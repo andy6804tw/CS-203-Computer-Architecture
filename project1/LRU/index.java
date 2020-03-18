@@ -9,13 +9,11 @@ import java.util.LinkedList;
  */
 class Frame {
 
-  String reference; // Use string to represent a reference.
-  byte usebit; // Reference bit. If the frame is referenced, set this use bit.
+  String data; // Use string to represent a data.
 
   Frame() {
     // Initialize
-    reference = null;
-    usebit = 0;
+    data = null;
   }
 }
 
@@ -31,11 +29,11 @@ public class index {
     for (int i = 0; i < numberOfFrames; ++i) {
       frames[i] = new Frame();
     }
-    // Make sure references is not null
-    final String list="EFABFCFDBCFCBAB";
-    final String references[] = list.split("");
+    // Make sure datas is not null
+    final String list="2342137543";
+    final String datas[] = list.split("");
 
-    final int numberOfPageFault = LRU(frames, numberOfFrames, references);
+    final int numberOfPageFault = LRU(frames, numberOfFrames, datas);
     System.out.println(numberOfPageFault);
   }
 
@@ -44,9 +42,9 @@ public class index {
    *
    * @param frames         input the available frames
    * @param numberOfFrames input the number of frames
-   * @param references     input the sequence of references
+   * @param datas     input the sequence of datas
    */
-  private static int LRU(final Frame frames[], final int numberOfFrames, final String... references) {
+  private static int LRU(final Frame frames[], final int numberOfFrames, final String... datas) {
     // Use linked list to store the index of frames, the order of the list is the
     // order of victims. The larger index, the more recent frame.
     final LinkedList<Integer> list = new LinkedList<>();
@@ -59,17 +57,17 @@ public class index {
     // Initialize the number of page fault
     int numberOfPageFault = 0;
 
-    // Load references in sequence
-    final int numberOfReferences = references.length;
-    for (int n = 0; n < numberOfReferences; ++n) {
-      final String reference = references[n];
+    // Load datas in sequence
+    final int numberOfdatas = datas.length;
+    for (int n = 0; n < numberOfdatas; ++n) {
+      final String data = datas[n];
 
-      // Find whether the reference exists in frames or not. If it is not found, the
+      // Find whether the data exists in frames or not. If it is not found, the
       // page fault happened.
       boolean fault = true;
       for (int i = 0; i < numberOfFrames; ++i) {
         final Frame frame = frames[i];
-        if (reference.equals(frame.reference)) {
+        if (data.equals(frame.data)) {
           // Set the recent order, and break the search loop
           final int indexInList = list.indexOf(i);
           list.remove(indexInList);
@@ -80,9 +78,9 @@ public class index {
       }
       if (fault) {
         // Page fault happened, then use the least recently used frame to replace its
-        // reference.
+        // data.
         final int victim = list.get(0);
-        frames[victim].reference = reference;
+        frames[victim].data = data;
         // Set the recent order
         list.remove(0);
         list.add(victim);

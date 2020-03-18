@@ -21,9 +21,17 @@ numberOfFrames=4
 ```
 ![](https://imgur.com/P2oechL.gif)
 
-
+### Example3
+```
+numberOfFrames=4
+"2342137543"
+分頁錯誤的次數為9次
+```
+![](https://imgur.com/aVsZDRO.png)
 
 
 
 ## Reference
 [Page Replacement Algorithms in OS](https://www.slideshare.net/AdilAslam4/page-replacement-algorithms-in-os)
+[PageFaultAlgorithm GitHub](https://github.com/magiclen/PageFaultAlgorithm)
+[分頁替換演算法(Page Replacement Algorithm)介紹與模擬](https://magiclen.org/page-fault/)
