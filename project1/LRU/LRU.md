@@ -27,7 +27,7 @@ numberOfFrames=4
 "2342137543"
 分頁錯誤的次數為9次
 ```
-![](https://imgur.com/aVsZDRO.png)
+![](https://i.imgur.com/aVsZDRO.png)
 
 
 
