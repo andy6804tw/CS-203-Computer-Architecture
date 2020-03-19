@@ -22,7 +22,7 @@ class Frame {
  */
 public class index {
 
-  static int numberOfFrames=3;
+  static int numberOfFrames=2;
   public static void main(final String[] args) {
     // Initialize frames
     final Frame frames[] = new Frame[numberOfFrames];
@@ -30,7 +30,7 @@ public class index {
       frames[i] = new Frame();
     }
     // Make sure datas is not null
-    final String list="2342137543";
+    final String list="01002";
     final String datas[] = list.split("");
 
     final int numberOfPageFault = LRU(frames, numberOfFrames, datas);
