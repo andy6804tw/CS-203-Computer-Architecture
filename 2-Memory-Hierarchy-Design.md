@@ -53,3 +53,21 @@ direct-map (也被稱為One-way set associative)direct-map顧名思義，就是�
 ![](https://i.imgur.com/8or05u6.png)
 
 > 一個32bit的記憶體位址大概會分成 [tag][cache index][word index][byte index]
+
+
+
+## Summary
+1. 完全聯想式映射：fully associative mapping‧
+  整個cache視同一個分組，An－1～A0外的位址位元為tag（需存入cache）‧
+  hit rate：最高，cost：最高，speed：最快‧
+2. 直接映射：direct mapping‧
+  一個分組（set）只包含一個資料段落，若有2m個分組，去掉n＋m位址位元後，
+  其餘位址位元為tag（需存入cache）‧
+  hit rate：最低，cost：最低，speed：最慢‧
+
+3. 分組聯想式映射：set associative mapping‧
+  多個分組，每個分組內有多個資料段落，若有2m個分組，去掉n＋m位址位元後，
+  其餘位址位元為tag（需存入cache）‧
+  hit rate：中等，cost：中等，speed：中等‧
+
+[練習](http://www.cs.nthu.edu.tw/~tingting/Archi_17/week14_class_sheet%20-%20ans_fix.pdf)
