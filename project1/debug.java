@@ -34,8 +34,8 @@ class Block {
 
 public class debug {
   public static int cache_size = 1024; // Cache的大小，單位為KByte
-  public static int block_size = 8; // 每個Cache Block的大小，單位為Byte
-  public static int set_degree = 1; // 一個set中的cache block個數
+  public static int block_size = 16; // 每個Cache Block的大小，單位為Byte
+  public static int set_degree = 2; // 一個set中的cache block個數
   public static int setSize = 0;
   public static int hitCount = 0;
   public static int missCount = 0;
@@ -59,14 +59,17 @@ public class debug {
       int setIndex = position % setSize;
       int tag = position / setSize;
       // n-way nee loop
-      for(int j=0;j< set_degree;j++){
+      int j=0;
+      for(;j< set_degree;j++){
         if (setArray[setIndex].blockArray[j].valid != 0 && setArray[setIndex].blockArray[j].tag == tag) {
           hitCount++;
-        } else {
-          setArray[setIndex].blockArray[j].valid = 1;
-          setArray[setIndex].blockArray[j].tag = tag;
-          missCount++;
+          break;
         }
+      }
+      if(j==set_degree){
+        setArray[setIndex].blockArray[0].valid = 1;
+        setArray[setIndex].blockArray[0].tag = tag;
+        missCount++;
       }
       // System.out.println(addressList.get(i).HEX_address+" "+addressList.get(i).DEC_address);
     }

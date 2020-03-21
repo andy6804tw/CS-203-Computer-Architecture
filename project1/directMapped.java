@@ -21,8 +21,8 @@ class Block {
 
 public class directMapped {
   public static int cache_size = 1024; // Cache的大小，單位為KByte
-  public static int block_size = 64; // 每個Cache Block的大小，單位為Byte
-  public static int set_degree = 1; // 一個set中的cache block個數
+  public static int block_size = 16; // 每個Cache Block的大小，單位為Byte
+  public static int set_degree = 2; // 一個set中的cache block個數
   public static int setSize = 0;
   public static int hitCount = 0;
   public static int missCount = 0;
