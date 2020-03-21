@@ -13,11 +13,15 @@ class Address {
 
 class CacheSet {
   Block[] blockArray;
+  ArrayList<Integer> orderList = new ArrayList<>();
 
   public CacheSet(int set_degree) {
     blockArray = new Block[set_degree];
     for (int i = 0; i < set_degree; i++) {
+      // 初始化每個Block
       blockArray[i] = new Block(0, 0);
+      // 寫入順序初始化
+      orderList.add(i);
     }
   }
 }
@@ -33,9 +37,9 @@ class Block {
 }
 
 public class debug {
-  public static int cache_size = 1024; // Cache的大小，單位為KByte
-  public static int block_size = 16; // 每個Cache Block的大小，單位為Byte
-  public static int set_degree = 2; // 一個set中的cache block個數
+  public static int cache_size = 128; // Cache的大小，單位為KByte
+  public static int block_size = 32; // 每個Cache Block的大小，單位為Byte
+  public static int set_degree = 4; // 一個set中的cache block個數
   public static int setSize = 0;
   public static int hitCount = 0;
   public static int missCount = 0;
@@ -52,8 +56,7 @@ public class debug {
     for(int i=0;i<setSize;i++){
     setArray[i]=new CacheSet(set_degree);
     }
-
-    readFile("example3.txt");
+    readFile("example4.txt");
     for (int i = 0; i < addressList.size(); i++) {
       int position = addressList.get(i).DEC_address / block_size; // 取得記憶體位置
       int setIndex = position % setSize;
@@ -62,13 +65,21 @@ public class debug {
       int j=0;
       for(;j< set_degree;j++){
         if (setArray[setIndex].blockArray[j].valid != 0 && setArray[setIndex].blockArray[j].tag == tag) {
+          // Set the recent order, and break the search loop
+          final int indexInList = setArray[setIndex].orderList.indexOf(j);
+          setArray[setIndex].orderList.remove(indexInList);
+          setArray[setIndex].orderList.add(j);
           hitCount++;
           break;
         }
       }
       if(j==set_degree){
-        setArray[setIndex].blockArray[0].valid = 1;
-        setArray[setIndex].blockArray[0].tag = tag;
+        int victim = setArray[setIndex].orderList.get(0);
+        setArray[setIndex].blockArray[victim].valid = 1;
+        setArray[setIndex].blockArray[victim].tag = tag;
+        // Set the recent order
+        setArray[setIndex].orderList.remove(0);
+        setArray[setIndex].orderList.add(victim);
         missCount++;
       }
       // System.out.println(addressList.get(i).HEX_address+" "+addressList.get(i).DEC_address);
