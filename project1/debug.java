@@ -1,6 +1,9 @@
 import java.io.*;
 import java.util.*;
 
+/**
+ * 記憶體位置儲存 HEX_address(十六進位) DEC_address(十進位)
+ */
 class Address {
   String HEX_address = "";
   int DEC_address = 0;
@@ -10,7 +13,22 @@ class Address {
     this.DEC_address = DEC_address;
   }
 }
+/**
+ * Cache Block 是 CPU Cache 中的最小快取單位。Cache Block 由valid bit、tag 和 data
+ * 組成(此專案無data故忽略) n-way說明一個set裡有n個line/block。
+ */
+class Block {
+  int tag = 0;
+  int valid = 0;
 
+  public Block(int tag, int valid) {
+    this.tag = tag;
+    this.valid = valid;
+  }
+}
+/**
+ * Cache 由m個 set 组成，一個 set 中有n個 Cache Block。
+ */
 class CacheSet {
   Block[] blockArray;
   ArrayList<Integer> orderList = new ArrayList<>();
@@ -26,20 +44,10 @@ class CacheSet {
   }
 }
 
-class Block {
-  int tag = 0;
-  int valid = 0;
-
-  public Block(int tag, int valid) {
-    this.tag = tag;
-    this.valid = valid;
-  }
-}
-
 public class debug {
   public static int cache_size = 128; // Cache的大小，單位為KByte
   public static int block_size = 32; // 每個Cache Block的大小，單位為Byte
-  public static int set_degree = 4; // 一個set中的cache block個數
+  public static int set_degree = 4; // 一個set中的Cache Block個數
   public static int setSize = 0;
   public static int hitCount = 0;
   public static int missCount = 0;
