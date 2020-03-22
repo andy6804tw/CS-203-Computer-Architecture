@@ -28,22 +28,24 @@
 處理器怎麼知道data是否在cache中，並且正確的從cache抓出想要的資料？
 
 ### 三種cache的配置：
-快取記憶體的動態位址轉換，採用硬體實作的技術來完成，每個 CPU 包含 tag RAM，用來紀錄一個 memory block 要對映到那一個 cache block
-#### 1. direct mapping
-每個 cache block 僅可以對應到唯一的一個 main memory block
+快取記憶體的動態位址轉換，採用硬體實作的技術來完成，每個 CPU 包含 tag RAM，用來紀錄一個 memory block 要對映到那一個 cache block。
+![](https://pic3.zhimg.com/80/90bf0022f6523251334ad507324873e6_720w.jpg)
+
+#### 1. Direct Mapped 
+每個 cache block 僅可以對應到唯一的一個 main memory block，相當於每個set只有1個cache line
 - 優點：搜尋時間短
 - 缺點：hit rate 低
-#### 2. n-way associative
-把 cache 分成多個 set，CPU 必須檢查指定 set 內的每個 block 是否有可用的 cache
+#### 2. N-Way Associative
+把 cache 分成多個 set，CPU 必須檢查指定 set 內的每個 block 是否有可用的 cache。也就是說有多個set，每個set多個cache line。一般每個set有n個cache line。
 - 優點：搜尋時間短且 hit rate 高
 - worst case: Fully Associative 的情況，也就是 CPU 要檢查整個 cache
 
-#### 3. fully associative
-任意 cache block 可以對應到任意的 main memory block
+#### 3. Fully Associative
+任意 cache block 可以對應到任意的 main memory block。相當於只有1個set。
 - 優點：hit rate 高
 - 缺點：搜尋時間長，CPU 必須掃過整個 cache 才能決定是否該繼續往 main memory 撈資料
 
-### direct map 
+### Direct Mapped 
 direct-map (也被稱為One-way set associative)direct-map顧名思義，就是直接根據記憶體位置，把所有區塊平均分配給cache。看圖應該就能理解配置的方法，cache內有000~111 8個block，memory內有00000~11111 32個block，memory內的block index結尾只要等於cache index，就代表該block可以被放到該cache的該位置。也就是灰色的部份（00001, 01001, 10001, 11001）都可以被放到cache 001 block內。
 
 ![](https://i.imgur.com/NOSOuvy.png)
