@@ -4,12 +4,15 @@
 3. 四種儲存技術：SRAM, DRAM, Flash, Magnetic disk。
 4. 三種associativity method: directed-mapped, set-associative, full-associative。
 5. cache中的地址由三部分組成：index, tag 和 byte offset。
+6. 計記憶體架構的兩大原則，Temporal Locality和Spatial Locality
 
 ## 記憶體設計的原則
 當初記憶體為什麼要像現在設計成階層式的架構？很簡單，因為我們發現我們寫的程式在存取記憶體的過程中，有兩大現象：
 
-- 剛剛用過的記憶體很容易再被使用（例如，for迴圈）
-- 如果一個記憶體剛剛使用過，他附近的記憶體位址也很可能被使用到（例如，陣列存取）
+- temporal locality(時間的局部性):一個記憶體位址被存取後,不久會再度被存取，也就是說剛剛用過的記憶體很容易再被使用。
+  - ex:迴圈,副程式,以及堆疊,迴圈控制變數,計算總合變數
+- spatial locality(空間的局部性):一個記憶體位址被存取後,不久其附近的記憶體位址也會被存取。如果一個記憶體剛剛使用過，他附近的記憶體位址也很可能被使用到。
+  - ex:循序指令,以及陣列,相關的變數
 
 ![](https://i.imgur.com/6wqhGGI.png)
 
@@ -22,28 +25,32 @@
 - miss penalty
   - 把下層記憶體的資料搬到上層 + 上層記憶體資料搬到處理器的時間
 
+## 為什麼需要 cache?
+早期，main memory 的速度非常慢而且也非常貴，但當時的 CPU 速度也慢，因此還未有 cache 出現。但從 1980 年代開始，main memory 和 CPU 的差距急速拉大(如下圖)，main memory 的速讀雖有提升，卻仍不及 CPU 的進展，因此需要 cache 來補強兩者間的差距。
+
+![](https://i.imgur.com/9O3rnCZ.png)
+
 ## cache設計的概念
 “cache” 是為了讓資料存取的速度適應 CPU 的處理速度，允許 CPU 直接到 cache memory 查看所需資料是否存在。若是，則直接存取不必再到 main memory —— 減少到 main memory 存取的次數，解決 main memory 存取不夠快的問題。因此才有SRAM的出現。
 
 處理器怎麼知道data是否在cache中，並且正確的從cache抓出想要的資料？
 
-### 三種cache的配置：
+## 三種cache的配置(Cache Associativity)：
 快取記憶體的動態位址轉換，採用硬體實作的技術來完成，每個 CPU 包含 tag RAM，用來紀錄一個 memory block 要對映到那一個 cache block。
 ![](https://pic3.zhimg.com/80/90bf0022f6523251334ad507324873e6_720w.jpg)
 
-#### 1. Direct Mapped 
-每個 cache block 僅可以對應到唯一的一個 main memory block，相當於每個set只有1個cache line
+### 1. Direct Mapped 
+每個 cache block 僅可以對應到唯一的一個 main memory block，相當於每個set只有1個cache line(block)。
 - 優點：搜尋時間短
 - 缺點：hit rate 低
-#### 2. N-Way Associative
-把 cache 分成多個 set，CPU 必須檢查指定 set 內的每個 block 是否有可用的 cache。也就是說有多個set，每個set多個cache line。一般每個set有n個cache line。
-- 優點：搜尋時間短且 hit rate 高
-- worst case: Fully Associative 的情況，也就是 CPU 要檢查整個 cache
-
-#### 3. Fully Associative
+### 2. Fully Associative
 任意 cache block 可以對應到任意的 main memory block。相當於只有1個set。
 - 優點：hit rate 高
 - 缺點：搜尋時間長，CPU 必須掃過整個 cache 才能決定是否該繼續往 main memory 撈資料
+### 3. N-Way Associative
+為了避免以上兩種極端設計模式的缺點發生。CPU 必須檢查指定 set 內的每個 block 是否有可用的 cache。也就是說把 cache 分成多個 set，每個 set 多個 cache line。一般每個 set 有n個 cache line(block)。
+- 優點：搜尋時間短且 hit rate 高
+- worst case: Fully Associative 的情況，也就是 CPU 要檢查整個 cache
 
 ### Direct Mapped 
 direct-map (也被稱為One-way set associative)direct-map顧名思義，就是直接根據記憶體位置，把所有區塊平均分配給cache。看圖應該就能理解配置的方法，cache內有000~111 8個block，memory內有00000~11111 32個block，memory內的block index結尾只要等於cache index，就代表該block可以被放到該cache的該位置。也就是灰色的部份（00001, 01001, 10001, 11001）都可以被放到cache 001 block內。

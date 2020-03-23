@@ -45,9 +45,9 @@ class CacheSet {
 }
 
 public class cacheAssociative {
-  public static int cache_size = 1024; // Cache的大小，單位為KByte
-  public static int block_size = 64; // 每個Cache Block的大小，單位為Byte
-  public static int set_degree = 4; // 一個set中的Cache Block個數
+  public static int cache_size = 128; // Cache的大小，單位為KByte
+  public static int block_size = 32; // 每個Cache Block的大小，單位為Byte
+  public static int set_degree = 1; // 一個set中的Cache Block個數
   public static int setSize = 0;
   public static int hitCount = 0;
   public static int missCount = 0;
@@ -64,7 +64,7 @@ public class cacheAssociative {
     for(int i=0;i<setSize;i++){
     setArray[i]=new CacheSet(set_degree);
     }
-    readFile("example5.txt");
+    readFile("example4.txt");
     for (int i = 0; i < addressList.size(); i++) {
       int position = addressList.get(i).DEC_address / block_size; // 取得記憶體位置
       int setIndex = position % setSize;
