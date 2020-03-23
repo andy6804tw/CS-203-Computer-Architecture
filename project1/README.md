@@ -96,6 +96,16 @@ set_degree: 4
 - Hits:3312
 - Misses:1691
 ```
+#### Example6
+##### Direct
+```
+cache_size: 512 
+block_size: 16
+set_degree: 1
+- Hits:3
+- Misses:3
+```
+
 
 ## Example
 [Cache Access Example 2-way](https://www.youtube.com/watch?v=quZe1ehz-EQ)

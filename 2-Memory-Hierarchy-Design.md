@@ -52,7 +52,7 @@
 
 > 搜尋時間長，CPU 必須掃過整個 cache 才能決定是否該繼續往 main memory 撈資料。
 ### 3. N-Way Associative
-為了解決以上兩種極端設計模式的缺點，我們在兩者之前取得平衡。CPU 必須檢查指定 set 內的每個 block 是否有可用的 cache。也就是說把 cache 分成多個 set，每個 set 多個 cache line。一般每個 set 有n個 cache line(block)。
+為了解決以上兩種極端設計模式的缺點，我們在兩者之前取得平衡。CPU 必須檢查指定 set 內的每個 block 是否有可用的 cache。也就是說把 cache 分成多個 set，每個 set m 個 cache line。一般每個 set 有n個 cache line(block)。
 - 優點：搜尋時間短且 hit rate 高
 - worst case: Fully Associative 的情況，也就是 CPU 要檢查整個 cache
 
