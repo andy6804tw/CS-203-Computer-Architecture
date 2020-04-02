@@ -67,9 +67,72 @@ direct-map (也被稱為One-way set associative)direct-map顧名思義，就是�
 
 > 一個32bit的記憶體位址大概會分成 [tag][cache index][word index][byte index]
 
+## block size與miss rate的關係
+![](https://i.imgur.com/qBHS13C.png)
+
+在同樣的cache size下，如果提昇block size，會降低miss rate，因為你提昇了spatial locality。但是如果你無限制的提高block size，反而會導致cache內的總block數太少。另一個提高block size會造成的問題是miss penalty變大，因為一旦miss，你須要轉移更多的記憶體內容。
+
+## two strategies writing to cache
+- Write-through
+  - 資料寫入cache時也會同步寫入memory
+  - CPU向cache寫入數據時，同時向memory(後端存儲)也寫一份，使cache 和memory的數據保持一致。
+  - 優點是簡單。
+  - 缺點是每次都要訪問memory， 速度比較慢。
+- write-back
+  - cpu更新cache時，只是把更新的cache區標記一下，並不同步更新memory (後端存儲)。只是在cache區要被新進入的數據取代時，才更新 memory(後端存儲)。這樣做的原因是考慮到很多時候cache存入的是中間結 果，沒有必要同步更新memory(後端存儲)。
+  - 優點是CPU執行的效率提高。
+  - 缺點是實現起來技術比較複雜。
+  - 將資料量儲存到一定的量之後,會依據同區塊的資料一次整批寫回去。
+  - 所謂 dirty，他是在記憶體裡面 cache 的一個 bit 用來指示這筆資料已經被 CPU 修改過但是尚未回寫到儲存裝置中。
+
+## 三種不同的 Cache Miss
+- Compulsory Miss (Cold Cache)
+  - 當程式剛開始執行時，Cache 中沒有任何的 Block。因此會發生 Cache Miss。
+- Capacity Miss
+  - Cache 的大小太小了，沒有辦法涵蓋到整個 Working Set。
+- Conflict Miss
+  - 雖然 Cache 還有很多空間，但在 Working Set 中的 任意兩個 Block 可能無法同時存在 Cache 中。發生的原因可能是因為，此 2 個 Block 的 Index 相同。(也就是所謂的 Cache Thrash)
+
+## Six basic cache optimizations
+###  Reducing Miss Rate
+1. Larger block size 
+- Advantage:
+  - Take advantage of spatial locality. Reduces compulsory misses 
+- Disadvantage:
+  - Increases miss penalty
+
+2. Larger total cache capacity to reduce miss rate
+- Advantage:
+  - Reduce capacity misses 
+- Disadvantage:
+  - Increases hit time, increases power consumption
+
+3. Higher associativity
+- Advantage:
+  - Reduces conflict misses
+- Disadvantage:
+  - Increases hit time, increases power consumption
+
+### Reduces overall memory access time
+4. Higher number of cache levels
+
+### Reduces miss penalty
+5. Giving priority to read misses over writes
+- 在寫入緩衝區中的較早寫入之前完成讀取
+
+### Reduces hit time
+6. Avoiding address translation in cache indexing
+- Cache中使用虛擬地址，這樣就可以同時Access TLB和Cache / Access Cache firstly
+
+## Ten Advanced Optimizations of Cache Performance
+
+
+
+
 
 
 ## Summary
+![](https://i.imgur.com/4FOEbsA.png)
 1. 完全聯想式映射：fully associative mapping‧
   整個cache視同一個分組，An－1～A0外的位址位元為tag（需存入cache）‧
   hit rate：最高，cost：最高，speed：最快‧
