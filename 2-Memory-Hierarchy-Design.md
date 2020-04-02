@@ -149,3 +149,7 @@ direct-map (也被稱為One-way set associative)direct-map顧名思義，就是�
 [練習](http://www.cs.nthu.edu.tw/~tingting/Archi_17/week14_class_sheet%20-%20ans_fix.pdf)
 
 [參考-淺談memory cache](http://opass.logdown.com/posts/249025-discussion-on-memory-cache)
+[現代處理器設計: Cache 原理和實際影響](https://hackmd.io/@sysprog/HkW3Dr1Rb)
+http://hellpuppetanna.pixnet.net/blog/post/268153860-%E8%A8%88%E7%AE%97%E6%A9%9F%E7%B5%90%E6%A7%8B---09-cache%28%E4%B8%8B%29
+https://hackmd.io/@drwQtdGASN2n-vt_4poKnw/H1U6NgK3Z
+http://oz.nthu.edu.tw/~d947207/chap21_cache.pdf
