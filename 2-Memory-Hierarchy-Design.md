@@ -125,6 +125,43 @@ direct-map (也被稱為One-way set associative)direct-map顧名思義，就是�
 - Cache中使用虛擬地址，這樣就可以同時Access TLB和Cache / Access Cache firstly
 
 ## Ten Advanced Optimizations of Cache Performance
+### 1. Reducing the hit time
+#### - Small and simple caches
+如果僅考慮Cache Hit Time，那麼結構越簡單、容量越小、組相連路數越少的緩存肯定是越快的。 所以出於速度考慮，CPU的L1緩存都是很小的。比如從Pentium MMX到Pentium 4，L1緩存的容量都沒有增長。 不過太少了肯定也是不行的。
+#### - Way prediction
+直接相連的Hit Time是很快的，但conflict miss多。組相連可以減少conflict miss，但結構複雜功耗也高一些，hit time也多一點。那麼有什麼方法能兩者兼得呢？因為組相連緩存中，每一個組裡面的N個路（block）是全相連的。也就是相當於讀的時候，每次映射好一個set之後，要遍歷一遍N個block，當N越大的時候費的時間就越多。有一種黑科技方法叫做路預測（way prediction），它的思想就是在緩存的每個塊中添加預測位，來預測在下一次緩存訪問時，要訪問該組裡的哪個塊。當下一次訪問時，如果預測準了就節省了遍歷的時間（相當於直接相連的速度了）；如果不准就再遍歷唄。 。 。好在目前這個accuracy還是很高的，大概80+%了。不過有個缺點就是Hit Time不再是確定的幾個cycle了（因為沒命中的時候要花的cycle多嘛），不便於後面進行優化（參考CPU pipeline）。
+### 2. Increasing cache bandwidth
+#### - Pipelined caches
+在cache訪問中也可以使用pipeline技術。 但pipeline是有可能提高overall access latency的（比如中間有流水線氣泡），而latency有時候比bandwidth更重要。所以很多high-level cache是​​不用pipeline的
+#### - cache with Multiple Banks
+對於Lower Level Cache（比如L2），它的read latency還是有點大的。假設我們有很多的cache access需要訪問不同的數據，能不能讓它們並行的access呢？可以把L2 Cache分成多個Bank（也就是多個小分區），把數據放在不同Bank上。這樣就可以並行訪問這幾個Bank了。那麼如何為數據選一個合適的Bank來存呢？一個簡單的思路就是sequential interleaving：Spread block addresses sequentially across banks. E,g, if there 4 banks, Bank 0 has all blocks whose address modulo 4 is 0; bank 1 has all blocks whose address modulo 4 is 1; .. .... 因為數據有locality嘛，把相鄰的塊存到不同bank，就可以盡量並行的訪問locality的塊了。
+#### - Nonblocking caches
+假設要執行下面一段程序：
+```
+Reg1:=LoadMem(A);
+Reg2:=LoadMem(B);
+Reg3:=Reg1 + Reg2;
+```
+當執行第一行時，cpu發現地址A不在cache中，就需要去內存讀。但讀內存的時間是很長的，此時CPU也不會閒著，就去執行了第二行。然後發現B也不在cache中。那麼此時cache會怎麼做呢？
+- (a). cache阻塞，等著先把A讀進來，然後再去讀B。這種叫做Blocking Cache
+- (b). cache同時去內存讀B，最終B和A一起進入Cache。這種叫做Non-Blocking Cache
+
+可以看出Non-Blocking Cache應該是比較高效的一種方法。在這種情況下，兩條語句的總執行時間就只有一個miss penalty了：
+
+![](https://i.imgur.com/L08kBPV.png)
+
+### 3. Reducing Miss Penalty
+#### - Critical word first
+相對一個Word來說，cache block size一般是比較大的。有時候cpu可能只需要一個block中的某一個word，那麼如果cpu還要等整個block傳輸完才能讀這個word就有點慢了。因此我們就有了兩種加速的策略：
+1. Critical Word First：首先從存儲器中讀想要的word，在它到達cache後就立即發給CPU。然後在載入其他目前不急需的word的同時，CPU就可以繼續運行了
+2. Early Restart：或者就按正常順序載入一整個block。當所需的word到達cache後就立即發給CPU。然後在載入其他目前不急需的word的同時，CPU就可以繼續運行了
+
+![](https://i.imgur.com/CfkntY9.png)
+
+#### - Merging write buffers
+
+### 4. Reducing Miss Rate
+#### - Compiler optimizations
 
 
 
