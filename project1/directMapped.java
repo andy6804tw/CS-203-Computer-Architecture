@@ -39,7 +39,7 @@ public class directMapped {
     for(int i=0;i<setSize;i++){
       setArray[i]=new Block(0,0);
     }
-    readFile("example3.txt");
+    readFile("example5.txt");
     for(int i=0;i<addressList.size();i++){
       int position=addressList.get(i).DEC_address/block_size; // 取得記憶體位置
       int setIndex=position%setSize;

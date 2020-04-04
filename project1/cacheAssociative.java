@@ -45,7 +45,7 @@ class CacheSet {
 }
 
 public class cacheAssociative {
-  public static int cache_size = 512; // Cache的大小，單位為KByte
+  public static int cache_size = 128; // Cache的大小，單位為KByte
   public static int block_size = 16; // 每個Cache Block的大小，單位為Byte
   public static int set_degree = 1; // 一個set中的Cache Block個數
   public static int setSize = 0;
@@ -57,6 +57,8 @@ public class cacheAssociative {
 
   public static void main(String[] args) {
 
+    //
+    cache_size=cache_size*1024;
     // 計算set的個數
     setSize = cache_size / (block_size * set_degree);
     // 初始化 setArray
@@ -64,7 +66,7 @@ public class cacheAssociative {
     for(int i=0;i<setSize;i++){
     setArray[i]=new CacheSet(set_degree);
     }
-    readFile("example6.txt");
+    readFile("example5.txt");
     for (int i = 0; i < addressList.size(); i++) {
       int position = addressList.get(i).DEC_address / block_size; // 取得記憶體位置
       int setIndex = position % setSize;
@@ -94,6 +96,7 @@ public class cacheAssociative {
     }
     System.out.println("Hit Count: " + hitCount);
     System.out.println("Miss Count: " + missCount);
+    System.out.printf("Miss Rate: %f\n", ((double)missCount/addressList.size()));
 
   }
 
