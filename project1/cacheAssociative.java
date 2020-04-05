@@ -48,6 +48,7 @@ public class cacheAssociative {
   public static int cache_size = 128; // Cache的大小，單位為KByte
   public static int block_size = 16; // 每個Cache Block的大小，單位為Byte
   public static int set_degree = 1; // 一個set中的Cache Block個數
+  public static String fileName="example5.txt";
   public static int setSize = 0;
   public static int hitCount = 0;
   public static int missCount = 0;
@@ -57,7 +58,23 @@ public class cacheAssociative {
 
   public static void main(String[] args) {
 
-    //
+    Scanner scn= new Scanner(System.in);
+		if(args.length!=0){
+			cache_size= Integer.parseInt(args[0]);
+			block_size= Integer.parseInt(args[1]);
+			set_degree= Integer.parseInt(args[2]);
+			fileName=args[3];
+		}else{
+			System.out.print("讀入Cache的大小，單位為KByte: "); 
+			cache_size=Integer.parseInt(scn.nextLine());
+			System.out.print("讀入每個Cache Block的大小，單位為Byte: "); 
+			block_size=Integer.parseInt(scn.nextLine());
+			System.out.print("讀入一個set中的Cache Block個數: "); 
+			set_degree=Integer.parseInt(scn.nextLine());
+			System.out.print("讀入檔名: "); 
+			fileName=scn.nextLine();
+		}
+    // Cach大小轉換
     cache_size=cache_size*1024;
     // 計算set的個數
     setSize = cache_size / (block_size * set_degree);
@@ -66,7 +83,7 @@ public class cacheAssociative {
     for(int i=0;i<setSize;i++){
     setArray[i]=new CacheSet(set_degree);
     }
-    readFile("example5.txt");
+    readFile(fileName);
     for (int i = 0; i < addressList.size(); i++) {
       int position = addressList.get(i).DEC_address / block_size; // 取得記憶體位置
       int setIndex = position % setSize;
