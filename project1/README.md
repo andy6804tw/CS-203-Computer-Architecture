@@ -106,6 +106,17 @@ set_degree: 1
 - Misses:3
 ```
 
+## Deploy project
+```
+javac -encoding UTF-8 cacheAssociative.java
+java cacheAssociative 128 16 1 example5.txt
+```
+
+執行 jar 
+```
+jar -cvfm cacheAssociative.jar  MANIFEST.MF ./
+java -jar cacheAssociative.jar 
+```
 
 ## Example
 [Cache Access Example 2-way](https://www.youtube.com/watch?v=quZe1ehz-EQ)

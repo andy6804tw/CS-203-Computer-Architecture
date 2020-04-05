@@ -14,7 +14,7 @@ class Address {
   }
 }
 /**
- * Cache Block 是 CPU Cache 中的最小快取單位。Cache Block 由valid bit、tag 和 data
+ * Cache Block 是 CPU Cache 中的最小快取單位。Cache Block 由 valid bit、tag 和 data
  * 組成(此專案無data故忽略) n-way說明一個set裡有n個line/block。
  */
 class Block {
@@ -65,15 +65,17 @@ public class cacheAssociative {
 			set_degree= Integer.parseInt(args[2]);
 			fileName=args[3];
 		}else{
-			System.out.print("讀入Cache的大小，單位為KByte: "); 
+			System.out.print("請輸入Cache的大小，單位為KByte: "); 
 			cache_size=Integer.parseInt(scn.nextLine());
-			System.out.print("讀入每個Cache Block的大小，單位為Byte: "); 
+			System.out.print("請輸入每個Cache Block的大小，單位為Byte: "); 
 			block_size=Integer.parseInt(scn.nextLine());
-			System.out.print("讀入一個set中的Cache Block個數: "); 
+			System.out.print("請輸入一個set中的Cache Block個數: "); 
 			set_degree=Integer.parseInt(scn.nextLine());
-			System.out.print("讀入檔名: "); 
-			fileName=scn.nextLine();
-		}
+      System.out.print("請輸入檔名(xxx.txt): ");
+      fileName=scn.nextLine();
+      System.out.println("---------------------------------------------------------------");
+    }
+    System.out.println("Cache Size: "+cache_size+" Block Size: "+block_size+" Way: "+set_degree+" "+fileName); 
     // Cach大小轉換
     cache_size=cache_size*1024;
     // 計算set的個數
@@ -114,7 +116,7 @@ public class cacheAssociative {
     System.out.println("Hit Count: " + hitCount);
     System.out.println("Miss Count: " + missCount);
     System.out.printf("Miss Rate: %f\n", ((double)missCount/addressList.size()));
-
+    scn.nextLine();
   }
 
   /**
