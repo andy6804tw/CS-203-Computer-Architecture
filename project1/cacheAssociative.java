@@ -28,6 +28,7 @@ class Block {
 }
 /**
  * Cache 由m個 set 组成，一個 set 中有n個 Cache Block。
+ * orderList 用來儲存過去每個 Cache Set 中的 Block 使用的順序 (LRU機制實作)
  */
 class CacheSet {
   Block[] blockArray;
@@ -85,16 +86,18 @@ public class cacheAssociative {
     for(int i=0;i<setSize;i++){
     setArray[i]=new CacheSet(set_degree);
     }
+    // 讀檔取得記憶體位置
     readFile(fileName);
     for (int i = 0; i < addressList.size(); i++) {
       int position = addressList.get(i).DEC_address / block_size; // 取得記憶體位置
       int setIndex = position % setSize;
       int tag = position / setSize;
-      // n-way nee loop
+      // n-way loop
       int j=0;
       for(;j< set_degree;j++){
+        // 判斷處理的記憶體位置中所獲得的 tag 與 Cache Block 中 tag 是否相等，若相等代表 hit
         if (setArray[setIndex].blockArray[j].valid != 0 && setArray[setIndex].blockArray[j].tag == tag) {
-          // Set the recent order, and break the search loop
+          // Set the recent order (LRU), and break the search loop
           final int indexInList = setArray[setIndex].orderList.indexOf(j);
           setArray[setIndex].orderList.remove(indexInList);
           setArray[setIndex].orderList.add(j);
@@ -102,16 +105,17 @@ public class cacheAssociative {
           break;
         }
       }
+      // 若沒有 hit 則，將記憶體 tag 放入第 orderList[0] 個 Cache Block 中取代
       if(j==set_degree){
+        // 取得欲被取代的 Cache Block
         int victim = setArray[setIndex].orderList.get(0);
         setArray[setIndex].blockArray[victim].valid = 1;
         setArray[setIndex].blockArray[victim].tag = tag;
-        // Set the recent order
+        // 將原本取代順位第一個的 Block 移到最後一個順位，表示最近被使用過 (LRU)
         setArray[setIndex].orderList.remove(0);
         setArray[setIndex].orderList.add(victim);
         missCount++;
       }
-      // System.out.println(addressList.get(i).HEX_address+" "+addressList.get(i).DEC_address);
     }
     System.out.println("Hit Count: " + hitCount);
     System.out.println("Miss Count: " + missCount);
