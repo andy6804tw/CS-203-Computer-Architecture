@@ -19,7 +19,7 @@ def check_cache_block(position_of_mapped_cache_block, TAG):
 		print("Error")
 
 filename = sys.argv[1]
-cache_size = convert_cachesize_to_int(sys.argv[2])
+cache_size = convert_cachesize_to_int(sys.argv[2])*1024
 print(cache_size, 'cache_size')
 block_size = int(sys.argv[3])
 number_of_cache_block = int(cache_size/block_size)
