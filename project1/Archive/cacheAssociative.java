@@ -111,12 +111,12 @@ public class cacheAssociative {
       // 若沒有 hit 則，將記憶體 tag 放入第 orderList[0] 個 Cache Block 中取代
       if (j == set_degree) {
         // 取得欲被取代的 Cache Block
-        int victim = setArray[setIndex].orderList.get(0);
-        setArray[setIndex].blockArray[victim].valid = 1;
-        setArray[setIndex].blockArray[victim].tag = tag;
+        int blockIndex = setArray[setIndex].orderList.get(0);
+        setArray[setIndex].blockArray[blockIndex].valid = 1;
+        setArray[setIndex].blockArray[blockIndex].tag = tag;
         // 將原本取代順位第一個的 Block 移到最後一個順位，表示最近被使用過 (LRU)
         setArray[setIndex].orderList.remove(0);
-        setArray[setIndex].orderList.add(victim);
+        setArray[setIndex].orderList.add(blockIndex);
         missCount++;
       }
     }
