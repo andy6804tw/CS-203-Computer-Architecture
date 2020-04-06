@@ -48,7 +48,7 @@ public class cacheAssociative {
   public static int cache_size = 128; // Cache的大小，單位為KByte
   public static int block_size = 16; // 每個Cache Block的大小，單位為Byte
   public static int set_degree = 1; // 一個set中的Cache Block個數
-  public static String fileName="example5.txt";
+  public static String fileName="trace.txt";
   public static int setSize = 0;
   public static int hitCount = 0;
   public static int missCount = 0;

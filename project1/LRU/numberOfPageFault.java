@@ -1,5 +1,3 @@
-package project1.LRU;
-
 import java.util.LinkedList;
 
 /**
