@@ -37,6 +37,7 @@
 
 ## 三種cache的配置(Cache Associativity)：
 快取記憶體的動態位址轉換，採用硬體實作的技術來完成，每個 CPU 包含 tag RAM，用來紀錄一個 memory block 要對映到那一個 cache block。
+
 ![](https://pic3.zhimg.com/80/90bf0022f6523251334ad507324873e6_720w.jpg)
 
 ### 1. Direct Mapped 
@@ -57,12 +58,12 @@
 - worst case: Fully Associative 的情況，也就是 CPU 要檢查整個 cache
 
 ### Direct Mapped 
-direct-map (也被稱為One-way set associative)direct-map顧名思義，就是直接根據記憶體位置，把所有區塊平均分配給cache。看圖應該就能理解配置的方法，cache內有000~111 8個block，memory內有00000~11111 32個block，memory內的block index結尾只要等於cache index，就代表該block可以被放到該cache的該位置。也就是灰色的部份（00001, 01001, 10001, 11001）都可以被放到cache 001 block內。
+direct-map (也被稱為One-way set associative)direct-map顧名思義，就是直接根據記憶體位置，把所有區塊平均分配給cache。看圖應該就能理解配置的方法，cache內有000-111 8個block，memory內有00000-11111 32個block，memory內的block index結尾只要等於cache index，就代表該block可以被放到該cache的該位置。也就是灰色的部份（00001, 01001, 10001, 11001）都可以被放到cache 001 block內。
 
 ![](https://i.imgur.com/NOSOuvy.png)
 
 
-下圖為4KB的cache(1024個block，一個block內有4byte的資料)。這是一個32bit的address，direct map到1024個block的cache。word是處理器指令集存取memory的單位。在此架構中一個word是4個bytes，因此我們需要兩個bit來決定到底是該word的哪一個bytes。該圖cache內1個block的大小是1個word，總共有1024個block，所以我們用10 bits來表示該cache index，剩下20個bits就作為tag。因此存取該cache意思就是取出2~11bit找到cache index，並比較tag(12~31 bit)決定是否hit，如果hit到，就讀出資料。
+下圖為4KB的cache(1024個block，一個block內有4byte的資料)。這是一個32bit的address，direct map到1024個block的cache。word是處理器指令集存取memory的單位。在此架構中一個word是4個bytes，因此我們需要兩個bit來決定到底是該word的哪一個bytes。該圖cache內1個block的大小是1個word，總共有1024個block，所以我們用10 bits來表示該cache index，剩下20個bits就作為tag。因此存取該cache意思就是取出2-11bit找到cache index，並比較tag(12-31 bit)決定是否hit，如果hit到，就讀出資料。
 ![](https://i.imgur.com/8or05u6.png)
 
 > 一個32bit的記憶體位址大概會分成 [tag][cache index][word index][byte index]
@@ -161,6 +162,7 @@ Reg3:=Reg1 + Reg2;
 ![](https://i.imgur.com/CfkntY9.png)
 
 #### ⑦ Merging write buffers
+當某個write buffer中已存放未來將更 新的資料時，如果又有新的資料要被更 新，新的位置將被檢查是否可以和已存 資料的合併，減少write penalty
 
 ### 4. Reducing Miss Rate
 #### ⑧ Compiler optimizations
@@ -173,7 +175,7 @@ Reg3:=Reg1 + Reg2;
   - 3. Loop Fusion: Combine 2 independent loops that have same looping and some variables overlap
   - 4. Blocking: Improve temporal locality by accessing “blocks” of data repeatedly vs. going down whole columns or rows
 
-#### 1. Merging Arrays: improve spatial locality by single array of compound elements vs.  arrays
+#### 1. Merging Arrays: improve spatial locality by single array of compound elements vs. 2 arrays
 ```C
 /* Before: 2 sequential arrays */
 int val[SIZE];
