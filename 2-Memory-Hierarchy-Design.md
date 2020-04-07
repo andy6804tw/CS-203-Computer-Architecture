@@ -3,7 +3,7 @@
 2. word是處理器指令集存取memory的單位，一個word是4個bytes。
 3. 四種儲存技術：SRAM, DRAM, Flash, Magnetic disk。
 4. 三種associativity method: directed-mapped, set-associative, full-associative。
-5. cache中的地址由三部分組成：index, tag 和 byte offset。
+5. cache中的地址由三部分組成：set index, tag 和 byte offset。
 6. 計記憶體架構的兩大原則，Temporal Locality和Spatial Locality
 
 ## 記憶體設計的原則
@@ -51,8 +51,8 @@
 - 缺點：cache 中尋找 block 時需要搜尋整個 cache
 
 > 搜尋時間長，CPU 必須掃過整個 cache 才能決定是否該繼續往 main memory 撈資料。
-### 3. N-Way Associative
-為了解決以上兩種極端設計模式的缺點，我們在兩者之前取得平衡。CPU 必須檢查指定 set 內的每個 block 是否有可用的 cache。也就是說把 cache 分成多個 set，每個 set m 個 cache line。一般每個 set 有n個 cache line(block)。
+### 3. N-Way Set Associative
+為了解決以上兩種極端設計模式的缺點，我們在兩者之前取得平衡。CPU 必須檢查指定 set 內的每個 block 是否有可用的 cache。也就是說把 cache 分成多個 set，每個 set n 個 cache line(block)。
 - 優點：搜尋時間短且 hit rate 高
 - worst case: Fully Associative 的情況，也就是 CPU 要檢查整個 cache
 
@@ -308,6 +308,18 @@ load a[5];
 #### ⑩ Compiler prefetching
 Insert prefetch instructions to request data before data is needed
 
+## Virtual Memory
+State at least two reasons why we need virtual memory and elaborate your answer.
+1. allow a single user program to exceed the size of primary memory.
+2. allow efficient and safe sharing of memory among multiple programs.
+
+當程式的 address space 大於 RAM 的 address space 的時候，如果沒有利用 virtual
+memory 則可能造成 crash.而利用 virtual memory 則可以將部分資料存放到 disk
+裡，需要的時候再經由 address mapping 找回。而且 virtual memory 可以經由
+address mapping 有效的保護資料不被不同程式經由讀取相同地址汙染，不只如
+此，如果要更有效率地運用儲存空間，可以將 mapping 改為指向同一個 RAM
+地址，以達到不同程式共同存取相同地址的目的。
+
 ## Summary
 ![](https://i.imgur.com/4FOEbsA.png)
 1. 完全聯想式映射：fully associative mapping‧
@@ -331,3 +343,153 @@ Insert prefetch instructions to request data before data is needed
 [現代處理器設計: Cache 原理和實際影響](https://hackmd.io/@sysprog/HkW3Dr1Rb)
 [Hack筆記](https://hackmd.io/@drwQtdGASN2n-vt_4poKnw/H1U6NgK3Z
 http://oz.nthu.edu.tw/~d947207/chap21_cache.pdf)
+
+## 練習
+1. Choose the statement that is wrong and explain why
+```
+(a) Spatial locality stating that if a data location is referenced, data locations with nearby addresses
+will tend to be referenced soon.
+(b) Temporal locality stating that if a data location is referenced then it will tend to be referenced again
+soon.
+(c) Memory hierarchy is a structure that uses multiple levels of memories; as the distance from the
+processor increases, the size of the memories and the access time both increase.
+(d) Miss penalty, the time required to fetch a block into a level of the memory hierarchy from the
+lower level, including the time to access the block, transmit it from one level to the other, insert it
+in the level that experienced the miss, and then pass the block to the requestor.
+(e) Larger blocks exploit spatial locality to lower miss rates. Increasing the block size always
+decreases the miss rate.
+```
+```
+Ans:
+(e) is wrong. Reason:不一定，如果 block size 最後占了 cache size 的一大部分,則 miss rate 會上升
+因為能在 cache 裡面被利用的 blocks 數會減少，在讀 words 前某些 block 會被擠壓出去，造成 miss
+rate 的效益降低
+```
+
+2. 以下關於 memory hierarchy 的敘述何者錯誤？
+```
+(a) Block is the basic unit of information transfer
+(b) Loop is an example of spatial locality
+(c) Hierarchy between cache and memory is managed by hardware
+(d) DRAM is slow, cheap, and dense while SRAM is fast, expensive, and not very dense
+(e) Miss penalty is the time to deliver the block to the processor
+```
+```
+Ans:
+(B) 應改為 temporal locality
+(E) Miss penalty is the time to deliver the block to the processor + time to replace a block in the upper
+level
+```
+
+3. 完成下面三個題組:
+
+(a) Name the five memory components in the memory hierarchy from fastest to slowest.
+(b) Name the four memory data transferring blocks from biggest sized to smallest sized.
+(c) On what is the effectiveness of the cache memory based on? Explain the principle of it and name the
+two types of it.
+```
+Ans:
+(a) Register -> Cache -> Memory -> Disk -> Tape
+(b) Files -> Pages -> Blocks -> Operands
+(c)
+Principle of Locality:
+ Program access a relatively small portion of the address space at any instant of time
+ 90/10 rule: 10% of code executed 90% of time
+Two types of locality:
+ Temporal locality: if an item is referenced, it will tend to be referenced again soon, e.g., loop
+ Spatial locality: if an item is referenced, items whose addresses are close by tend to be
+referenced soon., e.g., instruction access, array data structure
+```
+
+4. The Average Memory Access Time equation (AMAT) has three components: hit time,
+miss rate, and miss penalty. For each of the following cache optimizations, indicate
+which component of the AMAT equation is improved.
+- Using a second-level cache
+- Using a direct-mapped cache
+- Using a 4-way set-associative cache
+
+```
+1.Using a second-level cache improves miss rate
+2.Using a direct-mapped cache improves hit time
+3. Using a 4-way set-associative cache improves miss rate
+```
+
+5. Which of the following statements are generally true?
+```
+(1) Caches take advantage of temporal locality.
+(2) On a read, the value returned depends on which blocks are in the cache.
+(3) Most of the cost of the memory hierarchy is at the highest level.
+(4) Most of the capacity of the memory hierarchy is at the lowest level.
+```
+```
+1: True
+2: False, The value returned by a read remains the same.
+3: False, Most of the cost of the memory hierarchy is at the lowest level.
+4: True
+```
+
+6. Describe the advantage and disadvantage of increasing the block sizes.
+```
+advantage : reduce miss rate due to spatial locality
+disadvantage : if block sizes too big ,then the number of block will decrease
+⇒ miss rate increase
+```
+
+7. 關於 write-through 和 write-back 的敘述，下列何者正確？
+```
+A. 當 write hit 時，write-through 會將 cache 和 memory 的資料同時更新
+B. 當 write-back 的 dirty bit 為 1 時，代表 cache 裡沒有資料
+C. 在 cache 和 memory，Write-back 的資料是非一致性的
+D. 當 write miss 時，對於 write-through 通常都是 fetch the block
+```
+```
+Ans：C
+a)先存到 write buffer 再慢慢存回 memory
+b) cache 有被寫過資料
+d) write-back
+```
+
+8. Which of the following statement is true?
+```
+(A) Write-through : The information is written to both the block in the cache and the block in the lower level
+of the memory hierarchy (main memory for a cache).
+(B) Write-back : The information is written only to the lower level of the memory hierarchy. The modified
+block is written to the lower level of the hierarchy only when it is replaced.
+(C)In a fixed-sized cache, larger blocks will always reduce miss rate.
+(D) Static Random Access Memory need to be refreshed regularly
+```
+```
+ANS: A
+(A)True.
+(B) Write-back : The information is written only to the block in the cache. The modified block is written to the
+lower level of the hierarchy only when it is replaced.
+(C) In a fixed-sized cache, larger blocks will increased miss rate.
+(D) Dynamic Random Access Memory need to be refreshed regularly
+```
+
+9. Please give out 2 reasons why we use memory hierarchy approach.
+```
+Ans.
+DRAM’s speed can’t follow up CPU’s speed, in fact processor grows 50% faster per yaer, and the cost of
+SRAM is too high.
+Since 10% of code executed 90% of time, most of the time we the memory data we access is not as wide as
+the whole memory, so we can transfer those data to SRAM to increase performance.
+```
+
+10. Revise these improper statement.
+```
+a. When we use a multilevel cache to improve the performance, the most important thing for the
+level-2 cache is to minimize the hit time.
+b. There are no disadvantage of using a set associativity cache to improve performance.
+c. In an interleaved memory organization, since there are several memory banks, once the data is
+accessed(ready), the data can be transfer concurrently.
+d. When a new process is created and is waiting for the CPU scheduler dispatch, this process is in
+waiting state.
+```
+```
+Ans:
+a. Minimize the miss rate
+b. Data is ready after hit/miss detection and there are extra MUX delay.
+c. data still transfer sequentially.
+d. ready state.
+```
