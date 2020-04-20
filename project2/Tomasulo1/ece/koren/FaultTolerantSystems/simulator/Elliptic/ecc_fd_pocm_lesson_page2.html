@@ -1,0 +1,140 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>ECC_FD_PoCM</title>
+<link href="twoColLiqLtHdr.css" rel="stylesheet" type="text/css" />
+<!--[if IE]>
+<style type="text/css"> 
+/* place css fixes for all versions of IE in this conditional comment */
+.twoColLiqLtHdr #sidebar1 { padding-top: 30px; }
+.twoColLiqLtHdr #mainContent { zoom: 1; padding-top: 15px; }
+/* the above proprietary zoom property gives IE the hasLayout it needs to avoid several bugs */
+</style>
+<![endif]-->
+<script src="SpryAssets/SpryMenuBar.js" type="text/javascript"></script>
+<link href="SpryAssets/SpryMenuBarVertical.css" rel="stylesheet" type="text/css" />
+<style type="text/css">
+<!--
+body {
+	background-color: #841B15;
+}
+body,td,th {
+}
+.style1 {color: #FFFFFF}
+-->
+</style>
+<script src="Scripts/AC_RunActiveContent.js" type="text/javascript"></script>
+<style type="text/css">
+<!--
+p.MsoNormal {
+margin-top:0in;
+margin-right:0in;
+margin-bottom:10.0pt;
+margin-left:0in;
+line-height:115%;
+font-size:11.0pt;
+font-family:"Calibri","sans-serif";
+}
+.style2 {font-family: Verdana, Arial, Helvetica, sans-serif}
+.style5 {font-size: 100%}
+.style6 {	color: #841B15
+}
+-->
+</style>
+</head>
+
+<body class="twoColLiqLtHdr">
+
+<div id="container"> 
+  <div id="header">
+    <h1 class="style1">Fault Detection in Elliptic Curves </h1>
+    <h1 class="style1">Using  Point on Curve Method</h1>
+  <!-- end #header --></div>
+  <div id="sidebar1">
+    <ul id="MenuBar1" class="MenuBarVertical">
+          <li><a href="ecc_fd_pocm_index.html">Home</a>          </li>
+      <li><a href="ecc_fd_pocm_tutorial.html">Tutorial</a></li>
+      <li><a href="ecc_fd_pocm_lesson_page1.html">Overview</a>      </li>
+      <li><a href="ecc_fd_pocm_simulator.html">Simulator</a></li>
+    </ul>
+    <h3>&nbsp;</h3>
+  <!-- end #sidebar1 --></div>
+  <div id="mainContent">
+    <h1>Understanding the Point on Curve Method</h1>
+    <table width="100%" border="0">
+      <tr>
+        <td width="50%" scope="row"><p class="style6"><a href="ecc_fd_pocm_lesson_page1.html">&lt;&lt;Prev</a></p></td>
+        <td width="50%"><div align="right" class="style6"></div></td>
+      </tr>
+    </table>
+    <p align="justify">Typical fault detection methods such as parity prediction may be used in ECC but this simulator uses a fault detection scheme based on specific properties of elliptic fields. Elliptic fields must satisfy a non-singular equation. This simulator focuses on fields of order <em><span style="line-height:115%; font-family:Verdana, Arial, Helvetica, sans-serif; font-size:100%;">2<sup>m</sup></span></em> which are commonly referred to as binary fields.  The elements of these fields are binary strings of length <em>m</em> that satisfy the equation:</p>
+    <p align="center" class="MsoNormal"><em><span style="font-family:'Arial','sans-serif'; "><span class="style2"><span class="style5">y<sup>2</sup> + xy = x<sup>3</sup> +  ax<sup>2</sup> + b<sup>   </sup><sup></sup></span><sup>  </sup></span><sup>                  </sup></span></em></p>
+    <p align="justify">There are a finite number of points that satisfy the equation above for any chosen set of parameters. For example, let's choose the following:</p>
+    <blockquote>
+      <p>a = 3<br />
+        b = 1<br />
+        m = 4<br />
+        irreducible polynomial = x<span class="style5"><sup>4</sup></span> + x  + 1</p>
+    </blockquote>
+    <p align="justify">These parameters are insufficient for practical cryptography but the small values allow us to enumerate all the possible points and demonstrate how a fault in an elliptic curve arithmetic operation can be detected using the <em>Point on Curve Method</em>.</p>
+    <p align="justify">Solving the equation for all possible points (plus point at infinity) yields:</p>
+    <table width="70%" border="0" align="center">
+      <tr>
+        <td scope="row"><div align="center">(12,5)</div></td>
+        <td><div align="center">(10,7)</div></td>
+        <td><div align="center">(7,2)</div></td>
+        <td><div align="center">(6,14)</div></td>
+        <td><div align="center">(1,12)</div></td>
+      </tr>
+      <tr>
+        <td scope="row"><div align="center">(12,9)</div></td>
+        <td><div align="center">(8,5)</div></td>
+        <td><div align="center">(6,8) </div></td>
+        <td><div align="center">(1,13)</div></td>
+        <td><p align="center">(7,5)</p>        </td>
+      </tr>
+      <tr>
+        <td scope="row"><div align="center">(15,15)</div></td>
+        <td><div align="center">(15,0)</div></td>
+        <td><div align="center">(10,13)</div></td>
+        <td><div align="center">(0,1)</div></td>
+        <td><div align="center">(8,13)</div></td>
+      </tr>
+    </table>
+    <p align="justify">To see why the <em>Point on Curve Method</em> is effective, look at the graph of valid points below. Out of a possible 256 points, only 15 are valid. </p>
+    <p align="justify">
+      <!-- end #mainContent -->
+      <img src="valid_points" alt="" align="middle" /></p>
+    <p align="justify">It is important to note that despite being able to detect most errors, this test can not guarantee detection of all single bit errors in our example. For instance, points (1, 12) and (1,13) can have an undetected error in the least significant bit of the Y-coordinate.</p>
+    <p align="justify">References:</p>
+    <p align="justify">N. KOBLITZ, “Elliptic curve cryptosystems”,
+      Mathematics of Computation, 48 (1987), 203–
+    209.</p>
+    <p align="justify">N.Koblitz, Constructing elliptic curve cryptosystems in characteristic 2, Advances in Cryptology—CRYPTO
+    ’90, Lecture Notes in Computer Science, Springer-Verlag, 537 (1991) pp. 156–167.</p>
+    <p align="justify">Dominguez-Oviedo, A., and Hasan, M. A., “Error-Detecting and Fault-tolerant
+      Structures for ECC”, Technical Report CACR 2005-10, University of Waterloo,
+    2005</p>
+    <table width="100%" border="0">
+      <tr>
+        <td width="50%" scope="row"><p class="style6"><a href="ecc_fd_pocm_lesson_page1.html">&lt;&lt;Prev</a></p></td>
+        <td width="50%"><div align="right" class="style6"></div></td>
+      </tr>
+    </table>
+  </div>
+  <!-- This clearing element should immediately follow the #mainContent div in order to force the #container div to contain all child floats --><br class="clearfloat" />
+  <div id="footer">
+    <p>
+      <p class="style1">UMASS ECE</p>
+    </p>
+  <!-- end #footer --></div>
+<!-- end #container --></div>
+<script type="text/javascript">
+<!--
+var MenuBar1 = new Spry.Widget.MenuBar("MenuBar1", {imgRight:"SpryAssets/SpryMenuBarRightHover.gif"});
+
+//-->
+</script>
+</body>
+</html>

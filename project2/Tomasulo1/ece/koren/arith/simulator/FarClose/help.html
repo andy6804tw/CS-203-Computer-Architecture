@@ -1,0 +1,60 @@
+<html>
+<head>
+<title>Floating Point Demonstration of FAR and CLOSE cases: Help</title>
+</head>
+
+<h1> Far/Close Demo Help</h1>
+
+<p>
+
+This applet demonstrates the far and close cases of floating point subtraction.  Listed here
+are a few examples that demonstrate interesting cases. Each of the examples, except for the 
+last one, use single precision decimal format.
+<ul>
+<li><b>Close, with incorrect prediction of leading zeroes, exponents same</b> - A=1.5, B=1.2</li>
+    <ul><li>Notice that in step 3 it was first shifted by 1, since that was the predicted number of
+            leading zeroes.  But the prediction turned out to be incorrect as there were actually two 
+            leading zeroes.  This requires an additional shift by 1.</li></ul>
+<li><b>Close, with incorrect prediction of leading zeroes, exponents off by one</b> - A=2.0, B=1.2</li>
+    <ul><li>Notice that in step 3 it was first shifted by 1, since that was the predicted number of
+            leading zeroes.  But the prediction turned out to be incorrect as there were actually two 
+            leading zeroes.  This requires an additional shift by 1.</li></ul>
+<li><b>Close, with correct prediction of leading zeroes, exponents same</b> - A=3.75, B=3.5 </li>
+    <ul><li>Notice that in contrast to the previous example, step 3 only performed a single shift.
+            This is because the prediction of the number of leading zeroes was correct. </li></ul>
+<li><b>Close, with correct prediction of leading zeroes, exponents off by 1</b> - A=2.0, B=1.0 </li>
+<li><b>Far, the close circuit predicted the exponents to be far</b> - A=4.5, B=1.0 </li>
+    <ul><li>Notice that because the b exponent ended in 11 the circuit that predicts the difference
+            assumed that the a exponent was less by 2.  Only exponents ending in 10 or 00 could be 
+            within one of an exponent ending in 11. </li></ul>
+<li><b>Far, the close circuit predicted the exponents to be within 1</b> - A=32.5, B=1.0 </li>
+    <ul><li>Notice that because the b exponent ended in 11 the circuit that predicts the difference
+            assumed that the a exponent was 1 greater. </li></ul>
+    <ul><li>Compare this to A=2.5 and B=1.0.  In that case, the prediction was correct based on 
+            the last 2 bits of the exponent. </li></ul>
+<li><b>Far, that requires an additional shift after subtracting significands in step 3</b> - A=4.5, B=1.0 </li>
+<li><b>Far, that does not require an additional shift after subtracting significands in step 3</b> - A=133.5, B=1.0 </li>
+<li><b>Close, precise result</b> - A=33, B=32</li>
+     <ul><li>  Notice that the exponents were the same and therefore there was no pre-alignment, 
+              resulting in a precise result where no rounding was required. </li></ul>
+<li><b> Close, massive cancellation of most significant bits </b> - A=40000000, B=3FFFFFFF</li>
+     <ul><li>  Note that A and B are in hex.  Notice that a shift by 24 is needed. </li></ul>
+
+</ul>
+
+<p>
+<HR noshade size=1>
+
+In addition to demonstrating the operation of the subtraction, it will also calculate the delay.  
+Below are the block diagrams used to visualize the delay paths.
+
+
+<h2> FAR: </H2>
+<IMG SRC = far.gif>
+
+<HR noshade size=1>
+
+<h2> CLOSE: </H2>
+<IMG SRC = close.gif>
+
+</html>

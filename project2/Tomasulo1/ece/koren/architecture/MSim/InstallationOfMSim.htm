@@ -1,0 +1,442 @@
+<html xmlns:v="urn:schemas-microsoft-com:vml"
+xmlns:o="urn:schemas-microsoft-com:office:office"
+xmlns:w="urn:schemas-microsoft-com:office:word"
+xmlns="http://www.w3.org/TR/REC-html40">
+
+<head>
+<meta http-equiv=Content-Type content="text/html; charset=windows-1252">
+<meta name=ProgId content=Word.Document>
+<meta name=Generator content="Microsoft Word 11">
+<meta name=Originator content="Microsoft Word 11">
+<link rel=File-List href="InstallationOfMSim_files/filelist.xml">
+<link rel=Edit-Time-Data href="InstallationOfMSim_files/editdata.mso">
+<!--[if !mso]>
+<style>
+v\:* {behavior:url(#default#VML);}
+o\:* {behavior:url(#default#VML);}
+w\:* {behavior:url(#default#VML);}
+.shape {behavior:url(#default#VML);}
+</style>
+<![endif]-->
+<title>Installing M-Sim using Cygwin/SSH Secure Shell Client</title>
+<!--[if gte mso 9]><xml>
+ <o:DocumentProperties>
+  <o:Author>Jai Gupta</o:Author>
+  <o:Template>Normal</o:Template>
+  <o:LastAuthor>Jai Gupta</o:LastAuthor>
+  <o:Revision>2</o:Revision>
+  <o:TotalTime>13</o:TotalTime>
+  <o:Created>2008-01-17T19:35:00Z</o:Created>
+  <o:LastSaved>2008-01-17T19:35:00Z</o:LastSaved>
+  <o:Pages>1</o:Pages>
+  <o:Words>521</o:Words>
+  <o:Characters>2973</o:Characters>
+  <o:Company>Personal_Use</o:Company>
+  <o:Lines>24</o:Lines>
+  <o:Paragraphs>6</o:Paragraphs>
+  <o:CharactersWithSpaces>3488</o:CharactersWithSpaces>
+  <o:Version>11.5606</o:Version>
+ </o:DocumentProperties>
+</xml><![endif]--><!--[if gte mso 9]><xml>
+ <w:WordDocument>
+  <w:PunctuationKerning/>
+  <w:ValidateAgainstSchemas/>
+  <w:SaveIfXMLInvalid>false</w:SaveIfXMLInvalid>
+  <w:IgnoreMixedContent>false</w:IgnoreMixedContent>
+  <w:AlwaysShowPlaceholderText>false</w:AlwaysShowPlaceholderText>
+  <w:Compatibility>
+   <w:BreakWrappedTables/>
+   <w:SnapToGridInCell/>
+   <w:WrapTextWithPunct/>
+   <w:UseAsianBreakRules/>
+   <w:DontGrowAutofit/>
+   <w:UseFELayout/>
+  </w:Compatibility>
+  <w:BrowserLevel>MicrosoftInternetExplorer4</w:BrowserLevel>
+ </w:WordDocument>
+</xml><![endif]--><!--[if gte mso 9]><xml>
+ <w:LatentStyles DefLockedState="false" LatentStyleCount="156">
+ </w:LatentStyles>
+</xml><![endif]-->
+<style>
+<!--
+ /* Font Definitions */
+ @font-face
+	{font-family:Batang;
+	panose-1:2 3 6 0 0 1 1 1 1 1;
+	mso-font-alt:\BC14\D0D5;
+	mso-font-charset:129;
+	mso-generic-font-family:roman;
+	mso-font-pitch:variable;
+	mso-font-signature:-1342176593 1775729915 48 0 524447 0;}
+@font-face
+	{font-family:SimSun;
+	panose-1:2 1 6 0 3 1 1 1 1 1;
+	mso-font-alt:\5B8B\4F53;
+	mso-font-charset:134;
+	mso-generic-font-family:auto;
+	mso-font-pitch:variable;
+	mso-font-signature:3 135135232 16 0 262145 0;}
+@font-face
+	{font-family:"Comic Sans MS";
+	panose-1:3 15 7 2 3 3 2 2 2 4;
+	mso-font-charset:0;
+	mso-generic-font-family:script;
+	mso-font-pitch:variable;
+	mso-font-signature:647 0 0 0 159 0;}
+@font-face
+	{font-family:"\@Batang";
+	panose-1:2 3 6 0 0 1 1 1 1 1;
+	mso-font-charset:129;
+	mso-generic-font-family:roman;
+	mso-font-pitch:variable;
+	mso-font-signature:-1342176593 1775729915 48 0 524447 0;}
+@font-face
+	{font-family:"\@SimSun";
+	panose-1:2 1 6 0 3 1 1 1 1 1;
+	mso-font-charset:134;
+	mso-generic-font-family:auto;
+	mso-font-pitch:variable;
+	mso-font-signature:3 135135232 16 0 262145 0;}
+ /* Style Definitions */
+ p.MsoNormal, li.MsoNormal, div.MsoNormal
+	{mso-style-parent:"";
+	margin:0in;
+	margin-bottom:.0001pt;
+	mso-pagination:widow-orphan;
+	font-size:12.0pt;
+	font-family:"Times New Roman";
+	mso-fareast-font-family:Batang;}
+a:link, span.MsoHyperlink
+	{color:blue;
+	text-decoration:underline;
+	text-underline:single;}
+a:visited, span.MsoHyperlinkFollowed
+	{color:purple;
+	text-decoration:underline;
+	text-underline:single;}
+pre
+	{margin:0in;
+	margin-bottom:.0001pt;
+	mso-pagination:widow-orphan;
+	font-size:10.0pt;
+	font-family:"Courier New";
+	mso-fareast-font-family:SimSun;
+	mso-fareast-language:ZH-CN;}
+@page Section1
+	{size:8.5in 11.0in;
+	margin:1.0in 1.25in 1.0in 1.25in;
+	mso-header-margin:.5in;
+	mso-footer-margin:.5in;
+	mso-paper-source:0;}
+div.Section1
+	{page:Section1;}
+ /* List Definitions */
+ @list l0
+	{mso-list-id:362442194;
+	mso-list-type:hybrid;
+	mso-list-template-ids:1749077328 67698703 67698713 67698715 67698703 67698713 67698715 67698703 67698713 67698715;}
+@list l0:level1
+	{mso-level-start-at:2;
+	mso-level-tab-stop:.5in;
+	mso-level-number-position:left;
+	text-indent:-.25in;}
+@list l0:level2
+	{mso-level-tab-stop:1.0in;
+	mso-level-number-position:left;
+	text-indent:-.25in;}
+@list l0:level3
+	{mso-level-tab-stop:1.5in;
+	mso-level-number-position:left;
+	text-indent:-.25in;}
+@list l0:level4
+	{mso-level-tab-stop:2.0in;
+	mso-level-number-position:left;
+	text-indent:-.25in;}
+@list l0:level5
+	{mso-level-tab-stop:2.5in;
+	mso-level-number-position:left;
+	text-indent:-.25in;}
+@list l0:level6
+	{mso-level-tab-stop:3.0in;
+	mso-level-number-position:left;
+	text-indent:-.25in;}
+@list l0:level7
+	{mso-level-tab-stop:3.5in;
+	mso-level-number-position:left;
+	text-indent:-.25in;}
+@list l0:level8
+	{mso-level-tab-stop:4.0in;
+	mso-level-number-position:left;
+	text-indent:-.25in;}
+@list l0:level9
+	{mso-level-tab-stop:4.5in;
+	mso-level-number-position:left;
+	text-indent:-.25in;}
+ol
+	{margin-bottom:0in;}
+ul
+	{margin-bottom:0in;}
+-->
+</style>
+<!--[if gte mso 10]>
+<style>
+ /* Style Definitions */
+ table.MsoNormalTable
+	{mso-style-name:"Table Normal";
+	mso-tstyle-rowband-size:0;
+	mso-tstyle-colband-size:0;
+	mso-style-noshow:yes;
+	mso-style-parent:"";
+	mso-padding-alt:0in 5.4pt 0in 5.4pt;
+	mso-para-margin:0in;
+	mso-para-margin-bottom:.0001pt;
+	mso-pagination:widow-orphan;
+	font-size:10.0pt;
+	font-family:"Times New Roman";
+	mso-fareast-font-family:"Times New Roman";
+	mso-ansi-language:#0400;
+	mso-fareast-language:#0400;
+	mso-bidi-language:#0400;}
+</style>
+<![endif]--><!--[if gte mso 9]><xml>
+ <o:shapedefaults v:ext="edit" spidmax="2050"/>
+</xml><![endif]--><!--[if gte mso 9]><xml>
+ <o:shapelayout v:ext="edit">
+  <o:idmap v:ext="edit" data="1"/>
+ </o:shapelayout></xml><![endif]-->
+</head>
+
+<body lang=EN-US link=blue vlink=purple style='tab-interval:.5in'>
+
+<div class=Section1>
+
+<p class=MsoNormal><b><span style='font-size:16.0pt;font-family:"Comic Sans MS";
+color:red'>Installing M-Sim using Cygwin/SSH Secure Shell Client<o:p></o:p></span></b></p>
+
+<p class=MsoNormal><span style='font-family:"Comic Sans MS"'><o:p>&nbsp;</o:p></span></p>
+
+<p class=MsoNormal><span style='font-family:"Comic Sans MS"'>This document is a
+guide to installing M-Sim on one of the ECS machines<span
+style='mso-spacerun:yes'>  </span>you have been given access to. These ECS
+machines are accessible using Cygwin or SSH secure shell software, which is
+available on all the machines in the Marston and Elab computer labs. You can
+also follow this procedure if you have your own machine running most mainstream
+Linux distributions. Note that there could be issues during installation if you
+are using Ubuntu Linux distribution. Cygwin is available for free at <a
+href="../../../../../www.cygwin.com/mirrors.html">http://www.cygwin.com/mirrors.html</a>.<o:p></o:p></span></p>
+
+<p class=MsoNormal><span style='font-family:"Comic Sans MS"'><o:p>&nbsp;</o:p></span></p>
+
+<p class=MsoNormal><span style='font-family:"Comic Sans MS"'>1.<span
+style='mso-spacerun:yes'>  </span>Download M-Sim Tool Set<o:p></o:p></span></p>
+
+<p class=MsoNormal><o:p>&nbsp;</o:p></p>
+
+<p class=MsoNormal><span style='font-family:"Comic Sans MS"'>You may find [1]
+useful (see 4. Installation and Use):<o:p></o:p></span></p>
+
+<p class=MsoNormal><span style='font-family:"Comic Sans MS"'><o:p>&nbsp;</o:p></span></p>
+
+<p class=MsoNormal><span style='font-family:"Comic Sans MS"'>M-Sim, though an
+extension of simplescalar, is an independent package.<span
+style='mso-spacerun:yes'>  </span>Therefore, you need not have simplescalar
+installed to use M-Sim.<span style='mso-spacerun:yes'>  </span>Though system
+requirements are not explicitly specified, to perform the lab assignments that
+follow, you will need an appropriate version of gcc (operation under version
+3.4.4 has been verified).<span style='mso-spacerun:yes'>  </span>It has been
+confirmed that gcc v2.95.3 may cause compilation errors, so if you have an
+earlier version than gcc v3.4.4, try updating to this version before continuing
+installation.<span style='mso-spacerun:yes'>  </span>To download M-Sim, go to
+http://www.cs.binghamton.edu/~jsharke/m-sim/.<span style='mso-spacerun:yes'> 
+</span>The site will require you to register before initiating a download.<span
+style='mso-spacerun:yes'>  </span>After registration, select </span><span
+style='font-size:13.5pt'>M-Sim-v2.0.tgz.<o:p></o:p></span></p>
+
+<p class=MsoNormal><span style='font-size:13.5pt'><o:p>&nbsp;</o:p></span></p>
+
+<p class=MsoNormal style='margin-left:.25in;text-indent:-.25in;mso-list:l0 level1 lfo2;
+tab-stops:list .5in'><![if !supportLists]><span style='font-family:"Comic Sans MS";
+mso-fareast-font-family:"Comic Sans MS";mso-bidi-font-family:"Comic Sans MS"'><span
+style='mso-list:Ignore'>2.<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]><span style='font-family:"Comic Sans MS"'>Transfer
+to an ECS machine (if applicable)<o:p></o:p></span></p>
+
+<p class=MsoNormal><span style='font-family:"Comic Sans MS"'><o:p>&nbsp;</o:p></span></p>
+
+<p class=MsoNormal><span style='font-family:"Comic Sans MS";mso-bidi-font-family:
+"Courier New"'>Transfer or copy <span style='color:green'>m-sim-v2.0.tgz file </span>onto
+an ECS machine using<span style='color:green'> </span>SSH Secure File Transfer
+Client (such as winSCP). It is recommended that you make a directory by the
+name of msim on the ECS machine (See fig 1 below) and<span
+style='mso-spacerun:yes'>  </span>transfer the file into this directory using
+SSH Secure File Transfer Client (See fig 2 below).<span
+style='mso-spacerun:yes'>  </span>An important note is that some of the ECS
+machines may not be sufficiently updated for the installation (sloth, for
+example).<span style='mso-spacerun:yes'>  </span>Speak with an ECS
+administrator if you encounter a problem of this type.<span
+style='mso-spacerun:yes'>  </span>As a last resort, a known-compatible ECS
+machine is vlsitest.<span style='mso-spacerun:yes'>  </span>Again, ask an ECS
+administrator what needs to be done to be granted access to vlsitest.<o:p></o:p></span></p>
+
+<p class=MsoNormal><span style='font-family:"Comic Sans MS";mso-bidi-font-family:
+"Courier New"'><o:p>&nbsp;</o:p></span></p>
+
+<p class=MsoNormal align=center style='text-align:center'><span
+style='font-family:"Comic Sans MS"'><!--[if gte vml 1]><v:shapetype id="_x0000_t75"
+ coordsize="21600,21600" o:spt="75" o:preferrelative="t" path="m@4@5l@4@11@9@11@9@5xe"
+ filled="f" stroked="f">
+ <v:stroke joinstyle="miter"/>
+ <v:formulas>
+  <v:f eqn="if lineDrawn pixelLineWidth 0"/>
+  <v:f eqn="sum @0 1 0"/>
+  <v:f eqn="sum 0 0 @1"/>
+  <v:f eqn="prod @2 1 2"/>
+  <v:f eqn="prod @3 21600 pixelWidth"/>
+  <v:f eqn="prod @3 21600 pixelHeight"/>
+  <v:f eqn="sum @0 0 1"/>
+  <v:f eqn="prod @6 1 2"/>
+  <v:f eqn="prod @7 21600 pixelWidth"/>
+  <v:f eqn="sum @8 21600 0"/>
+  <v:f eqn="prod @7 21600 pixelHeight"/>
+  <v:f eqn="sum @10 21600 0"/>
+ </v:formulas>
+ <v:path o:extrusionok="f" gradientshapeok="t" o:connecttype="rect"/>
+ <o:lock v:ext="edit" aspectratio="t"/>
+</v:shapetype><v:shape id="_x0000_i1025" type="#_x0000_t75" style='width:6in;
+ height:275.25pt'>
+ <v:imagedata src="InstallationOfMSim_files/image001.png" o:title=""/>
+</v:shape><![endif]--><![if !vml]><img border=0 width=576 height=367
+src="InstallationOfMSim_files/image002.jpg" v:shapes="_x0000_i1025"><![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal align=center style='text-align:center'><span
+style='font-family:"Comic Sans MS"'>Figure 1: Msim directory creation<o:p></o:p></span></p>
+
+<p class=MsoNormal align=center style='text-align:center'><span
+style='font-family:"Comic Sans MS"'><o:p>&nbsp;</o:p></span></p>
+
+<p class=MsoNormal align=center style='text-align:center'><span
+style='font-family:"Comic Sans MS"'><!--[if gte vml 1]><v:shape id="_x0000_i1026"
+ type="#_x0000_t75" style='width:6in;height:254.25pt'>
+ <v:imagedata src="InstallationOfMSim_files/image003.png" o:title=""/>
+</v:shape><![endif]--><![if !vml]><img border=0 width=576 height=339
+src="InstallationOfMSim_files/image004.jpg" v:shapes="_x0000_i1026"><![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal align=center style='text-align:center'><span
+style='font-family:"Comic Sans MS"'>Figure 2: Transfer of m-sim-v2.0.tar<o:p></o:p></span></p>
+
+<p class=MsoNormal align=center style='text-align:center'><span
+style='font-family:"Comic Sans MS"'><o:p>&nbsp;</o:p></span></p>
+
+<p class=MsoNormal style='margin-left:.25in;text-indent:-.25in;mso-list:l0 level1 lfo2;
+tab-stops:list .5in'><![if !supportLists]><span style='font-family:"Comic Sans MS";
+mso-fareast-font-family:"Comic Sans MS";mso-bidi-font-family:"Comic Sans MS"'><span
+style='mso-list:Ignore'>3.<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]><span style='font-family:"Comic Sans MS"'>Install
+M-Sim<o:p></o:p></span></p>
+
+<p class=MsoNormal><span style='font-family:"Comic Sans MS"'><o:p>&nbsp;</o:p></span></p>
+
+<p class=MsoNormal><span style='font-family:"Comic Sans MS";mso-bidi-font-family:
+"Courier New"'>Now<span style='mso-spacerun:yes'>  </span>Unzip &amp; untar the
+<span style='color:green'>m-sim-v2.0.tgz </span>file by logging into your
+account using Cygwin Shell or SSH Secure Shell Client (like putty). Go to the
+msim directory that you have just created and where you have transferred the
+file (See figure 3 below). Enter the tar command (see figure 4 below) to unzip
+and untar the file. A directory m-sim_v2.0 is created.<o:p></o:p></span></p>
+
+<p class=MsoNormal><span style='font-family:"Comic Sans MS";mso-bidi-font-family:
+"Courier New"'><o:p>&nbsp;</o:p></span></p>
+
+<p class=MsoNormal align=center style='text-align:center'><span
+style='font-size:10.0pt;font-family:"Courier New"'><!--[if gte vml 1]><v:shape
+ id="_x0000_i1027" type="#_x0000_t75" style='width:431.25pt;height:218.25pt'>
+ <v:imagedata src="InstallationOfMSim_files/image005.png" o:title=""/>
+</v:shape><![endif]--><![if !vml]><img border=0 width=575 height=291
+src="InstallationOfMSim_files/image006.jpg" v:shapes="_x0000_i1027"><![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal align=center style='text-align:center'><span
+style='font-family:"Comic Sans MS"'>Figure 3: m-sim_v2.0.tgz file (at far
+right)<o:p></o:p></span></p>
+
+<p class=MsoNormal align=center style='text-align:center'><span
+style='font-family:"Comic Sans MS"'><o:p>&nbsp;</o:p></span></p>
+
+<p class=MsoNormal align=center style='text-align:center'><span
+style='font-family:"Comic Sans MS"'><!--[if gte vml 1]><v:shape id="_x0000_i1028"
+ type="#_x0000_t75" style='width:431.25pt;height:218.25pt'>
+ <v:imagedata src="InstallationOfMSim_files/image007.png" o:title=""/>
+</v:shape><![endif]--><![if !vml]><img border=0 width=575 height=291
+src="InstallationOfMSim_files/image008.jpg" v:shapes="_x0000_i1028"><![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal align=center style='text-align:center'><span
+style='font-family:"Comic Sans MS"'>Figure 4: Untarring<o:p></o:p></span></p>
+
+<p class=MsoNormal align=center style='text-align:center'><span
+style='font-family:"Comic Sans MS"'><o:p>&nbsp;</o:p></span></p>
+
+<p class=MsoNormal><span style='font-family:"Comic Sans MS"'>Now, enter the
+m-sim_v-2.0 directory.<o:p></o:p></span></p>
+
+<p class=MsoNormal><span style='font-family:"Comic Sans MS";color:#993300'>cd
+m-sim_v-2.0<o:p></o:p></span></p>
+
+<p class=MsoNormal><span style='font-family:"Comic Sans MS"'><o:p>&nbsp;</o:p></span></p>
+
+<p class=MsoNormal><span style='font-family:"Comic Sans MS"'>Before executing
+make, a small problem must be overcome.<span style='mso-spacerun:yes'> 
+</span>The m-sim package was put together incorrectly, in a way that causes a
+series of errors when attempting to build.<span style='mso-spacerun:yes'> 
+</span>The problem involves the need to avoid an existing libexo.c file.<span
+style='mso-spacerun:yes'>  </span>To overcome this error, remove the file
+libexo.c from the libexo directory.<o:p></o:p></span></p>
+
+<p class=MsoNormal><span style='font-family:"Comic Sans MS"'><o:p>&nbsp;</o:p></span></p>
+
+<p class=MsoNormal><span style='font-family:"Comic Sans MS"'>Type ‘make
+config-alpha’ from the m-sim_v-2.0 directory. Now type ‘make.’<span
+style='mso-spacerun:yes'>  </span>An executable sim-outorder should be created.<o:p></o:p></span></p>
+
+<p class=MsoNormal><span style='font-family:"Comic Sans MS"'><o:p>&nbsp;</o:p></span></p>
+
+<p class=MsoNormal><span style='font-family:"Comic Sans MS"'>4.<span
+style='mso-spacerun:yes'>  </span>Verify<o:p></o:p></span></p>
+
+<p class=MsoNormal><span style='font-family:"Comic Sans MS"'><o:p>&nbsp;</o:p></span></p>
+
+<p class=MsoNormal><span style='font-family:"Comic Sans MS"'>Now verify that
+m-sim is installed correctly.<o:p></o:p></span></p>
+
+<p class=MsoNormal><span style='font-family:"Comic Sans MS"'><o:p>&nbsp;</o:p></span></p>
+
+<p class=MsoNormal><span style='font-family:"Comic Sans MS";color:#993300'>cd<span
+style='mso-spacerun:yes'>  </span>m-sim_v-2.0<o:p></o:p></span></p>
+
+<p class=MsoNormal><span style='font-family:"Comic Sans MS";color:#993300'>./sim-outorder<o:p></o:p></span></p>
+
+<p class=MsoNormal><span style='font-family:"Comic Sans MS"'><o:p>&nbsp;</o:p></span></p>
+
+<p class=MsoNormal><span style='font-family:"Comic Sans MS"'>If results are
+generated from this, m-sim is most likely installed correctly.<o:p></o:p></span></p>
+
+<p class=MsoNormal><span style='font-family:"Comic Sans MS"'><o:p>&nbsp;</o:p></span></p>
+
+<p class=MsoNormal><span style='font-size:16.0pt;font-family:"Comic Sans MS";
+color:red'>References:<o:p></o:p></span></p>
+
+<p class=MsoNormal><span style='font-size:16.0pt;font-family:"Comic Sans MS";
+color:red'><o:p>&nbsp;</o:p></span></p>
+
+<p class=MsoNormal><span style='font-family:"Comic Sans MS"'>1)<span
+style='mso-spacerun:yes'>  </span><a
+href="../../../../../www.cs.binghamton.edu/~jsharke/m-sim/documentation/msim_tr.pdf">http://www.cs.binghamton.edu/~jsharke/m-sim/documentation/msim_tr.pdf</a><o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-left:.25in'><span style='font-family:"Comic Sans MS"'><o:p>&nbsp;</o:p></span></p>
+
+<p class=MsoNormal style='margin-left:.25in'><span style='font-family:"Comic Sans MS"'><o:p>&nbsp;</o:p></span></p>
+
+</div>
+
+</body>
+
+</html>

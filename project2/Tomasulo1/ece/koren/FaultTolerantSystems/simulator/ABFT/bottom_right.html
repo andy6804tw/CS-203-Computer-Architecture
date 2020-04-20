@@ -1,0 +1,59 @@
+<html>
+<head>
+<SCRIPT LANGUAGE="JavaScript" SRC="matrix.js">
+</SCRIPT>
+</head>
+
+<body>
+<center>
+<SCRIPT LANGUAGE="JavaScript">
+    if (parent.control_frame.Simulation_State == "BEGIN" || parent.control_frame.Simulation_State == "MODIFIED"){ 
+        document.writeln("<font size=\"+1\"><b>Instructions:</b></font>");
+        document.writeln("<TABLE><tr><td><OL>");
+        document.writeln("<LI>Select the size of the matrix you wish to use in the lower left frame.");
+        document.writeln("<LI>Edit the left and right matrices by pressing the corresponding \"Edit Matrix\" button.&nbsp;&nbsp;" + 
+                         "You can also randomize the matrices by entering the appropriate parameters " +
+                         "and pressing the \"Randomize Matrices\" button.");   
+        document.writeln("<LI>Press the \"Compute Checksum Matrices\" button to compute the corresponding checksum matrices.");
+        document.writeln("</OL></td></tr></TABLE>");   
+    }
+    else if (parent.control_frame.Simulation_State == "CHECKSUM_COMPUTED"){
+        document.writeln("<font size=\"+1\"><b>Instructions:</b></font>");
+        document.writeln("<TABLE><tr><td><OL start=\"4\">");
+        document.writeln("<LI>Introduce errors into the left and right matrices by pressing the corresponding \"Introduce Errors\" button.");
+        document.writeln("<LI>Select the matrix operation you wish to perform in the lower left frame. (Addition or Multiplication)");
+        document.writeln("<LI>Press the \"Perform Matrix Operation\" button to see the results of the matrix operation.");
+        document.writeln("</OL></td></tr></TABLE>");
+    }
+    else if (parent.control_frame.Simulation_State == "MATRIX_OPERATION_COMPLETE"){
+        document.writeln("<font size=\"+1\"><b>Matrix Operation Results:</b></font><br><br>");
+	
+        good_checksum = parent.Computed_Matrix.validate_checksums();
+        parent.Computed_Matrix.print();
+        document.writeln("<br>");
+   
+        
+        if (good_checksum == true){
+            document.writeln("<font color=\"blue\">No errors were detected during the matrix operation.</font>");
+        }
+        else {
+            document.writeln("Checksum errors were detected during the matrix operation!<br>");
+            document.writeln("They are shown in <font color=\"red\">red</font>.");
+        }
+
+        if (parent.Computed_Matrix.checksum_rounded == true){
+            document.writeln("<br><br><table border=1><tr><td align=center>");
+            document.writeln("<b>Warning:</b><br>"
+                + "The numbers in the computed matrix are so large "
+                + "that the checksums have exceeded the precision accuracy of an IEEE 754 Double.&nbsp;&nbsp;"
+                + "Therefore, the checksums have been rounded during the comparison.&nbsp;&nbsp;"  
+                + "This means that errors introduced "
+                + "into the higher decimal places of the left and right matrices may be "
+                + "undetected in the checksums of the computed matrix.");
+            document.writeln("</td></tr></table>");
+        }
+    }
+</SCRIPT>
+</center>
+</body>
+</html>

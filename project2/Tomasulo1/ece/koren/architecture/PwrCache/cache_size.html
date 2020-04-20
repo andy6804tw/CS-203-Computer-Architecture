@@ -1,0 +1,470 @@
+<html><head><title>Effect of variation of cache size</title>
+
+
+<SCRIPT LANGUAGE="JavaScript1.2" SRC="graph.js"></SCRIPT>
+<script>
+
+function compute_Ebit(Vdd,m,D,T,L,St,Nr_hit,Nr_miss,Nw_hit,Nw_miss,Wad_bus,Wbk_req)
+{
+
+
+//total number of hits
+var Nhit = Nr_hit + Nw_hit;
+
+//Total number of misses
+var Nmiss = Nr_miss + Nw_miss;
+
+//Total number of cache accesses
+var CA = Nhit + Nmiss;
+
+//Total number of sets
+S = Math.floor(D / (L*m));
+
+//Total number of rows
+Nrows = S;
+
+//Total number of columns
+Ncols = m*(8*L + T + St);
+
+//GOAL 1: ESTIMATION OF ENERGY DISSIPATED IN THE BIT LINES.
+var Nbitlines = (8*m*L + m*T + St)*2;
+
+var Nbit_pr = (Nhit + Nmiss)*Nbitlines*0.5;
+
+var femto = Math.pow(10,-15);
+
+var Cbit_pr = 5.5624*Nrows*femto;
+
+var Cbit_rw = Cbit_pr + 217.58*femto;
+
+var Nbit_r =  0.5*(Nhit + Nmiss)*Nbitlines;
+       
+var Wavg_data = 19;
+
+var Nbit_w =  0.5*Nr_miss*(T + St + 8*L)*2 + 0.5*Nw_hit*(St + Wavg_data)*2
+
+//total gate capacitance
+var gate_cap = (124.8 + 124.8 + 92.78)*femto;
+
+var factor1_2 = Nbit_pr*Cbit_pr + Cbit_rw*(Nbit_r + Nbit_w) + Ncols*CA*gate_cap;
+
+var Vddsq = Math.pow(Vdd,2);
+
+//Final calculation for Energy dissipated in bit lines
+
+Ebit = 0.5*Vddsq*factor1_2 ;
+
+return Ebit;
+
+}
+
+
+function compute_Eword(Vdd,m,D,T,L,St,Nr_hit,Nr_miss,Nw_hit,Nw_miss,Wad_bus,Wbk_req)
+{
+
+
+//total number of hits
+var Nhit = Nr_hit + Nw_hit;
+
+//Total number of misses
+var Nmiss = Nr_miss + Nw_miss;
+
+//Total number of cache accesses
+var CA = Nhit + Nmiss;
+
+//Total number of sets
+S = Math.floor(D / (L*m));
+
+//Total number of rows
+Nrows = S;
+
+//Total number of columns
+Ncols = m*(8*L + T + St);
+
+//GOAL 1: ESTIMATION OF ENERGY DISSIPATED IN THE BIT LINES.
+var Nbitlines = (8*m*L + m*T + St)*2;
+
+var Nbit_pr = (Nhit + Nmiss)*Nbitlines*0.5;
+
+var femto = Math.pow(10,-15);
+
+var Cbit_pr = 5.5624*Nrows*femto;
+
+var Cbit_rw = Cbit_pr + 217.58*femto;
+
+var Nbit_r =  0.5*(Nhit + Nmiss)*Nbitlines;
+       
+var Wavg_data = 19;
+
+var Nbit_w =  0.5*Nr_miss*(T + St + 8*L)*2 + 0.5*Nw_hit*(St + Wavg_data)*2
+
+//total gate capacitance
+
+var Cwordline = (6.52*Ncols + 570.787)*femto;
+
+var gate2_cap = Cwordline / Ncols;
+
+var Vddsq = Math.pow(Vdd,2);
+
+//Final calculation for Energy dissipated in bit lines
+var Eword = Vddsq*CA*Ncols*gate2_cap;
+
+return Eword;
+
+}
+
+function compute_Eainput(Vdd,m,D,T,L,St,Nr_hit,Nr_miss,Nw_hit,Nw_miss,Wad_bus,Wbk_req)
+{
+
+
+//total number of hits
+var Nhit = Nr_hit + Nw_hit;
+
+//Total number of misses
+var Nmiss = Nr_miss + Nw_miss;
+
+//Total number of cache accesses
+var CA = Nhit + Nmiss;
+
+//Total number of sets
+S = Math.floor(D / (L*m));
+
+//Total number of rows
+Nrows = S;
+
+//Total number of columns
+Ncols = m*(8*L + T + St);
+
+//GOAL 1: ESTIMATION OF ENERGY DISSIPATED IN THE BIT LINES.
+var Nbitlines = (8*m*L + m*T + St)*2;
+
+var Nbit_pr = (Nhit + Nmiss)*Nbitlines*0.5;
+
+var femto = Math.pow(10,-15);
+
+var Cbit_pr = 5.5624*Nrows*femto;
+
+var Cbit_rw = Cbit_pr + 217.58*femto;
+
+var Nbit_r =  0.5*(Nhit + Nmiss)*Nbitlines;
+       
+var Wavg_data = 19;
+
+var Nbit_w =  0.5*Nr_miss*(T + St + 8*L)*2 + 0.5*Nw_hit*(St + Wavg_data)*2;
+
+var Nainput = 0.5*CA*Wad_bus;
+
+var Cin_dec = 3.12*femto;
+
+var Ca_wire = 993.6*femto;
+
+var factor3 = (m+1)*2*S*Cin_dec + Ca_wire ;
+
+var Vddsq = Math.pow(Vdd,2);
+
+//Final calculation for Energy dissipated in bit lines
+
+Eainput = 0.5*Vddsq*Nainput*factor3 ;
+
+
+return Eainput;
+
+}
+
+function compute_Eop(Vdd,m,D,T,L,St,Nr_hit,Nr_miss,Nw_hit,Nw_miss,Wad_bus,Wbk_req)
+{
+
+//total number of hits
+var Nhit = Nr_hit + Nw_hit;
+
+//Total number of misses
+var Nmiss = Nr_miss + Nw_miss;
+
+//Total number of cache accesses
+var CA = Nhit + Nmiss;
+
+//Total number of sets
+S = Math.floor(D / (L*m));
+
+//Total number of rows
+Nrows = S;
+
+//Total number of columns
+Ncols = m*(8*L + T + St);
+
+//GOAL 1: ESTIMATION OF ENERGY DISSIPATED IN THE BIT LINES.
+var Nbitlines = (8*m*L + m*T + St)*2;
+
+var Nbit_pr = (Nhit + Nmiss)*Nbitlines*0.5;
+
+var femto = Math.pow(10,-15);
+
+var Cbit_pr = 5.5624*Nrows*femto;
+
+var Cbit_rw = Cbit_pr + 217.58*femto;
+
+var Nbit_r =  0.5*(Nhit + Nmiss)*Nbitlines;
+       
+var Wavg_data = 19;
+
+var Nbit_w =  0.5*Nr_miss*(T + St + 8*L)*2 + 0.5*Nw_hit*(St + Wavg_data)*2
+
+//total gate capacitance
+
+var Cwordline = (6.52*Ncols + 570.787)*femto;
+
+var gate2_cap = Cwordline / Ncols;
+
+var Vddsq = Math.pow(Vdd,2);
+
+	if(document.forms[0].cache_type.options.selectedIndex == 0)
+	{
+
+		var Nout_a2m = 0.5*(Nr_miss + Nw_miss + Wbk_req)*Wad_bus ;
+		
+		var Nout_d2m = (0.5*Nw_miss*Wavg_data) + (0.5*Wbk_req*8*L);
+		
+	}
+	else
+	{
+
+		var Nout_a2m = 0.5*(Nr_miss + Nw_hit + Nw_miss)*Wad_bus ;
+		
+		var Nout_d2m = 0.5*(Nw_hit + Nw_miss)*Wavg_data ;
+		
+
+	}
+
+
+	if(document.forms[0].cache_location.options.selectedIndex == 0)
+	{
+
+		var C_out = 0.5*Math.pow(10,-12);
+		
+		var Nout_d2c = 0.5*(Nr_hit + Nr_miss)*19;
+		
+		var Nout_a2c = Nout_d2c ;
+
+	}
+	else
+	{
+
+		var C_out = 20*Math.pow(10,-12);
+		
+		var Nout_d2c = 0.5*(Nr_hit + Nr_miss)*8*L ;
+		
+		var Nout_a2c = Nout_d2c ;
+
+}
+
+var Ea_op = 0.5*Vddsq*(Nout_a2m*C_out + Nout_a2c*C_out);
+
+var Ed_op = 0.5*Vddsq*(Nout_d2m*C_out + Nout_d2c*C_out);
+
+var Eoutput = Ea_op + Ed_op;
+
+return Eoutput;
+
+}
+
+</script></head>
+
+<body>
+<h1><center>Effect of variation of cache size</center></h1>
+This tool allows you to view the effect of variation of cache size
+on the energy dissipation. All other values are kept constant. <p>Enter four different values of size here,for which comparison will be made.</p>
+<form method="post">
+<table border="1">
+<tbody><tr><td>Supply voltage (Volts):</td><td><input size="10" name="sup_volt" type="text" value = "3.5"></td></tr>
+<tr><td>Associativity  of cache:</td><td><input size="10" name="associativity" type="text" value = "4"></td></tr>
+<tr><td><i>Total Data capacity of cache 1(BYTES):</td><td><input size="10" name="cache_cap1" type="text" value = "4000"></td></tr>
+<tr><td><i>Total Data capacity of cache 2(BYTES):</td><td><input size="10" name="cache_cap2" type="text" value = "8000"></td></tr>
+<tr><td><i>Total Data capacity of cache 3(BYTES):</td><td><input size="10" name="cache_cap3" type="text"value = "16000"></td></tr>
+<tr><td><i>Total Data capacity of cache 4(BYTES):</td><td><input size="10" name="cache_cap4" type="text" value = "32000"></td></tr>
+<tr><td>Tag size(in bits):</td><td><input size="10" name="tag_size" type="text" value = "4"></td></tr>
+<tr><td>Line Size(in BYTES):</td><td><input size="10" name="line_size" type="text" value = "16"></td></tr>
+<tr><td>Total number of memory accesses:</td><td><input size = "10" name = "mem_acc" type = "text" value = "1000"></td></tr>
+<tr><td>Percentage of read accesses:</td><td><input size = "10" name = "p_rd_acc" type = "text" value = "75"></td></tr>
+<tr><td>Percentage of read hits:</td><td><input size="10" name="read_hits" type="text" value = "75"></td></tr>
+<tr><td>Percentage of write hits:</td><td><input size="10" name="write_hits" type="text" value = "75"></td></tr>
+<tr><td>Write back requests(% of writes):</td><td><input size="10" name="write_back_req" type="text" value = "10"></td></tr>
+
+
+
+<tr><td>Select Type of Cache:</td>
+<td><select name="cache_type"><option>write back</option><option>write through</option></select></td></tr>
+
+<tr><td>Select Location of Cache:</td>
+<td><select name="cache_location"><option>On Chip</option><option>Off Chip</option></select></td></tr>
+
+</tbody></table>
+<input value="Calculate" onclick="{
+var Vdd = parseFloat(document.forms[0].sup_volt.value);		//supply voltage 
+if(Vdd < 3 || Vdd > 5) 
+{
+alert('Please enter a reasonable value for supply voltage 1');
+alert('Default value of 3.3 V is being used');
+Vdd = 3.5;
+}
+var m = parseInt(document.forms[0].associativity.value);	//associativity of cache
+var D1 = parseInt(document.forms[0].cache_cap1.value);		//total cache capacity1
+var D2 = parseInt(document.forms[0].cache_cap2.value);		//total cache capacity2
+var D3 = parseInt(document.forms[0].cache_cap3.value);		//total cache capacity3
+var D4 = parseInt(document.forms[0].cache_cap4.value);		//total cache capacity4
+var T = parseInt(document.forms[0].tag_size.value);			//tag size
+var L = parseInt(document.forms[0].line_size.value);		//line size
+var St = parseInt('2');	//number of status bits
+var mem = parseInt(document.forms[0].mem_acc.value); //total number of memory accesses
+
+var p_rd_acc = parseInt(document.forms[0].p_rd_acc.value); //percentage of read accesses
+var rd_acc = p_rd_acc*(mem/100); //actual number of read accesses
+var p_rd_hits = parseInt(document.forms[0].read_hits.value); //percentage of read hits
+var Nr_hit = p_rd_hits*(rd_acc/100); //number of read hits
+var Nr_miss = rd_acc - Nr_hit ; //number of read misses
+
+var p_wr_acc = 100-p_rd_acc; //percentage of write accesses
+var wr_acc = p_wr_acc*(mem/100); //actual number of write accesses
+var p_wr_hits = parseInt(document.forms[0].write_hits.value); //percentage of write hits
+var Nw_hit = p_wr_hits*(wr_acc/100); //number of write hits
+var Nw_miss = wr_acc - Nw_hit; //number of write misses
+
+var Wad_bus = parseInt('32');	//width of address bus
+
+var Wbk_req = (parseInt(document.forms[0].write_back_req.value))*(wr_acc/100);	 //number of write back requests
+
+Ebit1 = compute_Ebit(Vdd,m,D1,T,L,St,Nr_hit,Nr_miss,Nw_hit,Nw_miss,Wad_bus,Wbk_req);
+document.forms[1].e_bit1.value = Ebit1.toPrecision(5);
+
+Ebit2 = compute_Ebit(Vdd,m,D2,T,L,St,Nr_hit,Nr_miss,Nw_hit,Nw_miss,Wad_bus,Wbk_req);
+document.forms[1].e_bit2.value = Ebit2.toPrecision(5);
+
+Ebit3 = compute_Ebit(Vdd,m,D3,T,L,St,Nr_hit,Nr_miss,Nw_hit,Nw_miss,Wad_bus,Wbk_req);
+document.forms[1].e_bit3.value = Ebit3.toPrecision(5);
+
+Ebit4 = compute_Ebit(Vdd,m,D4,T,L,St,Nr_hit,Nr_miss,Nw_hit,Nw_miss,Wad_bus,Wbk_req);
+document.forms[1].e_bit4.value = Ebit4.toPrecision(5);
+
+
+
+Eword1 = compute_Eword(Vdd,m,D1,T,L,St,Nr_hit,Nr_miss,Nw_hit,Nw_miss,Wad_bus,Wbk_req);
+document.forms[1].e_word1.value = Eword1.toPrecision(5);
+
+Eword2 = compute_Eword(Vdd,m,D2,T,L,St,Nr_hit,Nr_miss,Nw_hit,Nw_miss,Wad_bus,Wbk_req);
+document.forms[1].e_word2.value = Eword2.toPrecision(5);
+
+Eword3 = compute_Eword(Vdd,m,D3,T,L,St,Nr_hit,Nr_miss,Nw_hit,Nw_miss,Wad_bus,Wbk_req);
+document.forms[1].e_word3.value = Eword3.toPrecision(5);
+
+Eword4 = compute_Eword(Vdd,m,D4,T,L,St,Nr_hit,Nr_miss,Nw_hit,Nw_miss,Wad_bus,Wbk_req);
+document.forms[1].e_word4.value = Eword4.toPrecision(5);
+
+
+
+Eainput1 = compute_Eainput(Vdd,m,D1,T,L,St,Nr_hit,Nr_miss,Nw_hit,Nw_miss,Wad_bus,Wbk_req);
+document.forms[1].e_add1.value = Eainput1.toPrecision(5);
+
+Eainput2 = compute_Eainput(Vdd,m,D2,T,L,St,Nr_hit,Nr_miss,Nw_hit,Nw_miss,Wad_bus,Wbk_req);
+document.forms[1].e_add2.value = Eainput2.toPrecision(5);
+
+Eainput3 = compute_Eainput(Vdd,m,D3,T,L,St,Nr_hit,Nr_miss,Nw_hit,Nw_miss,Wad_bus,Wbk_req);
+document.forms[1].e_add3.value = Eainput3.toPrecision(5);
+
+Eainput4 = compute_Eainput(Vdd,m,D4,T,L,St,Nr_hit,Nr_miss,Nw_hit,Nw_miss,Wad_bus,Wbk_req);
+document.forms[1].e_add4.value = Eainput4.toPrecision(5);
+
+
+
+Eoutput1 = compute_Eop(Vdd,m,D1,T,L,St,Nr_hit,Nr_miss,Nw_hit,Nw_miss,Wad_bus,Wbk_req);
+document.forms[1].e_out1.value = Eoutput1.toPrecision(5);
+
+Eoutput2 = compute_Eop(Vdd,m,D2,T,L,St,Nr_hit,Nr_miss,Nw_hit,Nw_miss,Wad_bus,Wbk_req);
+document.forms[1].e_out2.value = Eoutput2.toPrecision(5);
+
+Eoutput3 = compute_Eop(Vdd,m,D3,T,L,St,Nr_hit,Nr_miss,Nw_hit,Nw_miss,Wad_bus,Wbk_req);
+document.forms[1].e_out3.value = Eoutput3.toPrecision(5);
+
+Eoutput4 = compute_Eop(Vdd,m,D4,T,L,St,Nr_hit,Nr_miss,Nw_hit,Nw_miss,Wad_bus,Wbk_req);
+document.forms[1].e_out4.value = Eoutput4.toPrecision(5);
+
+
+Et1 = Ebit1 + Eword1 + Eainput1 + Eoutput1 ;
+Et2 = Ebit2 + Eword2 + Eainput2 + Eoutput2 ;
+Et3 = Ebit3 + Eword3 + Eainput3 + Eoutput3 ;
+Et4 = Ebit4 + Eword4 + Eainput4 + Eoutput4 ;
+
+document.forms[1].e_total1.value = Et1.toPrecision(5);
+document.forms[1].e_total2.value = Et2.toPrecision(5);
+document.forms[1].e_total3.value = Et3.toPrecision(5);
+document.forms[1].e_total4.value = Et4.toPrecision(5);
+
+
+var h = new Graph(400,500,true);
+h.bgColor = '#DDDDDD';
+h.setLegend('Dissipation in Bit lines','Dissipation in word lines','Dissipation in address input lines','Dissipation in output lines');
+h.addRow(Ebit1,Ebit2,Ebit3,Ebit4);
+h.addRow(Eword1,Eword2,Eword3,Eword4);
+h.addRow(Eainput1,Eainput2,Eainput3,Eainput4);
+h.addRow(Eoutput1,Eoutput2,Eoutput3,Eoutput4);
+message ='Effect of variation of cache size on cache energy dissipation';
+
+max = Et1; 
+
+if(Et2 > max) max = Et2;
+
+ if (Et3 > max) max = Et3;
+
+ if (Et4 > max) max = Et4;
+ Etotal = max;
+
+message += '<br>Total Energy dissipation '+ (Etotal*1e6).toPrecision(5) + ' micro Joule' ;
+h.title = message;
+h.xLabel = 'Variation of cache size';
+h.yLabel = 'Energy Dissipation' ;
+h.setXScaleValues(D1,D2,D3,D4);
+
+h.build();
+}" type="button">
+<input type="reset">
+</form>
+
+
+<h1> Results</h1><br><br>
+<form>
+<input type="reset">
+<table border="1">
+<tr><td><b> Total Energy dissipated</b></td></tr>
+<tr><td>Total Energy dissipated in cache with cache size 1</td><td><input size="30" name="e_total1" type="text">Joule</td></tr>
+<tr><td>Total Energy dissipated in cache with cache size 2</td><td><input size="30" name="e_total2" type="text">Joule</td></tr>
+<tr><td>Total Energy dissipated in cache with cache size 3</td><td><input size="30" name="e_total3" type="text">Joule</td></tr>
+<tr><td>Total Energy dissipated in cache with cache size 4</td><td><input size="30" name="e_total4" type="text">Joule</td></tr>
+
+<tbody><tr><td><b>Energy dissipated in bit lines</td></tr>
+<tr><td>Energy dissipated in bit lines with cache size 1</td><td><input size="30" name="e_bit1" type="text">Joule</td></tr>
+<tr><td>Energy dissipated in bit lines with cache size 2</td><td><input size="30" name="e_bit2" type="text">Joule</td></tr>
+<tr><td>Energy dissipated in bit lines with cache size 3</td><td><input size="30" name="e_bit3" type="text">Joule</td></tr>
+<tr><td>Energy dissipated in bit lines with cache size 4</td><td><input size="30" name="e_bit4" type="text">Joule</td></tr>
+
+<tr><td><b>Energy dissipated in the word lines</td></tr>
+<tr><td>Energy dissipated in word lines with cache size 1</td><td><input size="30" name="e_word1" type="text">Joule</td></tr>
+<tr><td>Energy dissipated in word lines with cache size 2</td><td><input size="30" name="e_word2" type="text">Joule</td></tr>
+<tr><td>Energy dissipated in word lines with cache size 3</td><td><input size="30" name="e_word3" type="text">Joule</td></tr>
+<tr><td>Energy dissipated in word lines with cache size 4</td><td><input size="30" name="e_word4" type="text">Joule</td></tr>
+
+<tr><td><b>Energy dissipated in the address input lines</td></tr>
+<tr><td>Energy dissipated in address input lines with cache size 1</td><td><input size="30" name="e_add1" type="text">Joule</td></tr>
+<tr><td>Energy dissipated in address input lines with cache size 2</td><td><input size="30" name="e_add2" type="text">Joule</td></tr>
+<tr><td>Energy dissipated in address input lines with cache size 3</td><td><input size="30" name="e_add3" type="text">Joule</td></tr>
+<tr><td>Energy dissipated in address input lines with cache size 4</td><td><input size="30" name="e_add4" type="text">Joule</td></tr>
+
+<tr><td><b>Energy dissipated in output lines</td></tr>
+<tr><td>Energy dissipated in output lines with cache size 1</td><td><input size="30" name="e_out1" type="text">Joule</td></tr>
+<tr><td>Energy dissipated in output lines with cache size 2</td><td><input size="30" name="e_out2" type="text">Joule</td></tr>
+<tr><td>Energy dissipated in output lines with cache size 3</td><td><input size="30" name="e_out3" type="text">Joule</td></tr>
+<tr><td>Energy dissipated in output lines with cache size 4</td><td><input size="30" name="e_out4" type="text">Joule</td></tr>
+
+
+</tbody></table>
+</form>
+
+
+</body></html>

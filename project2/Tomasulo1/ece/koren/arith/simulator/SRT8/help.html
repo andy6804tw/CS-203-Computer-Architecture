@@ -1,0 +1,56 @@
+<HTML>
+<HEAD>
+   <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+   <META NAME="Author" CONTENT="zhan">
+   <META NAME="GENERATOR" CONTENT="Mozilla/4.04 [en] (Win95; I) [Netscape]">
+   <TITLE>help for carry Lookahead Adder</TITLE>
+</HEAD>
+<BODY>
+
+<DL>
+<CENTER>
+<H1>
+SRT Radix 8 Online help</H1></CENTER>
+
+<CENTER><B><U><FONT SIZE=+2>How to Run</FONT></U></B></CENTER>
+</DL>
+
+<UL>
+<LI>
+The dividend X is divided by the divisor D in this program.  
+These two inputs can be entered in the boxes labeled
+<I>X</I> and <I>D</I> respectively.  The divisor must be a normalized
+fraction in the range [0.5, 1).</LI>
+
+<LI>
+The two numbers can be given in either the <I>bin</I> (binary) or <I>dec</I> (decimal)
+number system.</LI>
+
+<LI>
+Next, the total number of bits in the divider should be specified in <I>Total
+Bits</I> field.  This number should be odd.</LI>
+
+<LI>
+The value of alpha must also be specified.  A larger overlap region (corresponding to a
+higher value of alpha) may allow us to select comparison constants with fewer digits.  
+On the other hand, a higher value of alpha means having to produce more multiples of the
+form (alpha * Divisor), requiring extra hardware and/or time.
+</LI>
+
+
+<CENTER><B><U><FONT SIZE=+2>Format of Output</FONT></U></B></CENTER>
+
+<UL>After giving all the above mentioned inputs, when you click on the
+<I>Compute</I> button, in the right frame of the page, you should see
+the calculations leading to the quotient, along with the P-D plot 
+(partial remainder versus divisor) plot.  In this program, four different
+such plots are used representing the four different choices available for alpha.
+
+If just the alpha is selected, and the <I>Show PD Plots</I> button is pressed,
+in the right frame of the page, you should see the P-D plot (partial remainder 
+versus divisor) plot.  In this program, four different sets of such plots are used 
+representing the four different choices available for alpha.  
+<UL>
+
+</BODY>
+</HTML>

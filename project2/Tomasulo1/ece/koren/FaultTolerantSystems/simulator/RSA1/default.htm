@@ -1,0 +1,153 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+ <head>
+  <!-- ======================================================= -->
+  <!-- Created by AbiWord, a free, Open Source wordprocessor.  -->
+  <!-- For more information visit http://www.abisource.com.    -->
+  <!-- ======================================================= -->
+  <meta http-equiv="content-type" content="text/html;charset=UTF-8">
+  <title>rsa2.html</title>
+  <style type="text/css">
+   <!--
+#toc,
+.toc,
+.mw-warning {
+	border: 1px solid #aaa;
+	background-color: #f9f9f9;
+	padding: 5px;
+	font-size: 95%;
+}
+#toc h2,
+.toc h2 {
+	display: inline;
+	border: none;
+	padding: 0;
+	font-size: 100%;
+	font-weight: bold;
+}
+#toc #toctitle,
+.toc #toctitle,
+#toc .toctitle,
+.toc .toctitle {
+	text-align: center;
+}
+#toc ul,
+.toc ul {
+	list-style-type: none;
+	list-style-image: none;
+	margin-left: 0;
+	padding-left: 0;
+	text-align: left;
+}
+#toc ul ul,
+.toc ul ul {
+	margin: 0 0 0 2em;
+}
+#toc .toctoggle,
+.toc .toctoggle {
+	font-size: 94%;
+}@media print, projection, embossed {
+	body {
+		padding-top:1in;
+		padding-bottom:1in;
+		padding-left:1in;
+		padding-right:1in;
+	}
+}
+body {
+	font-family:'Times New Roman';
+	color:#000000;
+	widows:2;
+	font-style:normal;
+	text-indent:0in;
+	font-variant:normal;
+	font-size:12pt;
+	text-decoration:none;
+	font-weight:normal;
+	text-align:left;
+}
+table {
+}
+td {
+	border-collapse:collapse;
+	text-align:left;
+	vertical-align:top;
+}
+p, h1, h2, h3, li {
+	color:#000000;
+	font-family:'Times New Roman';
+	font-size:12pt;
+	text-align:left;
+	vertical-align:normal;
+}
+h1 {
+	font-family:'Nimbus Sans L';
+	font-size:17pt;
+	font-weight:bold;
+	margin-bottom:3pt;
+	margin-top:22pt;
+	page-break-after:avoid;
+}
+     -->
+  </style>
+ </head>
+ <body>
+  <div>
+   <h1 id="AbiTOC0__">RSA Applet with Error Detection Using Residue Codes</h1>
+   <p>Usage: Follow this link to go to applet: <a href="rsa.html">APPLET </a></p>
+   <p>This applet demonstrates the steps of the RSA algorithm. It first creates keys, then allows the user to enter a
+value, encrypts this value and then decrypts it. The user can modify the encrypted text, and see if the residue codes
+are able to detect errors. <br>
+The steps are:<br> <span style="font-weight:bold"><br><br>1) Entering Two Prime
+Numbers</span><br>User&nbsp;can&nbsp;enter two numbers and the applet automatically generates the closest prime
+numbers to what have been entered. It searches for a prime number between N and 2N where N is the entered number
+(Bertrand-Chebyshev theorem).
+<span style="font-weight:bold"><br><br>2) Calculation of N and e</span><br>After entering the two numbers, the user
+can press the button "Calculate N and e" to see N and possible e values. User either can choose one of the e`s or
+enter manually. The applet&nbsp;checks if it is a valid e. <span style="font-weight:bold"><br><br>4) Calculation of
+d</span><br>If a valid e is entered, applet will offer some possible d values. The user should enter a residue
+modulus value and a number in the "plain text" field. <span style="font-weight:bold"><br><br>5) Encryption and
+Decryption</span><br> After entering the input, the user can press the "encrypt"&nbsp;button for encryption
+and&nbsp; the "decrypt" button for decryption. <span style="font-weight:bold"><br><br>6) Error Detection</span><br> 
+To view error detection capabilities, 
+the user can modify the encrypted text and see if applet can detect the error with the given Residue&nbsp;Modulus.
+Higher modulus values increases error detection capabilities.&nbsp;Errors are not detected when the residues of the
+message and decrypted text are equal. Some of these cases are demonstrated below.</p>
+   <p></p>
+
+   <p><b>Examples:</b> </p>
+   <p></p>
+   <p>1) Enter 137 and 1453 as prime numbers. Calculate N and e. Choose 445 as e. Calculate d. Choose 151765 as d. Enter 8 as modulus, and 312 as input (plain text). &nbsp;Encrypted text will be 195434. Decrypt it, it will be decrypted correctly and message residue will be 0. Now change the encrypted text value to 195435 and press decrypt. Applet will detect the error. Change it to 195436&nbsp;<span lang="en-US">and press decrypt.</span>&nbsp;The applet will fail to detect the error. Change the modulus to 9 and press decrypt.&nbsp;Error will be detected. </p>
+   <p></p>
+
+   <p>2) <b><font color = blue> Inputs:</b> p = 149 , q = 797 , &nbsp;e
+= 351
+, d = 207087, Plain Text = 64 </font>&nbsp;</p>
+   <p><font color = red> <b> Outputs:</b> c&nbsp;= 77847 (<span
+lang="en-US">Encrypted Text)</span></p></font>
+   <p></p>
+   <p>For <b> M = 3</b> (Modulus) , applet cannot detect errors for <b>
+c = {77852, 77853, 77854}
+</b>&nbsp;for &nbsp;77848&nbsp;</span><span style="font-family:'Standard
+Symbols L'" lang="en-US">≤</span><span lang="en-US">&nbsp;&nbsp;c </span><span style="font-family:'Standard Symbols L'" lang="en-US">≤</span><span lang="en-US"> 77857 . Thus out of 10 instance only 5 of them can be detected.</span></p>
+   <p></p>
+   <p><span lang="en-US">For <b>M = 10</b>,&nbsp;applet cannot detect
+errors
+for c = {77854 } only. Thus out of 10 instances 9 of the errors can be detected for M = 10.</span></p>
+   <p></p>
+   <p><span lang="en-US">For <b> M = 13</b>, all the errors in that
+range can be detected.</span></p>
+
+   <p></p>
+<img src="rsa2.jpg"></img>
+   <p></p>
+   <p></p>
+   <p>&nbsp;</p>
+   <p></p>
+   <p></p>
+  </div>
+  <div>
+   <p></p>
+  </div>
+ </body>
+</html>

@@ -1,0 +1,254 @@
+<HTML>
+<HEAD>
+<TITLE> Page Replacement Algorithms  </TITLE>
+<SCRIPT language="JavaScript">
+
+// This function determines whether the reference is cache hit or miss
+function IsMiss(Reference, Cache) {
+        for (i = 0; i<BFval; i++) {
+                if( Cache[i] == Reference) {
+                        return 0;
+                }
+        }
+return 1;
+
+}
+
+// This function is to make a line
+
+function MakeLine(NumColumns)
+{
+        return "<TR> <TD colspan=" + NumColumns + "> <HR noshade size=1>";
+}
+
+
+// This function returns the frame number in which the referenced block present(if it is a hit)
+
+function  HitNumber(Cache, Reference) {
+         for (k = 0; k<BFval; k++){
+                if( Cache[k] == Reference) {
+                        return k;
+                }
+         }
+return -1;
+}
+
+// This function will update the sequence of block frames to reflect the least recenly used block
+
+function CircularShift(LeftBound, RightBound) {
+                temp = Cache[LeftBound];
+        for (l= LeftBound; l<RightBound; l++) {
+                Cache[l] = Cache[l+1];
+        }
+
+        Cache[RightBound-1] = temp;
+}
+
+// This function returns the number of block frames which are full
+
+function NumberFull(Cache) {
+        Full = 0;
+         for(j = 0; j<BFval; j++){
+                if( Cache[j] != " ") {
+                        Full = Full +1;
+                }
+
+         }
+return Full;
+
+}
+
+// This is for Optimal Algorithm
+
+function optimalsearch(start, reference) {
+
+       loca = 0;
+       Futurehit = 0;
+        Cachestat = new Array(BFval);
+        Top = "<HTML><HEAD><TITLE>Tablet</TITLE></HEAD><BODY bgcolor=white>"
+
+         parent.frames[1].document.write(Top);
+
+        for (q= 0; q<BFval; q++) {
+              Cachestat[q] = 0;
+        }
+        for (p = start; p< PageTraceLength; p++) {
+          yz = "stat Contents after " +  p + " references =  " +  Cachestat  + "<BR>\n"
+//                parent.frames[1].document.write(yz);
+
+                if ( Futurehit < BFval-1) {
+                        Futuremiss =  IsMiss(PageTrace[p], Cache);
+                       Futurehitnum =  HitNumber(Cache, PageTrace[p]);
+                                if ( Futuremiss == 0) {
+                                        if(Cachestat[Futurehitnum] == 0) {
+                                                Futurehit =  Futurehit + 1;
+                                                Cachestat[Futurehitnum] = 1;
+                                        }
+                                }
+                }
+        }
+        for (r = 0; r<BFval; r++) {
+                if ( Cachestat[r] == 0) {
+                         loca = r ;
+                        //Cache[r] = reference;
+                }
+        }
+        Cache[loca] = reference;
+}
+
+// This is for printing cache elements
+
+function PrintCache(Cache, Total, Middle, HitMiss,  PageFrame)
+{
+          Middle += "<TR>"
+	  Middle += " <TD><FONT color=red>" + PageFrame + "</FONT><TD>" 
+        for (lp=0; lp < Total; lp++)
+        {
+                        Middle +=   "<TD>"  + Cache[lp] + "<TD>"
+        } 
+
+        if (HitMiss == 0)
+                Middle += "<TD>Miss"
+        else
+                Middle += "<TD>Hit"
+
+        return Middle
+}
+
+// This is final function
+
+function ReplaceAlgo(form) {
+        PageTrace = form.BlockRef.value.split(" ");
+        PageTraceLength = PageTrace.length;
+        ChoseLRU = form.Base[0].checked; 
+        ChoseOPT = form.Base[2].checked; 
+        BFval = form.BF.value;
+	Cache = new Array(BFval);
+        for (n= 0; n<BFval; n++) {
+               Cache[n] = " "; 
+        }
+
+		ColdStartMiss = 0;
+		Hit = 0;
+
+	Top = "<HTML><HEAD><TITLE>Tablet</TITLE></HEAD><BODY bgcolor=white>"
+	
+	 parent.frames[1].document.write(Top);
+
+	Middle = "<TABLE>"
+	Middle += "<TR>"
+	Middle += "<TD><FONT color=red>PT</FONT> " + "<TD>" 
+	//Middle += "<TD>" + "Cache Contents" + "<TD>"
+	//Middle += "<TD>Cache Contents" + "<TD>"
+	for ( index = 0; index < BFval; index++)
+                Middle += "<TD>PF " + index + "<TD>"
+	Middle += "<TD>" + "Hit/Miss" + "<TD>"
+	
+	Middle += MakeLine(BFval*9)
+
+	for ( m = 0; m< PageTraceLength; m++) {
+		CacheBlocksFull = NumberFull(Cache);
+                Ismis =  IsMiss(PageTrace[m], Cache);
+
+		xyz = "Cache Contents after " +  m + " references =  " +  Cache  + "<BR>\n"
+	//	parent.frames[1].document.write(xyz);
+		
+		   if(ChoseOPT) {
+			 if (Ismis == 0) {
+                         	Hit = Hit +1;
+			  Middle = PrintCache(Cache, BFval, Middle, 1, PageTrace[m])
+                	}
+              	  	 else {
+                        	if ( CacheBlocksFull ==  BFval ) {
+                         		 optimalsearch(m+1, PageTrace[m]);
+                        	}
+                       		 else {
+					 ColdStartMiss++
+                               		 Cache[CacheBlocksFull] =  PageTrace[m];
+                        	}
+			 Middle = PrintCache(Cache, BFval, Middle, 0, PageTrace[m])
+                	 }
+	  	    }
+		
+	 	 else {
+
+			if (Ismis == 0) {
+				 Hit = Hit +1;
+			 	Hitnum =  HitNumber(Cache, PageTrace[m]);
+			 	if(ChoseLRU) {
+                               		 CircularShift(Hitnum, CacheBlocksFull);
+                         	}
+			Middle = PrintCache(Cache, BFval, Middle, 1, PageTrace[m])
+                	}
+			else {	
+				if ( CacheBlocksFull ==  BFval ) {
+                       		       Cache[0] = PageTrace[m];
+                              	       CircularShift(0, BFval);
+                        	}
+                        	else {
+					 ColdStartMiss++
+                               		 Cache[CacheBlocksFull] =  PageTrace[m];
+                        	}
+			Middle = PrintCache(Cache, BFval, Middle, 0, PageTrace[m])
+			}
+		}	
+      } 
+	Middle += "</TABLE> <P>";
+	
+	Ratio = 1000*Hit/PageTraceLength;
+	HitRatio = Math.round(Ratio)/1000;
+	Miss = PageTraceLength - Hit;
+//	ColdStartMiss =  BFval;
+		
+        Middle += "* <FONT color=red>PT</FONT> = Page Trace, " + "  PF = Page Frame" + "<BR>\n"	
+	Middle += "<BR>\n"	
+       	//Middle += "Contents at the end of all references= " + Cache  + "<BR>\n" 
+        Middle +="Number of Page Frames = " + BFval + "<BR>\n"
+        Middle +="Total Number of References = " + PageTraceLength + "<BR>\n"
+        Middle +=  "Number of Hits = " + Hit + "<BR>\n"
+        Middle +=  " Number of Misses = " + Miss + "   (Cold_start_Misses =" + ColdStartMiss + ")"+ "<BR>\n"
+        Middle +=  "HitRatio = " + HitRatio + "<BR>\n"
+
+	Bottom = "</BODY> </HTML>"
+
+        parent.frames[1].document.write(Middle);
+        parent.frames[1].document.write(Bottom);
+        parent.frames[1].document.close()
+
+
+}
+
+
+
+</SCRIPT>
+</HEAD>
+
+<BODY bgcolor="darkblue" text="white">
+
+<CENTER> <H2> Page Replacement Algorithms </H2> </CENTER>
+<FORM>
+Number of Page Frames: <INPUT type="text" name="BF" >
+<P>
+Page References: <INPUT type="string" name="BlockRef" >
+<P>
+<EM>LRU</EM> <INPUT type="radio" name="Base" value="Binary" checked>
+<EM>FIFO</EM> <INPUT type="radio" name="Base" value="Decimal">
+<EM>OPTIMAL</EM> <INPUT type="radio" name="Base" value="Binary">
+<P>
+<CENTER>
+<INPUT type="button" name="enter" value="Compute"
+onClick="ReplaceAlgo(this.form)">
+<p>
+<CENTER>
+<INPUT TYPE="Reset"  VALUE="   Clear   " onClick=parent.frames[1].location.href="blank.html">
+</CENTER>
+<P>
+<INPUT type="button" value="Help"
+onClick=parent.frames[1].location.href="help.html">
+
+</CENTER>
+</FORM>
+
+</BODY>
+</HTML>
+

@@ -1,0 +1,205 @@
+<HTML>
+<HEAD>
+   <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+   <META NAME="Author" CONTENT="zhan">
+   <META NAME="GENERATOR" CONTENT="Mozilla/4.04 [en] (Win95; I) [Netscape]">
+   <TITLE>help for Sign/Logarithm Arithmetic</TITLE>
+</HEAD>
+<BODY bgcolor="white">
+
+<DL>
+<CENTER>
+<H1>
+Sign/Logarithm Simulator Online help</H1></CENTER>
+
+<BR>
+<CENTER><B><U><FONT SIZE=+2>About the Simulator</FONT></U></B></CENTER>
+</DL>
+
+<TABLE border=0 cellpadding=6>
+<tr><td>
+This program converts the two numbers specified in boxes <I>A</I> and <I>B</I> into sign/logarithm format.
+</tr></td>
+
+<tr><td>
+The program then performs the arithmetic calculation specified (add, subtract, etc...) using the sign/logarithm number system.
+</tr></td>
+
+<tr><td>
+The input values <I>A</I> and <I>B</I> are first converted to sign/logarithm format according to the input parameters, <b>k</b> and <b>l</b>.
+</tr></td>
+
+<tr><td>
+<b>k</b> sets the number of <em>integer</em> bits and <b>l</b> defines the number of <em>fractional</em> bits.
+</tr></td>
+
+<tr><td>
+The representation of a number in sign/logarithm format is defined as the sequence of a single sign bit, <em>s</em>, followed by <em>k</em> integer bits and <em>l</em> fractional bits.  <b>k</b> and <b>l</b> comprise the 2's complement representation of the input value.  This sign bit, <b>s</b>, is then used to sign the value of this 2's complement number.
+</tr></td>
+
+<tr><td align=center>
+<b>E<SUB>A</SUB></b> = s<sub> a</sub>a<sub> k-1</sub>a<sub> k-2</sub>a<sub> 1</sub>a<sub> 0</sub> <B>.</B> a<sub> -1</sub>a<sub> -2</sub>a<sub> -l</sub>  
+</tr></td>
+
+<tr><td>
+The total number of bits in this system is therefore, <B> s + k + l </B> bits.  It is important to note that only <b>k</b> bits are available to represent integer numbers.  If k = 5 and a number has a "1" in the 2<SUP>4</SUP> position (MSB), a 2's complement result will occur which may be -2<SUP>4</SUP> off from the correct value.  For this reason, it is recommended to set <b>k</b> high enough to allow for sign-extended values.  NOTE: The "square" function is the most likely operation to result in overflow.
+</tr></td>
+
+<tr><td>
+A number is converted to sign/logarithmic format by the following equation:
+</tr></td>
+
+<tr><td align=center>
+<b>E<sub>X</sub></b> = log<sub>2</sub> | X | 
+</tr></td>
+
+<tr><td>
+The sign of E<sub>X</sub> remains the same as the original operand, X.
+</tr></td>
+
+<tr><td>
+To convert a number back from sign/logarithm format:
+</tr></td>
+
+<tr><td align=center>
+<b>X</b> = 2<sup>Ex</sup> 
+</tr></td>
+
+<tr><td>
+There is no representation for "0" in the sign/logarithm number system because log<sub>2</sub> | 0 | is undefined.  If "0" is entered as an operand, the value for E<sub>0</sub> is set to all "1's."  For <b>k</b> = 4 and <b>l</b> = 4, E<sub>0</sub> = "1111.1111"
+</tr></td>
+
+<tr><td>
+<BR>
+</tr></td>
+
+<tr><td>
+<CENTER><B><U><FONT SIZE=+2>Using the Simulator</FONT></U></B></CENTER>
+<BR>
+</tr></td>
+
+<tr><td>
+To perform a calculation in the sign/logarithm number system, enter values for <b>A</b>, <b>B</b>, <b>k</b>, and <b>l</b>.  Select an operation from the list by pushing the corresponding "radio" button to the right of the description. Press the "Compute" button to calculate the operation and display the output to the this form.
+</tr></td>
+
+<tr><td>
+Addition and subtraction are the most complicated operations to perform in the sign/logarithm number system.  These operations require the result of a function, <b><font face="Symbol">F</font>(x)</b>, defined as:
+</tr></td>
+
+<tr><td align="center">
+<b><font face="Symbol">F</font><sup>+</sup></b>( E<sub>A</sub> - E<sub>B</sub> ) = log<sub>2</sub> | 1 + 2<sup> - ( E<sub>A</sub> - E<sub>B</sub> )</sup> |  
+</tr></td>
+
+<tr><td>
+For addition and...
+</tr></td>
+
+<tr><td align="center">
+<b><font face="Symbol">F</font><sup>-</sup></b>( E<sub>A</sub> - E<sub>B</sub> ) = log<sub>2</sub> | 1 - 2<sup> - ( E<sub>A</sub> - E<sub>B</sub> )</sup> |  
+</tr></td>
+
+<tr><td>
+...for subtraction.  To speed calculations for addition and subtraction, values for <b><font face="Symbol">F</font>(x)</b> are generally stored in ROMs.  To view the <b><font face="Symbol">F</font><sup>+</sup></b> or <b><font face="Symbol">F</font><sup>-</sup></b> ROMs, enter values for <b>A</b>, <b>B</b>, <b>k</b>, and <b>l</b> and then click the "Show ROM PHI+" or "Show ROM PHI-" buttons.
+</tr></td>
+
+<tr><td>
+<BR><BR>
+<CENTER><B><U><FONT SIZE=+2>About the Arithmetic Operations</FONT></U></B></CENTER>
+<BR>
+</tr></td>
+
+<tr><td>
+<hr>
+<b>Addition</b> in the sign/logarithm number system is defined as...
+</tr></td>
+
+<tr><td align="center">
+<b>E<sub>s</sub></b> = E<sub>A</sub> + <font face="Symbol">F</font><sup>+</sup>( E<sub>A</sub> - E<sub>B</sub>)   
+</tr></td>
+
+<tr><td>
+for | E<sub>A</sub> | > | E<sub>B</sub> | and...
+</tr></td>
+
+<tr><td align="center">
+<b>E<sub>s</sub></b> = E<sub>B</sub> + <font face="Symbol">F</font><sup>+</sup>( E<sub>B</sub> - E<sub>A</sub>)   
+</tr></td>
+
+<tr><td>
+for | E<sub>B</sub> | > | E<sub>A</sub> | 
+</tr></td>
+
+<tr><td>
+<hr>
+<b>Subtraction</b> in the sign/logarithm number system is defined as...
+</tr></td>
+
+<tr><td align="center">
+<b>E<sub>d</sub></b> = E<sub>A</sub> + <font face="Symbol">F</font><sup>-</sup>( E<sub>A</sub> - E<sub>B</sub>)   
+</tr></td>
+
+<tr><td>
+for | E<sub>A</sub> | > | E<sub>B</sub> | and...
+</tr></td>
+
+<tr><td align="center">
+<b>E<sub>d</sub></b> = E<sub>B</sub> + <font face="Symbol">F</font><sup>-</sup>( E<sub>B</sub> - E<sub>A</sub>)   
+</tr></td>
+
+<tr><td>
+for | E<sub>B</sub> | > | E<sub>A</sub> | 
+</tr></td>
+
+<tr><td>
+<hr>
+<b>Multiplication</b> is reduced to the addition of two numbers in sign/logarithm format...
+</tr></td>
+
+<tr><td align="center">
+<b>E<sub>p</sub></b> = E<sub>A</sub> +  E<sub>B</sub>   
+</tr></td>
+
+<tr><td>
+<hr>
+<b>Division</b> is the subtraction of two numbers in sign/logarithm format...
+</tr></td>
+
+<tr><td align="center">
+<b>E<sub>q</sub></b> = E<sub>A</sub> -  E<sub>B</sub>   
+</tr></td>
+
+<tr><td>
+<hr>
+The <b>Reciprocal</b> of a numbers is calculated in the sign/logarithm number system by...
+</tr></td>
+
+<tr><td align="center">
+<b>E<sub>A</sub><sup>-1</sup></b> = 2<sup> - Ea</sup>   
+</tr></td>
+
+<tr><td>
+<hr>
+<b>Square Root</b> may be calculated as...
+</tr></td>
+
+<tr><td align="center">
+<b>E<sub>A</sub><sup>1/2</sup></b> = 2<sup> Ea / 2</sup>   
+</tr></td>
+
+<tr><td>
+<hr>
+<b>Square</b> of a number is found by...
+</tr></td>
+
+<tr><td align="center">
+<b>E<sub>A</sub><sup>2</sup></b> = 2<sup> 2 * Ea</sup>   
+<hr>
+</tr></td>
+
+<tr><td>
+		For more information on the sign/logarithm number system, please see Chapter 10 of "Computer Arithmetic Algorithms" by Israel Koren.
+</tr></td>
+
+</table>
+</BODY>
+</HTML>

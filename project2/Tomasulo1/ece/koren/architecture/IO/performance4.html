@@ -1,0 +1,636 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN"><HTML>
+<HEAD> 
+<script language="JavaScript">
+
+function validate(form)
+{
+
+if (form.disk_time.value>100)
+{
+clroutput(form)
+alert("invalid limit on disk time. Enter a number in the range 0-100")
+return(false)
+}
+if (form.SCSI.value>100)
+{
+clroutput(form)
+alert("invalid limit on SCSI buses. Enter a number in the range 0-100")
+return(false)
+}
+if (form.io_bus.value>100)
+{
+clroutput(form)
+alert("invalid limit on I/O bus. Enter a number in the range 0-100") 
+return(false)
+}
+if ((form.smallsize.value/form.largesize.value)>1)
+{
+clroutput(form)
+alert("Input error11: Small disk size > Large disk size or Missing disk size")
+return(false)
+}
+
+if((form.mips.value=="")||(form.width.value=="")||(form.smallsize.value==""))
+{
+clroutput(form)
+alert("Input error2: Missing input field")
+return(false)
+}
+if ((form.iosize.value=="")||(form.cpuinstr.value=="")||(form.busbandwidth.value==""))
+{
+clroutput(form)
+alert("Input error1: Missing input field")
+return(false)
+}
+if ((form.memcycle.value=="")||(form.busrate.value=="")||(form.overhead.value==""))
+{
+clroutput(form)
+alert("Input error3: Missing input field")
+return(false)
+}
+if ((form.smallspeed.value=="")||(form.largespeed.value=="")||(form.smallseek.value==""))
+{
+clroutput(form)
+alert("Input error4: Missing input field")
+return(false)
+}
+if ((form.largeseek.value=="")||(form.smallpackage.value=="")||(form.largepackage.value==""))
+{
+clroutput(form)
+alert("Input error5: Missing input field")
+return(false)
+}
+if ((form.smalltransfer.value=="")||(form.largetransfer.value=="")||(form.totaldisksize.value==""))
+{
+clroutput(form)
+alert("Input error6: Missing input field")
+return(false)
+}
+if ((form.largesize.value=="")||(form.diskperstring.value=="")||(form.costcontroller.value==""))
+{
+clroutput(form)
+alert("Input error7: Missing input field")
+return(false)
+}
+if ((form.packcost.value=="")||(form.cpucost.value=="")||(form.smallcost.value==""))
+{
+clroutput(form)
+alert("Input error8: Missing input field")
+return(false)
+}
+if ((form.largecost.value=="")||(form.disk_time.value=="")||(form.SCSI.value==""))
+{
+clroutput(form)
+alert("Input error9: Missing input field")
+return(false)
+}
+if (form.io_bus.value=="") 
+{
+clroutput(form)
+alert("Input error10: Missing input field")
+return(false)
+}
+else 
+{
+return (true)
+}
+}
+
+function evaluate(form)
+{
+
+var mips=parseFloat(form.mips.value)
+var cpuinstr=parseFloat(form.cpuinstr.value)
+var busbandwidth=parseFloat(form.busbandwidth.value)
+var iosize=parseFloat(form.iosize.value)
+var width=parseFloat(form.width.value)
+var smallsize=parseFloat(form.smallsize.value)
+var memcycle=parseFloat(form.memcycle.value)
+var busrate=parseFloat(form.busrate.value)
+var overhead=parseFloat(form.overhead.value)
+var smallspeed=parseFloat(form.smallspeed.value)
+var largespeed=parseFloat(form.largespeed.value)
+var smallseek=parseFloat(form.smallseek.value)
+var largeseek=parseFloat(form.largeseek.value)
+var smallpackage=parseFloat(form.smallpackage.value)
+var largepackage=parseFloat(form.largepackage.value)
+var smalltransfer=parseFloat(form.smalltransfer.value)
+var largetransfer=parseFloat(form.largetransfer.value)
+var totaldisksize=parseFloat(form.totaldisksize.value)
+var largesize=parseFloat(form.largesize.value)
+var diskperstring=parseFloat(form.diskperstring.value)
+var costcontroller=parseFloat(form.costcontroller.value)
+var packcost=parseFloat(form.packcost.value)
+var cpucost=parseFloat(form.cpucost.value)
+var smallcost=parseFloat(form.smallcost.value)
+var largecost=parseFloat(form.largecost.value)
+//var maxbus&controller=parseFloat(form.maxbus&controller.value)
+
+
+avgseek=(smallseek+largeseek)/2
+avgtransfer=(smalltransfer+largetransfer)/2
+avgspeed=(smallspeed+largespeed)/2
+ohead=overhead*6000
+scsitransfer=overhead+iosize/busrate
+rot_latency=(0.5*1000)/(avgspeed/60)
+
+w1_nolimit=1000*1/(avgseek+rot_latency+iosize/avgtransfer)
+w2_nolimit=1000*1/(scsitransfer)
+controlleriops1_nolimit=Math.floor(1000*1/(scsitransfer))
+busiops1_nolimit=Math.floor((busbandwidth*1000)/iosize)
+
+w1=(form.disk_time.value/100)*1000*1/(avgseek+rot_latency+iosize/avgtransfer)
+w2=(form.SCSI.value/100)*1000*1/(scsitransfer)
+w3=totaldisksize/largesize
+w4=totaldisksize/smallsize
+R9result1=Math.ceil(w4/diskperstring)
+R10result1=Math.ceil(w3/diskperstring)
+
+iotime1=avgseek+rot_latency+iosize/avgtransfer
+cpuiops1=Math.floor((mips*1000000)/cpuinstr) 
+busiops1=Math.floor(((form.io_bus.value/100)*busbandwidth*1000)/iosize)
+memoryiops1=Math.floor(((1/memcycle*1000000000)*width)/(iosize*1000))
+controlleriops1=Math.floor((form.SCSI.value/100)*1000*1/(scsitransfer))
+controlleriops_1=Math.floor(1000*1/(scsitransfer))
+diops=Math.floor(1000*1/(avgseek+rot_latency+iosize/avgtransfer))
+
+R8result1_nolimit=Math.floor(1000*1/(avgseek+rot_latency+iosize/avgtransfer))*w3
+R7result1_nolimit=Math.floor(1000*1/(avgseek+rot_latency+iosize/avgtransfer))*w4
+//form.diskiops_nolimit.value=Math.floor(1000*1/(avgseek+rot_latency+iosize/avgtransfer))
+R11result1_nolimit=Math.floor(R9result1*controlleriops1_nolimit)
+R12result1_nolimit=Math.floor(R10result1*controlleriops1_nolimit)
+R13result1_nolimit=Math.floor(w2_nolimit/w1_nolimit)
+R14result1_nolimit=Math.ceil(w4/Math.floor(w2_nolimit/w1_nolimit))
+R15result1_nolimit=Math.ceil(w3/Math.floor(w2_nolimit/w1_nolimit))
+R16result1_nolimit=Math.floor(Math.ceil(w4/Math.floor(w2_nolimit/w1_nolimit))*controlleriops1_nolimit)
+R17result1_nolimit=Math.floor(Math.ceil(w3/Math.floor(w2_nolimit/w1_nolimit))*controlleriops1_nolimit)
+
+R8result1=Math.floor((form.disk_time.value/100)*1000*1/(avgseek+rot_latency+iosize/avgtransfer))*w3
+R7result1=Math.floor((form.disk_time.value/100)*1000*1/(avgseek+rot_latency+iosize/avgtransfer))*w4
+R11result1=Math.floor(R9result1*controlleriops1)
+R12result1=Math.floor(R10result1*controlleriops1)
+R13result1=Math.floor(w2/w1)
+R14result1=Math.ceil(w4/Math.floor(w2/w1))
+R15result1=Math.ceil(w3/Math.floor(w2/w1))
+R16result1=Math.floor(Math.ceil(w4/Math.floor(w2/w1))*controlleriops1)
+R17result1=Math.floor(Math.ceil(w3/Math.floor(w2/w1))*controlleriops1)
+//this.form.smallsize1=smallsize
+
+iotime=avgseek+rot_latency+iosize/avgtransfer
+cpuiops=Math.floor((mips*1000000)/cpuinstr)
+busiops=Math.floor(((form.io_bus.value/100)*busbandwidth*1000)/iosize)
+memoryiops=Math.floor(((1/memcycle*1000000000)*width)/(iosize*1000))
+controlleriops=Math.floor((form.SCSI.value/100)*1000*1/(scsitransfer))
+diskiops=Math.floor((form.disk_time.value/100)*1000*1/(avgseek+rot_latency+iosize/avgtransfer))
+R8=Math.floor(totaldisksize/largesize)
+R7=Math.floor(totaldisksize/smallsize)
+largesize_1=largesize
+largesize_2=largesize
+largesize_3=largesize
+smallsize_1=smallsize
+smallsize_2=smallsize
+
+smallsize_3=smallsize
+R8result=Math.floor((form.disk_time.value/100)*1000*1/(avgseek+rot_latency+iosize/avgtransfer))*w3
+R7result=Math.floor((form.disk_time.value/100)*1000*1/(avgseek+rot_latency+iosize/avgtransfer))*w4
+R9result=R9result1
+R9result_1=R9result1
+R9result_2=R9result1
+R10result_1=R10result1
+R10result_2=R10result1 
+R14result_1=R14result1
+
+R14result_2=R14result1
+R15result_1=R15result1
+R15result_2=R15result1
+
+R10result=Math.ceil(w3/diskperstring)
+R11result=Math.floor(R9result1*controlleriops1)
+R12result=Math.floor(R10result1*controlleriops1) 
+R13result=Math.floor(w2/w1)
+R14result=Math.ceil(w4/Math.floor(w2/w1)) 
+R15result=Math.ceil(w3/Math.floor(w2/w1))
+R16result=Math.floor(Math.ceil(w4/Math.floor(w2/w1))*controlleriops1)
+R17result=Math.floor(Math.ceil(w3/Math.floor(w2/w1))*controlleriops1)
+
+tcost_1=cpucost+R9result1*costcontroller+w4*smallsize*smallcost+packcost*Math.ceil(w4/smallpackage) 
+tcost_2=cpucost+R10result1*costcontroller+w3*largesize*largecost+packcost*Math.ceil(w3/largepackage)
+tcost_3=cpucost+R14result1*costcontroller+w4*smallsize*smallcost+packcost*Math.ceil(w4/smallpackage) 
+tcost_4=cpucost+R15result1*costcontroller+w3*largesize*largecost+packcost*Math.ceil(w3/largepackage)
+
+tcost_nolimit1=cpucost+R14result1_nolimit*costcontroller+w4*smallsize*smallcost+packcost*Math.ceil(w4/smallpackage) 
+tcost_nolimit2=cpucost+R15result1_nolimit*costcontroller+w3*largesize*largecost+packcost*Math.ceil(w3/largepackage)
+
+min_1a=Math.min(cpuiops1,memoryiops1)
+min_1b=Math.min(min_1a,busiops1_nolimit)
+min_1c=Math.min(min_1b,R7result1_nolimit)
+min1=Math.min(min_1c,R11result1_nolimit)
+min_2c=Math.min(min_1b,R8result1_nolimit)
+min2=Math.min(min_2c,R12result1_nolimit)
+min_3c=Math.min(min_1b,R7result1_nolimit)
+min3=Math.min(min_3c,R16result1_nolimit)
+min_4c=Math.min(min_1b,R8result1_nolimit)
+min4=Math.min(min_4c,R17result1_nolimit)
+
+minimum_1a=Math.min(cpuiops1,memoryiops1)
+minimum_1b=Math.min(minimum_1a,busiops1)
+minimum_1c=Math.min(minimum_1b,R7result1)
+minimum1=Math.min(minimum_1c,R11result1)
+minimum_2c=Math.min(minimum_1b,R8result1)
+minimum2=Math.min(minimum_2c,R12result1)
+minimum_3c=Math.min(minimum_1b,R7result1)
+minimum3=Math.min(minimum_3c,R16result1)
+minimum_4c=Math.min(minimum_1b,R8result1)
+minimum4=Math.min(minimum_4c,R17result1)
+
+//tcost1.v=tcost_1     
+//form.tcost2.value=tcost_2 
+//form.tcost3.value=tcost_3 
+//form.tcost4.value=tcost_4
+
+
+cost1= Math.round(tcost_1/minimum1)
+cost2= Math.round(tcost_2/minimum2)
+cost3= Math.round(tcost_3/minimum3)
+cost4= Math.round(tcost_4/minimum4)
+cost_nolimit1= Math.round(tcost_nolimit1/min1)
+cost_nolimit2= Math.round(tcost_nolimit2/min2)
+
+cutil1= Math.round((minimum1/cpuiops1)*100)
+cutil2= Math.round((minimum2/cpuiops1)*100)
+cutil3= Math.round((minimum3/cpuiops1)*100)
+cutil4= Math.round((minimum4/cpuiops1)*100)
+cutil_nolimit1= Math.round((min1/cpuiops1)*100)
+cutil_nolimit2= Math.round((min2/cpuiops1)*100)
+
+mutil1= Math.round((minimum1/memoryiops1)*100)
+mutil2= Math.round((minimum2/memoryiops1)*100)
+mutil3= Math.round((minimum3/memoryiops1)*100)
+mutil4= Math.round((minimum4/memoryiops1)*100)
+mutil_nolimit1= Math.round((min1/memoryiops1)*100)
+mutil_nolimit2= Math.round((min2/memoryiops1)*100)
+
+ioutil1= Math.round((minimum1/busiops1)*100)
+ioutil2= Math.round((minimum2/busiops1)*100)
+ioutil3= Math.round((minimum3/busiops1)*100)
+ioutil4= Math.round((minimum4/busiops1)*100)
+ioutil_nolimit1= Math.round((min1/busiops1_nolimit)*100)
+ioutil_nolimit2= Math.round((min2/busiops1_nolimit)*100)
+
+busutil1=Math.round((minimum1/(R9result1*controlleriops_1))*100)
+busutil2=Math.round((minimum2/(R10result1*controlleriops_1))*100)
+busutil3=Math.round((minimum3/(R14result1*controlleriops_1))*100)
+busutil4=Math.round((minimum4/(R15result1*controlleriops_1))*100)
+busutil_nolimit1=Math.round((min1/(R9result1*controlleriops_1))*100)
+busutil_nolimit2=Math.round((min2/(R10result1*controlleriops_1))*100)
+
+diskutil1=Math.round((minimum1/(w4*diops))*100)
+diskutil2=Math.round((minimum2/(w3*diops))*100)
+diskutil3=Math.round((minimum3/(w4*diops))*100)
+diskutil4=Math.round((minimum4/(w3*diops))*100)
+diskutil_nolimit1=Math.round((min1/(w4*diops))*100)
+diskutil_nolimit2=Math.round((min2/(w3*diops))*100)
+
+seekutil1= Math.round(0.1*smallseek/(1/(minimum1/w4)))
+seekutil2= Math.round(0.1*largeseek/(1/(minimum2/w3)))
+seekutil3= Math.round(0.1*smallseek/(1/(minimum3/w4)))
+seekutil4= Math.round(0.1*largeseek/(1/(minimum4/w3)))
+seekutil_nolimit1= Math.round(0.1*smallseek/(1/(min1/w4)))
+seekutil_nolimit2= Math.round(0.1*largeseek/(1/(min2/w3)))
+
+iops1=minimum1
+iops2=minimum2
+iops3=minimum3
+iops4=minimum4
+iops_nolimit1=min1
+iops_nolimit2=min2
+
+}
+function print1(form)
+{
+
+evaluate(form)
+
+Top1="<p align='center'><font size='6'><b>Output Results</b></font></p>"
+
+T2="<div align='left'><font size='5'><b>Specifications of the System Organization</b></font></div>"
+
+line1="<div align='left'><table border='2' width='100%' cellspacing='0'><tr><td width='20%' height='38' align='left'><fontsize='3'><b>Maximum IOPS for CPU=</td><td align='left'>"+cpuiops +"<b><font color='brown'>IOPS</td><td width='25%'><b>Maximum IOPS for main memory=</td><td align='left'>"+memoryiops +"<b><font color='brown'>IOPS</td><td width='25%'><b>Maximum IOPS for I/O Bus=</td><td width='10%' align='left'>"+busiops +"<b><font color='brown'>IOPS </td></b></b></b></b></b></b></font></font></font></font><tr><td width='20%' height='38' align='left'><fontsize='3'><b>Maximum IOPS per SCSI controller=</td><td align='left'>"+controlleriops +"<b><font color='brown'>IOPS</td><td width='25%'><b>Maximum I/O time =</td><td align='left'>"+iotime +"<b><font color='brown'>ms</td><td width='25%'><b>Maximum IOPS per disk=</td><td width='10%' align='left'>"+diskiops +"<b><font color='brown'>IOPS </td></b></b></b></b></b></b></font></font></font></font><tr><td width='20%' height='38' align='left'><fontsize='3'><b>Number of"+smallsize_1+"GB  disks required=</td><td align='left'>"+R7 +"<b><font color='brown'>disks</td><td width='25%'><b>Number of "+largesize_1+"GB disks required =</td><td align='left'>"+ R8 +"<b><font color='brown'>disks</td><td width='25%'><b>Minimum number of SCSI strings of "+smallsize_1+"GB disks=</td><td width='10%' align='left'>"+R9result +"<b><font color='brown'>strings </td></b></b></b></b></b></b></font></font></font></font><tr><td width='20%' height='38' align='left'><fontsize='3'><b>Minimum number of SCSI strings of "+largesize_1+"GB  disks required=</td><td align='left'>"+R10result+"<b><font color='brown'>strings</td><td width='25%'><b>Maximum IOPS for "+smallsize_1+"GB disks required =</td><td align='left'>"+R7result +"<b><font color='brown'>IOPS</td><td width='25%'><b>Maximum IOPS for  "+largesize_1+"GB disks=</td><td width='10%' align='left'>"+R8result +"<b><font color='brown'>IOPS </td></b></b></b></b></b></b></font></font></font></font><tr><td width='20%' height='38' align='left'><fontsize='3'><b>Maximum IOPS for"+R9result_1+"strings of "+smallsize_1+" disks =</td><td align='left'>"+R11result+"<b><font color='brown'>IOPS</td><td width='25%'><b>Maximum IOPS for"+R10result_1+"strings of "+largesize_1+"disks =</td><td align='left'>"+R12result+"<b><font color='brown'>IOPS</td><td width='25%'><b>Number of disks per SCSI string at full bandwidth of =</td><td width='10%' align='left'>"+R13result+"<b><font color='brown'>disks </td></b></b></b></b></b></b></font></font></font></font><tr><td width='20%' height='38' align='left'><fontsize='3'><b>Ideal number of SCSI strings of "+smallsize_1+"GB disks at full bandwidth =</td><td align='left'>"+R14result+"<b><font color='brown'>strings</td><td width='25%'><b>Ideal number of SCSI strings of "+largesize_1+"GB disks at full bandwidth =</td><td align='left'>"+R15result +"<b><font color='brown'>strings</td><td width='25%'><b>Maximum IOPS for "+R14result_1+" SCSI strings of "+smallsize_1+" GB disks=</td><td width='10%' align='left'>"+R16result +"<b><font color='brown'>IOPS </td></b></b></b></b></b></b></font></font></font></font><tr><td width='25%'><b>Maximum IOPS for "+R15result_1+" SCSI strings of "+largesize_1+" GB disks=</td><td width='10%' align='left'>"+R17result +"<b><font color='brown'>IOPS </td></b></font>"
+
+bottom="</table></div>"
+
+parent.frames[1].document.open()
+parent.frames[1].document.write(Top1,T2)
+parent.frames[1].document.write(line1)  
+parent.frames[1].document.write(bottom)
+parent.frames[1].document.close()
+}
+
+function maxiops(form)
+
+{
+
+evaluate(form)
+
+Topiops1="<p align='center'><font size='6'><b>Output Results</b></font></p>"
+
+Topiops2="<div align='left'><font size='5'><b> Maximum IOPS</b></font></div>"
+
+lineiops1="<div align='left'><table border='2' width='100%' cellspacing='0'><tr><td width='20%' height='40' align='left'><fontsize='4' color='brown'><b></td><td width='26%' align='center'><font size='4'color='brown'><b>Assuming 100% utilization</td><td width='53%' align='center'><font size='4' color='brown'><b>Assuming the constraints on Resource utilization</td></b></b></b></font></font><font></table></div>"
+
+
+lineiops3="<div align='left'><table border='2' width='100%' cellspacing='0'><tr><td width='15%' height='43' align='center'><fontsize='3'><b>Resource</td><td width ='10%'><b>"+largesize_1+"GB disks,"+R10result+" strings</td><td width='10%'><b>"+smallsize_1+"GB disks,"+R9result+" strings</td><td width='10%'><b>"+largesize_1+"GB disks,"+R10result+"strings</td><td width='10%'><b>"+smallsize_1+"GB disks,"+R9result+"strings</td><td width='10%'><b>"+largesize_1+"GB disks,"+R15result+"strings</td><td width='10%'><b>"+smallsize_1+"GB disks,"+R14result+"strings</td></b></b></b></b></b></b></b></font><tr><td width='15%' height='30' align='center'><fontsize='3'><b>CPU</td><td width ='10%' align='center'>"+cpuiops1+"</td><td width='10%' align='center'>"+cpuiops1+"</td><td width='10%' align='center'>"+cpuiops1+"</td><td width='10%' align='center'>"+cpuiops1+"</td><td width='10%' align='center'>"+cpuiops1+"</td><td width='10%' align='center'>"+cpuiops1+"</td></b></font><tr><td width='15%' height='30' align='center'><fontsize='3'><b>Main memory</td><td width ='10%' align='center'>"+memoryiops1+"</td><td width='10%' align='center'>"+memoryiops1+"</td><td width='10%' align='center'>"+memoryiops1+"</td><td width='10%' align='center'>"+memoryiops1+"</td><td width='10%' align='center'>"+memoryiops1+"</td><td width='10%' align='center'>"+memoryiops1+"</td></b></font><tr><td width='15%' height='30' align='center'><fontsize='3'><b>I/O Bus</td><td width ='10%' align='center'>"+busiops1_nolimit+"</td><td width='10%' align='center'>"+busiops1_nolimit+"</td><td width='10%' align='center'>"+busiops1+"</td><td width='10%' align='center'>"+busiops1+"</td><td width='10%' align='center'>"+busiops1+"</td><td width='10%' align='center'>"+busiops1+"</td></b></font><tr><td width='15%' height='30' align='center'><fontsize='3'><b>SCSI Buses</td><td width ='10%' align='center'>"+R12result1_nolimit+"</td><td width='10%' align='center'>"+R11result1_nolimit+"</td><td width='10%' align='center'>"+R12result1+"</td><td width='10%' align='center'>"+R11result1+"</td><td width='10%' align='center'>"+R17result1+"</td><td width='10%' align='center'>"+R16result1+"</td></b></font><tr><td width='15%' height='30' align='center'><fontsize='3'><b>Disks</td><td width ='10%' align='center'>"+R8result1_nolimit+"</td><td width='10%' align='center'>"+R7result1_nolimit+"</td><td width='10%' align='center'>"+R7result1+"</td><td width='10%' align='center'>"+R8result1+"</td><td width='10%' align='center'>"+R7result1+"</td><td width='10%' align='center'>"+R8result1+"</td></b></font>"
+
+
+bottomiops="</table></div>"
+
+
+parent.frames[1].document.write(Topiops1,Topiops2)
+parent.frames[1].document.write(lineiops1, lineiops3)  
+parent.frames[1].document.write(bottomiops)
+parent.frames[1].document.close()
+
+
+}
+
+function resource(form)
+
+{
+
+evaluate(form)
+
+Toputil1="<p align='center'><font size='6'><b>Output Results</b></font></p>"
+
+Toputil2="<div align='left'><font size='5'><b> Percentage of resource utilization</b></font></div>"
+
+lineutil1="<div align='left'><table border='2' width='100%' cellspacing='0'><tr><td width='20%' height='40'align='left'><fontsize='4' color='brown'><b></td><td width='26%'align='center'><font size='4'color='brown'><b>Assuming 100% utilization</td><td width='53%'align='center'><font size='4' color='brown'><b>Assuming the constraints on Resource utilization</td></b></b></b></font></font><font></table></div>"
+
+lineutil3="<div align='left'><table border='2' width='100%' cellspacing='0'><tr><td width='15%' height='40' align='center'><fontsize='3'><b>Resource</td><td width ='10%'><b>"+largesize_1+"GB disks,"+R10result+" strings</td><td width='10%'><b>"+smallsize_1+"GB disks,"+R9result+" strings</td><td width='10%'><b>"+largesize_1+"GB disks,"+R10result+"strings</td><td width='10%'><b>"+smallsize_1+"GB disks,"+R9result+"strings</td><td width='10%'><b>"+largesize_1+"GB disks,"+R15result+"strings</td><td width='10%'><b>"+smallsize_1+"GB disks,"+R14result+"strings</td></b></b></b></b></b></b></b></font><tr><td width='15%' height='20' align='center'><fontsize='3'><b>CPU</td><td width ='10%' align='center'>"+cutil_nolimit2+"%</td><td width='10%' align='center'>"+cutil_nolimit1+"%</td><td width='10%' align='center'>"+cutil2+"%</td><td width='10%' align='center'>"+cutil1+"%</td><td width='10%' align='center'>"+cutil4+"%</td><td width='10%' align='center'>"+cutil3+"%</td></b></font><tr><td width='15%' height='20' align='center'><fontsize='3'><b>Main memory</td><td width ='10%' align='center'>"+mutil_nolimit2+"%</td><td width='10%' align='center'>"+mutil_nolimit1+"%</td><td width='10%' align='center'>"+mutil2+"%</td><td width='10%' align='center'>"+mutil1+"%</td><td width='10%' align='center'>"+mutil4+"%</td><td width='10%' align='center'>"+mutil3+"%</td></b></font><tr><td width='15%' height='20' align='center'><fontsize='3'><b>I/O Bus</td><td width ='10%' align='center'>"+ioutil_nolimit2+"%</td><td width='10%' align='center'>"+ioutil_nolimit1+"%</td><td width='10%' align='center'>"+ioutil2+"%</td><td width='10%' align='center'>"+ioutil1+"%</td><td width='10%' align='center'>"+ioutil4+"%</td><td width='10%' align='center'>"+ioutil3+"%</td></b></font><tr><td width='15%' height='20' align='center'><fontsize='3'><b>SCSI Buses</td><td width ='10%' align='center'>"+busutil_nolimit2+"%</td><td width='10%' align='center'>"+busutil_nolimit1+"%</td><td width='10%' align='center'>"+busutil2+"%</td><td width='10%' align='center'>"+busutil1+"%</td><td width='10%' align='center'>"+busutil4+"%</td><td width='10%' align='center'>"+busutil3+"%</td></b></font><tr><td width='15%' height='20' align='center'><fontsize='3'><b>Disks</td><td width ='10%' align='center'>"+diskutil_nolimit2+"%</td><td width='10%' align='center'>"+diskutil_nolimit1+"%</td><td width='10%' align='center'>"+diskutil2+"%</td><td width='10%' align='center'>"+diskutil1+"%</td><td width='10%' align='center'>"+diskutil4+"%</td><td width='10%' align='center'>"+diskutil3+"%</td></b></font><tr><td width='15%' height='20' align='center'><fontsize='3'><b>Seek utilization</td><td width ='10%' align='center'>"+seekutil_nolimit2+"%</td><td width='10%' align='center'>"+seekutil_nolimit1+"%</td><td width='10%' align='center'>"+seekutil2+"%</td><td width='10%' align='center'>"+seekutil1+"%</td><td width='10%' align='center'>"+seekutil4+"%</td><td width='10%' align='center'>"+seekutil3+"%</td></b></font><tr><td width='15%' height='20' align='center'><fontsize='3'><b>IOPS</td><td width ='10%' align='center'>"+min2+"</td><td width='10%' align='center'>"+min1+"</td><td width='10%' align='center'>"+minimum2+"</td><td width='10%' align='center'>"+minimum1+"</td><td width='10%' align='center'>"+minimum4+"</td><td width='10%' align='center'>"+minimum3+"</td></b></font>"
+
+
+bottomutil="</table></div>"
+
+
+parent.frames[1].document.write(Toputil1,Toputil2)
+parent.frames[1].document.write(lineutil1, lineutil3)  
+parent.frames[1].document.write(bottomutil)
+parent.frames[1].document.close()
+
+
+}
+
+function systcost(form)
+
+{
+
+evaluate(form)
+
+Topcost1="<p align='center'><font size='6'><b>Output Results</b></font></p>"
+
+Topcost2="<div align='left'><font size='5'><b> Cost of Organization</b></font></div>"
+
+linecost1="<div align='left'><table border='2' width='100%' cellspacing='0'><tr><td width='20%'height='40'align='left'><fontsize='4' color='brown'><b></td><td width='26%' align='center'><font size='4'color='brown'><b>Assuming 100% utilization</td><td width='53%' align='center'><font size='4' color='brown'><b>Assuming the constraints on Resource utilization</td></b></b></b></font></font><font></table></div>"
+
+linecost3="<div align='left'><table border='2' width='100%' cellspacing='0'><tr><td width='15%' height='35' align='center'><fontsize='3'><b></td><td width ='10%'><b>"+largesize_1+"GB disks,"+R10result+" strings</td><td width='10%'><b>"+smallsize_1+"GB disks,"+R9result+" strings</td><td width='10%'><b>"+largesize_1+"GB disks,"+R10result+"strings</td><td width='10%'><b>"+smallsize_1+"GB disks,"+R9result+"strings</td><td width='10%'><b>"+largesize_1+"GB disks,"+R15result+"strings</td><td width='10%'><b>"+smallsize_1+"GB disks,"+R14result+"strings</td></b></b></b></b></b></b></b></font><tr><td width='15%' height='30' align='center'><fontsize='3'><b>Cost of organization ($)</td><td width ='10%' align='center'>"+tcost_nolimit2+"</td><td width='10%' align='center'>"+tcost_nolimit1+"</td><td width='10%' align='center'>"+tcost_2+"</td><td width='10%' align='center'>"+tcost_1+"</td><td width='10%' align='center'>"+tcost_4+"</td><td width='10%' align='center'>"+tcost_3+"</td></b></font><tr><td width='15%' height='30' align='center'><fontsize='3'><b>IOPS</td><td width ='10%' align='center'>"+min2+"</td><td width='10%' align='center'>"+min1+"</td><td width='10%' align='center'>"+minimum2+"</td><td width='10%' align='center'>"+minimum1+"</td><td width='10%' align='center'>"+minimum4+"</td><td width='10%' align='center'>"+minimum3+"</td></b></font><tr><td width='15%' height='30' align='center'><fontsize='3'><b>Cost per IOPS ($)</td><td width ='10%' align='center'>"+cost_nolimit2+"</td><td width='10%' align='center'>"+cost_nolimit1+"</td><td width='10%' align='center'>"+cost2+"</td><td width='10%' align='center'>"+cost1+"</td><td width='10%' align='center'>"+cost4+"</td><td width='10%' align='center'>"+cost3+"</td></b></font>"
+
+
+
+
+bottomcost="</table></div>"
+
+
+parent.frames[1].document.write(Topcost1,Topcost2)
+parent.frames[1].document.write(linecost1,linecost3)  
+parent.frames[1].document.write(bottomcost)
+parent.frames[1].document.close()
+
+
+}
+
+function clroutput(form)
+{
+clear="<BODY bgcolor=white>"
+bottomclr="</BODY>"
+parent.frames[1].document.open()
+parent.frames[1].document.write(clear)
+parent.frames[1].document.write(bottomclr)
+parent.frames[1].document.close()
+}
+
+function newwindow(form)
+{
+newWindow=open("help.html")
+
+newWindow.document.close()
+}
+
+function newwindow1(form)
+{
+parent.frames[0].document.open()
+parent.frames[1].document.open()
+parent.frames[0].document.close()
+parent.frames[1].document.close()
+
+newWindow1=open("performancehome.html")
+newWindow1.document.close()
+
+alert("Please close the blank window on the background before you proceed!")
+
+}
+
+</script>
+<base target="result">
+<TITLE> I/O Cost & Performance</TITLE>
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#FFCC99" LINK="#0000EF" VLINK="#55188A" ALINK="#FF0000">
+<CENTER>
+<H1>
+Tool to Evaluate I/O Cost &
+Performance</H1></CENTER>
+
+<FORM METHOD="post">
+<H3>Input Values:</H3>
+<TABLE BORDER CELLPADDING=2>
+<TD>
+CPU MIPS =</TD>
+<TD>
+<INPUT TYPE="text" NAME="mips" VALUE="2500" SIZE=10>
+MIPS</TD>
+<TD>
+CPU Cost =</TD>
+<TD>
+<INPUT TYPE="text" NAME="cpucost" VALUE="20000" SIZE=8>
+$</TD>
+<TR> 
+<TD> 
+Width of interleaved memory = </TD> 
+<TD> 
+<INPUT TYPE="text" NAME="width" VALUE="16" SIZE=7> 
+bytes</TD>
+<TD> 
+Memory cycle time = </TD> 
+<TD> 
+<INPUT TYPE="text" NAME="memcycle" VALUE="10" SIZE=7> 
+ns</TD>
+<TR>
+<TD>
+I/O Bus bandwidth = </TD>
+<TD>
+<INPUT TYPE="text" NAME="busbandwidth" VALUE="1000" SIZE=7>
+MB/sec</TD>
+<TD>
+Maximum number of SCSI buses and controllers = </TD>
+<TD>
+<INPUT TYPE="text" NAME="maxbus&controller" VALUE="20" 
+SIZE=7>
+</TD>
+<TR>
+<TD>
+SCSI Bus transfer rate = </TD>
+<TD>
+<INPUT TYPE="text" NAME="busrate" VALUE="160" SIZE=7>
+MB/sec</TD>
+<TD>
+Maximum number of disks per SCSI string = </TD>
+<TD>
+<INPUT TYPE="text" NAME="diskperstring" VALUE="15" SIZE=7>
+</TD>
+<TR>
+<TD>
+Cost of each SCSI controller = </TD>
+<TD>
+<INPUT TYPE="text" NAME="costcontroller" VALUE="500" SIZE=7>
+$</TD>
+<TD>
+SCSI Controller overhead = </TD>
+<TD>
+<INPUT TYPE="text" NAME="overhead" VALUE="0.3" SIZE=7>
+ms</TD>
+<TR>
+<TD>
+Number of CPU instructions for an I/O operation =
+</TD>
+<TD>
+<INPUT TYPE="text" NAME="cpuinstr" VALUE="50000" SIZE=10>
+</TD>
+<TD>
+Average I/O size  = </TD>
+<TD>
+<INPUT TYPE="text" NAME="iosize" VALUE="32" SIZE=7>
+KB</TD>
+</table>
+
+<H3>Input Disk specifications:</H3>
+<TABLE BORDER CELLPADDING=2>
+
+<TD>Disk size = </TD>
+<TD><i>small disk</i> 
+<INPUT TYPE="text" NAME="smallsize" VALUE="40" SIZE=5>GB</TD> 
+<TD><i>large disk</i> 
+<INPUT TYPE="text" NAME="largesize" VALUE="80" SIZE=5>GB</TD>   
+<TR>
+<TD>Cost of Disk per GB = </TD>
+<TD><i>small disk</i>
+<INPUT TYPE="text" NAME="smallcost" VALUE="10" SIZE=5>$</TD>
+<TD><i>large disk</i>
+<INPUT TYPE="text" NAME="largecost" VALUE="10" SIZE=5>$</TD>
+<TR>
+<TD>   
+Maximum number of disks per package = </TD>
+<TD><i>small disk</i>
+<INPUT TYPE="text" NAME="smallpackage" VALUE="12" SIZE=5>
+</TD>
+<TD><i>large disk</i>
+<INPUT TYPE="text" NAME="largepackage" VALUE="8" SIZE=5>
+</TD>
+<TR>
+<TD>   
+Disk Rotation speed  = </TD>
+<TD><i>small disk</i>
+<INPUT TYPE="text" NAME="smallspeed" VALUE="15000" SIZE=5>
+RPM</TD>
+<TD><i>large disk</i>
+<INPUT TYPE="text" NAME="largespeed" VALUE="15000" SIZE=5>
+RPM</TD>
+<TR>
+<TD>   
+Average seek time = </TD>
+<TD><i>small disk</i>
+<INPUT TYPE="text" NAME="smallseek" VALUE="5" SIZE=5>
+ms</TD>
+<TD><i>large disk</i>
+<INPUT TYPE="text" NAME="largeseek" VALUE="5" SIZE=5>
+ms</TD>
+<TR>
+<TD>   
+Disk Transfer rate = </TD>
+<TD><i>small disk</i>
+<INPUT TYPE="text" NAME="smalltransfer" VALUE="40" SIZE=5>
+MB/sec</TD>
+<TD><i>large disk</i>
+<INPUT TYPE="text" NAME="largetransfer" VALUE="40" SIZE=5>
+MB/sec</TD>
+<TR>
+<TD>   
+Desired total disk capacity = </TD>
+<TD>
+<INPUT TYPE="text" NAME="totaldisksize" VALUE="1920" SIZE=5>
+GB</TD>
+<TR>
+<TD>
+Cost of enclosure = </TD>
+<TD>
+<INPUT TYPE="text" NAME="packcost" VALUE="1500" SIZE=5>$
+</TD>
+
+</table>
+
+<H3>Constraints on Resource Utilization:</H3>
+<TABLE BORDER CELLPADDING=2>
+<TD>
+Limit on disk time utilization =</TD>
+<TD>
+<INPUT TYPE="text" NAME="disk_time" VALUE="80" SIZE=5>%   
+</TD>
+<TD>
+Limit on utilization of SCSI buses =</TD>
+<TD>
+<INPUT TYPE="text" NAME="SCSI" VALUE="40" SIZE=5>%
+</TD>
+<TD>
+Limit on utilization of I/O bus =</TD>
+<TD>
+<INPUT TYPE="text" NAME="io_bus" VALUE="75" SIZE=5>%
+</TD>
+</table>
+
+<P>
+<TABLE BORDER CELLPADDING=2>
+<P>
+<TABLE BORDER=5 CELLPADDING=2>
+<TD><INPUT TYPE="reset" NAME="res" VALUE="Reset Values" onClick="clroutput(this.form);"></TD>
+
+<TD><INPUT TYPE="button" NAME="eval" VALUE="Specs. of Organization"
+onClick="if (validate(this.form)) print1(this.form);">
+</td>
+<TD><INPUT TYPE="button" NAME="eval" VALUE="Maximum IOPS"
+onClick="if (validate(this.form)) maxiops(this.form);">
+</td>
+<TD><INPUT TYPE="button" NAME="eval" VALUE="Cost of Organization"
+onClick="if (validate(this.form)) systcost(this.form);">
+</td>
+<TD><INPUT TYPE="button" NAME="eval" VALUE="Resource Utilization"
+onClick="if (validate(this.form)) resource(this.form);">
+</td>
+<TD><INPUT TYPE="button" NAME="eval" VALUE="Help"
+onClick="newwindow(this.form)">
+<TD><INPUT TYPE="button" NAME="eval" VALUE="Quit"
+onClick="newwindow1(this.form)">
+</td>
+</TABLE>
+
+</FORM></BODY></HTML>
+
+
+
+

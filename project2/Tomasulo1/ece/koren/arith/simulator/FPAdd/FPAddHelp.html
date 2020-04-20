@@ -1,0 +1,72 @@
+
+<HTML><HEAD>
+    <TITLE>FP Add/Subtract Simulation</TITLE>
+</HEAD>
+<BODY>
+<H2>Floating-Point Add/Sub Help</H2>
+This simulator demonstrates the addition or subtraction of two IEEE
+floating-point numbers. The following steps are taken:
+<OL>
+    <LI>Represent the two numbers in standard IEEE floating point format:<P>
+        <CENTER><B>Number = (-1)<SUP>SIGN</SUP> * h.f * 2<SUP>(Exponent-Bias)
+        </SUP> </B></CENTER><P>
+            where h=1 except when (Exponent-Bias)=0.
+    <LI>By shifting, align the significands of the two numbers so that their
+        exponent bias is the same. At the same time, save three extra bits of
+        the fractional part.
+    <LI>Perform the binary addition/subtraction between the aligned
+        significants of the two numbers with the three extra bits participating.
+    <LI>Perform post-normalization, if necessary, so that the result is in
+        standard IEEE floating point format.
+    <LI>Perform different rounding schemes to obtain all four final results.
+</OL>
+
+<HR> <H3>Accepted formats for A and B</H3>
+    <UL>
+        <LI><B>Decimal</B><BR>
+            Accepts any decimal number, with the exception of numbers that start
+            with &quot;<B>0</B>&quot;.
+        <LI><B>Hexadecimal</B><BR>
+            All hexadecimal characters are valid.  Since all numbers are represented
+            in <B>single precision</B>,  you have to input exactly <B>8</B>
+            characters.  This hexadecimal number represents the floating point
+            representation of a
+            number as stored in the register. The value of the number is determined
+            based on the IEEE single floating point representation.
+        <LI><B>Function</B><BR>
+            Input your number in a function format. The accuracy of the calculation
+            of the function is always double, independent of the selected precision
+            for the addition or the subtraction. The numbers follow the above rules.
+            <P>
+                <B>Examples:</B><BR>
+            <blockquote><B>A</B> = .9*pow(2,123)<BR>
+                <B>B</B> = -.34*pow(10,3)<P>
+                    <B>A</B> = .9*sin(23)<BR>
+                    <B>B</B> = 5-pow(2,-123)<P>
+                    <B>A</B> = pow(2,128)-pow(2,104) largest positive number<BR>
+                    <B>B</B> = pow(2,-149) smallest denormalized positive number<BR>
+            </blockquote>
+            <P>
+<!--           <B>Important Note</B> -
+If you are using Netscape version 3.x, you must type <B>Math.</B> in
+                front of any function you want to use.<P>
+                <B>Example:</B><BR>
+            <blockquote>
+                <B>A</B> = .9*Math.sin(23)<BR>
+                <B>B</B> = 5-Math.pow(2,-123)<BR></blockquote>
+<P> -->
+    </UL>
+    <HR>
+    <H3>Precision</H3>
+    Precision is set to the <B>single IEEE format</B>
+    (<I>word length = 32 bits, sign = 1 bit, fraction + hidden bit = 23+1
+        bits, exponent = 8 bits, bias = 127</I>).  <P>
+    <HR>
+
+    <H3>Abbreviations</H3>
+    <I>Inf</I> -- Infinity <BR>
+    <I>NaN</I> -- Not a Number <BR>
+    <I>Denom</I> -- Denormalized Number <BR>
+
+</BODY>
+</HTML>

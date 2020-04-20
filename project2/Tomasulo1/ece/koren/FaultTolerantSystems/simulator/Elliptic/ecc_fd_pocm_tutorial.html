@@ -1,0 +1,98 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>ECC_FD_PoCM</title>
+<link href="twoColLiqLtHdr.css" rel="stylesheet" type="text/css" />
+<!--[if IE]>
+<style type="text/css"> 
+/* place css fixes for all versions of IE in this conditional comment */
+.twoColLiqLtHdr #sidebar1 { padding-top: 30px; }
+.twoColLiqLtHdr #mainContent { zoom: 1; padding-top: 15px; }
+/* the above proprietary zoom property gives IE the hasLayout it needs to avoid several bugs */
+</style>
+<![endif]-->
+<script src="SpryAssets/SpryMenuBar.js" type="text/javascript"></script>
+<link href="SpryAssets/SpryMenuBarVertical.css" rel="stylesheet" type="text/css" />
+<style type="text/css">
+<!--
+body {
+	background-color: #841B15;
+}
+body,td,th {
+	color: #000000;
+}
+.style1 {color: #FFFFFF}
+.style4 {font-size: 90%}
+.style5 {
+	font-size: small
+}
+.style6 {font-size: 100%}
+-->
+</style>
+</head>
+
+<body class="twoColLiqLtHdr">
+
+<div id="container"> 
+  <div id="header">
+    <h1 class="style1">Fault Detection in Elliptic Curves </h1>
+    <h1 class="style1">Using  Point on Curve Method</h1>
+  <!-- end #header --></div>
+  <div id="sidebar1">
+    <ul id="MenuBar1" class="MenuBarVertical">
+          <li><a href="ecc_fd_pocm_index.html">Home</a>          </li>
+      <li><a href="ecc_fd_pocm_tutorial.html">Tutorial</a></li>
+      <li><a href="ecc_fd_pocm_lesson_page1.html">Overview</a>      </li>
+      <li><a href="ecc_fd_pocm_simulator.html">Simulator</a></li>
+    </ul>
+    <h3>&nbsp;</h3>
+  <!-- end #sidebar1 --></div>
+  <div id="mainContent">
+    <h1>Using the Simulator
+      <!-- end #mainContent -->
+    </h1>
+    <table width="100%" border="0">
+      <tr>
+        <td width="45%" scope="row"><h4 align="left" class="twoColLiqLtHdr">Step 1</h4>
+          <p align="justify" class="twoColLiqLtHdr style4"><span class="twoColLiqLtHdr">Fill in the elliptic curve parameters or use the default parameters. Note that </span>specified parameters must represent a valid elliptic curve or default parameters will be used. <em>The fields will be filled with default parameters if the user input is invalid</em>.</p>
+          <h5 align="justify" class="twoColLiqLtHdr style5">Selecting valid parameters</h5>
+        <p align="justify" class="twoColLiqLtHdr style4">Enter a value for (a,b) between zero (inclusive) and m (exclusive).</p>
+        <p align="justify" class="twoColLiqLtHdr style4">Enter an irreducible trinomial or pentanomial and enter the degree of the polynomial as m. An example of a valid trinomial is x<span class="style6"><sup>4</sup></span> + x  + 1 for which m value is 4.</p>
+        <p align="justify" class="twoColLiqLtHdr style4">Try varying the degree of the polynomial to see how the detection rate changes. This can be as simple as changing the default degree (4) to a greater value in both fields (m and poly) since x^m + x + 1 is irreducible. You may have to adjust (a,b) values to maximize the number of valid points (if <em>Find Point</em> returns the same values, adjust a and b).</p></td>
+        <td width="55%"><img src="tut_pic1" alt="" border="0" align="right" /></td>
+      </tr>
+      <tr>
+        <td scope="row"><h4 align="left" class="twoColLiqLtHdr">Step 2</h4>
+        <p align="left" class="twoColLiqLtHdr  style4">Choose an output base. This can be changed at any point.</p></td>
+        <td><img src="tut_pic2" alt="" border="0" align="right" /></td>
+      </tr>
+      <tr>
+        <td scope="row"><h4 align="left" class="twoColLiqLtHdr">Step 3</h4>
+          <p align="justify" class="twoColLiqLtHdr style4"><span class="twoColLiqLtHdr">Enter a </span>point or use the <em>Find Point</em> button. Create a random error by using the <em>Flip Bit</em> button or edit the coordinate fields manually. Finally use the <em>Launch Test</em> button to run the <em>Point on Curve Test</em> and see if the error is detected.</p>
+          <h5 align="justify" class="twoColLiqLtHdr style5">Why does it seem all errors are detected?</h5>
+        <p align="justify" class="twoColLiqLtHdr style4">As outlined in the <em>Overview</em> section, the majority of points are invalid. The chance of failing to detect an error is 1/2<span class="style6"><sup>m</sup></span> and for large values of m it is very small. Note that typical cryptographic applications call for a polynomial of degree greater than 163! The probability of undetected <strong><em>random</em></strong> faults is almost zero with a large degree polynomial.</p>
+        </td>
+        <td><img src="tut_pic3" alt="" border="0" align="right" /></td>
+      </tr>
+    </table>
+  </div>
+  <blockquote>
+    <blockquote>
+      <h4 align="left"><br class="clearfloat" />
+  </h4>
+      </blockquote>
+  </blockquote>
+  <div id="footer">
+    <p>
+      <p class="style1">UMASS ECE</p>
+    </p>
+  <!-- end #footer --></div>
+<!-- end #container --></div>
+<script type="text/javascript">
+<!--
+var MenuBar1 = new Spry.Widget.MenuBar("MenuBar1", {imgRight:"SpryAssets/SpryMenuBarRightHover.gif"});
+//-->
+</script>
+</body>
+</html>

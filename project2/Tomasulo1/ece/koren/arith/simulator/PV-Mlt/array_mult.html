@@ -1,0 +1,447 @@
+<HTML>
+<HEAD>
+<TITLE> Performace of Array Multiplier</TITLE>
+
+<script type="text/javascript" src="jstat-0.1.0.min.js"></script>
+<script type="text/javascript" src="jquery-1.4.4.min.js"></script>
+<script type="text/javascript" src="jquery-ui-1.8.9.min.js"></script>
+<script type="text/javascript" src="jquery.flot.min.js"></script>
+<link rel="stylesheet" type="text/css" href="jquery.aristo.css" />
+
+
+<SCRIPT language="JavaScript">
+
+function RandArr(mean, sig)
+{
+
+   var arr = []
+
+   for(var i=0; i<1000; i++) {
+
+      var u1,u2;
+      u1 = u2 = 0.;
+      while (u1 * u2 == 0.) {
+        u1 = Math.random();
+        u2 = Math.random();
+      }
+      var temp = Math.sqrt(-2. * Math.log(u1)) * Math.cos(2 * Math.PI * u2);
+
+      arr[i] = sig * temp + 1. * mean;
+      }
+   return arr;
+} 
+
+function GetSquareRoot(TheNum)
+{
+ return (Math.round((Math.sqrt(TheNum)) * 10000) / 10000)
+}
+function MakeLine(NumColumns) 
+{
+	return "<TR> <TD colspan=" + NumColumns + "> <HR noshade size=1>\n";
+}
+
+function PrintError(Message) 
+{
+	Error = "<CENTER><H1> ERROR </H1></CENTER> <P>\n"
+	Error += "<CENTER> <EM>" + Message + "</EM> </CENTER>\n"
+	return Error
+}
+
+function IsInteger(Num) 
+{
+	return (Num == Math.floor(Num))
+}
+
+function OrderOfMagnitude (TheNum) 
+{
+	// returns the highest place which has a "1" in TheNum's
+	// binary representation
+
+	// to account for 2's complement representation...
+	//alert ("TheNum is now " + TheNum)
+	TheNum < 0 ? TheNum = (TheNum * -2) - 2 : TheNum *= 2
+	//alert ("TheNum is now " + TheNum)
+
+	LogBaseTwo = Math.log(TheNum)/Math.LN2;
+	return Math.floor(LogBaseTwo)
+}
+
+function ParseBinary (BinNum) 
+{
+	// Turns a binary number into a decimal, sets a flag to true if
+	// BinNum is not actually binary
+
+	IsNeg = false
+	if (BinNum < 0) 
+	{
+		IsNeg = true
+		BinNum *= -1
+	}
+	RealNum = 0
+	BinNum += Math.pow(10, -1 - NumBits) // kludge so processor
+					     // won't mess up
+	LogBaseTen = Math.log(BinNum)/Math.LN10
+	HighestPlace = Math.ceil(LogBaseTen)
+	for (CurPlace = HighestPlace; CurPlace >= -NumBits; CurPlace--) 
+	{
+		CurEntry = Math.floor(BinNum / Math.pow(10, CurPlace))
+		if (CurEntry != 0 && CurEntry != 1) 
+		{
+			NotBinary = true
+			CurEntry = 1 // feed it something normal, to avoid
+					 // wierd Javascript errors
+		}
+		if (CurEntry == 1) 
+		{
+			RealNum += Math.pow(2, CurPlace)
+			BinNum -= Math.pow(10, CurPlace)
+		}
+	}
+	if (IsNeg) {RealNum *= -1} // reverse it back at the end
+
+	// now check if the number was negative according to two's complement
+	// representation - if it was, set the decimal value to this negative
+	// number
+	if (HighestPlace == NumBits)
+		RealNum -= Math.pow(2, NumBits)
+
+	// if (HighestPlace == 1)
+	// 	RealNum -= Math.pow(2, 1)
+
+	return RealNum
+}
+
+function RoundOff (TheNum) 
+{
+	// returns the value TheNum would have if it were represented by
+	// NumDecimals bits after the decimal point
+	Scaling = Math.pow(2, NumDecimals)
+	return (Math.floor(TheNum * Scaling) / Scaling)
+}
+
+
+
+function PrintTwosComp(TheNum, StartPlace) 
+{
+
+	// first deal with negative numbers...
+	if (TheNum < 0) {TheNum += Math.pow(2, StartPlace)}
+
+	// now initialize the string
+	S = "";
+	S += "<TD> ";
+	for (CurPlace = StartPlace - 1; CurPlace >= -NumDecimals; CurPlace--) 
+	{
+		if (CurPlace == -1) 
+		{
+			S += ".";
+		}
+		CurPower = Math.pow(2, CurPlace);
+		if (TheNum >= CurPower) 
+		{
+			S += "1 ";
+			TheNum -= CurPower
+		} 
+		else 
+		{
+			S += "0 "
+		} 
+	}
+	return S;
+}
+
+
+function FeedIntoVariable(TheNum, StartPlace, ReturnArray) 
+{
+	if (TheNum < 0) {TheNum += Math.pow(2, StartPlace)}
+
+	// now initialize the string
+	index = StartPlace - 1
+	for (CurPlace = StartPlace - 1; CurPlace >= -NumDecimals; CurPlace--) 
+	{
+		if (CurPlace == -1) 
+		{
+			ReturnArray[index] = 2;
+			index --
+		}
+		CurPower = Math.pow(2, CurPlace);
+		if (TheNum >= CurPower) 
+		{
+			ReturnArray[index] = 1;
+			index --
+			TheNum -= CurPower
+		} 
+		else 
+		{
+			ReturnArray[index] = 0;
+			index --;
+		} 
+	}
+	return ReturnArray
+}
+
+
+function PrintSumCarry(Middle, counter)
+{
+	Middle += MakeLine(NumCols + 3)
+    Middle += "<TR><TD><TD>"
+	if (counter == 1)
+		Middle += "<TR><TD><h4>Time =  t</h4><TD><TD>"
+	else
+		Middle += "<TR><TD><h4>Time =  " + counter + "t</h4><TD><TD>"
+    Middle += "<TR><TD>Carry     :    <TD><TD>" 
+	for (loop=NumDigits-1;loop>=0;loop--)
+ 		Middle += " " + FinalCarry[loop];
+    Middle += "<TR><TD>Sum       :    <TD><TD>"
+	for (loop=NumDigits-1;loop>=0;loop--)
+		Middle += " " + FinalSum[loop]
+	
+
+	return Middle
+}
+
+
+//Next function returns the larger of two numbers
+function GetMax(Number1, Number2)
+{
+	if (Number1 > Number2)
+		bigger = Number1
+	else
+		bigger = Number2
+
+	return bigger
+}
+
+
+//Next function returns the smaller of two numbers
+function GetMin(Number1, Number2)
+{
+	if (Number1 < Number2)
+		smaller = Number1
+	else
+		smaller = Number2
+
+	return smaller
+}
+
+
+//Next function returns the time needed to Calculate the Sum-time of this adder block
+function CalculateSumTime(AToSum, CinToSum, PrevCarryTime)
+{
+	if (PrevCarryTime == 0)
+		finalTime = GetMax(AToSum, CinToSum)
+	else
+	{
+		if (CinToSum > AToSum)
+			finalTime = PrevCarryTime + CinToSum
+		else
+		{
+			if (PrevCarryTime < AToSum)
+			{
+				difference = AToSum - CinToSum
+				finalTime = GetMax(difference, CinToSum) + PrevCarryTime
+			}
+			else
+				finalTime = CinToSum + PrevCarryTime
+		}
+	}
+
+	//Cross-checking for trivial case
+	if (finalTime < AToSum)
+		finalTime = AToSum
+	if (finalTime < CinToSum)
+		finalTime = CinToSum
+
+	return finalTime	
+}
+
+
+//Next function returns the time needed to Calculate the Carry-time of this adder block
+function CalculateCarryTime(AToCout, CinToCout, PrevCarryTime)
+{
+	if (PrevCarryTime == 0)
+		CarryOutTime = GetMax(AToCout, CinToCout)
+	else
+	{
+		if (CinToCout > AToCout)
+			CarryOutTime = PrevCarryTime + CinToCout
+		else
+		{
+			if (PrevCarryTime < AToCout)
+			{
+				difference = AToCout - CinToCout
+				CarryOutTime = GetMax(difference, CinToCout) + PrevCarryTime
+			}
+			else
+				CarryOutTime = CinToCout + PrevCarryTime
+		}
+	}
+
+	//Cross-checking for trivial case
+	if (CarryOutTime < AToCout)
+		CarryOutTime = AToCout
+	if (CarryOutTime < CinToCout)
+		CarryOutTime = CinToCout
+
+	return CarryOutTime	
+}
+
+
+
+function ArrayMult(form) 
+{
+	TheTop = "<HTML><HEAD><TITLE>ARRAY</TITLE></HEAD><BODY bgcolor=white text=black>";
+
+
+        Sigma = parseFloat(form.Sig.value)   
+        
+        Tech45 = form.tech[0].checked 
+        Tech32 = form.tech[1].checked 
+        Tech22 = form.tech[2].checked 
+        Tech16 = form.tech[3].checked 
+
+	NumBits = parseInt(form.NumBits.value)
+
+// Curve fit equations for mean and standard deviation of delay for different technology nodes
+
+	if (Tech45) {
+	techVar = 45
+	CinToSum_Mean =(0.0006076*Sigma*Sigma)+(0.008821*Sigma)+7.501
+	AToSum_Mean = (0.004769*Sigma*Sigma)-(0.003994*Sigma)+37.19
+	CinToCout_Mean =(0.002384*Sigma*Sigma)-(0.002299*Sigma)+20.3
+	AToCout_Mean =(0.006922*Sigma*Sigma)-(0.002199*Sigma)+43.37
+        Delay_Mean = Math.round(((NumBits-2)*AToSum_Mean+AToCout_Mean+(NumBits-2)*CinToCout_Mean+CinToSum_Mean)*10000)/10000
+	CinToSum_Sigma =(0.0003984*Sigma*Sigma)+(0.07137*Sigma)+0.009666
+	AToSum_Sigma = (0.003092*Sigma*Sigma)+(0.214*Sigma)+0.1266
+	CinToCout_Sigma =(0.001208*Sigma*Sigma)+(0.01203*Sigma)+0.01885
+	AToCout_Sigma =(0.003377*Sigma*Sigma)+(0.2347*Sigma)+0.1726
+        Delay_Sigma = GetSquareRoot(((NumBits-2)*AToSum_Sigma*AToSum_Sigma)+(AToCout_Sigma*AToCout_Sigma)+((NumBits-2)*CinToCout_Sigma*CinToCout_Sigma)+(CinToSum_Sigma*CinToSum_Sigma))
+	}
+
+
+	if (Tech32) {
+	techVar = 32
+	CinToSum_Mean =(0.001077*Sigma*Sigma)+(0.001641*Sigma)+7.447
+	AToSum_Mean = (0.008534*Sigma*Sigma)-(0.04685*Sigma)+33.62
+	CinToCout_Mean =(0.002817*Sigma*Sigma)+(0.001546*Sigma)+17.27
+	AToCout_Mean =(0.009446*Sigma*Sigma)-(0.0309*Sigma)+39.89
+        Delay_Mean = Math.round(((NumBits-2)*AToSum_Mean+AToCout_Mean+(NumBits-2)*CinToCout_Mean+CinToSum_Mean)*10000)/10000
+	CinToSum_Sigma =(0.001037*Sigma*Sigma)+(0.07495*Sigma)+0.09614
+	AToSum_Sigma = (0.005891*Sigma*Sigma)+(0.2132*Sigma)+0.2527
+	CinToCout_Sigma =(0.002469*Sigma*Sigma)+(0.1102*Sigma)+0.105
+	AToCout_Sigma =(0.006082*Sigma*Sigma)+(0.2414*Sigma)+0.283
+        Delay_Sigma = GetSquareRoot(((NumBits-2)*AToSum_Sigma*AToSum_Sigma)+(AToCout_Sigma*AToCout_Sigma)+((NumBits-2)*CinToCout_Sigma*CinToCout_Sigma)+(CinToSum_Sigma*CinToSum_Sigma))
+	}
+
+
+	if (Tech22) {
+	techVar = 22
+	CinToSum_Mean =(0.002184*Sigma*Sigma)-(0.02663*Sigma)+8.033
+	AToSum_Mean = (0.009818*Sigma*Sigma)-(0.0548*Sigma)+28.46
+	CinToCout_Mean =(0.005184*Sigma*Sigma)-(0.0259*Sigma)+16.83
+	AToCout_Mean =(0.01304*Sigma*Sigma)-(0.0667*Sigma)+35.93
+        Delay_Mean = Math.round(((NumBits-2)*AToSum_Mean+AToCout_Mean+(NumBits-2)*CinToCout_Mean+CinToSum_Mean)*10000)/10000
+	CinToSum_Sigma =(0.00251*Sigma*Sigma)+(0.07167*Sigma)+0.1744
+	AToSum_Sigma = (0.009048*Sigma*Sigma)+(0.1702*Sigma)+0.4568
+	CinToCout_Sigma =(0.004532*Sigma*Sigma)+(0.1004*Sigma)+0.2235
+	AToCout_Sigma =(0.01034*Sigma*Sigma)+(0.2062*Sigma)+0.5242
+        Delay_Sigma = GetSquareRoot(((NumBits-2)*AToSum_Sigma*AToSum_Sigma)+(AToCout_Sigma*AToCout_Sigma)+((NumBits-2)*CinToCout_Sigma*CinToCout_Sigma)+(CinToSum_Sigma*CinToSum_Sigma))
+	}
+
+
+	if (Tech16) {
+	techVar = 16
+	CinToSum_Mean =(0.002887*Sigma*Sigma)-(0.03623*Sigma)+7.759
+	AToSum_Mean = (0.012*Sigma*Sigma)-(0.06839*Sigma)+27.68
+	CinToCout_Mean =(0.006422*Sigma*Sigma)-(0.04121*Sigma)+15.28
+	AToCout_Mean =(0.0168*Sigma*Sigma)-(0.1124*Sigma)+33.24
+        Delay_Mean = Math.round(((NumBits-2)*AToSum_Mean+AToCout_Mean+(NumBits-2)*CinToCout_Mean+CinToSum_Mean)*10000)/10000
+	CinToSum_Sigma =(0.004768*Sigma*Sigma)+(0.0386*Sigma)+0.3395
+	AToSum_Sigma = (0.01375*Sigma*Sigma)+(0.1234*Sigma)+0.8052
+	CinToCout_Sigma =(0.007192*Sigma*Sigma)+(0.05868*Sigma)+0.4279
+	AToCout_Sigma =(0.0163*Sigma*Sigma)+(0.1201*Sigma)+0.9848
+        Delay_Sigma = GetSquareRoot(((NumBits-2)*AToSum_Sigma*AToSum_Sigma)+(AToCout_Sigma*AToCout_Sigma)+((NumBits-2)*CinToCout_Sigma*CinToCout_Sigma)+(CinToSum_Sigma*CinToSum_Sigma))
+	}
+
+
+
+// Display Gaussian plot for estimated mean delay and std. deviation
+
+        var range = RandArr(Delay_Mean, Delay_Sigma);
+        var densities = jstat.dnorm(range, Delay_Mean,Delay_Sigma );
+
+	
+	Fractional = false
+	Overflow = false
+        Small = false
+        if (NumBits <=2)
+                Small = true
+
+ 
+        Middle = "\n\n\n<br>"
+	Middle += "<b> <font size=\"6\">"
+	Middle += " Mean Delay of Multiplier <br> = " + Delay_Mean + "ps" 
+	Middle += "\n\n\n<br><br>"
+        Middle += "Standard Deviation in Delay <br> =" + Delay_Sigma + " ps"  
+	Middle += "</font> </b>"
+	Bottom = "</BODY> </HTML>";
+
+        if (Small) { Middle = PrintError("Array is too small- Number of Bits should be > 2 ") }
+        if (!Small) { var plotGraph = (jstat.plot(range, densities, {main: "PDF of Delay in " + techVar + "nm technology",type: "p"}));}
+
+
+	parent.frames[1].document.open()
+	parent.frames[1].document.write(TheTop);
+	parent.frames[1].document.write(Middle);
+	parent.frames[1].document.write(Bottom);
+	parent.frames[1].document.close()
+
+
+
+}
+
+
+
+</SCRIPT>
+</HEAD>
+
+<BODY bgcolor="#938B8B">
+<CENTER> <H2> <FONT size="6">Impact of Process Variation on Performance of 2's Complement Array Multiplier</FONT></H2> </CENTER>
+
+<FORM>
+<FONT size="4">
+<b>
+Number of Bits (>2): <INPUT type="text" name="NumBits" value=3>
+
+<HR>
+<A>Choose the Process Technology</A><br>
+<p>
+<EM>45nm</EM><INPUT type="radio" name="tech" value="NodeA" checked>
+<EM>32nm</EM><INPUT type="radio" name="tech" value="NodeB">
+<EM>22nm</EM><INPUT type="radio" name="tech" value="NodeC">
+<EM>16nm</EM><INPUT type="radio" name="tech" value="NodeD">
+</p>
+<p>
+Sigma Vt variation: <INPUT type="text" name="Sig" value=10>
+</p>
+
+<p>
+<INPUT type="button" name="enter" value="Compute" onClick="ArrayMult(this.form)">
+</p>
+
+
+<p>
+<INPUT TYPE="Reset"  VALUE="   Reset   " onClick=parent.frames[1].location.href="tablet.html">
+</P>
+
+<p>
+<INPUT TYPE="button"  VALUE="   Help    " onClick=parent.frames[1].location.href="help.html">
+</P>
+        
+
+</FONT>
+</FORM>
+
+
+</BODY>
+</HTML>

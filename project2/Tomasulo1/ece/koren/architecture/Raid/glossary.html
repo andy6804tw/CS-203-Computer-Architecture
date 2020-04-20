@@ -1,0 +1,95 @@
+<HTML>
+<HEAD>
+   <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+   <META NAME="GENERATOR" CONTENT="Mozilla/4.03 [en] (X11; I; Linux 2.0.30 i686) [Netscape]">
+   <TITLE>glossary</TITLE>
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#FFCC99" LINK="#0000EF" VLINK="#55188A" ALINK="#FF0000">
+
+<CENTER>
+<H1>
+Glossary</H1></CENTER>
+
+<DIV ALIGN=right><FONT FACE="Times New Roman,Times"><FONT SIZE=+1><A HREF="raidhome.html">HOME</A></FONT></FONT></DIV>
+<B>RAID</B>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -- <B>R</B>edundant
+<B>A</B>rray of <B>I</B>nexpensive <B>D</B>isks
+
+<P><A NAME="MTTF"></A><B>MTTF</B>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+-- <B>M</B>ean-<B>T</B>ime-<B>T</B>o-<B>F</B>ailure
+
+<P>Average interval of time that a component will operate before failing.
+See Failure Functions below.
+
+<P><A NAME="MTTR"></A><B>MTTR</B>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+-- <B>M</B>ean-<B>T</B>ime-<B>T</B>o-<B>R</B>epair
+
+<P>Average amount of time needed to repair a component, recover a system,
+or otherwise restore service after a failure. See Failure Functions below.
+
+<P><B>MTBF</B>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -- <B>M</B>ean-<B>T</B>ime-<B>B</B>etween-<B>F</B>ailures
+
+<P>MTBF&nbsp;= MTTR&nbsp;+ MTTR
+
+<P><A NAME="MTTDL"></A><B>MTTDL</B>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+-- <B>M</B>ean-<B>T</B>ime-<B>T</B>o-<B>D</B>ata-<B>L</B>oss
+
+<P>A reliability metric. MTTDL is a function of MTTF, MTTR, total number
+of disks in the system (N), and parity group size (G).
+
+<P><B>Failure Functions</B>.
+
+<P>When a time basis is determined, failures can be expressed in several
+ways: the cumulative failure function, the failure intensity function,
+the failure rate function, and the mean time to failure function. The cumulative
+failure func- tion (also called the mean value function) denotes the average
+cumulative failures associated with each point of time. The failure intensity
+function represents the rate of change of the cumulative failure function.
+The failure rate function (or called the hazard rate, or the rate of occurrence
+of failures) is defined as the instantaneous failure rate at a time t,
+given that the system has not failed up to t. The mean time to failure
+(MTTF) function represents the expected time that the next failure will
+be observed. (MTTF is also known as MTBF, mean time between failures.)
+Note that the above three measures are closely-related and could be translated
+with one another.
+
+<P>Mean Time To Repair and Availability. Another quantity related to time
+is mean time to repair (MTTR), which represents the expected time until
+a system will be repaired after a failure is observed. When the MTTF and
+MTTR for a system are measured, its availability can be obtained.
+
+<P><A NAME="Availability"></A><B>Availability</B> -- is the probability
+that a system is available when needed. Typically, it is measured by
+
+<P>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+MTTF
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Availability&nbsp; =&nbsp; -----------
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+MTTF + MTTR
+
+<P><B><A HREF="../../../../../www.ora.com/reference/dictionary/terms/E/Error-Correcting_Code.htm">ECC</A></B>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+-- <B>E</B>rror <B>C</B>orrection <B>C</B>ode
+
+<P><A NAME="BER"></A><B>BER</B>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+-- <B>B</B>it <B>E</B>rror <B>R</B>ate
+
+<P><A NAME="p(disk)"></A><B>p(disk)</B>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+-- The probability of reading all sectors on a disk (derived from disk
+size, sector size, and BER)
+
+<P><A NAME="G"></A><B>G</B>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+-- parity group size i.e., number of disks in parity group
+
+<P><A NAME="N"></A><B>N</B>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+-- total number of disks in a redundant array system
+
+<P><A NAME="seek"></A><B>seek time</B>&nbsp;&nbsp;&nbsp;&nbsp; -- Amount
+of time needed to move the head to the correct radial position of the disk.
+
+<P><A NAME="rotational"></A><B>rotational latency</B> -- Amount of time
+needed for the desired sector to rotate under the disk head.
+<DIV ALIGN=right>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<FONT FACE="Times New Roman,Times"><FONT SIZE=+1><A HREF="raidhome.html">HOME</A></FONT></FONT></DIV>
+&nbsp;
+</BODY>
+</HTML>

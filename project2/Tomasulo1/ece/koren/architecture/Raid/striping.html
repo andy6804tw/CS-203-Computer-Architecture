@@ -1,0 +1,106 @@
+<HTML>
+<HEAD>
+   <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+   <META NAME="Author" CONTENT="sameer">
+   <META NAME="GENERATOR" CONTENT="Mozilla/4.03 [en] (X11; I; Linux 2.0.30 i686) [Netscape]">
+   <TITLE>striping</TITLE>
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#FFCC99" LINK="#0000EF" VLINK="#55188A" ALINK="#FF0000">
+&nbsp;
+<CENTER><B><FONT FACE="Copperplate Gothic Bold"><FONT SIZE=+4>Data striping
+and Redundancy</FONT></FONT></B></CENTER>
+
+<DIV ALIGN=right><FONT FACE="Times New Roman,Times"><FONT SIZE=+1><A HREF="why.html">BACK</A>
+/ <A HREF="raidhome.html">HOME</A> / <A HREF="basicRAID.html">NEXT</A></FONT></FONT></DIV>
+&nbsp;
+
+<P>There are 2 important concepts to be understood in the design and implementation
+of disk arrays:
+
+<P>1. Data striping, for improved performance.
+<BR>2. Redundancy for improved availability.
+<CENTER><B><FONT FACE="Copperplate Gothic Bold"><FONT COLOR="#3366FF"><FONT SIZE=+2>Data
+Striping</FONT></FONT></FONT></B></CENTER>
+
+
+<P>Data striping transparently distributes data over multiple disks to
+make them appear as a single fast, large disk. Striping improves aggregate
+I/O performance by allowing multiple I/Os to be serviced in parallel. There
+are 2 aspects to this parallelism.
+<BR>&nbsp;
+<UL>
+<LI>
+Multiple, independent requests can be serviced in parallel by separate
+disks. This decreases the queueing time seen by I/O requests.</LI>
+
+<LI>
+Single, multiple block requests can be serviced by multiple disks acting
+in co-ordination. This increases the effective transfer rate seen by a
+single request. The performance benefits increase with the number of disks
+in the array. Unfortunately, a large number of disks lowers the overall
+reliability of the disk array.</LI>
+</UL>
+Most of the redundant disk array organizations can be distinguished based
+on 2 features:
+
+<P>1. the granularity of data interleaving and
+<BR>2. the way in which the redundant data is computed and stored across
+the disk array.
+
+<P>Data interleaving can be either fine grained or coarse grained.
+
+<P>Fine grained disk arrays conceptually interleave data in relatively
+small units so that all I/O requests, regardless of their size, access
+all of the disks in the disk array. This results in very high data transfer
+rate for all I/O requests but has the disadvantages that only one logical
+I/O request can be in service at any given time and all disks must waste
+time positioning for every request.
+
+<P>Coarse grained disk arrays interleave data in relatively large units
+so that small I/O requests need access only a small number of disks while
+large requests can access all the disks in the disk array. This allows
+multiple small requests to be serviced simultaneously while still allowing
+large requests to see the higher transfer rates afforded by using multiple
+disks.
+<BR>&nbsp;
+<CENTER><B><FONT FACE="Copperplate Gothic Bold"><FONT COLOR="#3366FF"><FONT SIZE=+2>Redundancy</FONT></FONT></FONT></B></CENTER>
+
+
+<P>Since larger number of disks lower the overall reliability of the array
+of disks, it is important to incorporate redundancy in the array of disks
+to tolerate disk failures and allow for the continuous operation of the
+system without any loss of data.
+
+<P>The incorporation of redundancy in disk arrays brings up two problems:
+
+<P>1. Selecting the method for computing the redundant information. Most
+redundant disks arrays today use parity, though some use Hamming or Reed-Solomon
+codes.
+
+<P>2. Selecting a method for distribution of the redundant information
+across the disk array. The distribution method can be classified into 2
+different schemes:
+<UL>
+<LI>
+&nbsp;Schemes that concentrate redundant information on a small number
+of disks.</LI>
+
+<LI>
+&nbsp;Schemes that distribute redundant information uniformly across all
+of the disks.</LI>
+</UL>
+Such schemes are generally more desirable because they avoid hot spots
+and other load balancing problems suffered by schemes that do not uniformly
+distribute redundant information.
+
+<P>Finally, it is important to mention that selecting between the many
+possible data striping and redundancy schemes involves complex tradeoffs
+between availability, performance and cost, which have been discussed in
+the next few sections.
+<BR>&nbsp;
+<DIV ALIGN=right><FONT FACE="Times New Roman,Times"><FONT SIZE=+1><A HREF="why.html">BACK</A>
+/ <A HREF="raidhome.html">HOME</A> / <A HREF="basicRAID.html">NEXT</A></FONT></FONT></DIV>
+<FONT SIZE=+2>&nbsp;</FONT>
+<BR>&nbsp;
+</BODY>
+</HTML>

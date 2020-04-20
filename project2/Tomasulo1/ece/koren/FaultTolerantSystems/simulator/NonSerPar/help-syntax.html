@@ -1,0 +1,78 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta http-equiv="Content-Language" content="en-us">
+   <meta name="GENERATOR" content="Microsoft FrontPage 4.0">
+   <meta name="ProgId" content="FrontPage.Editor.Document">
+   <title>Help</title>
+   <base target="_self">
+</head>
+<body background="cyprbk.jpg" bgproperties="fixed">
+
+<center><font color="#FFFF00"><font size=+3>Help - Syntax of Configuration</font></font></center>
+
+<p><font color="#CCFFFF"><font size=+1>The systax of configuration description
+is :</font></font>
+<br>&nbsp;
+<div style="line-height: 100%; word-spacing: 0; width: 1147; height: 258; margin-left: 0; margin-top: 0; margin-bottom: 0">
+<blockquote><b><tt><font color="#CC0000"><font size=+1>NodesNum&nbsp; = 7&nbsp;&nbsp;
+  ModulesNum = 8&nbsp;</font></font></tt></b>
+<br><b><tt><font color="#CC0000"><font size=+1>InputNode = 1&nbsp;&nbsp; OutputNode
+  = 5&nbsp;</font></font></tt></b>
+  <p><b><tt><font size="+1" color="#CCFFFF">The node pair for each module:</font></tt></b>
+<br><b><tt><font color="#CC0000"><font size=+1>A = (1, 2)&nbsp;&nbsp;&nbsp;
+
+</font></font><i><font color="#000000">--->&nbsp; module A is located
+from node 1 to node 2</font></i></tt></b>
+<br><b><tt><font color="#CC0000"><font size=+1>B = (2, 3)&nbsp;&nbsp;&nbsp;
+
+</font></font><i><font color="#000000">--->&nbsp; module B is located
+from node 2 to node 3</font></i></tt></b>
+<br><b><tt><font color="#CC0000"><font size=+1>C = (3, 4)&nbsp;&nbsp;&nbsp;
+
+</font></font><i><font color="#000000">--->&nbsp; module C is located
+from node 3 to node 4</font></i></tt></b>
+<br><b><tt><font color="#CC0000"><font size=+1>D = (3, 4)&nbsp;&nbsp;&nbsp;
+
+</font></font><i><font color="#000000">--->&nbsp; module D is located
+from node 3 to node 4</font></i></tt></b>
+<br><b><tt><font color="#CC0000"><font size=+1>E = (1, 6)&nbsp;&nbsp;&nbsp;
+
+</font></font><i><font color="#000000">--->&nbsp; module E is located
+from node 1 to node 6</font></i></tt></b>
+<br><b><tt><font color="#CC0000"><font size=+1>F = (6, 7)&nbsp;&nbsp;&nbsp;
+
+</font></font><i><font color="#000000">--->&nbsp; module F is located
+from node 6 to node 7</font></i></tt></b>
+<br><b><tt><font color="#CC0000"><font size=+1>G = (7, 4)&nbsp;&nbsp;&nbsp;
+
+</font></font><i><font color="#000000">--->&nbsp; module G is located
+from node 7 to node 4</font></i></tt></b>
+<br><b><tt><font color="#CC0000"><font size=+1>H = (4, 5)&nbsp;&nbsp;&nbsp;
+
+</font></font><i><font color="#000000">--->&nbsp; module H is located
+from node 4 to node 5</font></i></tt></b></p>
+</blockquote>
+</div>
+<font color="#CCFFFF"><font size=+1>This configuration descripes the system
+below:</font></font>
+<br><font color="#CCFFFF"><font size=+1>There are 8 modules and 7 nodes
+in this system. Node 1 is the system input and node 5 is the system output.</font></font>
+<center>
+<p><img SRC="sam3.jpg" BORDER=0 height=198 width=669></center>
+
+<p><font color="#000000"><font size=+1>If it reports that there is an error
+in your configuration, please make sure that:</font></font>
+<blockquote><font size=+1>(1): NodesNum>=2 and NodesNum&lt;=20.</font>
+<br><font size=+1>(2): ModulesNum>=1 and ModulesNum&lt;=20.</font>
+<br><font size=+1>(3): InputNode is between 1 and NodesNum.</font>
+<br><font size=+1>(4): OutputNodes is between 1 and NodesNum.</font>
+<br><font size=+1>(5): InputNode does not equal OutputNode.</font>
+<br><font size=+1>(6): Check whether the Module name and node pairs are
+legible.</font>
+<br><font size=+1>(7): Check whether the syntax is right.</font></blockquote>
+<font size=+1><a href="help.html">return</a></font>
+<br>&nbsp;
+</body>
+</html>

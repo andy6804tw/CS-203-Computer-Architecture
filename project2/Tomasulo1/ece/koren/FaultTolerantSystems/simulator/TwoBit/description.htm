@@ -1,0 +1,2024 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="en-us">
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<meta name="GENERATOR" content="Microsoft FrontPage 4.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<title>Description</title>
+<base target="contents">
+</head>
+
+<body>
+
+<p><b>Two Bit Error Correction and Three Bit Error Detection Scheme with Minimal
+Latency</b></p>
+<p><u>Overview</u></p>
+<p>This page describes an error detection and correction scheme which:</p>
+<ul>
+  <li>Corrects 1-bit and 2-bit errors and detects 3-bit errors for a 32-bit data path,</li>
+  <li>Detects a large percentage of higher-order (4-bit, 5-bit, etc) bit errors,</li>  
+  <li>Uses no more than 16 check bits (2-bit correction requires&nbsp; 2^r &gt;= r + d + 1 +
+    comb((d+r)|2), which is satisfied for d =32 if r &gt; = 11),</li>
+  <li>Works for any combination of data or check bit errors, and</li>
+  <li>Can be implemented with minimal latency.</li>
+</ul>
+<p>To achieve low latency, a separate data path and control path were developed,
+and the number and type of
+check bits was changed from the traditional approach used for error detection
+and correction.&nbsp; While the traditional approach uses one monolithic check matrix 
+and requires the control path
+to wait for the data path computations, the approach here is to
+detect the error type (i.e. no error, single, double, or triple-bit error) using
+two fast SEC/DED codes.&nbsp; This way the error type can be detected well ahead
+of the double-bit correction logic to complete.&nbsp; The primary drawback to this scheme is that the number of
+check bit is more than the minimum required.</p>
+<p><u>Description</u></p>
+<p>The heart of the scheme is the check matrix, which is made up of the following components:</p>
+<ul>
+  <li>A sub-matrix (in green background in the matrix below) which has 7 check bits,
+    odd-weight, minimum ones evenly distributed, checking a 32-bit data path.&nbsp;
+    This sub-matrix is capable of correcting single-bit errors and detecting
+    double-bit errors.&nbsp; Using an odd-weight allows the circuit to be simple,
+    and evenly distributing the ones in the matrix makes the circuit fast.&nbsp;
+    Further merits of this code are discussed in the <a href="../../../../../../domino.research.ibm.com/tchjr/journalindex.nsf/0/94b6268eb2137e0485256bfa006840b4@OpenDocument" target="_blank">IBM
+    Journal of Research and Development</a>.&nbsp; The check bits for this
+    sub-matrix are referred to as ck_A.</li>
+</ul>
+<ul>
+  <li>A second sub-matrix (in blue background in the matrix below) similar to the first, but
+    with 8 check bits. This sub-matrix is also capable of correcting single-bit
+    errors and detecting double-bit errors.&nbsp; These check bits are referred to as ck_B.&nbsp; The check bit selection was such that triple data bit errors,
+    possibly masquerading as single-bit errors in both the ck_A and ck_B
+    sub-matrices, don’t
+    masquerade as the same data bit.&nbsp; Since triple-bit errors will not
+    masquerade as the same single-bit error, the two syndromes can be decoded to
+    detect triple-bit errors.&nbsp;&nbsp;</li>
+</ul>
+<ul>
+  <li>A parity bit (in yellow background in the matrix below) is generated over the check bits
+    in the second sub-matrix.&nbsp; By detecting single bit errors in the second
+    sub-matrix's check bits, the validity of its single-bit error correction can
+    be determined.</li>
+</ul>
+<p>The scheme developed works for any combination of data or check bit errors.&nbsp;
+It will detect, for example, 2 data bits and 1 check bit in error.&nbsp;
+Likewise, it will detect (or ignore) 3 check bits in error.&nbsp;&nbsp;</p>
+<p>Instead of a monolithic check matrix with a Hamming distance of 5 (needed for
+2-bit correction, distance&nbsp; = 2d+1 for d bits corrected), <font color="#000000">the two sub-matrices both have minimum distance of
+4.&nbsp; Both are capable of correcting single-bit errors and detecting
+double-bit errors.&nbsp;&nbsp;</font></p>
+<p><font color="#000000">The number of check bits is 16, which is well above 11,
+the minimum required.&nbsp; A goal of 16 check bits </font>was arrived
+at by rounding up to the next byte boundary (the minimum of 11 bits needed was
+rounded up to 16).&nbsp; This relaxation, although potentially very costly for a
+memory of custom width, has no impact when standard memory devices are used
+(which have byte granularity).&nbsp; The benefit of this relaxation was that it
+permitted the control logic to be driven strictly by low latency circuits, as described
+in more detail in the &quot;A More Realistic Block Diagram of Decode Circuit&quot; and
+&quot;Control Logic&quot; sections below.</p>
+<p><u>Check Matrix</u></p>
+<table border="1" width="200">
+  <tr>
+    <td width="128%" colspan="32">
+      <p align="center">Data Bits</td>
+    <td width="28%" colspan="7">
+      <p align="center">ck_A</td>
+    <td width="3%">Par_B</td>
+    <td width="32%" colspan="8">
+      <p align="center">ck_A</td>
+  </tr>
+  <tr>
+    <td width="3%">D00</td>
+    <td width="3%">D01</td>
+    <td width="3%">D02</td>
+    <td width="3%">D03</td>
+    <td width="3%">D04</td>
+    <td width="3%">D05</td>
+    <td width="3%">D06</td>
+    <td width="3%">D07</td>
+    <td width="3%">D08</td>
+    <td width="3%">D09</td>
+    <td width="3%">D10</td>
+    <td width="3%">D11</td>
+    <td width="3%">D12</td>
+    <td width="3%">D13</td>
+    <td width="3%">D14</td>
+    <td width="3%">D15</td>
+    <td width="3%">D16</td>
+    <td width="3%">D17</td>
+    <td width="3%">D18</td>
+    <td width="3%">D19</td>
+    <td width="3%">D20</td>
+    <td width="3%">D21</td>
+    <td width="3%">D22</td>
+    <td width="3%">D23</td>
+    <td width="3%">D24</td>
+    <td width="3%">D25</td>
+    <td width="3%">D26</td>
+    <td width="3%">D27</td>
+    <td width="3%">D28</td>
+    <td width="3%">D29</td>
+    <td width="3%">D30</td>
+    <td width="3%">D31</td>
+    <td width="3%">P01</td>
+    <td width="3%">P02</td>
+    <td width="3%">P03</td>
+    <td width="3%">P04</td>
+    <td width="3%">P05</td>
+    <td width="3%">P06</td>
+    <td width="3%">P07</td>
+    <td width="3%">
+      <p align="center">P08</p>
+    </td>
+    <td width="3%">P09</td>
+    <td width="3%">P10</td>
+    <td width="3%">P11</td>
+    <td width="3%">P12</td>
+    <td width="3%">P13</td>
+    <td width="3%">P14</td>
+    <td width="3%">P15</td>
+    <td width="3%">P16</td>    
+  </tr>
+  <tr>
+    <td width="3%" align="center" style="background-color: #00FF00">
+      <p align="center" style="background-color: #00FF00">1</p>
+    </td>
+    <td width="3%" align="center" style="background-color: #00FF00">
+      <p align="center">1</p>
+    </td>
+    <td width="3%" align="center" style="background-color: #00FF00">1</td>
+    <td width="3%" align="center" style="background-color: #00FF00">1</td>
+    <td width="3%" align="center" style="background-color: #00FF00">1</td>
+    <td width="3%" align="center" style="background-color: #00FF00">1</td>
+    <td width="3%" align="center" style="background-color: #00FF00">1</td>
+    <td width="3%" align="center" style="background-color: #00FF00">1</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">1</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">1</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">1</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">1</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">1</td>
+    <td width="3%" align="center" style="background-color: #00FF00">1</td>
+    <td width="3%" align="center" style="background-color: #00FF00">1</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+  </tr>
+  <tr>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">1</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">1</td>
+    <td width="3%" align="center" style="background-color: #00FF00">1</td>
+    <td width="3%" align="center" style="background-color: #00FF00">1</td>
+    <td width="3%" align="center" style="background-color: #00FF00">1</td>
+    <td width="3%" align="center" style="background-color: #00FF00">1</td>
+    <td width="3%" align="center" style="background-color: #00FF00">1</td>
+    <td width="3%" align="center" style="background-color: #00FF00">1</td>
+    <td width="3%" align="center" style="background-color: #00FF00">1</td>
+    <td width="3%" align="center" style="background-color: #00FF00">1</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">1</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">1</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">1</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">1</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">1</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+  </tr>
+  <tr>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">1</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">1</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">1</td>
+    <td width="3%" align="center" style="background-color: #00FF00">1</td>
+    <td width="3%" align="center" style="background-color: #00FF00">1</td>
+    <td width="3%" align="center" style="background-color: #00FF00">1</td>
+    <td width="3%" align="center" style="background-color: #00FF00">1</td>
+    <td width="3%" align="center" style="background-color: #00FF00">1</td>
+    <td width="3%" align="center" style="background-color: #00FF00">1</td>
+    <td width="3%" align="center" style="background-color: #00FF00">1</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">1</td>
+    <td width="3%" align="center" style="background-color: #00FF00">1</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">1</td>
+    <td width="3%" align="center" style="background-color: #00FF00">1</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">1</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+  </tr>
+  <tr>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">1</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">1</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">1</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">1</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">1</td>
+    <td width="3%" align="center" style="background-color: #00FF00">1</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">1</td>
+    <td width="3%" align="center" style="background-color: #00FF00">1</td>
+    <td width="3%" align="center" style="background-color: #00FF00">1</td>
+    <td width="3%" align="center" style="background-color: #00FF00">1</td>
+    <td width="3%" align="center" style="background-color: #00FF00">1</td>
+    <td width="3%" align="center" style="background-color: #00FF00">1</td>
+    <td width="3%" align="center" style="background-color: #00FF00">1</td>
+    <td width="3%" align="center" style="background-color: #00FF00">1</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">1</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+  </tr>
+  <tr>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">1</td>
+    <td width="3%" align="center" style="background-color: #00FF00">1</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">1</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">1</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">1</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">1</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">1</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">1</td>
+    <td width="3%" align="center" style="background-color: #00FF00">1</td>
+    <td width="3%" align="center" style="background-color: #00FF00">1</td>
+    <td width="3%" align="center" style="background-color: #00FF00">1</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">1</td>
+    <td width="3%" align="center" style="background-color: #00FF00">1</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">1</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">1</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+  </tr>
+  <tr>
+    <td width="3%" align="center" style="background-color: #00FF00">1</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">1</td>
+    <td width="3%" align="center" style="background-color: #00FF00">1</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">1</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">1</td>
+    <td width="3%" align="center" style="background-color: #00FF00">1</td>
+    <td width="3%" align="center" style="background-color: #00FF00">1</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">1</td>
+    <td width="3%" align="center" style="background-color: #00FF00">1</td>
+    <td width="3%" align="center" style="background-color: #00FF00">1</td>
+    <td width="3%" align="center" style="background-color: #00FF00">1</td>
+    <td width="3%" align="center" style="background-color: #00FF00">1</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">1</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">1</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+  </tr>
+  <tr>
+    <td width="3%" align="center" style="background-color: #00FF00">1</td>
+    <td width="3%" align="center" style="background-color: #00FF00">1</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">1</td>
+    <td width="3%" align="center" style="background-color: #00FF00">1</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">1</td>
+    <td width="3%" align="center" style="background-color: #00FF00">1</td>
+    <td width="3%" align="center" style="background-color: #00FF00">1</td>
+    <td width="3%" align="center" style="background-color: #00FF00">1</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">1</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">1</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">1</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">1</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">1</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">1</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FF00">&nbsp;</td>
+  </tr>
+  <tr>
+    <td width="3%" align="center" style="background-color: #FFFF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #FFFF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #FFFF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #FFFF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #FFFF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #FFFF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #FFFF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #FFFF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #FFFF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #FFFF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #FFFF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #FFFF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #FFFF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #FFFF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #FFFF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #FFFF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #FFFF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #FFFF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #FFFF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #FFFF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #FFFF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #FFFF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #FFFF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #FFFF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #FFFF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #FFFF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #FFFF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #FFFF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #FFFF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #FFFF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #FFFF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #FFFF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #FFFF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #FFFF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #FFFF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #FFFF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #FFFF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #FFFF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #FFFF00">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #FFFF00">1</td>
+    <td width="3%" align="center" style="background-color: #FFFF00">1</td>
+    <td width="3%" align="center" style="background-color: #FFFF00">1</td>
+    <td width="3%" align="center" style="background-color: #FFFF00">1</td>
+    <td width="3%" align="center" style="background-color: #FFFF00">1</td>
+    <td width="3%" align="center" style="background-color: #FFFF00">1</td>
+    <td width="3%" align="center" style="background-color: #FFFF00">1</td>
+    <td width="3%" align="center" style="background-color: #FFFF00">1</td>
+    <td width="3%" align="center" style="background-color: #FFFF00">1</td>
+  </tr>
+  <tr>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">1</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">1</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">1</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">1</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">1</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">1</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">1</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">1</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">1</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">1</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">1</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">1</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+  </tr>
+  <tr>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">1</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">1</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">1</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">1</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">1</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">1</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">1</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">1</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">1</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">1</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">1</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">1</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+  </tr>
+  <tr>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">1</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">1</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">1</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">1</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">1</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">1</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">1</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">1</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">1</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">1</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">1</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">1</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">1</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+  </tr>
+  <tr>
+    <td width="3%" align="center" style="background-color: #00FFFF">1</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">1</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">1</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">1</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">1</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">1</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">1</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">1</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">1</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">1</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">1</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">1</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">1</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+  </tr>
+  <tr>
+    <td width="3%" align="center" style="background-color: #00FFFF">1</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">1</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">1</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">1</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">1</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">1</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">1</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">1</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">1</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">1</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">1</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">1</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">1</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">1</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+  </tr>
+  <tr>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">1</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">1</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">1</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">1</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">1</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">1</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">1</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">1</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">1</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">1</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">1</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">1</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">1</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+  </tr>
+  <tr>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">1</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">1</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">1</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">1</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">1</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">1</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">1</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">1</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">1</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">1</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">1</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">1</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">1</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+  </tr>
+  <tr>
+    <td width="3%" align="center" style="background-color: #00FFFF">1</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">1</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">1</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">1</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">1</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">1</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">1</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">1</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">1</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">1</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">1</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">1</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">1</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">&nbsp;</td>
+    <td width="3%" align="center" style="background-color: #00FFFF">1</td>
+  </tr>
+</table>
+<p style="margin-top: 40"><u>Block Diagram of the Decode Circuit with Comments</u></p>
+<p style="margin-top: 0"><img border="0" src="edac_2X_1c2d_revd_comments.gif" width="978" height="708"></p>
+<p style="margin-top: 40"><u>A More Realistic Block Diagram of Decode Circuit</u></p>
+<p style="margin-top: 0">The block diagram shown above is notional only.&nbsp;
+The dbl_decode_1 block contains 496 AND gates (32
+items taken 2 at a time) which present around 150 to 200 loads on each of the
+syndrome signals (Synd_A and Synd_B).&nbsp; In addition, there are 32 OR gates
+in the dbl_decode_2 block, each of which has 31
+inputs.&nbsp; These high fan-in and fan-out circuits will have timing
+problems during logic implementation.&nbsp; Since the circuits are
+combinational, the logic can be split over
+several clock cycles.&nbsp; The block diagram below shows the additional
+pipeline stages (i.e. pipeline registers at intersections with the blue lines) 
+needed for a more realistic implementation.&nbsp; Since the
+control logic can determine what kind of error occurred before the
+results from the double-bit decode is available, it is capable of returning the
+no-correction or single-bit correction data with little penalty over a
+single-bit-only error correction circuit.&nbsp; Obviously, the control logic
+must have some control over the timing of returned data if it needs to wait
+(albeit rarely) for the corrected double-bit error data.</p>
+<p style="margin-top: 0"><img border="0" src="edac_2X_1c2d_reve.gif" width="1276" height="552"></p>
+<p style="margin-top: 40"><u>Control Logic</u></p>
+<p style="margin-top: 0; margin-bottom: 0">One of the requirements for a
+low-latency circuit is that the inputs to the control circuit not depend on the
+results of the high-latency (double bit locator) circuits.&nbsp; Thus, the control logic
+is designed to compute the error type using the following
+information:</p>
+<ul>
+  <li>the syndromes from the two sub-matrices, </li>
+  <li>parity of the B sub-matrix, </li>
+  <li>an indication if the A and B syndromes point to the same single bit being
+    in error (&quot;sgl/tpl&quot;), and </li>
+  <li>in indication if the B syndrome indicates no errors (&quot;lb0&quot;)
+    .&nbsp; </li>
+</ul>
+<p>To detect the type of error that has occurred, the control logic takes
+advantage of the fact that the two single-bit syndromes will both have an even
+number of bits high for a double-bit error.&nbsp; The following table, which
+shows the input values for error combination cases for 0, 1, 2, and 3 bit errors,
+was generated based on this fact.&nbsp; This table was used to create the
+control logic in the javascript code.&nbsp; Note that some error combinations do not require corrections
+(i.e. errors in the check bits only), so these errors are &quot;ignored&quot;.</p>
+<table BORDER="1" CELLSPACING="1" CELLPADDING="7" WIDTH="1057">
+  <tr>
+    <td WIDTH="43" VALIGN="middle" align="center"><b>
+      <p ALIGN="CENTER">Bit</b> <b>Errors</b></td>
+    <td WIDTH="34" VALIGN="middle" align="center"><b>
+      <p ALIGN="CENTER">Case</b></td>
+    <td WIDTH="98" VALIGN="middle" align="center"><b>
+      <p>Error Combination</b></td>
+    <td WIDTH="68" VALIGN="middle" align="center"><b>
+      <p ALIGN="CENTER">1’s in Synd_a</b></td>
+    <td WIDTH="68" VALIGN="middle" align="center"><b>
+      <p ALIGN="CENTER">1’s in Synd_b</b></td>
+    <td WIDTH="102" VALIGN="middle" align="center"><b>
+      <p ALIGN="CENTER">par_b</b></td>
+    <td WIDTH="90" VALIGN="middle" align="center"><b>
+      <p ALIGN="CENTER">sgl/tpl</b></td>
+    <td WIDTH="88" VALIGN="middle" align="center"><b>
+      <p ALIGN="CENTER">lb0</b></td>
+    <td WIDTH="148" VALIGN="middle" align="center"><b>
+      <p ALIGN="CENTER">Response Ignore</b>/<b>Correct</b>/<b>Detect</b></td>
+    <td WIDTH="136" VALIGN="middle" align="center"><b>
+      <p align="center">Comments</b></td>
+  </tr>
+  <tr>
+    <td WIDTH="43" VALIGN="middle" align="center">
+      <p ALIGN="CENTER">0</td>
+    <td WIDTH="34" VALIGN="middle" align="center">
+      <p ALIGN="CENTER">0</td>
+    <td WIDTH="98" VALIGN="middle" align="center">
+      <p>None</td>
+    <td WIDTH="68" VALIGN="middle" align="center">
+      <p ALIGN="CENTER">0</td>
+    <td WIDTH="68" VALIGN="middle" align="center">
+      <p ALIGN="CENTER">0</td>
+    <td WIDTH="102" VALIGN="middle" align="center">
+      <blockquote>
+        <p ALIGN="CENTER">0
+      </blockquote>
+    </td>
+    <td WIDTH="90" VALIGN="middle" align="center">
+      <blockquote>
+        <p ALIGN="CENTER">x
+      </blockquote>
+    </td>
+    <td WIDTH="88" VALIGN="middle" align="center">
+      <blockquote>
+        <p ALIGN="CENTER">x
+      </blockquote>
+    </td>
+    <td WIDTH="148" VALIGN="middle" align="center">
+      <blockquote>
+        <p>N/A
+      </blockquote>
+    </td>
+    <td WIDTH="136" VALIGN="middle" align="center">&nbsp;</td>
+  </tr>
+  <tr>
+    <td WIDTH="43" VALIGN="middle" ROWSPAN="3" align="center">
+      <p ALIGN="CENTER">1</td>
+    <td WIDTH="34" VALIGN="middle" align="center">
+      <p ALIGN="CENTER">1a</td>
+    <td WIDTH="98" VALIGN="middle" align="center">
+      <p>Single check bit in ck_a/b</td>
+    <td WIDTH="68" VALIGN="middle" align="center">
+      <p ALIGN="CENTER">1/0</td>
+    <td WIDTH="68" VALIGN="middle" align="center">
+      <p ALIGN="CENTER">0/1</td>
+    <td WIDTH="102" VALIGN="middle" align="center">
+      <blockquote>
+        <p ALIGN="CENTER">0/1
+      </blockquote>
+    </td>
+    <td WIDTH="90" VALIGN="middle" align="center">
+      <blockquote>
+        <p ALIGN="CENTER">x
+      </blockquote>
+    </td>
+    <td WIDTH="88" VALIGN="middle" align="center">
+      <blockquote>
+        <p ALIGN="CENTER">x
+      </blockquote>
+    </td>
+    <td WIDTH="148" VALIGN="middle" align="center">
+      <blockquote>
+        <p>Ignore
+      </blockquote>
+    </td>
+    <td WIDTH="136" VALIGN="middle" align="center">&nbsp;</td>
+  </tr>
+  <tr>
+    <td WIDTH="34" VALIGN="middle" align="center">
+      <p ALIGN="CENTER">1b</td>
+    <td WIDTH="98" VALIGN="middle" align="center">
+      <p>Single data bit</td>
+    <td WIDTH="68" VALIGN="middle" align="center">
+      <p ALIGN="CENTER">3</td>
+    <td WIDTH="68" VALIGN="middle" align="center">
+      <p ALIGN="CENTER">3</td>
+    <td WIDTH="102" VALIGN="middle" align="center">
+      <blockquote>
+        <p ALIGN="CENTER">0
+      </blockquote>
+    </td>
+    <td WIDTH="90" VALIGN="middle" align="center">
+      <blockquote>
+        <p ALIGN="CENTER">0
+      </blockquote>
+    </td>
+    <td WIDTH="88" VALIGN="middle" align="center">
+      <blockquote>
+        <p ALIGN="CENTER">0
+      </blockquote>
+    </td>
+    <td WIDTH="148" VALIGN="middle" align="center">
+      <blockquote>
+        <p>Correct
+      </blockquote>
+    </td>
+    <td WIDTH="136" VALIGN="middle" align="center">
+      <blockquote>
+        <p>checks agree, use a output
+      </blockquote>
+    </td>
+  </tr>
+  <tr>
+    <td WIDTH="34" VALIGN="middle" align="center">
+      <p ALIGN="CENTER">1c</td>
+    <td WIDTH="98" VALIGN="middle" align="center">
+      <p>par_b bit</td>
+    <td WIDTH="68" VALIGN="middle" align="center">
+      <p ALIGN="CENTER">0</td>
+    <td WIDTH="68" VALIGN="middle" align="center">
+      <p ALIGN="CENTER">0</td>
+    <td WIDTH="102" VALIGN="middle" align="center">
+      <blockquote>
+        <p ALIGN="CENTER">1
+      </blockquote>
+    </td>
+    <td WIDTH="90" VALIGN="middle" align="center">
+      <blockquote>
+        <p ALIGN="CENTER">0
+      </blockquote>
+    </td>
+    <td WIDTH="88" VALIGN="middle" align="center">
+      <blockquote>
+        <p ALIGN="CENTER">x
+      </blockquote>
+    </td>
+    <td WIDTH="148" VALIGN="middle" align="center">
+      <blockquote>
+        <p>Ignore
+      </blockquote>
+    </td>
+    <td WIDTH="136" VALIGN="middle" align="center">&nbsp;</td>
+  </tr>
+  <tr>
+    <td WIDTH="43" VALIGN="middle" ROWSPAN="8" align="center">
+      <p ALIGN="CENTER">2</td>
+    <td WIDTH="34" VALIGN="middle" align="center">
+      <p ALIGN="CENTER">2a</td>
+    <td WIDTH="98" VALIGN="middle" align="center">
+      <p>Two check bits in ck_a/b</td>
+    <td WIDTH="68" VALIGN="middle" align="center">
+      <p ALIGN="CENTER">2/0</td>
+    <td WIDTH="68" VALIGN="middle" align="center">
+      <p ALIGN="CENTER">0/2</td>
+    <td WIDTH="102" VALIGN="middle" align="center">
+      <blockquote>
+        <p ALIGN="CENTER">0
+      </blockquote>
+    </td>
+    <td WIDTH="90" VALIGN="middle" align="center">
+      <blockquote>
+        <p ALIGN="CENTER">x
+      </blockquote>
+    </td>
+    <td WIDTH="88" VALIGN="middle" align="center">
+      <blockquote>
+        <p ALIGN="CENTER">x
+      </blockquote>
+    </td>
+    <td WIDTH="148" VALIGN="middle" align="center">
+      <blockquote>
+        <p>Ignore
+      </blockquote>
+    </td>
+    <td WIDTH="136" VALIGN="middle" align="center">&nbsp;</td>
+  </tr>
+  <tr>
+    <td WIDTH="34" VALIGN="middle" align="center">
+      <p ALIGN="CENTER">2b</td>
+    <td WIDTH="98" VALIGN="middle" align="center">
+      <p>Two check bits (1 each ck_a and ck_b)</td>
+    <td WIDTH="68" VALIGN="middle" align="center">
+      <p ALIGN="CENTER">1</td>
+    <td WIDTH="68" VALIGN="middle" align="center">
+      <p ALIGN="CENTER">1</td>
+    <td WIDTH="102" VALIGN="middle" align="center">
+      <blockquote>
+        <p ALIGN="CENTER">1
+      </blockquote>
+    </td>
+    <td WIDTH="90" VALIGN="middle" align="center">
+      <blockquote>
+        <p ALIGN="CENTER">x
+      </blockquote>
+    </td>
+    <td WIDTH="88" VALIGN="middle" align="center">
+      <blockquote>
+        <p ALIGN="CENTER">x
+      </blockquote>
+    </td>
+    <td WIDTH="148" VALIGN="middle" align="center">
+      <blockquote>
+        <p>Ignore
+      </blockquote>
+    </td>
+    <td WIDTH="136" VALIGN="middle" align="center">&nbsp;</td>
+  </tr>
+  <tr>
+    <td WIDTH="34" VALIGN="middle" align="center">
+      <p ALIGN="CENTER">2c</td>
+    <td WIDTH="98" VALIGN="middle" align="center">
+      <p>One ck_a and par_b</td>
+    <td WIDTH="68" VALIGN="middle" align="center">
+      <p ALIGN="CENTER">1</td>
+    <td WIDTH="68" VALIGN="middle" align="center">
+      <p ALIGN="CENTER">0</td>
+    <td WIDTH="102" VALIGN="middle" align="center">
+      <blockquote>
+        <p ALIGN="CENTER">1
+      </blockquote>
+    </td>
+    <td WIDTH="90" VALIGN="middle" align="center">
+      <blockquote>
+        <p ALIGN="CENTER">x
+      </blockquote>
+    </td>
+    <td WIDTH="88" VALIGN="middle" align="center">
+      <blockquote>
+        <p ALIGN="CENTER">x
+      </blockquote>
+    </td>
+    <td WIDTH="148" VALIGN="middle" align="center">
+      <p>Ignore</td>
+    <td WIDTH="136" VALIGN="middle" align="center">&nbsp;</td>
+  </tr>
+  <tr>
+    <td WIDTH="34" VALIGN="middle" align="center">
+      <p ALIGN="CENTER">2d</td>
+    <td WIDTH="98" VALIGN="middle" align="center">
+      <p>One ck_b and par_b</td>
+    <td WIDTH="68" VALIGN="middle" align="center">
+      <p ALIGN="CENTER">0</td>
+    <td WIDTH="68" VALIGN="middle" align="center">
+      <p ALIGN="CENTER">1</td>
+    <td WIDTH="102" VALIGN="middle" align="center">
+      <blockquote>
+        <p ALIGN="CENTER">0
+      </blockquote>
+    </td>
+    <td WIDTH="90" VALIGN="middle" align="center">
+      <blockquote>
+        <p ALIGN="CENTER">x
+      </blockquote>
+    </td>
+    <td WIDTH="88" VALIGN="middle" align="center">
+      <blockquote>
+        <p ALIGN="CENTER">x
+      </blockquote>
+    </td>
+    <td WIDTH="148" VALIGN="middle" align="center">
+      <blockquote>
+        <p>Ignore
+      </blockquote>
+    </td>
+    <td WIDTH="136" VALIGN="middle" align="center">&nbsp;</td>
+  </tr>
+  <tr>
+    <td WIDTH="34" VALIGN="middle" align="center">
+      <p ALIGN="CENTER">2e</td>
+    <td WIDTH="98" VALIGN="middle" align="center">
+      <p>Single data and par_b</td>
+    <td WIDTH="68" VALIGN="middle" align="center">
+      <p ALIGN="CENTER">3</td>
+    <td WIDTH="68" VALIGN="middle" align="center">
+      <p ALIGN="CENTER">3</td>
+    <td WIDTH="102" VALIGN="middle" align="center">
+      <blockquote>
+        <p ALIGN="CENTER">1
+      </blockquote>
+    </td>
+    <td WIDTH="90" VALIGN="middle" align="center">
+      <blockquote>
+        <p ALIGN="CENTER">0
+      </blockquote>
+    </td>
+    <td WIDTH="88" VALIGN="middle" align="center">
+      <blockquote>
+        <p ALIGN="CENTER">x
+      </blockquote>
+    </td>
+    <td WIDTH="148" VALIGN="middle" align="center">
+      <blockquote>
+        <p>Correct
+      </blockquote>
+    </td>
+    <td WIDTH="136" VALIGN="middle" align="center">
+      <blockquote>
+        <p>use a corrector output
+      </blockquote>
+    </td>
+  </tr>
+  <tr>
+    <td WIDTH="34" VALIGN="middle" align="center">
+      <p ALIGN="CENTER">2f</td>
+    <td WIDTH="98" VALIGN="middle" align="center">
+      <p>Single data with overlapping ck_a/b</td>
+    <td WIDTH="68" VALIGN="middle" align="center">
+      <p ALIGN="CENTER">2/3</td>
+    <td WIDTH="68" VALIGN="middle" align="center">
+      <p ALIGN="CENTER">3/2</td>
+    <td WIDTH="102" VALIGN="middle" align="center">
+      <blockquote>
+        <p ALIGN="CENTER">0/1
+      </blockquote>
+    </td>
+    <td WIDTH="90" VALIGN="middle" align="center">
+      <blockquote>
+        <p ALIGN="CENTER">x
+      </blockquote>
+    </td>
+    <td WIDTH="88" VALIGN="middle" align="center">
+      <blockquote>
+        <p ALIGN="CENTER">x
+      </blockquote>
+    </td>
+    <td WIDTH="148" VALIGN="middle" align="center">
+      <blockquote>
+        <p>Correct
+      </blockquote>
+    </td>
+    <td WIDTH="136" VALIGN="middle" align="center">
+      <blockquote>
+        <p>use b/a corrector output
+      </blockquote>
+    </td>
+  </tr>
+  <tr>
+    <td WIDTH="34" VALIGN="middle" align="center">
+      <p ALIGN="CENTER">2g</td>
+    <td WIDTH="98" VALIGN="middle" align="center">
+      <p>Single data with non-overlapping ck_a/b</td>
+    <td WIDTH="68" VALIGN="middle" align="center">
+      <p ALIGN="CENTER">4/3</td>
+    <td WIDTH="68" VALIGN="middle" align="center">
+      <p ALIGN="CENTER">3/4</td>
+    <td WIDTH="102" VALIGN="middle" align="center">
+      <blockquote>
+        <p ALIGN="CENTER">0/1
+      </blockquote>
+    </td>
+    <td WIDTH="90" VALIGN="middle" align="center">
+      <blockquote>
+        <p ALIGN="CENTER">x
+      </blockquote>
+    </td>
+    <td WIDTH="88" VALIGN="middle" align="center">
+      <blockquote>
+        <p ALIGN="CENTER">x
+      </blockquote>
+    </td>
+    <td WIDTH="148" VALIGN="middle" align="center">
+      <blockquote>
+        <p>Correct
+      </blockquote>
+    </td>
+    <td WIDTH="136" VALIGN="middle" align="center">
+      <blockquote>
+        <p>use b/a corrector output
+      </blockquote>
+    </td>
+  </tr>
+  <tr>
+    <td WIDTH="34" VALIGN="middle" align="center">
+      <p ALIGN="CENTER">2h</td>
+    <td WIDTH="98" VALIGN="middle" align="center">
+      <p>Two data bits</td>
+    <td WIDTH="68" VALIGN="middle" align="center">
+      <p ALIGN="CENTER">2,4,6</td>
+    <td WIDTH="68" VALIGN="middle" align="center">
+      <p ALIGN="CENTER">2,4,6</td>
+    <td WIDTH="102" VALIGN="middle" align="center">
+      <blockquote>
+        <p ALIGN="CENTER">0
+      </blockquote>
+    </td>
+    <td WIDTH="90" VALIGN="middle" align="center">
+      <blockquote>
+        <p ALIGN="CENTER">x
+      </blockquote>
+    </td>
+    <td WIDTH="88" VALIGN="middle" align="center">
+      <blockquote>
+        <p ALIGN="CENTER">x
+      </blockquote>
+    </td>
+    <td WIDTH="148" VALIGN="middle" align="center">
+      <blockquote>
+        <p>Correct
+      </blockquote>
+    </td>
+    <td WIDTH="136" VALIGN="middle" align="center">
+      <blockquote>
+        <p>use dbl corrector output
+      </blockquote>
+    </td>
+  </tr>
+  <tr>
+    <td WIDTH="43" VALIGN="middle" ROWSPAN="17" align="center">
+      <p ALIGN="CENTER">3</td>
+    <td WIDTH="34" VALIGN="middle" align="center">
+      <p ALIGN="CENTER">3a</td>
+    <td WIDTH="98" VALIGN="middle" align="center">
+      <p>Three ck_a/b bits</td>
+    <td WIDTH="68" VALIGN="middle" align="center">
+      <p ALIGN="CENTER">3/0</td>
+    <td WIDTH="68" VALIGN="middle" align="center">
+      <p ALIGN="CENTER">0/3</td>
+    <td WIDTH="102" VALIGN="middle" align="center">
+      <blockquote>
+        <p ALIGN="CENTER">x
+      </blockquote>
+    </td>
+    <td WIDTH="90" VALIGN="middle" align="center">
+      <blockquote>
+        <p ALIGN="CENTER">x
+      </blockquote>
+    </td>
+    <td WIDTH="88" VALIGN="middle" align="center">
+      <blockquote>
+        <p ALIGN="CENTER">x
+      </blockquote>
+    </td>
+    <td WIDTH="148" VALIGN="middle" align="center">
+      <blockquote>
+        <p>Detect
+      </blockquote>
+    </td>
+    <td WIDTH="136" VALIGN="middle" align="center">&nbsp;</td>
+  </tr>
+  <tr>
+    <td WIDTH="34" VALIGN="middle" align="center">
+      <p ALIGN="CENTER">3b</td>
+    <td WIDTH="98" VALIGN="middle" align="center">
+      <p>One ck_a, two ck_b</td>
+    <td WIDTH="68" VALIGN="middle" align="center">
+      <p ALIGN="CENTER">1</td>
+    <td WIDTH="68" VALIGN="middle" align="center">
+      <p ALIGN="CENTER">2</td>
+    <td WIDTH="102" VALIGN="middle" align="center">
+      <blockquote>
+        <p ALIGN="CENTER">x
+      </blockquote>
+    </td>
+    <td WIDTH="90" VALIGN="middle" align="center">
+      <blockquote>
+        <p ALIGN="CENTER">x
+      </blockquote>
+    </td>
+    <td WIDTH="88" VALIGN="middle" align="center">
+      <blockquote>
+        <p ALIGN="CENTER">x
+      </blockquote>
+    </td>
+    <td WIDTH="148" VALIGN="middle" align="center">
+      <blockquote>
+        <p>Detect
+      </blockquote>
+    </td>
+    <td WIDTH="136" VALIGN="middle" align="center">&nbsp;</td>
+  </tr>
+  <tr>
+    <td WIDTH="34" VALIGN="middle" align="center">
+      <p ALIGN="CENTER">3c</td>
+    <td WIDTH="98" VALIGN="middle" align="center">
+      <p>Two ck_a, one ck_b</td>
+    <td WIDTH="68" VALIGN="middle" align="center">
+      <p ALIGN="CENTER">2</td>
+    <td WIDTH="68" VALIGN="middle" align="center">
+      <p ALIGN="CENTER">1</td>
+    <td WIDTH="102" VALIGN="middle" align="center">
+      <blockquote>
+        <p ALIGN="CENTER">1
+      </blockquote>
+    </td>
+    <td WIDTH="90" VALIGN="middle" align="center">
+      <blockquote>
+        <p ALIGN="CENTER">x
+      </blockquote>
+    </td>
+    <td WIDTH="88" VALIGN="middle" align="center">
+      <blockquote>
+        <p ALIGN="CENTER">x
+      </blockquote>
+    </td>
+    <td WIDTH="148" VALIGN="middle" align="center">
+      <blockquote>
+        <p>Ignore
+      </blockquote>
+    </td>
+    <td WIDTH="136" VALIGN="middle" align="center">&nbsp;</td>
+  </tr>
+  <tr>
+    <td WIDTH="34" VALIGN="middle" align="center">
+      <p ALIGN="CENTER">3d</td>
+    <td WIDTH="98" VALIGN="middle" align="center">
+      <p>Two ck_a, par_b</td>
+    <td WIDTH="68" VALIGN="middle" align="center">
+      <p ALIGN="CENTER">2</td>
+    <td WIDTH="68" VALIGN="middle" align="center">
+      <p ALIGN="CENTER">0</td>
+    <td WIDTH="102" VALIGN="middle" align="center">
+      <blockquote>
+        <p ALIGN="CENTER">1
+      </blockquote>
+    </td>
+    <td WIDTH="90" VALIGN="middle" align="center">
+      <blockquote>
+        <p ALIGN="CENTER">x
+      </blockquote>
+    </td>
+    <td WIDTH="88" VALIGN="middle" align="center">
+      <blockquote>
+        <p ALIGN="CENTER">x
+      </blockquote>
+    </td>
+    <td WIDTH="148" VALIGN="middle" align="center">
+      <blockquote>
+        <p>Ignore
+      </blockquote>
+    </td>
+    <td WIDTH="136" VALIGN="middle" align="center">&nbsp;</td>
+  </tr>
+  <tr>
+    <td WIDTH="34" VALIGN="middle" align="center">
+      <p ALIGN="CENTER">3e</td>
+    <td WIDTH="98" VALIGN="middle" align="center">
+      <p>Two ck_b, par_b</td>
+    <td WIDTH="68" VALIGN="middle" align="center">
+      <p ALIGN="CENTER">0</td>
+    <td WIDTH="68" VALIGN="middle" align="center">
+      <p ALIGN="CENTER">2</td>
+    <td WIDTH="102" VALIGN="middle" align="center">
+      <blockquote>
+        <p ALIGN="CENTER">1
+      </blockquote>
+    </td>
+    <td WIDTH="90" VALIGN="middle" align="center">
+      <blockquote>
+        <p ALIGN="CENTER">x
+      </blockquote>
+    </td>
+    <td WIDTH="88" VALIGN="middle" align="center">
+      <blockquote>
+        <p ALIGN="CENTER">x
+      </blockquote>
+    </td>
+    <td WIDTH="148" VALIGN="middle" align="center">
+      <blockquote>
+        <p>Ignore
+      </blockquote>
+    </td>
+    <td WIDTH="136" VALIGN="middle" align="center">&nbsp;</td>
+  </tr>
+  <tr>
+    <td WIDTH="34" VALIGN="middle" align="center">
+      <p ALIGN="CENTER">3f</td>
+    <td WIDTH="98" VALIGN="middle" align="center">
+      <p>One ck_a, one ck_b, par_b</td>
+    <td WIDTH="68" VALIGN="middle" align="center">
+      <p ALIGN="CENTER">1</td>
+    <td WIDTH="68" VALIGN="middle" align="center">
+      <p ALIGN="CENTER">1</td>
+    <td WIDTH="102" VALIGN="middle" align="center">
+      <blockquote>
+        <p ALIGN="CENTER">0
+      </blockquote>
+    </td>
+    <td WIDTH="90" VALIGN="middle" align="center">
+      <blockquote>
+        <p ALIGN="CENTER">x
+      </blockquote>
+    </td>
+    <td WIDTH="88" VALIGN="middle" align="center">
+      <blockquote>
+        <p ALIGN="CENTER">x
+      </blockquote>
+    </td>
+    <td WIDTH="148" VALIGN="middle" align="center">
+      <blockquote>
+        <p>Detect
+      </blockquote>
+    </td>
+    <td WIDTH="136" VALIGN="middle" align="center">&nbsp;</td>
+  </tr>
+  <tr>
+    <td WIDTH="34" VALIGN="middle" align="center">
+      <p ALIGN="CENTER">3g</td>
+    <td WIDTH="98" VALIGN="middle" align="center">
+      <p>One data bit, two overlapping ck_a/b</td>
+    <td WIDTH="68" VALIGN="middle" align="center">
+      <p ALIGN="CENTER">1/3</td>
+    <td WIDTH="68" VALIGN="middle" align="center">
+      <p ALIGN="CENTER">3/1</td>
+    <td WIDTH="102" VALIGN="middle" align="center">
+      <blockquote>
+        <p ALIGN="CENTER">x
+      </blockquote>
+    </td>
+    <td WIDTH="90" VALIGN="middle" align="center">
+      <blockquote>
+        <p ALIGN="CENTER">x
+      </blockquote>
+    </td>
+    <td WIDTH="88" VALIGN="middle" align="center">
+      <blockquote>
+        <p ALIGN="CENTER">x
+      </blockquote>
+    </td>
+    <td WIDTH="148" VALIGN="middle" align="center">
+      <blockquote>
+        <p>Detect
+      </blockquote>
+    </td>
+    <td WIDTH="136" VALIGN="middle" align="center">&nbsp;</td>
+  </tr>
+  <tr>
+    <td WIDTH="34" VALIGN="middle" align="center">
+      <p ALIGN="CENTER">3h</td>
+    <td WIDTH="98" VALIGN="middle" align="center">
+      <p>One data bit, one each over/non-over ck_a/b</td>
+    <td WIDTH="68" VALIGN="middle" align="center">
+      <p ALIGN="CENTER">3/3</td>
+    <td WIDTH="68" VALIGN="middle" align="center">
+      <p ALIGN="CENTER">3/3</td>
+    <td WIDTH="102" VALIGN="middle" align="center">
+      <blockquote>
+        <p ALIGN="CENTER">0/1
+      </blockquote>
+    </td>
+    <td WIDTH="90" VALIGN="middle" align="center">
+      <blockquote>
+        <p ALIGN="CENTER">1
+      </blockquote>
+    </td>
+    <td WIDTH="88" VALIGN="middle" align="center">
+      <blockquote>
+        <p ALIGN="CENTER">1
+      </blockquote>
+    </td>
+    <td WIDTH="148" VALIGN="middle" align="center">
+      <blockquote>
+        <p>Detect
+      </blockquote>
+    </td>
+    <td WIDTH="136" VALIGN="middle" align="center">&nbsp;</td>
+  </tr>
+  <tr>
+    <td WIDTH="34" VALIGN="middle" align="center">
+      <p ALIGN="CENTER">3i</td>
+    <td WIDTH="98" VALIGN="middle" align="center">
+      <p>One data bit, two non-overlapping ck_a/b</td>
+    <td WIDTH="68" VALIGN="middle" align="center">
+      <p ALIGN="CENTER">5/3</td>
+    <td WIDTH="68" VALIGN="middle" align="center">
+      <p ALIGN="CENTER">3/5</td>
+    <td WIDTH="102" VALIGN="middle" align="center">
+      <blockquote>
+        <p ALIGN="CENTER">0
+      </blockquote>
+    </td>
+    <td WIDTH="90" VALIGN="middle" align="center">
+      <blockquote>
+        <p ALIGN="CENTER">x
+      </blockquote>
+    </td>
+    <td WIDTH="88" VALIGN="middle" align="center">
+      <blockquote>
+        <p ALIGN="CENTER">x
+      </blockquote>
+    </td>
+    <td WIDTH="148" VALIGN="middle" align="center">
+      <blockquote>
+        <p>Detect
+      </blockquote>
+    </td>
+    <td WIDTH="136" VALIGN="middle" align="center">&nbsp;</td>
+  </tr>
+  <tr>
+    <td WIDTH="34" VALIGN="middle" align="center">
+      <p ALIGN="CENTER">3j</td>
+    <td WIDTH="98" VALIGN="middle" align="center">
+      <p>One data bit, one ck_a, one ck_b</td>
+    <td WIDTH="68" VALIGN="middle" align="center">
+      <p ALIGN="CENTER">2,4</td>
+    <td WIDTH="68" VALIGN="middle" align="center">
+      <p ALIGN="CENTER">2,4</td>
+    <td WIDTH="102" VALIGN="middle" align="center">
+      <blockquote>
+        <p ALIGN="CENTER">1
+      </blockquote>
+    </td>
+    <td WIDTH="90" VALIGN="middle" align="center">
+      <blockquote>
+        <p ALIGN="CENTER">x
+      </blockquote>
+    </td>
+    <td WIDTH="88" VALIGN="middle" align="center">
+      <blockquote>
+        <p ALIGN="CENTER">x
+      </blockquote>
+    </td>
+    <td WIDTH="148" VALIGN="middle" align="center">
+      <p>Detect</td>
+    <td WIDTH="136" VALIGN="middle" align="center">&nbsp;</td>
+  </tr>
+  <tr>
+    <td WIDTH="34" VALIGN="middle" align="center">
+      <p ALIGN="CENTER">3k</td>
+    <td WIDTH="98" VALIGN="middle" align="center">
+      <p>One data bit, one ck_a, par_b</td>
+    <td WIDTH="68" VALIGN="middle" align="center">
+      <p ALIGN="CENTER">2,4</td>
+    <td WIDTH="68" VALIGN="middle" align="center">
+      <p ALIGN="CENTER">3</td>
+    <td WIDTH="102" VALIGN="middle" align="center">
+      <blockquote>
+        <p ALIGN="CENTER">1
+      </blockquote>
+    </td>
+    <td WIDTH="90" VALIGN="middle" align="center">
+      <blockquote>
+        <p ALIGN="CENTER">x
+      </blockquote>
+    </td>
+    <td WIDTH="88" VALIGN="middle" align="center">
+      <blockquote>
+        <p ALIGN="CENTER">x
+      </blockquote>
+    </td>
+    <td WIDTH="148" VALIGN="middle" align="center">
+      <p>Detect</td>
+    <td WIDTH="136" VALIGN="middle" align="center">&nbsp;</td>
+  </tr>
+  <tr>
+    <td WIDTH="34" VALIGN="middle" align="center">
+      <p ALIGN="CENTER">3l</td>
+    <td WIDTH="98" VALIGN="middle" align="center">
+      <p>One data bit, one ck_b, par_b</td>
+    <td WIDTH="68" VALIGN="middle" align="center">
+      <p ALIGN="CENTER">3</td>
+    <td WIDTH="68" VALIGN="middle" align="center">
+      <p ALIGN="CENTER">2,4</td>
+    <td WIDTH="102" VALIGN="middle" align="center">
+      <blockquote>
+        <p ALIGN="CENTER">0
+      </blockquote>
+    </td>
+    <td WIDTH="90" VALIGN="middle" align="center">
+      <blockquote>
+        <p ALIGN="CENTER">x
+      </blockquote>
+    </td>
+    <td WIDTH="88" VALIGN="middle" align="center">
+      <blockquote>
+        <p ALIGN="CENTER">x
+      </blockquote>
+    </td>
+    <td WIDTH="148" VALIGN="middle" align="center">
+      <p>Detect</td>
+    <td WIDTH="136" VALIGN="middle" align="center">&nbsp;</td>
+  </tr>
+  <tr>
+    <td WIDTH="34" VALIGN="middle" align="center">
+      <p ALIGN="CENTER">3m</td>
+    <td WIDTH="98" VALIGN="middle" align="center">
+      <p>Two data bits, ck_a</td>
+    <td WIDTH="68" VALIGN="middle" align="center">
+      <p ALIGN="CENTER">1,3,5,7</td>
+    <td WIDTH="68" VALIGN="middle" align="center">
+      <p ALIGN="CENTER">2,4,6</td>
+    <td WIDTH="102" VALIGN="middle" align="center">
+      <blockquote>
+        <p ALIGN="CENTER">0
+      </blockquote>
+    </td>
+    <td WIDTH="90" VALIGN="middle" align="center">
+      <blockquote>
+        <p ALIGN="CENTER">x
+      </blockquote>
+    </td>
+    <td WIDTH="88" VALIGN="middle" align="center">
+      <blockquote>
+        <p ALIGN="CENTER">x
+      </blockquote>
+    </td>
+    <td WIDTH="148" VALIGN="middle" align="center">
+      <p>Detect</td>
+    <td WIDTH="136" VALIGN="middle" align="center">&nbsp;</td>
+  </tr>
+  <tr>
+    <td WIDTH="34" VALIGN="middle" align="center">
+      <p ALIGN="CENTER">3n</td>
+    <td WIDTH="98" VALIGN="middle" align="center">
+      <p>Two data bits, ck_b</td>
+    <td WIDTH="68" VALIGN="middle" align="center">
+      <p ALIGN="CENTER">2,4,6</td>
+    <td WIDTH="68" VALIGN="middle" align="center">
+      <p ALIGN="CENTER">1,3,5,7</td>
+    <td WIDTH="102" VALIGN="middle" align="center">
+      <blockquote>
+        <p ALIGN="CENTER">1
+      </blockquote>
+    </td>
+    <td WIDTH="90" VALIGN="middle" align="center">
+      <blockquote>
+        <p ALIGN="CENTER">x
+      </blockquote>
+    </td>
+    <td WIDTH="88" VALIGN="middle" align="center">
+      <blockquote>
+        <p ALIGN="CENTER">x
+      </blockquote>
+    </td>
+    <td WIDTH="148" VALIGN="middle" align="center">
+      <p>Detect</td>
+    <td WIDTH="136" VALIGN="middle" align="center">&nbsp;</td>
+  </tr>
+  <tr>
+    <td WIDTH="34" VALIGN="middle" align="center">
+      <p ALIGN="CENTER">3o</td>
+    <td WIDTH="98" VALIGN="middle" align="center">
+      <p>Two data bits, par_b</td>
+    <td WIDTH="68" VALIGN="middle" align="center">
+      <p ALIGN="CENTER">2,4,6</td>
+    <td WIDTH="68" VALIGN="middle" align="center">
+      <p ALIGN="CENTER">2,4,6</td>
+    <td WIDTH="102" VALIGN="middle" align="center">
+      <blockquote>
+        <p ALIGN="CENTER">1
+      </blockquote>
+    </td>
+    <td WIDTH="90" VALIGN="middle" align="center">
+      <blockquote>
+        <p ALIGN="CENTER">x
+      </blockquote>
+    </td>
+    <td WIDTH="88" VALIGN="middle" align="center">
+      <blockquote>
+        <p ALIGN="CENTER">x
+      </blockquote>
+    </td>
+    <td WIDTH="148" VALIGN="middle" align="center">
+      <p>Detect</td>
+    <td WIDTH="136" VALIGN="middle" align="center">&nbsp;</td>
+  </tr>
+  <tr>
+    <td WIDTH="34" VALIGN="middle" align="center">
+      <p ALIGN="CENTER">3p</td>
+    <td WIDTH="98" VALIGN="middle" align="center">
+      <p>Three data bits, resulting in unused syndromes</td>
+    <td WIDTH="68" VALIGN="middle" align="center">
+      <p ALIGN="CENTER">3</td>
+    <td WIDTH="68" VALIGN="middle" align="center">
+      <p ALIGN="CENTER">3</td>
+    <td WIDTH="102" VALIGN="middle" align="center">
+      <blockquote>
+        <p ALIGN="CENTER">0
+      </blockquote>
+    </td>
+    <td WIDTH="90" VALIGN="middle" align="center">
+      <blockquote>
+        <p ALIGN="CENTER">0
+      </blockquote>
+    </td>
+    <td WIDTH="88" VALIGN="middle" align="center">
+      <blockquote>
+        <p ALIGN="CENTER">1
+      </blockquote>
+    </td>
+    <td WIDTH="148" VALIGN="middle" align="center">
+      <p>Detect</td>
+    <td WIDTH="136" VALIGN="middle" align="center">&nbsp;</td>
+  </tr>
+  <tr>
+    <td WIDTH="34" VALIGN="middle" align="center">
+      <p ALIGN="CENTER">3q</td>
+    <td WIDTH="98" VALIGN="middle" align="center">
+      <p>Three data bits</td>
+    <td WIDTH="68" VALIGN="middle" align="center">
+      <p ALIGN="CENTER">0,1,3,5,7,9</td>
+    <td WIDTH="68" VALIGN="middle" align="center">
+      <p ALIGN="CENTER">0,1,3,5,7,9</td>
+    <td WIDTH="102" VALIGN="middle" align="center">
+      <blockquote>
+        <p ALIGN="CENTER">0
+      </blockquote>
+    </td>
+    <td WIDTH="90" VALIGN="middle" align="center">
+      <blockquote>
+        <p ALIGN="CENTER">1
+      </blockquote>
+    </td>
+    <td WIDTH="88" VALIGN="middle" align="center">
+      <blockquote>
+        <p ALIGN="CENTER">1
+      </blockquote>
+    </td>
+    <td WIDTH="148" VALIGN="middle" align="center">
+      <p>Detect</td>
+    <td WIDTH="136" VALIGN="middle" align="center">&nbsp;</td>
+  </tr>
+</table>
+<p style="margin-top: 40"><u>Response to Higher-Order Bit-Errors</u></p>
+<p>The scheme's response to higher-order bits errors for all error
+combinations up to 7 bits was simulated with the results shown in the table below.&nbsp; In general, about
+half of the even-bit-errors are detected, and about 90% of the odd-bit-errors
+are detected.</p>
+<table BORDER="1" CELLSPACING="1" CELLPADDING="7" WIDTH="589">
+  <tr>
+    <td WIDTH="17%" VALIGN="TOP">
+      <p>&nbsp;</td>
+    <td WIDTH="83%" VALIGN="TOP" COLSPAN="4">
+      <p ALIGN="CENTER">Response</td>
+  </tr>
+  <tr>
+    <td WIDTH="17%" VALIGN="TOP">&nbsp;</td>
+    <td WIDTH="21%" VALIGN="TOP">
+      <p>Correct/Ignore</td>
+    <td WIDTH="21%" VALIGN="TOP">
+      <p ALIGN="CENTER">Detected</td>
+    <td WIDTH="21%" VALIGN="TOP">
+      <p ALIGN="CENTER">Undetected</td>
+    <td WIDTH="21%" VALIGN="TOP">
+      <p ALIGN="CENTER">Total</td>
+  </tr>
+  <tr>
+    <td WIDTH="17%" VALIGN="TOP">
+      <p>Single</td>
+    <td WIDTH="21%" VALIGN="MIDDLE">
+      <p ALIGN="CENTER">100%</td>
+    <td WIDTH="21%" VALIGN="MIDDLE">
+      <p ALIGN="CENTER">0%</td>
+    <td WIDTH="21%" VALIGN="MIDDLE">
+      <p ALIGN="CENTER">0%</td>
+    <td WIDTH="21%" VALIGN="MIDDLE">
+      <p ALIGN="CENTER">100%</td>
+  </tr>
+  <tr>
+    <td WIDTH="17%" VALIGN="TOP">
+      <p>Double</td>
+    <td WIDTH="21%" VALIGN="MIDDLE">
+      <p ALIGN="CENTER">100%</td>
+    <td WIDTH="21%" VALIGN="MIDDLE">
+      <p ALIGN="CENTER">0%</td>
+    <td WIDTH="21%" VALIGN="MIDDLE">
+      <p ALIGN="CENTER">0%</td>
+    <td WIDTH="21%" VALIGN="MIDDLE">
+      <p ALIGN="CENTER">100%</td>
+  </tr>
+  <tr>
+    <td WIDTH="17%" VALIGN="TOP">
+      <p>Triple</td>
+    <td WIDTH="21%" VALIGN="MIDDLE">
+      <p ALIGN="CENTER">6.6%</td>
+    <td WIDTH="21%" VALIGN="MIDDLE">
+      <p ALIGN="CENTER">93.4%</td>
+    <td WIDTH="21%" VALIGN="MIDDLE">
+      <p ALIGN="CENTER">0%</td>
+    <td WIDTH="21%" VALIGN="MIDDLE">
+      <p ALIGN="CENTER">100%</td>
+  </tr>
+  <tr>
+    <td WIDTH="17%" VALIGN="TOP">
+      <p>Four</td>
+    <td WIDTH="21%" VALIGN="MIDDLE">
+      <p ALIGN="CENTER">1.3%</td>
+    <td WIDTH="21%" VALIGN="MIDDLE">
+      <p ALIGN="CENTER">49.1%</td>
+    <td WIDTH="21%" VALIGN="MIDDLE">
+      <p ALIGN="CENTER">49.6%</td>
+    <td WIDTH="21%" VALIGN="MIDDLE">
+      <p ALIGN="CENTER">100%</td>
+  </tr>
+  <tr>
+    <td WIDTH="17%" VALIGN="TOP">
+      <p>Five</td>
+    <td WIDTH="21%" VALIGN="MIDDLE">
+      <p ALIGN="CENTER">0.1%</td>
+    <td WIDTH="21%" VALIGN="MIDDLE">
+      <p ALIGN="CENTER">93.1%</td>
+    <td WIDTH="21%" VALIGN="MIDDLE">
+      <p ALIGN="CENTER">6.8%</td>
+    <td WIDTH="21%" VALIGN="MIDDLE">
+      <p ALIGN="CENTER">100%</td>
+  </tr>
+  <tr>
+    <td WIDTH="17%" VALIGN="TOP">
+      <p>Six</td>
+    <td WIDTH="21%" VALIGN="MIDDLE">
+      <p ALIGN="CENTER">0.0%</td>
+    <td WIDTH="21%" VALIGN="MIDDLE">
+      <p ALIGN="CENTER">57.1%</td>
+    <td WIDTH="21%" VALIGN="MIDDLE">
+      <p ALIGN="CENTER">42.9%</td>
+    <td WIDTH="21%" VALIGN="MIDDLE">
+      <p ALIGN="CENTER">100%</td>
+  </tr>
+  <tr>
+    <td WIDTH="17%" VALIGN="TOP">
+      <p>Seven</td>
+    <td WIDTH="21%" VALIGN="MIDDLE">
+      <p ALIGN="CENTER">0.0%</td>
+    <td WIDTH="21%" VALIGN="MIDDLE">
+      <p ALIGN="CENTER">91.7%</td>
+    <td WIDTH="21%" VALIGN="MIDDLE">
+      <p ALIGN="CENTER">8.3%</td>
+    <td WIDTH="21%" VALIGN="MIDDLE">
+      <p ALIGN="CENTER">100%</td>
+  </tr>
+</table>
+</body>
+
+</html>

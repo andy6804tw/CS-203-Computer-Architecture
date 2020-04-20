@@ -1,0 +1,135 @@
+<html>
+<head>
+<title>Reservation Table Analyzer</title>
+<script language="JavaScript">
+function start() 
+{
+ window.open("main.html", "console", "status=no,toolbar=no,menubar=no,location=no,resizable=yes");
+}
+</script>
+</head>
+<body><center>
+<H2>Reservation Table Analyzer</H2></center>
+<hr>
+<p>
+This software is used to analyze pipeline reservation tables. If you already know what the 
+reservation table is and how to analyze it, you can just click the <b>Start</b> button below
+to start the Reservation Table Analyzer in JavaScript. Otherwise you can read through the 
+following documents about the reservation table and its analysis method first then start the
+Reservation Table Analyzer in JavaScript. Enjoy it!
+<center><form>
+<input type="button" onClick="start(); return false;" name="starter" value=" Start ">
+</form></center>
+<p>
+<h3><u>The Concept of a Reservation Table</u></h3>
+<p>
+A reservation table is a way of representing the task flow pattern    
+of a pipelined sytem. A reservation table has several rows and
+columns. Each row of the reservation table represents
+one resource of the pipeline and each column represents one
+time-slice of the pipeline. For example, if in a pipelined
+system, there are four resources and five time-slices, then, the
+reservation table will have four rows and five columns.
+All the elements of the table are either 0 or 1. If one resource
+(say, resource i) is used in a time-slice (say time-slice j),
+then the (i,j)-th element of the table will have the entry 1.
+On the other hand, if a resource is not used in a particular
+time-slice, then that entry of the table will have the value 0.
+<p>
+<h3><u>An Analysis Example of Reservation Table</u></h3>
+<p>
+Suppose that we have 4 resources and 6 time-slices and the usage of 
+resources is as follows :
+<ol>
+<li>resource 1 is used in time-slices 1, 3, 6.
+<li>resource 2 is used in time-slice 2.
+<li>resource 3 is used in time-slices 2, 4.
+<li>resource 4 is used in time-slice 5.
+</ol>
+<p>
+The corresponding reservation table will be as follows :     
+<p><center>
+<table border=3>
+<tr><td>index</td>
+<td>time-1</td><td>time-2</td><td>time-3</td><td>time-4</td><td>time-5</td><td>time-6</td>
+</tr>
+<tr>
+<td>resource 1</td><td align=center>1</td><td align=center>0</td><td align=center>1</td>
+<td align=center>0</td><td align=center>0</td><td align=center>1</td></tr>
+<tr>
+<td>resource 2</td><td align=center>0</td><td align=center>1</td><td align=center>0</td>
+<td align=center>0</td><td align=center>0</td><td align=center>0</td></tr>
+<tr>
+<td>resource 3</td><td align=center>0</td><td align=center>1</td><td align=center>0</td>
+<td align=center>1</td><td align=center>0</td><td align=center>0</td></tr>
+<tr>
+<td>resource 4</td><td align=center>0</td><td align=center>0</td><td align=center>0</td>
+<td align=center>0</td><td align=center>1</td><td align=center>0</td></tr>
+</table></center>
+<p>
+Often to make the table look simpler, the 0 entries are
+represented by blank and 1 entries are represented by a 'X'.
+We have followed this second approach when we display
+the reservation table. The above table will look now like
+ <p><center>
+<table border=3>
+<tr><td>index</td>
+<td>time-1</td><td>time-2</td><td>time-3</td><td>time-4</td><td>time-5</td><td>time-6</td>
+</tr>
+<tr>
+<td>resource 1</td><td align=center>X</td><td align=center>&nbsp</td><td align=center>X</td>
+<td align=center>&nbsp</td><td align=center>&nbsp</td><td align=center>X</td></tr>
+<tr>
+<td>resource 2</td><td align=center>&nbsp</td><td align=center>X</td><td align=center>&nbsp</td>
+<td align=center>&nbsp</td><td align=center>&nbsp</td><td align=center>&nbsp</td></tr>
+<tr>
+<td>resource 3</td><td align=center>&nbsp</td><td align=center>X</td><td align=center>&nbsp</td>
+<td align=center>X</td><td align=center>&nbsp</td><td align=center>&nbsp</td></tr>
+<tr>
+<td>resource 4</td><td align=center>&nbsp</td><td align=center>&nbsp</td><td align=center>&nbsp</td>
+<td align=center>&nbsp</td><td align=center>X</td><td align=center>&nbsp</td></tr>
+</table></center>
+<p>                                    
+<br><br>
+<h3><u>How to use this Software</u></h3>
+<p>
+Now, if you try to analyze this reservation table, you will get
+different options. try to explore those one by one.
+<p>
+   You will get the following outputs:
+<oL>
+<li> Forbidden Latencies are : 0, 2, 3, 5
+<li> Pipeline collision Vector is : (101101)
+<li> Greedy Cycle is : (1, 6)*
+<li> Minimal Average Latency is : 3.5
+<li> Throughput is 0.28
+<li> State Diagram is
+</ol>
+<p>
+There are 3 states in the State Diagram
+<br>        State [1] represents 101101
+<br>        State [2] represents 111111
+<br>        State [3] represents 111101
+<p>
+        State 1 (101101)
+   <br> Reaches state 2 (111111) after 1 cycle
+   <br> Reaches state 3 (111101) after 4 cycles
+   <br> Reaches state 1 (101101) after 6 or more cycles
+<p>
+        State 2 (111111)
+   <br> Reaches state 1 (101101) after 6 or more cycles
+<p>
+        State 3 (111101)
+   <br> Reaches state 3 (111101) after 4 cycles
+   <br> Reaches state 1 (101101) after 6 or more cycles
+<p> You may explore the software by clicking the following 
+<b>Start</b> button now! 
+<!-- Enjoy it!
+If you need further assistance, feel free to send Qiang Yu e-mail at <a href="mailto:qyu@cs.umass.edu"><I>qyu@cs.umass.edu</i></a>.
+-->
+<center><form>
+<input type="button" onClick="start(); return false;" name="starter" value=" Start ">
+</form> </center>
+<hr>
+</body>
+</html>

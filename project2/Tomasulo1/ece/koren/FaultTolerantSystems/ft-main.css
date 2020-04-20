@@ -1,0 +1,12 @@
+body {margin: 8px; color: rgb(0, 0, 0); background-color: rgb(255,
+255, 255);}
+a {color: #cd202b}
+a:active {color: #000099}
+a:visited {color: #900000}
+.ft-title {font-family: Verdana; font-weight: bold; font-size:
+large;}
+.ft-header {font-family: Verdana; font-weight: bold; font-size:
+medium;}
+.ft-section {border-bottom: 1px dashed rgb(100, 100, 100); padding:
+1px; font-family: Verdana; font-size: small; line-height: 1.5;}
+.ft-text {font-family: Verdana; font-size: small;}

@@ -1,0 +1,55 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="en-us">
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<meta name="GENERATOR" content="Microsoft FrontPage 4.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<title>Help for Square Root By Convergence</title>
+</head>
+
+<body>
+<DL>
+<CENTER>
+<H1>Square Root By Convergence Online Help</H1></CENTER>
+
+</DL>
+
+<UL>
+<LI>
+Square-Root by Convergence is based on Newton-Raphson method.
+To find the square root of X, square-root by convergence seeks the
+solution to Q<SUP>2</SUP> - X = 0. The steps are as follows, for i = 0,1,...
+   <UL>
+<p>For Fractional X: 0<U>&lt;</U>X&lt;1, initialize
+<p><table><tr><td nowrap align=center>Q<SUP>(0)</SUP> = </td><td nowrap
+align=center>(1+X)<hr noshade>2<br></td></tr></table>
+
+<P><table><tr><td nowrap
+   align=center>Q<SUP>(i+1)</SUP> = Q<SUP>(i)</SUP> - </td><td nowrap
+   align=center>f(Q<SUP>(i)</SUP>)
+<hr noshade>f '(Q<SUP>(i)</SUP>)<br></td></tr></table>
+
+   <P>f(Q) = Q<SUP>2</SUP> - X (The fractional number must between 0 and 1)
+   
+   <P><table><tr><td nowrap align=center>Q<SUP>(i+1)</SUP> = </td><td
+   nowrap align=center>(Q<SUP>(i)</SUP> + </td><td nowrap align=center>X<hr
+   noshade>Q<SUP>(i)</SUP><td nowrap align=center>)/2</td><br></td></tr></table>
+
+   <p><table><tr><td nowrap align=center><FONT
+   FACE="symbol">d</FONT><SUP>(i+1)</SUP> = X<SUP>1/2</SUP>
+-Q<SUP>(i+1)</SUP> = -</td><td
+   nowrap align=center>(X<SUP>1/2</SUP>-Q<SUP>(i)</SUP>)<SUP>2</SUP><hr
+   noshade>2Q<SUP>(i)</SUP></td><td nowrap align=center>=</td><td nowrap
+   align=center> - <FONT FACE="symbol">(d</FONT>
+<SUP>(i)</SUP>)<SUP>2</SUP><hr noshade>2Q<SUP>(i)</SUP><br></td></tr></table>
+</UL>
+
+<LI>
+Convergence is quadratic. (Number of bits accuracy doubles at each
+iteration.)
+</LI>
+
+</body>
+
+</html>

@@ -1,0 +1,67 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>Comparison of Dynamic Voltage Scaling Algorithms</title>
+<style type="text/css">
+<!--
+body,td,th {
+	font-family: Times New Roman, Times, serif;
+	font-size: 14px;
+	color: #000000;
+}
+body {
+	background-color: #CCCCCC;
+}
+.style1 {color: #FF0000}
+-->
+</style></head>
+
+<body>
+<h1><center>
+  <p>Comparison of Dynamic Voltage Scaling Algorithms</p>
+</center></h1>
+<h2>ABSTRACT</h2>
+<p align="justify">Dynamic Voltage Scaling has been a key technique for exploiting the hardware characteristics of processors to reduce energy dissipation by lowering the supply voltage and the operating frequency. The DVS algorithms are shown to make dramatic energy savings while providing the necessary peak computation power in general purpose systems. However, to provide real time guarantees, DVS must consider the deadlines
+and periodicity of real time tasks. In this project, I have attempted to simulate three of the five algorithms published in the paper by Pillai and Shin, "<a href="rtdvs.pdf">Real Time Dynamic Voltage Scaling for Low Power Embedded Operating Systems</a>"</p>
+
+<h2> INTRODUCTION</h2>
+<P align="justify">Dynamic Voltage Scaling tries to address the tradeoff between performance and battery life by taking into account two important characteristics: <br><br>
+1. the peak computing rate needed is much higher than the average throughput that must be sustained. <br>
+
+This essentially means that high performance is needed only for a small fraction of the time, while fr the rest of the time, a low performance low power processor would suffice. We can achieve the low performance by lowering the operating frequency of the processor when the full speed is not needed. DVS scales the operating voltage along with the frequency which results in power savings. <br> <br>
+
+
+2. the processors are based on CMOS Logic  <br>
+
+CMOS Logic has a voltage dependent maximum operating frequency, so when used at a reduced frequency, the processor can operate at a lower supply voltage. Since the energy dissipated per cycle with the CMOS scales quadratically to the supply voltage, DVS can potentially provide a very large net energy savings through frequency and voltage scaling </P> 
+
+<h2>Algorithms</h2>
+<p align="justify"> In this project, I have tried to simulate three of the five algorithms proposed by Pillai and Shin in their paper, "<a href="rtdvs.pdf">Real Time Dynamic Voltage Scaling for Embedded Operating Systems</a>". Besides, the standard non-DVS "Rate Monotonic" and "Earliest Deadline First" algorithms have also been simulated. Finally, the gantt chart of these algorithms for the various tasks are output and the corresponding energy savings achieved from the DVS algorithms as compared to the non-DVS algorithms is displayed. <br>
+  <br>
+
+The Non-DVS algorithms simulated are: <br>
+1. Rate Monotonic Algorithm<br>
+2. Earliest Deadline First Algorithm <br><br>
+
+The DVS algorithms simulated are : <br>
+1. Static Rate Monotonic Algorithm <br>
+2. Static Earliest Deadline First Algorithm <br>
+3. Cycle Conserving Earliest Deadline First Algorithm <br>
+
+<h3> Static Voltage Scaling</h3>
+<p align="justify">In Static Voltage Scaling, we select the lowest possible operating frequency that will allow the RM or EDF scheduler to meet all the deadlines for a give task set. This frequency is set statically and will not be changed unless the task set is changed.</p>
+
+<h3>Cycle Conserving Mechanism</h3>
+<p align="justify"> Generally, real time tasks use much less than their specified worst case computation requirements on most invocations. To account for this, the cycle conserving mechanism reduces the operating frequency and voltage when tasks use less than their worst case allotment and increase the frequency to meet the worst case needs.</p>
+<h3>Assumptions</h3>
+<p> 1.All tasks are periodic i.e. the task Ti is released periodically once every Pi time units</p>
+<p> 2.The task needs to complete its execution by its deadline, i.e. Deadline equals Period</p>
+<p> 3.Tasks are independent and non-preemptive</p>
+<h2><a href="RTDVS.htm">Take me back to the COMPARISON page</a> </h2>
+<p><a href="help.htm">HELP </a>(with example testcases) </p>
+<p><span class="style1">NOTE</span>: Please make sure that you have enabled active content in your browser. This project has been done in JavaScript and thus requires the active content to be enabled. Also, please use Internet Explorer as some of the functionalites might not be supported in others. Thanks.</p>
+<H3> <a href="help.htm"> </a></H3>
+</body>
+</html>

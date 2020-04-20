@@ -1,0 +1,179 @@
+<HTML>
+<HEAD>
+<TITLE> Inverse Tangent </TITLE>
+<SCRIPT language="JavaScript">
+
+function PrintError(Message) {
+	Error = "<CENTER><H1> ERROR </H1></CENTER> <P>\n"
+	Error += "<CENTER> <EM>" + Message + "</EM> </CENTER>\n"
+	return Error
+}
+
+function OrderOfMagnitude (TheNum) {
+	// returns the highest place which has a "1" in TheNum's
+	// binary representation - special non-2's complement version
+
+	LogBaseTwo = Math.log(TheNum)/Math.LN2;
+	return Math.floor(LogBaseTwo)
+}
+
+function ParseBinary (BinNum) {
+	// Turns a binary number into a decimal, sets a flag to true if
+	// BinNum is not actually binary
+
+	IsNeg = false
+	if (BinNum < 0) {
+		IsNeg = true
+		BinNum *= -1
+	}
+
+	BinNum += Math.pow(10, -NumBits - 1) // kludge - otherwise,
+				// if the last bit isn't a 1, the
+				// procedure will think it's
+				// non-binary
+
+	RealNum = 0
+	LogBaseTen = Math.log(BinNum)/Math.LN10
+	HighestPlace = Math.ceil(LogBaseTen)
+	for (CurPlace = HighestPlace; CurPlace >= -NumBits; CurPlace--) {
+		CurEntry = Math.floor(BinNum / Math.pow(10, CurPlace))
+		if (CurEntry != 0 && CurEntry != 1) {
+			NotBinary = true
+			CurEntry = 1 // feed it something normal, to avoid
+					 // wierd Javascript errors
+		}
+		if (CurEntry == 1) {
+			RealNum += Math.pow(2, CurPlace)
+			BinNum -= Math.pow(10, CurPlace)
+		}
+	}
+
+	if (IsNeg) {RealNum *= -1} // reverse it back at the end
+	// now check if the number was negative according to two's complement
+	// representation - if it was, set the decimal value to this negative
+	// number
+	if (HighestPlace == NumBits) {
+		RealNum -= Math.pow(2, NumBits)
+	}
+
+	return RealNum
+}
+
+function RoundOff (TheNum) {
+	// returns the value TheNum would have if it were represented by
+	// NumDecimals bits after the decimal point
+	Scaling = Math.pow(2, NumDecimals)
+	return (Math.round(TheNum * Scaling) / Scaling)
+}
+
+function PrintBinary(TheNum, NumDecs) {
+
+	// initialize the string
+	S = "";
+	// deal with negative numbers
+	if (TheNum < 0) {
+		S += "-"
+		TheNum *= -1
+	}
+	StartPlace = OrderOfMagnitude(TheNum)
+	if (StartPlace < 0) {StartPlace = 0}
+
+	for (CurPlace = StartPlace; CurPlace >= -NumDecs; CurPlace--) {
+		if (CurPlace == -1) {S += "."}
+		CurPower = Math.pow(2, CurPlace)
+		if (TheNum >= CurPower) {
+			S += "1"
+			TheNum = TheNum - CurPower
+		} else  {
+			S += "0"
+		}
+	}
+	return S
+}
+
+function ArcTan(form) {
+	C = parseFloat(form.C.value)
+	NumDecimals = parseFloat(form.NumDecimals.value) - 1
+	ChoseBin = form.Base[0].checked
+	NumBits = NumDecimals
+	NotBinary = false
+	if (ChoseBin) {C = ParseBinary(C)}
+
+	TheTop = "<HTML><HEAD><TITLE>Tablet</TITLE></HEAD><BODY bgcolor=white>"
+	C = RoundOff(C)
+	Middle = "C = " + C + "<P>\n"
+	Middle += "<TABLE border>"
+	Middle += "<TR> <TD> <var>i</var> <TD> <var>U<sub>i</sub></var> "
+	Middle += "<TD> <var>V<sub>i</sub></var> <TD> <var>y<sub>i</sub></var> "
+	Middle += "<TD> <var>s<sub>i</sub></var>" + "\n"
+	iCol = ""	// initialize the five columns of the table
+	UCol = ""
+	VCol = ""
+	yCol = ""
+	sCol = ""
+
+	U = 1
+	V = C
+	y = 0
+	for (i = 1; i <= NumDecimals; i++) {
+		iCol += i + " <BR>\n"
+		s = (V >= 0 ? -1 : 1)
+		UCol += PrintBinary(U, NumDecimals) + " <BR>\n"
+		OldU = U	// needed to calculate V
+		U = RoundOff(U - s * Math.pow(2, -i) * V)
+		VCol += PrintBinary(V, NumDecimals) + " <BR>\n"
+		V = RoundOff(V + s * Math.pow(2, -i) * OldU)
+		yCol += PrintBinary(y, NumDecimals) + " <BR>\n"
+		y = RoundOff (y - s * Math.atan(Math.pow(2, -i)))
+		sCol += s + " <BR>\n"
+	}
+	// for last row...
+	iCol += i + " <BR>\n"
+	UCol += PrintBinary(U, NumDecimals) + " <BR>\n"
+	VCol += PrintBinary(V, NumDecimals) + " <BR>\n"
+	yCol += PrintBinary(y, NumDecimals) + " <BR>\n"
+	// don't print s
+
+	Middle += "<TR> <TD> " + iCol + "<TD align=right> " + UCol
+	Middle += "<TD align=right> " + VCol + "<TD align=right> " + yCol 
+	Middle += "<TD valign=top align=right> " + sCol
+
+	Middle += "</TABLE> <P>\n"
+	Middle += "tan<sup>-1</sup>(C) = y<sub>" + i
+	Middle += "</sub> = " + PrintBinary(y, NumDecimals) + " = " + y + "<BR>\n"
+	Middle += "Actual value = " + Math.atan(C) + ", error = " +
+			Math.abs(Math.atan(C) - y)
+	Bottom = "</BODY> </HTML>"
+
+	if (NotBinary) {Middle = PrintError("Non-binary number")}
+
+	parent.frames[1].document.open()
+	parent.frames[1].document.write(TheTop);
+	parent.frames[1].document.write(Middle);
+	parent.frames[1].document.write(Bottom);
+	parent.frames[1].document.close()
+
+}
+
+</SCRIPT>
+</HEAD>
+
+<BODY bgcolor="#D8D8BF">
+
+<CENTER> <H2> Inverse Tangent </H2> </CENTER>
+<FORM>
+C: <INPUT type="text" name="C">
+<P>
+<EM>bin</EM> <INPUT type="radio" name="Base" value="Binary" checked>
+<EM>dec</EM> <INPUT type="radio" name="Base" value="Decimal">
+<P>
+Number of bits: <INPUT type="text" name="NumDecimals" size=4>
+<P>
+<CENTER>
+<INPUT type="button" name="enter" value="Compute"
+onClick="ArcTan(this.form)">
+</CENTER>
+</FORM>
+
+</BODY>
+</HTML>

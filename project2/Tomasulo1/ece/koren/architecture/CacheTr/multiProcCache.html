@@ -1,0 +1,1224 @@
+<html>
+<head>
+<title>Multitask Cache Demonstrator</title>
+<script language="JavaScript">
+
+task_colors = new Array(26);
+config_ops = new Object();
+var refs_dirty = 0, sched_dirty = 0, sim_step = 0;
+var my_cache, suppress_output = 0;
+var first_iter = 1;
+
+function init_colors() {
+  task_colors[0] = "#3399CC"
+  task_colors[1] = "#00FF00"
+  task_colors[2] = "#FFCC33"
+  task_colors[3] = "#999999"
+  task_colors[4] = "#FF9900"
+  task_colors[5] = "#999900"
+  task_colors[6] = "#FF6699"
+  task_colors[7] = "#996600"
+  task_colors[8] = "#FF0000"
+  task_colors[9] = "#66FF66"
+  task_colors[10] = "#FFFFCC"
+  task_colors[11] = "#009999"
+  task_colors[12] = "#663399"
+  task_colors[13] = "#0033FF"
+  task_colors[14] = "#990099"
+  task_colors[15] = "#CC33CC"
+  task_colors[16] = "#FF9900"
+  task_colors[17] = "#339900"
+  task_colors[18] = "#00FFFF"
+  task_colors[19] = "#00FF99"
+  task_colors[20] = "#CCFF33"
+  task_colors[21] = "#CC9999"
+  task_colors[22] = "#FFFF00"
+  task_colors[23] = "#FFCCFF"
+  task_colors[24] = "#009966"
+  task_colors[25] = "#CCFFCC"
+}
+
+function testInput(v) {
+  x = parseInt(v.value);
+  str = "The number of memory references should not exceed "
+  str += "35 unless the \"Allow more than 35 memory references\" "
+  str += "box is checked."
+  if (document.forms[0]['plus35'].checked != 1) {
+    if (v != "" && x > 35) {
+      alert(str);
+      v.value = 35;
+    }
+  }
+}
+
+function checkLocNeeded(v) {
+  if (v.checked == 1) {
+    parent.frames[0].document.forms[0].locality.disabled = false;
+  } else {
+    parent.frames[0].document.forms[0].locality.disabled = true;
+  }
+}
+
+function locality_block(nrefs) {
+  this.addr = new Array(nrefs);
+  this.count = 0;
+}
+
+function cache_set(slots) {
+  this.slot = new Array(slots);
+  this.full = 0;
+  this.open_slot = 0;
+}
+
+function cache_block(addr, task) {
+  this.addr = addr;
+  this.fifo_age = 0;
+  this.lru_age = 0;
+  this.taskinfo = task;
+}
+
+function cache(size, assoc, nrefs) {
+  this.set = new Array(assoc)
+
+  for (j=0; j < assoc; j++) {
+      this.set[j] = new cache_set((size/assoc));
+  }
+
+  this.num_slots = size/assoc;
+  this.seq = new Array(nrefs);
+  this.removed_blocks = new Array(nrefs);
+  this.num_removed = 0;
+  this.currseq = 0;
+  this.tot_refs = nrefs;
+  this.misses = 0;
+}
+
+function update_schedmech(form) {
+
+  memAccVals = new Array(form.ntasks.value);
+	
+  if (form.schedmech.value == 2 || form.schedmech.value == 3) {
+    form.tslice.disabled = false;
+  } else {
+    form.tslice.disabled = true;
+  }
+
+  for (i=0; i < form.ntasks.value; i++) {
+    memAccVals[i] = form["num_memacc" + i].value;
+  }
+
+  update_num_memacc(form);
+
+  for (i=0; i < form.ntasks.value; i++) {
+    form["num_memacc" + i].value = memAccVals[i];
+  }
+}
+
+function update_tasks(form) {
+  memAccVals = new Array(config_ops.numTasks);
+
+  for (i=0; i < config_ops.numTasks; i++) {
+    memAccVals[i] = form["num_memacc" + i].value;
+  }
+
+  update_num_memacc(form);
+
+  for (i=0; i < config_ops.numTasks; i++) {
+    form["num_memacc" + i].value = memAccVals[i];
+  }
+}
+
+
+function reset_form() {
+  parent.frames[0].location.href = "multiProcCache.html"
+  parent.frames[1].location.href = "scratch.html"
+  first_iter = 1;
+	sim_step = 0;
+}
+
+function memAccess(name, numrefs, priority, color) {
+  this.name = name;
+  this.numRefs = parseInt(numrefs);
+  this.priority = priority;
+  this.color = color;
+  this.reloadtrans = 0;
+}
+
+function csize_onClick(val) {
+
+  if (parseInt(val) < parent.frames[0].document.forms[0].nsets.value) {
+    alert("Cache size cannot be less than the number of sets.");
+    parent.frames[0].document.forms[0].csize.value =
+      parent.frames[0].document.forms[0].nsets.value;
+  }
+
+}
+
+function nsets_onClick(val) {
+
+  if (parseInt(val) > parent.frames[0].document.forms[0].csize.value) {
+    alert("# of sets cannot exceed the cache size.");
+    parent.frames[0].document.forms[0].nsets.value =
+      parent.frames[0].document.forms[0].csize.value;
+  }
+
+}
+
+function updtconfig_onClick(form) {
+
+	parent.frames[1].scrollTo(0,0);
+	if (first_iter == 1) {
+		config_ops.cacheSize = parseInt(form.csize.value);
+ 	 	config_ops.numSets = parseInt(form.nsets.value);
+  	config_ops.replPol = parseInt(form.rpolicy.value);
+  	config_ops.numTasks = parseInt(form.ntasks.value);
+  	config_ops.schedMech = parseInt(form.schedmech.value);
+  	config_ops.locality = parseInt(form.locality.value);
+  	config_ops.useRandom = form.rand.checked;
+  	config_ops.tasks = new Array(form.ntasks.value);
+  	config_ops.tSlice = parseInt(form.tslice.value);
+
+		tmp = "<html><head><title>Memory Access Configuration</title></head>"
+  	tmp += "<body>"
+	
+		tmp += "<div id=\"configSpace\">"
+  	tmp += "<ul>"
+  	tmp += "<li><b>Configuration -</b><ul>"
+  	tmp += "<li>Cache Size: " + config_ops.cacheSize + " blocks</li>"
+  	tmp += "<li>Associativity: " + config_ops.numSets + "</li>"
+  	tmp += "<li>Block Replacement Policy: "
+  	if (config_ops.replPol == 1) {
+    	tmp += "LRU" + "</li>"
+  	} else if (config_ops.replPol == 2) {
+    	tmp += "FIFO" + "</li>"
+  	} else {
+    	tmp += "RAND" + "</li>"
+  	}
+  	tmp += "<li>Scheduling Policy: "
+  	if (config_ops.schedMech == 1) {
+    	tmp += "FIFO" + "</li>"
+  	} else if (config_ops.schedMech == 2) {
+    tmp += "Round Robin" + "</li>"
+  	} else {
+    	tmp += "Priority Based" + "</li>"
+  	}
+  	tmp += "<li>CPU Time Slice: "
+  	if (config_ops.schedMech != 1) {
+
+      tmp += config_ops.tSlice + "</li>"
+    } else {
+      tmp += "N/A</li>"
+    }
+  	tmp += "<li># of tasks: " + config_ops.numTasks + "</li>"
+  	tmp += "</ul></li></ul>"
+		tmp += "</div>"
+  	tmp += "<p><form name=\"formA\">"
+
+		tmp += "<div id=\"memRefSpace\"></div><br><br>"
+  	tmp += "<div id=\"schSpace\"></div><br><br>"
+  	tmp += "<div id=\"cacheSpace\"></div>"
+  	tmp += "</form></p></body></html>"
+
+		parent.frames[1].document.open()
+  	parent.frames[1].document.write(tmp);
+  	parent.frames[1].document.close();
+		
+		sim_step = 1;
+	} else {
+
+		// this variable will trigger a transparent reschedule of the tasks 
+		// in order to create a new cache object when the user changes the 
+		//cache size and/or associativity
+		var resched = 0;
+ 
+		// we are updating the configuration options after an initial run
+		// the frame sections are already set up in this case
+
+		if (config_ops.cacheSize != parseInt(form.csize.value)) {
+			resched = 1;
+			config_ops.cacheSize = parseInt(form.csize.value);
+		}
+
+		if (config_ops.numSets != parseInt(form.nsets.value)) {
+ 	 		resched = 1;
+			config_ops.numSets = parseInt(form.nsets.value);
+		}
+
+  	config_ops.replPol = parseInt(form.rpolicy.value);
+
+		if (config_ops.locality != parseInt(form.locality.value)) {
+			config_ops.locality = parseInt(form.locality.value);
+			refs_dirty = 1;
+		}
+
+		if (config_ops.useRandom != form.rand.checked) {
+  		config_ops.useRandom = form.rand.checked;
+			refs_dirty = 1;
+		}
+		
+		if (config_ops.numTasks != form.ntasks.value) {
+			config_ops.numTasks = parseInt(form.ntasks.value);
+  		config_ops.tasks = new Array(form.ntasks.value);
+			refs_dirty = 1;
+		}
+
+		if (config_ops.schedMech != form.schedmech.value) {
+  		config_ops.schedMech = parseInt(form.schedmech.value);
+			if (refs_dirty != 1) {
+				sched_dirty = 1;
+			}
+		}
+
+		if (config_ops.tSlice != parseInt(form.tslice.value)) {
+  		config_ops.tSlice = parseInt(form.tslice.value);
+			if (refs_dirty != 1) {
+				sched_dirty = 1;
+			}
+		}
+
+		if (config_ops.schedMech == 3 && refs_dirty != 1) {
+			config_ops.tasks.sort(taskname_sort)
+			for (i=0; i < config_ops.numTasks; i++) {
+				if (config_ops.tasks[i].priority != form["priority" + i].value) {
+					config_ops.tasks[i].priority = form["priority" + i].value;
+					sched_dirty = 1;
+				}      
+    	}
+		}
+	
+		tmp = "<ul>"
+  	tmp += "<li><b>Configuration -</b><ul>"
+  	tmp += "<li>Cache Size: " + config_ops.cacheSize + " blocks</li>"
+  	tmp += "<li>Associativity: " + config_ops.numSets + "</li>"
+  	tmp += "<li>Block Replacement Policy: "
+  	if (config_ops.replPol == 1) {
+    	tmp += "LRU" + "</li>"
+  	} else if (config_ops.replPol == 2) {
+    	tmp += "FIFO" + "</li>"
+  	} else {
+    	tmp += "RAND" + "</li>"
+  	}
+  	tmp += "<li>Scheduling Policy: "
+  	if (config_ops.schedMech == 1) {
+    	tmp += "FIFO" + "</li>"
+  	} else if (config_ops.schedMech == 2) {
+    tmp += "Round Robin" + "</li>"
+  	} else {
+    	tmp += "Priority Based" + "</li>"
+  	}
+  	tmp += "<li>CPU Time Slice: "
+  	if (config_ops.schedMech != 1) {
+
+      tmp += config_ops.tSlice + "</li>"
+    } else {
+      tmp += "N/A</li>"
+    }
+  	tmp += "<li># of tasks: " + config_ops.numTasks + "</li>"
+  	tmp += "</ul></li></ul>"
+
+		parent.frames[1].document.getElementById('configSpace').innerHTML = tmp;
+		
+		if (refs_dirty == 0 && sched_dirty == 0) {
+			unbold_transients();
+		}
+
+		// call schedule simply to make the creation of a new cache object
+		// transparent to the user. this would be invoked if either a new
+		// cache size or associativity was selected
+		if (resched == 1) {
+			schedule();
+		}
+	}	
+}
+
+function gnrate_onClick(form) {
+
+		if (sim_step == 0) {
+			msg = "You must press the \"Update Configuration\" "
+  		msg += "button first."
+			alert(msg);
+		} else if (sim_step >= 1) {
+  		generate(form);
+			refs_dirty = 0;
+			sched_dirty = 1;
+			sim_step = 2;
+		}
+}
+
+function sched_onClick(form) {
+	if (sim_step == 0) {
+		msg = "You must press the \"Update Configuration\" "
+  	msg += "button first."
+		alert(msg);
+  } else if (sim_step == 1) {
+		msg = "You must press the \"Generate Memory References Button\" "
+  	msg += "button first."
+		alert(msg);	
+	} else if (sim_step >= 2) {
+  	schedule();
+		sched_dirty = 0;
+		sim_step = 3;
+	}
+}
+
+function run_onClick(form) {
+  var tmp, msg;
+
+	if (sim_step == 0) {
+		msg = "You must press the \"Update Configuration\" "
+  	msg += "button first."
+		alert(msg);
+		return;
+  } else if (sim_step == 1) {
+		msg = "You must press the \"Generate Memory References Button\" "
+  	msg += "button first."
+		alert(msg);
+		return;	
+	} else if (sim_step == 2) {
+		msg = "You must press the \"Schedule Tasks\" "
+  	msg += "button first."
+		alert(msg);
+		return;	
+	}
+	
+	if (sched_dirty == 1) {
+		msg = "You have changed the configuration in a manner that requires "
+		msg += "the rescheduling of tasks. Please press the \"Schedule Tasks\" "
+		msg += "button before continuing."
+		alert(msg);
+	} else if (refs_dirty == 1) {
+		msg = "You have changed the configuration in a manner that requires "
+		msg += "you to regenerate the memory references. Please press the "
+		msg += "\"Generate Memory References\" button before continuing."
+		alert(msg);
+	} else {
+    if (form.R1[0].checked == true) {
+      if (my_cache.currseq == my_cache.tot_refs) {
+        alert("Simulation is complete.");
+        zero_transients();
+        tmp = my_cache.seq;
+        my_cache = new cache(config_ops.cacheSize, config_ops.numSets, my_cache.tot_refs);
+        my_cache.seq = tmp;
+      } else {
+        run_simulation();
+      }
+    } else if (form.R1[1].checked == true) {
+      suppress_output = 1;
+      while(my_cache.currseq < my_cache.tot_refs) {
+        run_simulation();
+      }
+
+      alert("Simulation is complete.");
+      zero_transients();
+      tmp = my_cache.seq;
+      my_cache = new cache(config_ops.cacheSize, config_ops.numSets, my_cache.tot_refs);
+      my_cache.seq = tmp;
+    } else if (form.R1[2].checked == true) {
+      var x;
+      for (x=0; x < parseInt(form.T1.value); x++) {
+        if (my_cache.currseq == my_cache.tot_refs) {
+          alert("Simulation is complete.");
+          zero_transients();
+          tmp = my_cache.seq;
+          my_cache = new cache(config_ops.cacheSize, config_ops.numSets, my_cache.tot_refs);
+          my_cache.seq = tmp;
+          break;
+        } else {
+          run_simulation();
+        }
+      }
+    }
+	}
+}
+
+// clear out the bolded values in the schedule table for the next run
+function unbold_transients() {
+	for (x=0; x < my_cache.tot_refs; x++) {
+		parent.frames[1].document.getElementById('m' + x).innerHTML =
+              																my_cache.seq[x].addr;
+	}
+}
+
+// Zero out all of the reload transient counts
+function zero_transients() {
+var i;
+
+  for (i=0; i < my_cache.currseq; i++) {
+    my_cache.seq[i].taskinfo.reloadtrans = 0;
+  }
+}
+
+function update_num_memacc(form) {
+  newVal = form.ntasks.value
+
+  tmp = "<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\"><tr>"
+  tmp += "<td width=\"33%\"><b>Task Name</b></td>"
+  tmp += "<td width=\"33%\" align=\"center\"><b>Number of Memory References</b></td>"
+  if (form.schedmech.value == 3) {
+    tmp += "<td width=\"34%\" align=\"center\"><b>Priority</b></td></tr>"
+  } else {
+    tmp += "<td width=\"34%\">&nbsp</td></tr>"
+  }
+  for (i=0; i < newVal; i++) {
+    tmp += "<tr><td width=\"33%\" bgcolor=\"" + task_colors[i] + "\">task "
+    tmp += String.fromCharCode(i+65) + "</td>"
+    tmp += "<td width=\"33%\" align=\"center\"><input type=\"text\" name=\"num_memacc" + i + "\" "
+    tmp += "maxlength=\"2\" size=\"2\" value=\"8\"></td>"
+    if (form.schedmech.value == 3) {
+      tmp += "<td width=\"34%\" align=\"center\"><select name=\"priority" + i + "\" " + "size=\"1\">"
+      for(k=0; k < newVal; k++) {
+        if (k == i) {
+          tmp += "<option selected value=\"" + k + "\">"+k+"</option>"
+        } else {
+          tmp += "<option value=\"" + k + "\">"+k+"</option>"
+        }
+      }
+      tmp += "</select></td>"
+    } else {
+      tmp += "<td width=\"34%\">&nbsp</td>"
+    }
+    tmp += "</tr>"
+  }
+  tmp += "</table>"
+  document.getElementById('num_memacc').innerHTML = tmp
+}
+
+function generate(form) {
+  var refVal, indx;
+
+  max_val = 0;
+  for (i=0; i < form.ntasks.value; i++) {
+    if (parseInt(form["num_memacc" + i].value) > max_val) {
+      max_val = form["num_memacc" + i].value;
+    }
+    if (form.schedmech.value == 3) {
+      config_ops.tasks[i] = new memAccess(String.fromCharCode(i+65),
+                        form["num_memacc" + i].value,
+                        form["priority" + i].value,
+                        task_colors[i]);
+    } else {
+      config_ops.tasks[i] = new memAccess(String.fromCharCode(i+65),
+                        form["num_memacc" + i].value,-1,
+                        task_colors[i]);
+    }
+  }
+
+  /* allow user to enter mem addresses on second frame */
+  tmp = "<b>Memory references of each task</b><br>"
+  tmp += "<table border=\"1\" cellpadding=\"0\" cellspacing=\"0\">"
+
+  prevRefs = new Array(config_ops.numTasks);
+  for (i=0; i < config_ops.numTasks; i++) {
+    prevRefs[i] = new locality_block(config_ops.tasks[i].numRefs);
+  }
+
+  for (i=max_val; i > 0; i--) {
+    tmp += "<tr><td width=\"35\"># " + i + "</td>"
+    for (j=0; j < config_ops.numTasks; j++) {
+        tmp += "<td width=\"60\">"
+        if (config_ops.tasks[j].numRefs >= i) {
+          if (config_ops.useRandom == 1) {
+
+            // Generate a random memory block request constrained by
+            // the locality probability
+            if (Math.random()*100 < parseInt(form.locality.value)) {
+              if (prevRefs[j].count == 0) {
+                refVal = Math.round(Math.random()*(config_ops.cacheSize*4));
+                prevRefs[j].addr[prevRefs[j].count] = refVal;
+                prevRefs[j].count++;
+              } else {
+                indx = Math.round(Math.random()*(prevRefs[j].count-1));
+                refVal = prevRefs[j].addr[indx];
+              }
+            } else {
+              refVal = Math.round(Math.random()*(config_ops.cacheSize*4));
+              prevRefs[j].addr[prevRefs[j].count] = refVal;
+              prevRefs[j].count++;
+            }
+
+            tmp += "<p align=\"center\"><input style=\"background-color:" + task_colors[j]
+            tmp += "\" type=\"text\" name=\""
+            tmp += config_ops.tasks[j].name + "ref" + i + "\" size=\"5\" "
+            tmp += "value=\"" + refVal + "\" readonly></p>"
+          } else {
+            tmp += "<p align=\"center\"><input type=\"text\" name=\""
+            tmp += config_ops.tasks[j].name + "ref" + i + "\" style=\"background-color:"
+            tmp += task_colors[j] + "\" "
+            tmp += "maxlength=\"4\" size=\"5\"></p>"
+          }
+        }
+        tmp += "</td>"
+    }
+    tmp += "</tr>"
+  }
+
+  tmp += "<tr>"
+  tmp += "<td width=\"35\"><b>Task</b></td>"
+  for (j=0; j < config_ops.numTasks; j++) {
+    tmp += "<td width=\"60\" bgcolor=\"" + task_colors[j]
+    tmp += "\"><p align=\"center\"><b>" + String.fromCharCode(j+65) + "</b></p></td>"
+  }
+
+  tmp += "</tr></table>"
+	parent.frames[1].document.getElementById('memRefSpace').innerHTML = tmp;
+}
+
+function taskname_sort(a, b) {
+	if (a.name < b.name) {
+		return -1;
+	} else if (a.name > b.name) {
+		return 1;
+	} else {
+		return 0;
+	}
+}
+
+function priority_sort(a, b) {
+	var x;
+ 	x = a.priority - b.priority;
+	if (x == 0) {
+		if (a.name < b.name) {
+			x = -1;
+		} else if (a.name > b.name) {
+			x = 1;
+		}
+	}
+	return(x);
+}
+
+function schedule() {
+
+  var tmp, elmnt, output;
+  var rowctr = 0, totRefs = 0;
+  var currslice = 0, currtask = 0;
+  var width = "6%";
+
+  for (i=0; i < config_ops.numTasks; i++) {
+      totRefs += config_ops.tasks[i].numRefs;
+  }
+
+  my_cache = new cache(config_ops.cacheSize, config_ops.numSets, totRefs);
+
+  output =  "<b>Order of memory references after scheduling "
+  output += "</b><br>(note: values will turn bold when a particular cache "
+  output += "miss was the result of a reload transient)<br>"
+  output += "<table width=\"100%\"><tr>"
+
+  
+  // FIFO
+  if (config_ops.schedMech == 1) {
+    for (i=0; i < config_ops.numTasks; i++) {
+      for (j=0; j < config_ops.tasks[i].numRefs; j++) {
+        elmnt = String.fromCharCode(i+65) + "ref" + (j+1);
+        tmp = parent.frames[1].document.forms[0][elmnt].value;
+        // create a cache element
+        my_cache.seq[my_cache.currseq] = new cache_block(tmp, config_ops.tasks[i]);
+        my_cache.currseq++; // update array pos
+        output += "<td width=\"" + width + "\" bgcolor=\"" + task_colors[i] + "\"><div id=\"m"
+        output += (my_cache.currseq-1) + "\" align=\"center\">";
+        output += tmp + "</div></td>"
+        rowctr++;
+
+        if (rowctr == 5) { width = "7%"; }
+        if (rowctr == 15) {
+          output += "</tr><tr>"
+          rowctr = 0;
+          width = "6%";
+        }
+      }
+    }
+    output += "</tr></table>"
+
+  // Round Robin
+  } else if (config_ops.schedMech == 2) {
+    robinctr = new Array(config_ops.numTasks);
+
+    for (i=0; i < config_ops.numTasks; i++) {
+          robinctr[i] = 0;
+        }
+
+        for (i=0; i < totRefs; i++) {
+
+          if (currslice == config_ops.tSlice) {
+            currtask++;
+            currslice = 0;
+          }
+
+          if (currtask == config_ops.numTasks) {
+            currtask = 0;
+            currslice = 0;
+          }
+
+          tester = 1;
+          while (tester == 1) {
+            if (robinctr[currtask] == config_ops.tasks[currtask].numRefs) {
+              currtask++;
+              if (currtask == config_ops.numTasks) {
+                currtask = 0;
+              }
+              currslice = 0;
+            } else {
+              tester = 0;
+            }
+      }
+
+      elmnt = String.fromCharCode(currtask+65) + "ref" + (robinctr[currtask]+1);
+      tmp = parent.frames[1].document.forms[0][elmnt].value;
+      // create a cache element
+      my_cache.seq[my_cache.currseq] = new cache_block(tmp, config_ops.tasks[currtask]);
+      my_cache.currseq++; // update array pos
+      robinctr[currtask]++;
+      currslice++;
+
+      output += "<td width=\"" + width + "\" bgcolor=\"" + task_colors[currtask] + "\">"
+      output += "<div id=\"m" + (my_cache.currseq - 1) + "\" align=\"center\">";
+      output += tmp + "</div></td>"
+      rowctr++;
+
+      if (rowctr == 5) { width = "7%"; }
+      if (rowctr == 15) {
+        output += "</tr><tr>"
+        rowctr = 0;
+        width = "6%";
+      }
+
+    }
+    output += "</tr></table>"
+
+  // Priority Based
+  } else if (config_ops.schedMech == 3) {
+
+		var marker = -1;
+    servctr = new Array(config_ops.numTasks);
+
+    temp_ops = new Object(config_ops);
+
+    // sort tasks based on priority
+		temp_ops.tasks.sort(priority_sort);
+		
+    for (i=0; i < temp_ops.numTasks; i++) {
+      servctr[i] = 0;
+    }
+
+    for (i=0; i < totRefs; i++) {
+			if (marker == -1) {
+				marker = currtask;
+			}
+      if (currslice == config_ops.tSlice) {
+        if (temp_ops.tasks[currtask].priority ==
+            temp_ops.tasks[(currtask+1) % temp_ops.numTasks].priority) {
+          currslice = 0;
+          currtask++;
+        } else {
+			 		currslice = 0;
+					currtask = marker;
+					marker = -1;
+        }
+      }
+
+      if (currtask == temp_ops.numTasks) {
+        currtask = 0;
+        currslice = 0;
+      }
+
+      tester = 1;
+      while (tester == 1) {
+        if (servctr[currtask] == temp_ops.tasks[currtask].numRefs) {
+          currtask++;
+          if (currtask == temp_ops.numTasks) {
+            currtask = 0;
+          }
+          currslice = 0;
+        } else {
+          tester = 0;
+        }
+      }
+
+      elmnt = temp_ops.tasks[currtask].name + "ref" + (servctr[currtask]+1);
+      //parent.frames[1].document.getElementById('schSpace').innerHTML = elmnt
+      tmp = parent.frames[1].document.forms[0][elmnt].value;
+      // create a cache element
+      my_cache.seq[my_cache.currseq] = new cache_block(tmp, temp_ops.tasks[currtask]);
+      my_cache.currseq++; // update array pos
+      servctr[currtask]++;
+      currslice++;
+
+      output += "<td width=\"" + width + "\" bgcolor=\"" + temp_ops.tasks[currtask].color + "\">";
+			output += "<div id=\"m" + (my_cache.currseq - 1) + "\" align=\"center\">";
+      output += tmp + "</div></td>"
+      rowctr++;
+
+      if (rowctr == 5) { width = "7%"; }
+      if (rowctr == 15) {
+        output += "</tr><tr>"
+        rowctr = 0;
+        width = "6%";
+      }
+    }
+    output += "</tr></table>"
+  }
+
+  my_cache.currseq = 0; // reset for the start of simulation
+  parent.frames[1].document.getElementById('schSpace').innerHTML = output;
+  if (first_iter == 1 && suppress_output != 1) {
+    parent.frames[1].scrollTo(0,parent.frames[1].document.body.scrollHeight);
+  }
+}
+
+function run_simulation() {
+
+  var set, addr, totTransients=0;
+  var hit=0, rlt=0;  // reset current reference counter
+
+  // main loop
+  addr = my_cache.seq[my_cache.currseq].addr;
+  set = addr % config_ops.numSets;
+
+  // search cache for a hit in the given set
+  if (my_cache.set[set].full == 1) {
+    for (k=0; k < my_cache.num_slots; k++) {
+
+      if(my_cache.set[set].slot[k].addr == addr &&
+         my_cache.set[set].slot[k].taskinfo.name == my_cache.seq[my_cache.currseq].taskinfo.name) {
+        prev = parseInt(my_cache.set[set].slot[k].lru_age);
+        for(h=my_cache.num_slots-1; h >= 0; h--) {
+          if (my_cache.set[set].slot[h].lru_age < prev) {
+            my_cache.set[set].slot[h].lru_age++;
+          }
+        }
+        my_cache.set[set].slot[k].lru_age = 0;
+        hit = 1; // there has been a cache hit
+      }
+    }
+  } else {
+    for (k=0; k < my_cache.set[set].open_slot; k++) {
+      if(my_cache.set[set].slot[k].addr == addr &&
+         my_cache.set[set].slot[k].taskinfo.name == my_cache.seq[my_cache.currseq].taskinfo.name) {
+        prev = my_cache.set[set].slot[k].lru_age;
+        for(h=my_cache.set[set].open_slot-1; h >= 0; h--) {
+          if (my_cache.set[set].slot[h].lru_age < prev) {
+            my_cache.set[set].slot[h].lru_age++;
+          }
+        }
+        my_cache.set[set].slot[k].lru_age = 0;
+        hit = 1;
+      }
+    }
+  }
+  // a cache miss has occurred
+  if (hit == 0) {
+    my_cache.misses++;
+    // we had a miss so we must put the block in the cache
+    if (my_cache.set[set].full == 0) { // trivial case
+      my_cache.set[set].slot[my_cache.set[set].open_slot] = my_cache.seq[my_cache.currseq];
+      // next we must age it for the replacement algorithms
+      // for an open slot fifo age we just give it the age of the slot position
+      my_cache.set[set].slot[my_cache.set[set].open_slot].fifo_age = my_cache.set[set].open_slot;
+
+      for(x=my_cache.set[set].open_slot; x >= 0; x--) {
+        my_cache.set[set].slot[x].lru_age = (my_cache.set[set].open_slot)-x;
+      }
+
+      my_cache.set[set].open_slot++;
+      if (my_cache.set[set].open_slot == my_cache.num_slots) {
+        my_cache.set[set].full = 1;
+      }
+    } else {
+      /* Now comes the hard part....
+         We must determine which block to remove from the cache
+         based on the replacement policy being used */
+
+      var oldest=-1, replPol = 0;
+      switch(config_ops.replPol) {
+      /* LRU */
+      case 1:
+        for (x=0; x < my_cache.num_slots; x++) {
+          if (my_cache.set[set].slot[x].lru_age ==
+            (config_ops.cacheSize/config_ops.numSets)-1) {
+            // Look for a reload transient
+            for (y=0; y < my_cache.num_removed; y++) {
+              if(my_cache.removed_blocks[y].addr == my_cache.seq[my_cache.currseq].addr &&
+                 my_cache.removed_blocks[y].taskinfo.name == 
+                    my_cache.seq[my_cache.currseq].taskinfo.name) {
+                my_cache.seq[my_cache.currseq].taskinfo.reloadtrans++;
+                parent.frames[1].document.getElementById('m' + my_cache.currseq).innerHTML =
+                                    "<b>" + my_cache.seq[my_cache.currseq].addr + "</b>";
+                my_cache.removed_blocks.splice(y,1);
+                my_cache.num_removed--;
+                rlt = 1; // local variable for updating the display
+              }
+            }
+
+            if (my_cache.seq[my_cache.currseq].taskinfo.name !=
+                        my_cache.set[set].slot[x].taskinfo.name) {
+              my_cache.removed_blocks[my_cache.num_removed] =
+                        new cache_block(my_cache.set[set].slot[x].addr,
+                        my_cache.set[set].slot[x].taskinfo);
+              my_cache.num_removed++;
+            }
+            my_cache.set[set].slot[x] = my_cache.seq[my_cache.currseq];
+            my_cache.set[set].slot[x].lru_age = 0;
+          } else {
+            my_cache.set[set].slot[x].lru_age++;
+          }
+        } /* end for loop */
+        break;
+      /* FIFO */
+      case 2:
+        for (x=0; x < my_cache.num_slots; x++) {
+          if (my_cache.set[set].slot[x].fifo_age == 0) {
+            // Look for a reload transient
+            for (y=0; y < my_cache.num_removed; y++) {
+              if(my_cache.removed_blocks[y].addr == my_cache.seq[my_cache.currseq].addr &&
+                 my_cache.removed_blocks[y].taskinfo.name == 
+                    my_cache.seq[my_cache.currseq].taskinfo.name) {
+                my_cache.seq[my_cache.currseq].taskinfo.reloadtrans++;
+                parent.frames[1].document.getElementById('m' + my_cache.currseq).innerHTML =
+                        "<b>" + my_cache.seq[my_cache.currseq].addr + "</b>";
+                my_cache.removed_blocks.splice(y,1);
+                my_cache.num_removed--;
+                
+                rlt = 1; // local variable for updating the display
+              }
+            }
+
+            if (my_cache.seq[my_cache.currseq].taskinfo.name !=
+                        my_cache.set[set].slot[x].taskinfo.name) {
+              my_cache.removed_blocks[my_cache.num_removed] =
+                                    new cache_block(my_cache.set[set].slot[x].addr,
+                                    my_cache.set[set].slot[x].taskinfo);
+              my_cache.num_removed++;
+            }
+            my_cache.set[set].slot[x] = my_cache.seq[my_cache.currseq];
+            my_cache.set[set].slot[x].fifo_age = (config_ops.cacheSize/config_ops.numSets)-1;
+          } else {
+            my_cache.set[set].slot[x].fifo_age = my_cache.set[set].slot[x].fifo_age - 1;
+          }
+        } /* end for loop */
+        break;
+      /* RAND */
+      case 3:
+        remslot = Math.round(Math.random()*(my_cache.num_slots-1));
+        // Look for a reload transient
+        for (y=0; y < my_cache.num_removed; y++) {
+          if(my_cache.removed_blocks[y].addr == my_cache.seq[my_cache.currseq].addr &&
+            my_cache.removed_blocks[y].taskinfo.name == my_cache.seq[my_cache.currseq].taskinfo.name) {
+            my_cache.seq[my_cache.currseq].taskinfo.reloadtrans++;
+            parent.frames[1].document.getElementById('m' + my_cache.currseq).innerHTML =
+                              "<b>" + my_cache.seq[my_cache.currseq].addr + "</b>";
+            my_cache.removed_blocks.splice(y,1);
+            my_cache.num_removed--;
+            rlt = 1; // local variable for updating the display
+          }
+        }
+
+        if (my_cache.seq[my_cache.currseq].taskinfo.name !=
+                        my_cache.set[set].slot[remslot].taskinfo.name) {
+          my_cache.removed_blocks[my_cache.num_removed] =
+                                new cache_block(my_cache.set[set].slot[remslot].addr,
+                                my_cache.set[set].slot[remslot].taskinfo);
+          my_cache.num_removed++;
+        }
+            my_cache.set[set].slot[remslot] = my_cache.seq[my_cache.currseq];
+        break;
+      } /* end switch */
+    }
+  }
+
+
+  totTransients = 0;
+  for (x=0; x < config_ops.numTasks; x++) {
+    totTransients += config_ops.tasks[x].reloadtrans;
+  }
+
+  // format the output for display
+  output = "<p><b>Cache Contents:</b></p><div align=\"center\"><table border=\"1\" width=\"65%\">"
+  output += "<tr><td width=\"10%\" height=\"42\"><p align=\"center\"><b>SET #</b></p></td>"
+  output += "<td width=\"90%\" height=\"42\" colspan=\"4\"><p align=\"center\"><b>"
+  output += config_ops.numSets + "-way set-associative cache      size = "
+  output += config_ops.cacheSize + "Blocks</p></b></td>"
+
+  rows_needed = 1;
+  if ((config_ops.cacheSize/config_ops.numSets) > 2) {
+    rows_needed = (config_ops.cacheSize/config_ops.numSets)/4;
+  }
+  row_height = 42*rows_needed;
+
+  for (k=0; k < config_ops.numSets; k++) {
+    if (rows_needed > 1) {
+      output += "<tr><td width=\"10%\" height=\"" + row_height + "\" rowspan=\"" + rows_needed + "\">"
+      output += "<p align=\"center\">" + k + "</p></td>"
+    } else {
+      output += "<tr><td width=\"10%\" height=\"42\"><p align=\"center\">" + k + "</p></td>"
+    }
+    for (j=0; j < my_cache.num_slots; j++) {
+      if ((j%4) == 0 && j != 0) {
+        output += "</tr><tr>"
+      }
+      if (my_cache.set[k].slot[j] != null) {
+        output += "<td width=\"22.5%\" height=\"42\" bgcolor=\""
+        output += my_cache.set[k].slot[j].taskinfo.color + "\"><p align=\"center\">"
+        output += my_cache.set[k].slot[j].addr + "<br>Task: " + my_cache.set[k].slot[j].taskinfo.name
+      } else {
+        output += "<td width=\"22.5%\" height=\"42\"><p align=\"center\">&nbsp;"
+      }
+      output += "</p></td>"
+    }
+    output += "</tr>"
+  }
+  output += "</table></div>"
+
+  output += "<table border=\"1\" cellspacing=\"1\" width=\"100%\">"
+  output += "<tr>"
+  if (hit == 1) {
+    output +=   "<td width=\"33%\" bgcolor=\"#00FF00\">"
+  } else {
+    output +=   "<td width=\"33%\" bgcolor=\"#FFFFFF\">"
+  }
+  output +=   "<p align=\"center\"><b>HIT</b></td>"
+  if (hit == 0) {
+    output +=   "<td width=\"33%\" bgcolor=\"#FF0000\">"
+  } else {
+    output +=   "<td width=\"33%\" bgcolor=\"#FFFFFF\">"
+  }
+  output +=   "<p align=\"center\"><b>MISS</b></td>"
+  if (rlt == 1) {
+    output +=   "<td width=\"34%\" bgcolor=\"#FFFF00\">"
+  } else {
+    output +=   "<td width=\"34%\" bgcolor=\"#FFFFFF\">"
+  }
+  output +=   "<p align=\"center\"><b>RELOAD TRANSIENT</b></td>"
+  output += "</tr>"
+  output += "</table>"
+
+  output += "<p><b>Cache Statistics:</b></p>"
+  output += "<p><table border=\"1\" cellspacing=\"1\" width=\"65%\">"
+  output += "<tr>"
+  output +=    "<td width=\"40%\" bgcolor=\"#66FFFF\">"
+  output +=    "<p align=\"right\"><b>Previous Block Request:</b></td>"
+  output +=    "<td width=\"25%\" bgcolor=\"#FFFF99\"><p align=\"center\">"
+  output +=    "<table border=\"0\" width=\"40%\"><tr>"
+  output +=    "<td align=\"center\" bgcolor=\"" + my_cache.seq[my_cache.currseq].taskinfo.color + "\">"
+  output +=    my_cache.seq[my_cache.currseq].addr + "</td></tr></table></p></td>"
+  output += "</tr>"
+
+  output += "<tr>"
+  output +=    "<td width=\"40%\" bgcolor=\"#66FFFF\">"
+  output +=    "<p align=\"right\"><b>Total Memory Refs:</b></td>"
+  output +=    "<td width=\"25%\" bgcolor=\"#FFFF99\"><p align=\"center\">"
+  output +=       "<b>" + (my_cache.currseq+1) + "</b></p></td>"
+  output += "</tr>"
+  output += "<tr>"
+  output +=    "<td width=\"40%\" bgcolor=\"#66FFFF\">"
+  output +=    "<p align=\"right\"><b>Total Hits:</b></td>"
+  output +=    "<td width=\"25%\" bgcolor=\"#FFFF99\"><p align=\"center\"><b>"
+  output +=     (my_cache.currseq+1-my_cache.misses) + "</b></p></td>"
+  output += "</tr>"
+  output += "<tr>"
+  output +=    "<td width=\"40%\" bgcolor=\"#66FFFF\">"
+  output +=    "<p align=\"right\"><b>Total Misses:</b></td>"
+  output +=    "<td width=\"25%\" bgcolor=\"#FFFF99\"><p align=\"center\"><b>"
+  output +=    my_cache.misses + "</b></p></td>"
+  output += "</tr>"
+  output += "<tr>"
+  output +=    "<td width=\"40%\" bgcolor=\"#66FFFF\">"
+  output +=    "<p align=\"right\"><b>Hit Rate:</b></td>"
+  output +=    "<td width=\"25%\" bgcolor=\"#FFFF99\"><p align=\"center\"><b>"
+  output +=      Math.round(((my_cache.currseq+1-my_cache.misses)/(my_cache.currseq+1))*100) + "%</b></p></td>"
+  output += "</tr>"
+  output += "<tr>"
+  output +=    "<td width=\"40%\" bgcolor=\"#66FFFF\">"
+  output +=    "<p align=\"right\"><b>Miss Rate:</b></td>"
+  output +=    "<td width=\"25%\" bgcolor=\"#FFFF99\"><p align=\"center\"><b>"
+  output +=      Math.round((my_cache.misses/(my_cache.currseq+1))*100) + "%</b></p></td>"
+  output += "</tr>"
+  output += "<tr>"
+  output +=    "<td width=\"40%\" bgcolor=\"#66FFFF\">"
+  output +=    "<p align=\"right\"><b>Total Reload Transient:</b></td>"
+  output +=    "<td width=\"25%\" bgcolor=\"#FFFF99\"><p align=\"center\"><b>"
+  output +=      totTransients + "</b></p></td>"
+  output += "</tr>"
+  output += "</table></p>"
+
+  my_cache.currseq++;
+  if (my_cache.currseq  == my_cache.tot_refs) {
+    suppress_output = 0;
+  }
+
+  if (suppress_output != 1) {
+    parent.frames[1].document.getElementById('cacheSpace').innerHTML = output
+  }
+  /*parent.frames[1].document.open();
+  parent.frames[1].document.write();
+  parent.frames[1].document.close();*/
+
+  if (first_iter == 1 && suppress_output != 1) {
+    parent.frames[1].scrollTo(0,parent.frames[1].document.body.scrollHeight);
+    first_iter = 0;
+  }
+}
+
+</script>
+</head>
+
+<body bgcolor="#8FC844">
+<script language="JavaScript">
+  init_colors();
+</script>
+
+<center> <H2>Multitask Cache Demonstrator</h2> </center>
+
+<form>
+
+<table><tr><td><b>Cache Size</b></td>
+  <td><select name="csize" onClick="csize_onClick(this.value)">
+    <option value="4">4</option>
+    <option value="8">8</option>
+    <option selected value=16>16</option>
+    <option value="32">32</option>
+    <option value="64">64</option>
+    <option value="128">128</option>
+    <option value="256">256</option>
+  </select></td><br>
+  <tr><td><b># Sets</b></td>
+  <td><select name="nsets" onClick="nsets_onClick(this.value)">
+    <option value="1">1</option>
+    <option value="2">2</option>
+    <option selected value="4">4</option>
+    <option value="8">8</option>
+    <option value="16">16</option>
+    <option value="32">32</option>
+    <option value="64">64</option>
+    <option value="128">128</option>
+    <option value="256">256</option>
+  </select></td></tr>
+</table>
+
+<p><select name="rpolicy" size="3">
+     <option selected value=1>LRU</option>
+     <option value="2">FIFO</option>
+     <option value="3">RAND</option>
+</select><b>Replacement Policy</b></p>
+<p><hr></p>
+
+<p><select name="schedmech" size="3" onChange="update_schedmech(this.form)">
+    <option selected value=1>FIFO</option>
+    <option value="2">Round Robin</option>
+    <option value="3">Priority Based</option>
+</select><b>Scheduling Mechanism</b></p>
+
+<p><input type="text" name="tslice" maxlength="3" size="3" disabled value="2">
+   <b>CPU Time Slice</b></p>
+
+<p><input name="rand" type=checkbox checked onClick="checkLocNeeded(this)">
+   <b>Use Random Access Sequence </b></p>
+<p><b>Locality Probability</b>
+  <select name="locality">
+    <option value="100">100%</option>
+    <option value="90">90%</option>
+    <option value="80">80%</option>
+    <option value="70">70%</option>
+    <option value="60">60%</option>
+    <option selected value="50">50%</option>
+    <option value="40">40%</option>
+    <option value="30">30%</option>
+    <option value="20">20%</option>
+    <option value="10">10%</option>
+    <option value="0">0%</option>
+  </select>
+</p>
+<p><hr></p>
+<p><b># of Tasks</b>
+  <select name="ntasks" onChange="update_tasks(this.form)">
+    <option value="1">1</option>
+    <option value="2">2</option>
+    <option value="3">3</option>
+    <option value="4">4</option>
+    <option value="5">5</option>
+    <option value="6">6</option>
+    <option value="7">7</option>
+    <option value="8">8</option>
+    <option value="9">9</option>
+    <option value="10">10</option>
+    <option value="11">11</option>
+    <option value="12">12</option>
+    <option value="13">13</option>
+    <option value="14">14</option>
+    <option value="15">15</option>
+    <option value="16">16</option>
+    <option value="17">17</option>
+    <option value="18">18</option>
+    <option value="19">19</option>
+    <option value="20">20</option>
+    <option value="21">21</option>
+    <option value="22">22</option>
+    <option value="23">23</option>
+    <option value="24">24</option>
+    <option value="25">25</option>
+    <option value="26">26</option>
+  </select>
+</p>
+<p><input name="plus35" type=checkbox> <b>Allow more than 35 Memory Refs</b></p>
+<div id="num_memacc">
+  <table border="0" cellpadding="0" cellspacing="0">
+    <tr>
+      <td width="33%"><b>Task Name</b></td>
+      <td width="33%"><b>Number of Memory References</b></td>
+      <td width="34%">&nbsp</td>
+    </tr>
+    <tr>
+      <td width="33%" bgcolor="#3399CC">task A</td>
+      <td width="33%">
+        <input type="text" name="num_memacc0" maxlength="2" size="2" value="8" onBlur="testInput(this)">
+      </td>
+      <td width="34%">&nbsp</td>
+    </tr>
+  </table>
+</div>
+<p><hr></p>
+<p align="center">
+<input type="button" name="upconfig" value="Update Configuration"
+    onClick="updtconfig_onClick(this.form)">
+</p>
+<p align="center">
+<input type="button" name="gnrate" value="Generate Memory References"
+    onClick="gnrate_onClick(this.form)">
+</p>
+<p align="center">
+<input type="button" name="sched" value="Schedule Tasks"
+    onClick="sched_onClick(this.form)">
+</p>
+<p>
+<fieldset width="302" height="113" padding"2">
+  <legend>Clock Options</legend>
+  <table border="0" cellspacing="1" width="100%">
+    <tr>
+      <td width="100%" height="26" colspan="2">
+        <p><input type="radio" value="V1" checked name="R1">Single Step</p>
+      </td>
+    </tr>
+    <tr>
+      <td width="48%" height="21">
+        <p><input type="radio" name="R1" value="V2">Run to Completion</p>
+      </td>
+      <td width="52%" height="21">
+        <p align="right"><input type="button"  value="Step/Run" onClick="run_onClick(this.form)"></p>
+      </td>
+    </tr>
+    <tr>
+      <td width="100%" height="17" valign="top" colspan="2">
+        <p><input type="radio" name="R1" value="V3">Run&nbsp;&nbsp;
+        <input type="text" name="T1" maxlength="3" size="3">&nbsp;Clock Cycles</p>
+      </td>
+    </tr>
+  </table>
+</fieldset>
+</p>
+<p align="center">
+<input type="button"  value="   Reset   " onClick="reset_form()">
+</p>
+
+</form>
+
+</body>
+</html>

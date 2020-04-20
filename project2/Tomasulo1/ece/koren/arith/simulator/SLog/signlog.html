@@ -1,0 +1,1516 @@
+<HTML>
+<HEAD>
+<TITLE> Working Functions </TITLE>
+<SCRIPT language="JavaScript">
+
+function PrintError(Message) {
+	Error = "<CENTER><H1> ERROR </H1></CENTER> <P>\n"
+	Error += "<CENTER> <EM>" + Message + "</EM> </CENTER>\n"
+	return Error
+}
+
+function RoundOff (TheNum, fractional) {
+	// returns the value TheNum would have if it were represented by
+	// NumDecimals bits after the decimal point
+	//Scaling = Math.pow(2, NumDecimals)
+	Scaling = Math.pow(2, fractional)
+	return (Math.round(TheNum * Scaling) / Scaling)
+}
+
+function ParseBinary (BinNum) {
+	// Turns a binary number into a decimal, sets a flag to true if
+	// BinNum is not actually binary
+	if ( BinNum == MaxEaNum ) {
+		RealNum = 0;
+
+	} else {
+
+		IsNeg = false
+		if (BinNum < 0) {
+			IsNeg = true
+			BinNum *= -1
+		}
+		RealNum = 0
+		LogBaseTen = Math.log(BinNum)/Math.LN10
+		HighestPlace = Math.ceil(LogBaseTen)
+
+		PrintHighestPlace = "This is the Highest Place  " + HighestPlace;
+
+		// for (CurPlace = HighestPlace; CurPlace >= -NumBits; CurPlace--) {
+		for (CurPlace = HighestPlace; CurPlace >= -l; CurPlace--) {
+			CurEntry = Math.round(BinNum / Math.pow(10, CurPlace))
+			if (CurEntry != 0 && CurEntry != 1) {
+				NotBinary = true
+				CurEntry = 1 // feed it something normal, to avoid
+					 // wierd Javascript errors
+			}
+			if (CurEntry == 1) {
+				RealNum += Math.pow(2, CurPlace)
+				BinNum -= Math.pow(10, CurPlace)
+			}
+		}
+		if (IsNeg) {RealNum *= -1} // reverse it back at the end
+
+		// now check if the number was negative according to two's complement
+		// representation - if it was, set the decimal value to this negative
+		// number
+		// if (HighestPlace == NumBits) {
+		if (HighestPlace == k ) {
+			// RealNum -= Math.pow(2, NumBits)
+			RealNum -= Math.pow(2, k)
+		}
+	}
+
+	return RealNum
+}
+
+function ParseBinaryMax (BinNumMax) {
+	// Turns a binary number into a decimal, sets a flag to true if
+	// BinNum is not actually binary
+
+		IsNeg = false
+		if (BinNumMax < 0) {
+			IsNeg = true
+			BinNumMax *= -1
+		}
+		RealNumMax = 0
+		LogBaseTen = Math.log(BinNumMax)/Math.LN10
+		HighestPlace = Math.ceil(LogBaseTen)
+
+		PrintHighestPlaceMax = "This is the Highest Place  " + HighestPlace;
+
+		for (CurPlace = HighestPlace; CurPlace >= -l; CurPlace--) {
+			CurEntry = Math.round(BinNumMax / Math.pow(10, CurPlace))
+			if (CurEntry != 0 && CurEntry != 1) {
+				NotBinary = true
+				CurEntry = 1 // feed it something normal, to avoid
+					 // wierd Javascript errors
+			}
+			if (CurEntry == 1) {
+				RealNumMax += Math.pow(2, CurPlace)
+				BinNumMax -= Math.pow(10, CurPlace)
+			}
+		}
+		if (IsNeg) {RealNumMax *= -1} // reverse it back at the end
+
+		// now check if the number was negative according to two's complement
+		// representation - if it was, set the decimal value to this negative
+		// number
+
+	return RealNumMax
+}
+
+
+function OrderOfMagnitude (TheNum) {
+	// returns the highest place which has a "1" in TheNum's
+	// binary representation - special non-2's complement version
+
+	LogBaseTwo = Math.log(TheNum)/Math.LN2;
+	return Math.floor(LogBaseTwo)
+}
+
+function PrintBinary(TheNum, NumDecs) {
+
+	// initialize the string
+	S = "";
+	// deal with negative numbers
+	if (TheNum < 0) {
+		S += "-"
+		TheNum *= -1
+	}
+	StartPlace = OrderOfMagnitude(TheNum)
+	if (StartPlace < 0) {StartPlace = 0}
+
+	for (CurPlace = StartPlace; CurPlace >= -NumDecs; CurPlace--) {
+		if (CurPlace == -1) {S += "."}
+		CurPower = Math.pow(2, CurPlace)
+		if (TheNum >= CurPower) {
+			S += "1"
+			TheNum = TheNum - CurPower
+		} else  {
+			S += "0"
+		}
+	}
+	return S
+}
+
+	TheSpace = "<BR>";
+
+
+function PrintTwosComp(TheNum, StartPlace) 
+{
+	if ( TheNum == "0" && ZeroInput == "1" ) {
+		S = MaxEaNum;
+	} else {
+
+		if ( TheNum > MaxDecimal ) {
+			Overflow = 1;
+		}
+
+		// first deal with negative numbers...
+		if (TheNum < 0) {TheNum += Math.pow(2, StartPlace)}
+
+		// now initialize the string
+		S = "";
+		// S += "<TD>";
+		for (CurPlace = StartPlace - 1; CurPlace >= -l; CurPlace--) 
+		{
+			if (CurPlace == -1) 
+			{
+				S += ".";
+			}
+			CurPower = Math.pow(2, CurPlace);
+			if (TheNum >= CurPower) 
+			{
+				S += "1";
+				TheNum -= CurPower
+			} 
+			else 
+			{
+				S += "0"
+			} 
+		}
+
+	}
+	return S;
+
+}
+
+function SignOrigNum(OrigNum) { 
+	if (OrigNum < 0) {
+		SignBit = "1"
+	} else {
+		SignBit = "0"
+		}
+
+	return SignBit;
+}
+
+function SignDecimalNum( SignOfNum, UnsignedNum ) {
+	if ( SignOfNum == "1" ) {
+		SignedUnsignedNum = -1 * UnsignedNum;
+		} else {
+			SignedUnsignedNum = UnsignedNum;
+	}
+	return SignedUnsignedNum;
+}
+	
+
+function NumToSignLog(OrigNum, Eta, Tau) { 
+	InverseTau = 1 / Tau;
+	AbsoluteOrigNum = Math.abs(OrigNum);
+	if ( AbsoluteOrigNum <= InverseTau ) {
+		Ka1 = 0;
+	} else {
+
+		EtaMinusOne = Eta - 1;
+		OneMinusEta = 1 - Eta;
+		TauOfOrigNum1 = OrigNum * Tau; 
+		TauOfOrigNum = Math.abs(TauOfOrigNum1);
+		LogBaseTwoOrigNum = Math.log(TauOfOrigNum)/Math.LN2;
+		TwoToEtaMinusOne = Math.pow(2,EtaMinusOne);
+        	TwoToOneMinusEta = Math.pow(2,OneMinusEta);
+		KaHigh = (LogBaseTwoOrigNum * TwoToEtaMinusOne + 0.5);
+		KaFloor = Math.floor(KaHigh);
+		Ka1 = KaFloor * TwoToOneMinusEta;
+		}
+
+	return Ka1;
+}
+
+
+function NumToSignLogKoren(OrigNum) { 
+	absOrigNum = Math.abs(OrigNum);
+	if ( OrigNum == "0" ) {
+		LogBaseTwoOrigNum = "0";
+	} else {
+		LogBaseTwoOrigNum = Math.log(absOrigNum)/Math.LN2;
+	}
+
+	return LogBaseTwoOrigNum;
+}
+
+
+function FindMaxValuek( GivenkBits ) {
+	MaxkValue = 0;
+	for (i = 0; i <= GivenkBits - 1; i++) {
+		MaxkValueMult = Math.pow(10,i)	
+		MaxkValue += MaxkValueMult;
+	}
+	return MaxkValue;
+}
+
+function FindMaxValuel( GivenlBits ) {
+	MaxlValue = 0;
+	for (i = 0; i <= GivenlBits - 1; i++) {
+		MaxlValueMult = Math.pow(10,i)	
+		MaxlValue += MaxlValueMult;
+	}
+	return MaxlValue;
+}
+
+
+function KofTau(Tau, Eta) { 
+	EtaMinusOne = Eta - 1;
+	OneMinusEta = 1 - Eta;
+	LogBaseTwoTau = Math.log(Tau)/Math.LN2;
+	TwoToEtaMinusOne = Math.pow(2,EtaMinusOne);
+        TwoToOneMinusEta = Math.pow(2,OneMinusEta);
+	TaHigh = (LogBaseTwoTau * TwoToEtaMinusOne + 0.5);
+	TaFloor = Math.floor(TaHigh);
+	Ta1 = TaFloor * TwoToOneMinusEta;
+	return Ta1;
+}
+
+function KtoNum( SignK, Klog, Tau ) {
+	OneOverTau = 1 / Tau;
+	TwoToKlog = Math.pow(2,Klog);
+	UnsignedNumNotRound = TwoToKlog * OneOverTau;
+	UnsignedNum = RoundOff(UnsignedNumNotRound, 8);
+	if ( SignK == "1" ) {
+		NumConvertResult = -1 * UnsignedNum;
+		} else {
+			NumConvertResult = UnsignedNum;
+	}
+	return NumConvertResult;
+}
+
+
+function KtoNumKoren( SignK, Klog, AorB ) {
+	TwoToKlog = Math.pow(2,Klog);
+	UnsignedNumNotRound = TwoToKlog;
+	UnsignedNum = RoundOff(UnsignedNumNotRound, 8);
+	if ( SignK == "1" ) {
+		NumConvertResultWord = -1 * UnsignedNum;
+		} else {
+			NumConvertResultWord = UnsignedNum;
+	}
+	if ( AorB == "1" && ZeroInputA == "1" ) {
+		NumConvertResultWord = 0;
+	}
+	if ( AorB == "0" && ZeroInputB == "1" ) {
+		NumConvertResultWord = 0;
+	}
+
+	return NumConvertResultWord;
+}
+
+function PrintLeadingZeros( BinResult ) {
+	StringBinResult = "" + BinResult + "";
+	BinResultArray = StringBinResult.split(".");
+	BinResultInteger = BinResultArray[0];
+	LengthBinResult = BinResultInteger.length;
+	NeedToAddZeros = k - LengthBinResult;
+	ZerosString = "";
+	ZerosBinResult = "";
+	for ( zeros = 0; zeros <= NeedToAddZeros - 1; zeros++ ) {
+		ZerosString += "0";
+	}
+	ZerosBinResult += ZerosString + StringBinResult;
+	ZerosBinResultString = ZerosBinResult.toString();
+	return ZerosBinResultString;
+}
+
+function BetaOfK( Kdiff ) {
+		TwoToKdiff = Math.pow(2,Kdiff);
+		TwoToKdiffOne = 1 + TwoToKdiff;
+		TwoToKdiffOneAbs = Math.abs(TwoToKdiffOne);
+		LogBaseTwoKdiff = Math.log(TwoToKdiffOneAbs)/Math.LN2;
+
+	return LogBaseTwoKdiff;
+}
+
+function GammaOfK( KdiffToo ) {
+
+		TwoToKdiffToo = Math.pow(2,KdiffToo);
+		TwoToKdiffTooOne = 1 - TwoToKdiffToo;
+		TwoToKdiffTooOneAbs = Math.abs(TwoToKdiffTooOne);
+		LogBaseTwoKdiffToo = Math.log(TwoToKdiffTooOneAbs)/Math.LN2;
+
+	return LogBaseTwoKdiffToo;
+}
+
+function SignLog(form) {
+
+	ChoseAdd = form.Operation[0].checked
+	ChoseSubtract = form.Operation[1].checked
+	ChoseMultiply = form.Operation[2].checked
+	ChoseDivide = form.Operation[3].checked
+	ChoseReciprocal = form.Operation[4].checked
+	ChoseSquareRoot = form.Operation[5].checked
+	ChoseSquare = form.Operation[6].checked
+
+	if ( ChoseAdd == "1" ) {
+		Operator = "Add";
+		} else if ( ChoseSubtract == "1" ) { 
+			Operator = "Subtract";
+			} else if ( ChoseMultiply == "1" ) { 
+				Operator = "Multiply";
+				} else if ( ChoseDivide == "1" ) { 
+					Operator = "Divide";
+					} else if ( ChoseReciprocal == "1" ) { 
+						Operator = "Reciprocal";
+						} else if ( ChoseSquareRoot == "1" ) { 
+							Operator = "SquareRoot";
+							} else if ( ChoseSquare == "1" ) { 
+								Operator = "Square";
+
+	}
+
+
+	A = parseFloat(form.A.value)
+	B = parseFloat(form.B.value) 
+	C = "junk";
+	k = parseFloat(form.k.value)
+	l = parseFloat(form.l.value)
+	SignA = SignOrigNum(A);
+	SignB = SignOrigNum(B);
+	Tau = 1;
+	Eta = 1;
+	Maxk = FindMaxValuek( k );
+	Maxl = FindMaxValuel( l );
+	MaxEaNum = Maxk + "." + Maxl;
+	MaxDecimal = ParseBinaryMax(MaxEaNum, k);
+	SignedMaxEaNum = "1" + MaxEaNum;
+	Overflow = 0;
+	ZeroInput = 0;
+	ZeroInputA = 0;
+	ZeroInputB = 0;
+	DivideByZero = 0;
+
+	if ( A == "0" ) {
+		ZeroInput = 1;
+		ZeroInputA = 1;
+		SignA = 0;
+	}
+	if ( B == "0" ) {
+		ZeroInput = 1;
+		ZeroInputB = 1;
+		SignB = 0;
+	}
+
+	if ( Operator == "Divide" && ZeroInputB == "1" ) {
+		DivideByZero = 1;
+	}
+	if ( Operator == "Reciprocal" && ZeroInputA == "1" ) {
+		DivideByZero = 1;
+	}
+	if ( Operator == "Reciprocal" && ZeroInputB == "1" ) {
+		DivideByZero = 1;
+	}
+
+	NumBits = k + l;
+
+	Ea = NumToSignLogKoren(A); 
+	Eb = NumToSignLogKoren(B); 
+	EaRound = RoundOff( Ea, 5 )
+	EbRound = RoundOff( Eb, 5 )
+	EaRoundSigned = SignDecimalNum( SignA, EaRound );
+	EbRoundSigned = SignDecimalNum( SignB, EbRound );
+
+	EaBin = PrintBinary(Ea, l )
+	EbBin = PrintBinary(Eb, l )
+	EaBinExtend = PrintLeadingZeros( EaBin );
+	EbBinExtend = PrintLeadingZeros( EbBin );
+	EaBinTwosComp = PrintTwosComp(Ea, k) 
+	EaBinTwosCompSigned = SignA + EaBinTwosComp;
+	EbBinTwosComp = PrintTwosComp(Eb, k) 
+	EbBinTwosCompSigned = SignB + EbBinTwosComp;
+
+	EaDecTwosComp = ParseBinary(EaBinTwosComp, k);
+	EbDecTwosComp = ParseBinary(EbBinTwosComp, k);
+	EaDecTwosCompSigned = SignDecimalNum( SignA, EaDecTwosComp );
+	EbDecTwosCompSigned = SignDecimalNum( SignB, EbDecTwosComp );
+
+	EaPlusEb = Ea + Eb;
+	EaPlusEbBin = PrintBinary(EaPlusEb,l);
+	EaPlusEbDec = ParseBinary(EaPlusEbBin);
+	ExtendedEaPlusEb = PrintLeadingZeros( EaBin );
+	AddValueDec = KtoNumKoren( 0, EaPlusEbDec, C) 
+
+	if ( Operator == "Subtract" ) {
+		SignBInvert = 1 ^ SignB; 
+		SignB = SignBInvert;
+	}
+
+	MixedSigns = SignA ^ SignB;
+		
+	if ( Operator == "Add" || Operator == "Subtract" ) {
+		if ( MixedSigns == "1" ) {
+			Operator = "Subtract";
+			} else {
+				Operator = "Add";
+		}
+	}
+
+	PrintConvertToLogKoren =  "<p><B>E<SUB>X</SUB></B> = ";
+	PrintConvertToLogKoren += " log<SUB>2</SUB> | X | </p>";
+
+	PrintConvertToLogKorenA =  "<p><B>E<SUB>A</SUB></B> = ";
+	PrintConvertToLogKorenA += "" + EaBinTwosCompSigned + "<SUB>2</SUB>";
+	PrintConvertToLogKorenA += " = " + EaDecTwosCompSigned + "<SUB>10</SUB></p>";
+
+	PrintConvertToLogKorenB =  "<p><B>E<SUB>B</SUB></B> = ";
+	PrintConvertToLogKorenB += "" + EbBinTwosCompSigned + "<SUB>2</SUB>";
+	PrintConvertToLogKorenB += " = " + EbDecTwosCompSigned + "<SUB>10</SUB></p>";
+
+	Ka = NumToSignLog(A,Eta,Tau);
+	Kb = NumToSignLog(B,Eta,Tau);
+	Kt = KofTau(Tau, Eta);  
+
+	PrintConvertToLogEquation = "<p><B>K<SUB>x</SUB></B> = 2<SUP>1-";
+	PrintConvertToLogEquation += "<font face=\"Symbol\">h</font></SUP> ";
+	PrintConvertToLogEquation += "[1/2 + 2<SUP><font face=\"Symbol\">h</font>-1</SUP> ";
+        PrintConvertToLogEquation += "log<SUB>2</SUB> | <font face=\"Symbol\">t</font>X | ] </p>";
+
+	PrintConvertToLogA =  "<p><B>K<SUB>A</SUB></B> = K<SUB>" + A + "</SUB> = 2<SUP>1-" + Eta + "</SUP>";
+        PrintConvertToLogA += " [1/2 + 2<SUP>" + Eta + "-1</SUP> log<SUB>2</SUB> ";
+	PrintConvertToLogA += "|" + Tau + " * " + A + "| ]  =  " + Ka + "</p>";
+
+	PrintConvertToLogB =  "<p><B>K<SUB>B</SUB></B> = K<SUB>" + B + "</SUB> = 2<SUP>1-" + Eta + "</SUP>";
+        PrintConvertToLogB += " [1/2 + 2<SUP>" + Eta + "-1</SUP> log<SUB>2</SUB> ";
+	PrintConvertToLogB += "|" + Tau + " * " + B + "| ]  =  " + Kb + "</p>";
+
+	PrintConvertToLogTau = "<p><B>K<SUB><font face=\"Symbol\">t</font></SUB></B> = K<SUB>";
+	PrintConvertToLogTau +=	Tau + "</SUB> = 2<SUP>1-" + Eta + "</SUP>";
+        PrintConvertToLogTau += " [1/2 + 2<SUP>" + Eta + "-1</SUP> log<SUB>2</SUB> ";
+	PrintConvertToLogTau += "|" + Tau + "| ]  =  " + Kt + "</p>";
+
+
+	if ( Operator == "Multiply" ) {
+		SignLogMultiply = Ea + Eb;
+		SignLogMultiplyEaBin = ParseBinary(EaBinTwosComp, k);
+		SignLogMultiplyEbBin = ParseBinary(EbBinTwosComp, k);
+		SignLogMultiplyBin = SignLogMultiplyEaBin + SignLogMultiplyEbBin;
+
+		SignLogMultiplySa = SignA ^ SignB;
+		if ( SignLogMultiplySa == "1" ) {
+			SignLogMultiplyBinSigned = -1 * SignLogMultiplyBin;
+			} else {
+				SignLogMultiplyBinSigned = SignLogMultiplyBin;
+		}
+		if ( SignLogMultiplySa == "1" ) {
+			Result = -1 * SignLogMultiply;
+			} else {
+				Result = SignLogMultiply;
+		}
+
+		SignLogMultiplyBinTwosComp = PrintTwosComp(SignLogMultiplyBin, k); 
+		SignLogMultiplyDecTwosComp = ParseBinary(SignLogMultiplyBinTwosComp, k );
+		SignLogMultiplyDecTwosCompSigned = SignDecimalNum( SignLogMultiplySa, SignLogMultiplyDecTwosComp );
+		if ( SignLogMultiplySa == "1" ) {
+			SignLogMultiplyBinTwosCompSigned = "1" + SignLogMultiplyBinTwosComp;
+			} else {
+				SignLogMultiplyBinTwosCompSigned = "0" + SignLogMultiplyBinTwosComp;
+		}
+
+		NumConvertResult = KtoNumKoren( SignLogMultiplySa, SignLogMultiplyDecTwosComp, C ); 
+		NumConvertResultA = KtoNumKoren( SignA, SignLogMultiplyEaBin, 1 ); 
+		NumConvertResultB = KtoNumKoren( SignB, SignLogMultiplyEbBin, 0 ); 
+
+		if ( ZeroInput == "1" ) {
+			SignLogMultiplyBinTwosCompSigned = SignedMaxEaNum;
+			SignLogMultiplyDecTwosCompSigned = 0;
+			NumConvertResult = 0;
+		}
+
+		PrintEquation = "<p><B>E<SUB>P</SUB></B> = E<SUB>A</SUB> + E<SUB>B</SUB> = E<SUB>";
+		PrintEquation += "" + A + "</SUB> + E<SUB>" + B + "</SUB>";
+		PrintEquation += " = " + SignLogMultiplyEaBin + " + ";
+		PrintEquation += "" + SignLogMultiplyEbBin + " = " + SignLogMultiplyBinSigned;
+		PrintSignLogMultiply = "<p><B>E<SUB>P</SUB></B>";
+		PrintSignLogMultiply += " = " + SignLogMultiplyBinTwosCompSigned + "<SUB>2</SUB> = ";
+		PrintSignLogMultiply += "" + SignLogMultiplyDecTwosCompSigned + "<SUB>10</SUB></P>";
+		PrintSignLogMultiply += "<TR><TD><B>2<SUP>E a</SUP></B> = " + NumConvertResultA;
+		PrintSignLogMultiply += "" + "<SUB>10</SUB><BR>";
+		PrintSignLogMultiply += "<B>2<SUP>E b</SUP></B> = " + NumConvertResultB + "<SUB>10</SUB><BR>";
+		PrintSignLogMultiply += "<B>2<SUP>E p</SUP></B> = " + NumConvertResult + "<SUB>10</SUB></TD></TR>";
+		PrintResult = PrintSignLogMultiply;
+	}
+
+        if ( Operator == "Divide" ) {
+		SignLogDivide = Ea - Eb;
+		SignLogDivideEaBin = ParseBinary(EaBinTwosComp, k);
+		SignLogDivideEbBin = ParseBinary(EbBinTwosComp, k);
+		SignLogDivideBin = SignLogDivideEaBin - SignLogDivideEbBin;
+
+		SignLogDivideSa = SignA ^ SignB;
+		if ( SignLogDivideSa == "1" ) {
+			Result = -1 * SignLogDivide;
+			} else {
+				Result = SignLogDivide;
+		}
+		if ( SignLogDivideSa == "1" ) {
+			SignLogDivideBinSigned = -1 * SignLogDivideBin;
+			} else {
+				SignLogDivideBinSigned = SignLogDivideBin;
+		}
+
+
+		SignLogDivideBinTwosComp = PrintTwosComp(SignLogDivideBin, k); 
+		SignLogDivideDecTwosComp = ParseBinary(SignLogDivideBinTwosComp, k );
+		SignLogDivideDecTwosCompSigned = SignDecimalNum( SignLogDivideSa, SignLogDivideDecTwosComp );
+		if ( SignLogDivideSa == "1" ) {
+			SignLogDivideBinTwosCompSigned = "1" + SignLogDivideBinTwosComp;
+			} else {
+				SignLogDivideBinTwosCompSigned = "0" + SignLogDivideBinTwosComp;
+		}
+
+		NumConvertResult = KtoNumKoren( SignLogDivideSa, SignLogDivideDecTwosComp, C ); 
+		NumConvertResultA = KtoNumKoren( SignA, SignLogDivideEaBin, 1 ); 
+		NumConvertResultB = KtoNumKoren( SignB, SignLogDivideEbBin, 0 ); 
+
+		if ( ZeroInput == "1" ) {
+			SignLogDivideBinTwosCompSigned = SignedMaxEaNum;
+			SignLogDivideDecTwosCompSigned = 0;
+			NumConvertResult = 0;
+		}
+
+		PrintEquation = "<p><B>E<SUB>Q</SUB></B> = E<SUB>A</SUB> - E<SUB>B</SUB> = E<SUB>";
+		PrintEquation += "" + A + "</SUB> - E<SUB>" + B + "</SUB>";
+		PrintEquation += " = " + SignLogDivideEaBin + " - ";
+		PrintEquation += "" + SignLogDivideEbBin + " = " + SignLogDivideBinSigned;
+
+		PrintSignLogDivide = "<p><B>E<SUB>Q</SUB></B>";
+		PrintSignLogDivide += " = " + SignLogDivideBinTwosCompSigned + "<SUB>2</SUB> = ";
+		PrintSignLogDivide += "" + SignLogDivideDecTwosCompSigned + "<SUB>10</SUB></P>";
+		PrintSignLogDivide += "<TR><TD><B>2<SUP>E a</SUP></B> = " + NumConvertResultA;
+		PrintSignLogDivide += "" + "<SUB>10</SUB><BR>";
+		PrintSignLogDivide += "<B>2<SUP>E b</SUP></B> = " + NumConvertResultB + "<SUB>10</SUB><BR>";
+		PrintSignLogDivide += "<B>2<SUP>E q</SUP></B> = " + NumConvertResult + "<SUB>10</SUB></TD></TR>";
+		PrintResult = PrintSignLogDivide;
+
+	}	
+
+	if ( Operator == "Add" ) {
+		if ( Ea >= Eb ) {
+			EbMinusEa = Eb - Ea;
+			BetaEbMinusEa = BetaOfK( EbMinusEa );
+			Eadd = Ea + BetaEbMinusEa;
+			BetaResult = BetaEbMinusEa;
+			EaddSign = SignA;
+			Result = Eadd;
+
+			SignLogAddEaBin = ParseBinary(EaBinTwosComp, k);
+			SignLogAddEbBin = ParseBinary(EbBinTwosComp, k);
+		        EbMinusEaBin = SignLogAddEbBin - SignLogAddEaBin;
+			BetaEbMinusEaBin = BetaOfK( EbMinusEaBin ); 
+			SignLogAddBin = SignLogAddEaBin + BetaEbMinusEaBin;
+
+			if ( ZeroInputA == "1" ) {
+				SignLogAddBin = SignLogAddEbBin;
+			}
+			if ( ZeroInputB == "1" ) {
+				SignLogAddBin = SignLogAddEaBin;
+			}
+
+			SignLogAddBinTwosComp = PrintTwosComp(SignLogAddBin, k); 
+			SignLogAddDecTwosComp = ParseBinary(SignLogAddBinTwosComp, k );
+			SignLogAddDecTwosCompSigned = SignDecimalNum( EaddSign, SignLogAddDecTwosComp );
+			if ( EaddSign == "1" ) {
+				SignLogAddBinTwosCompSigned = "1" + SignLogAddBinTwosComp;
+				} else {
+					SignLogAddBinTwosCompSigned = "0" + SignLogAddBinTwosComp;
+			}
+
+			NumConvertResult = KtoNumKoren( EaddSign, SignLogAddDecTwosComp, C ); 
+			NumConvertResultA = KtoNumKoren( SignA, SignLogAddEaBin, 1 ); 
+			NumConvertResultB = KtoNumKoren( SignB, SignLogAddEbBin, 0 ); 
+
+			PrintEquation = "<p><B>E<SUB>S</SUB></B> = E<SUB>A</SUB> + <font face=\"Symbol\">F</font>";
+			PrintEquation += "<SUP>+</SUP> (E<SUB>B</SUB> - E<SUB>A</SUB>) = ";
+			PrintEquation += "E<SUB>" + A + "</SUB> + <font face=\"Symbol\">F</font><SUP>+</SUP>";
+			PrintEquation += " ( E<SUB>" + B + "</SUB> - E<SUB>" + A + "</SUB> ) ";
+			PrintEquation += " = " + SignLogAddEaBin + " + <font face=\"Symbol\">F</font><SUP>+</SUP> (";
+			PrintEquation += "" + EbMinusEaBin + " )";
+
+			PrintSignLogAdd = "<p><B>E<SUB>S</SUB></B>";
+			PrintSignLogAdd += " = " + SignLogAddBinTwosCompSigned + "<SUB>2</SUB> = ";
+			PrintSignLogAdd += "" + SignLogAddDecTwosCompSigned + "<SUB>10</SUB></P>";
+			PrintSignLogAdd += "<TR><TD><B>2<SUP>E a</SUP></B> = " + NumConvertResultA;
+			PrintSignLogAdd += "" + "<SUB>10</SUB><BR>";
+			PrintSignLogAdd += "<B>2<SUP>E b</SUP></B> = " + NumConvertResultB + "<SUB>10</SUB><BR>";
+			PrintSignLogAdd += "<B>2<SUP>E s</SUP></B> = " + NumConvertResult + "<SUB>10</SUB></TD></TR>";
+			PrintResult = PrintSignLogAdd;
+
+			} else if ( Eb > Ea ) {
+				EaMinusEb = Ea - Eb;
+				BetaEaMinusEb = BetaOfK( EaMinusEb );
+				Eadd = Eb + BetaEaMinusEb;
+				BetaResult = BetaEaMinusEb;
+				EaddSign = SignB;
+				Result = Eadd;
+
+				SignLogAddEaBin = ParseBinary(EaBinTwosComp, k);
+				SignLogAddEbBin = ParseBinary(EbBinTwosComp, k);
+		        	EaMinusEbBin = SignLogAddEaBin - SignLogAddEbBin;
+				BetaEaMinusEbBin = BetaOfK( EaMinusEbBin ); 
+				SignLogAddBin = SignLogAddEbBin + BetaEaMinusEbBin;
+
+				if ( ZeroInputA == "1" ) {
+					SignLogAddBin = SignLogAddEbBin;
+				}
+				if ( ZeroInputB == "1" ) {
+					SignLogAddBin = SignLogAddEaBin;
+				}
+
+				SignLogAddBinTwosComp = PrintTwosComp(SignLogAddBin, k); 
+				SignLogAddDecTwosComp = ParseBinary(SignLogAddBinTwosComp, k );
+				SignLogAddDecTwosCompSigned = SignDecimalNum( EaddSign, SignLogAddDecTwosComp );
+				if ( EaddSign == "1" ) {
+					SignLogAddBinTwosCompSigned = "1" + SignLogAddBinTwosComp;
+					} else {
+						SignLogAddBinTwosCompSigned = "0" + SignLogAddBinTwosComp;
+				}
+
+				NumConvertResult = KtoNumKoren( EaddSign, SignLogAddDecTwosComp, C ); 
+				NumConvertResultA = KtoNumKoren( SignA, SignLogAddEaBin, 1 ); 
+				NumConvertResultB = KtoNumKoren( SignB, SignLogAddEbBin, 0 ); 
+
+
+				PrintEquation = "<p><B>E<SUB>S</SUB></B> = E<SUB>B</SUB> + <font face=\"Symbol\">F</font>";
+				PrintEquation += "<SUP>+</SUP> (E<SUB>A</SUB> - E<SUB>B</SUB>) = ";
+				PrintEquation += "E<SUB>" + B + "</SUB> + <font face=\"Symbol\">F</font><SUP>+</SUP>";
+				PrintEquation += " ( E<SUB>" + A + "</SUB> - E<SUB>" + B + "</SUB> ) ";
+				PrintEquation += " = " + SignLogAddEbBin + " + <font face=\"Symbol\">F</font><SUP>+</SUP> (";
+				PrintEquation += "" + EaMinusEbBin + " )";
+
+
+				PrintSignLogAdd = "<p><B>E<SUB>S</SUB></B>";
+				PrintSignLogAdd += " = " + SignLogAddBinTwosCompSigned + "<SUB>2</SUB> = ";
+				PrintSignLogAdd += "" + SignLogAddDecTwosCompSigned + "<SUB>10</SUB></P>";
+				PrintSignLogAdd += "<TR><TD><B>2<SUP>E a</SUP></B> = " + NumConvertResultA;
+				PrintSignLogAdd += "" + "<SUB>10</SUB><BR>";
+				PrintSignLogAdd += "<B>2<SUP>E b</SUP></B> = " + NumConvertResultB + "<SUB>10</SUB><BR>";
+				PrintSignLogAdd += "<B>2<SUP>E s</SUP></B> = " + NumConvertResult + "<SUB>10</SUB></TD></TR>";
+				PrintResult = PrintSignLogAdd;
+
+
+		}
+	}
+
+
+	if ( Operator == "Subtract" ) {
+		if ( Ea >= Eb ) {
+			EbMinusEa = Eb - Ea;
+			GammaEbMinusEa = GammaOfK( EbMinusEa );
+			Esub = Ea + GammaEbMinusEa;
+			GammaResult = GammaEbMinusEa;
+			EsubSign = SignA;
+			Result = Esub;
+
+			SignLogSubEaBin = ParseBinary(EaBinTwosComp, k);
+			SignLogSubEbBin = ParseBinary(EbBinTwosComp, k);
+		        EbMinusEaBin = SignLogSubEbBin - SignLogSubEaBin;
+			GammaEbMinusEaBin = GammaOfK( EbMinusEaBin ); 
+			SignLogSubBin = SignLogSubEaBin + GammaEbMinusEaBin;
+
+			if ( ZeroInputA == "1" ) {
+				SignLogSubBin = SignLogSubEbBin;
+			}
+
+			if ( ZeroInputB == "1" ) {
+				SignLogSubBin = SignLogSubEaBin;
+			}
+
+			SignLogSubBinTwosComp = PrintTwosComp(SignLogSubBin, k); 
+			SignLogSubDecTwosComp = ParseBinary(SignLogSubBinTwosComp, k );
+			SignLogSubDecTwosCompSigned = SignDecimalNum( EsubSign, SignLogSubDecTwosComp );
+			if ( EsubSign == "1" ) {
+				SignLogSubBinTwosCompSigned = "1" + SignLogSubBinTwosComp;
+				} else {
+					SignLogSubBinTwosCompSigned = "0" + SignLogSubBinTwosComp;
+			}
+
+			NumConvertResult = KtoNumKoren( EsubSign, SignLogSubDecTwosComp, C ); 
+			NumConvertResultA = KtoNumKoren( SignA, SignLogSubEaBin, 1 ); 
+			NumConvertResultB = KtoNumKoren( SignB, SignLogSubEbBin, 0 ); 
+
+			PrintEquation = "<p><B>E<SUB>D</SUB></B> = E<SUB>A</SUB> + <font face=\"Symbol\">F</font>";
+			PrintEquation += "<SUP>-</SUP> (E<SUB>B</SUB> - E<SUB>A</SUB>) = ";
+			PrintEquation += "E<SUB>" + A + "</SUB> + <font face=\"Symbol\">F</font><SUP>-</SUP>";
+			PrintEquation += " ( E<SUB>" + B + "</SUB> - E<SUB>" + A + "</SUB> ) ";
+			PrintEquation += " = " + SignLogSubEbBin + " + <font face=\"Symbol\">F</font><SUP>-</SUP> (";
+			PrintEquation += "" + EbMinusEaBin + " )";
+
+			PrintSignLogSubtract = "<p><B>E<SUB>D</SUB></B>";
+			PrintSignLogSubtract += " = " + SignLogSubBinTwosCompSigned + "<SUB>2</SUB> = ";
+			PrintSignLogSubtract += "" + SignLogSubDecTwosCompSigned + "<SUB>10</SUB></P>";
+			PrintSignLogSubtract += "<TR><TD><B>2<SUP>E a</SUP></B> = " + NumConvertResultA;
+			PrintSignLogSubtract += "" + "<SUB>10</SUB><BR>";
+			PrintSignLogSubtract += "<B>2<SUP>E b</SUP></B> = " + NumConvertResultB + "<SUB>10</SUB><BR>";
+			PrintSignLogSubtract += "<B>2<SUP>E d</SUP></B> = " + NumConvertResult + "<SUB>10</SUB></TD></TR>";
+			PrintResult = PrintSignLogSubtract;
+
+			} else if ( Eb > Ea ) {
+				EaMinusEb = Ea - Eb;
+				GammaEaMinusEb = GammaOfK( EaMinusEb );
+				Esub = Eb + GammaEaMinusEb;
+				GammaResult = GammaEaMinusEb;
+				EsubSign = SignB;
+				Result = Esub;
+
+				SignLogSubEaBin = ParseBinary(EaBinTwosComp, k);
+				SignLogSubEbBin = ParseBinary(EbBinTwosComp, k);
+		        	EaMinusEbBin = SignLogSubEaBin - SignLogSubEbBin;
+				GammaEaMinusEbBin = GammaOfK( EaMinusEbBin ); 
+				SignLogSubBin = SignLogSubEbBin + GammaEaMinusEbBin;
+
+				if ( ZeroInputA == "1" ) {
+					SignLogSubBin = SignLogSubEbBin;
+				}
+
+				if ( ZeroInputB == "1" ) {
+					SignLogSubBin = SignLogSubEaBin;
+				}
+
+				SignLogSubBinTwosComp = PrintTwosComp(SignLogSubBin, k); 
+				SignLogSubDecTwosComp = ParseBinary(SignLogSubBinTwosComp, k );
+				SignLogSubDecTwosCompSigned = SignDecimalNum( EsubSign, SignLogSubDecTwosComp );
+				if ( EsubSign == "1" ) {
+					SignLogSubBinTwosCompSigned = "1" + SignLogSubBinTwosComp;
+					} else {
+						SignLogSubBinTwosCompSigned = "0" + SignLogSubBinTwosComp;
+				}
+
+				NumConvertResult = KtoNumKoren( EsubSign, SignLogSubDecTwosComp, C ); 
+				NumConvertResultA = KtoNumKoren( SignA, SignLogSubEaBin, 1 ); 
+				NumConvertResultB = KtoNumKoren( SignB, SignLogSubEbBin, 0 ); 
+
+				PrintEquation = "<p><B>E<SUB>D</SUB></B> = E<SUB>B</SUB> + <font face=\"Symbol\">F</font>";
+				PrintEquation += "<SUP>-</SUP> (E<SUB>A</SUB> - E<SUB>B</SUB>) = ";
+				PrintEquation += "E<SUB>" + B + "</SUB> + <font face=\"Symbol\">F</font><SUP>-</SUP>";
+				PrintEquation += " ( E<SUB>" + A + "</SUB> - E<SUB>" + B + "</SUB> ) ";
+				PrintEquation += " = " + SignLogSubEbBin + " + <font face=\"Symbol\">F</font><SUP>-</SUP> (";
+				PrintEquation += "" + EaMinusEbBin + " )";
+
+				PrintSignLogSubtract = "<p><B>E<SUB>D</SUB></B>";
+				PrintSignLogSubtract += " = " + SignLogSubBinTwosCompSigned + "<SUB>2</SUB> = ";
+				PrintSignLogSubtract += "" + SignLogSubDecTwosCompSigned + "<SUB>10</SUB></P>";
+				PrintSignLogSubtract += "<TR><TD><B>2<SUP>E a</SUP></B> = " + NumConvertResultA;
+				PrintSignLogSubtract += "" + "<SUB>10</SUB><BR>";
+				PrintSignLogSubtract += "<B>2<SUP>E b</SUP></B> = " + NumConvertResultB + "<SUB>10</SUB><BR>";
+				PrintSignLogSubtract += "<B>2<SUP>E d</SUP></B> = " + NumConvertResult + "<SUB>10</SUB></TD></TR>";
+				PrintResult = PrintSignLogSubtract;
+				PrintGammaResult = "This is the Gamma Result" + GammaResult;
+
+			}
+
+	}
+
+	if ( Operator == "Reciprocal" ) {
+
+		SignLogReciprocalEaBin = ParseBinary(EaBinTwosComp, k);
+		SignLogReciprocalEbBin = ParseBinary(EbBinTwosComp, k);
+
+		RoundFactor = l + 2;
+		SignLogReciprocalAUnRound = Math.pow(2, -SignLogReciprocalEaBin);
+		SignLogReciprocalBUnRound = Math.pow(2, -SignLogReciprocalEbBin);
+
+		if ( ZeroInputA == "1" ) {
+			SignLogReciprocalAUnRound = 0;
+		}
+
+		if ( ZeroInputB == "1" ) {
+			SignLogReciprocalBUnRound = 0;
+		}
+
+		SignLogReciprocalA = RoundOff( SignLogReciprocalAUnRound, RoundFactor );
+		SignLogReciprocalB = RoundOff( SignLogReciprocalBUnRound, RoundFactor );
+		SignLogReciprocalASigned = SignDecimalNum( SignA, SignLogReciprocalA );
+		SignLogReciprocalBSigned = SignDecimalNum( SignB, SignLogReciprocalB );
+
+		SignLogReciprocalABinTwosComp = PrintTwosComp(SignLogReciprocalA, k); 
+		SignLogReciprocalBBinTwosComp = PrintTwosComp(SignLogReciprocalB, k); 
+
+		SignLogReciprocalADecTwosComp = ParseBinary(SignLogReciprocalABinTwosComp, k );
+		SignLogReciprocalBDecTwosComp = ParseBinary(SignLogReciprocalBBinTwosComp, k );
+
+		SignLogReciprocalADecTwosCompSigned = SignDecimalNum( SignA, SignLogReciprocalADecTwosComp );
+		SignLogReciprocalBDecTwosCompSigned = SignDecimalNum( SignB, SignLogReciprocalBDecTwosComp );
+
+		if ( SignA == "1" ) {
+			SignLogReciprocalABinTwosCompSigned = "1" + SignLogReciprocalABinTwosComp;
+			EaBinTwosCompRecip = "0" + EaBinTwosComp;
+			} else {
+				SignLogReciprocalABinTwosCompSigned = "0" + SignLogReciprocalABinTwosComp;
+				EaBinTwosCompRecip = "1" + EaBinTwosComp;
+		}
+		if ( SignB == "1" ) {
+			SignLogReciprocalBBinTwosCompSigned = "1" + SignLogReciprocalBBinTwosComp;
+			EbBinTwosCompRecip = "1" + EbBinTwosComp;
+			} else {
+				SignLogReciprocalBBinTwosCompSigned = "0" + SignLogReciprocalBBinTwosComp;
+				EbBinTwosCompRecip = "0" + EbBinTwosComp;
+		}
+
+		NumConvertResultA = KtoNumKoren( SignA, SignLogReciprocalEaBin, 1 ); 
+		NumConvertResultB = KtoNumKoren( SignB, SignLogReciprocalEbBin, 0 ); 
+		NumConvertResult = KtoNumKoren( SignA, SignLogReciprocalEaBin, 1 ); 
+
+		PrintEquation = "</TD></TR>";
+
+		if ( ZeroInputA == "1" ) {
+			PrintEquation += "<TR><TD><B>E<SUB>Ar</SUB></b> = 0</TD></TR>";
+		} else {
+
+			PrintEquation += "<TR><TD><B>E<SUB>Ar</SUB></B> = -E<SUB>A</SUB> = -E";
+			PrintEquation += "<SUB>" + A + "</SUB>";
+			PrintEquation += " = " + EaBinTwosCompRecip + "<SUB>2</SUB>";
+			PrintEquation += " = -" + SignLogReciprocalEaBin + "<SUB>10</SUB></TD></TR>";
+//			PrintEquation += " = " + SignLogReciprocalASigned + "</TD></TR>";
+		}
+
+		if ( ZeroInputB == "1" ) {
+			PrintEquation += "<TR><TD><B>E<SUB>Br</SUB></b> = 0</TD></TR>";
+		} else {
+
+			PrintEquation += "<TR><TD><B>E<SUB>Br</SUB></B> = -E<SUB>B</SUB> = -E";
+			PrintEquation += "<SUB>" + B + "</SUB>";
+			PrintEquation += " = " + EbBinTwosCompRecip + "<SUB>2</SUB>";
+			PrintEquation += " = -" + SignLogReciprocalEbBin + "<SUB>10</SUB></TD></TR>";
+//			PrintEquation += " = " + SignLogReciprocalBSigned + "</TD></TR>";
+		}
+
+		PrintSignLogReciprocal = "<TR><TD><B>2<SUP>E a</SUP></B> = " + NumConvertResultA;
+		PrintSignLogReciprocal += "" + "<SUB>10</SUB><BR>";
+		PrintSignLogReciprocal += "<B>2<SUP>E b</SUP></B> = " + NumConvertResultB + "<SUB>10</SUB><BR>";
+		PrintSignLogReciprocal += "<B>2<SUP>-E<SUB>Ar</SUB></SUP> = A<SUP>-1</SUP></B>";
+//		PrintSignLogReciprocal += " = " + SignLogReciprocalABinTwosCompSigned + "<SUB>2</SUB> = ";
+		PrintSignLogReciprocal += " = ";
+		PrintSignLogReciprocal += "" + SignLogReciprocalADecTwosCompSigned + "<SUB>10</SUB><BR>";
+		PrintSignLogReciprocal += "<B>2<SUP>-E<SUB>Br</SUB></SUP> = B<SUP>-1</SUP></B>";
+//		PrintSignLogReciprocal += " = " + SignLogReciprocalBBinTwosCompSigned + "<SUB>2</SUB> = ";
+		PrintSignLogReciprocal += " = ";
+		PrintSignLogReciprocal += "" + SignLogReciprocalBDecTwosCompSigned + "<SUB>10</SUB><BR>";
+		PrintSignLogReciprocal += "</TD></TR>";
+		PrintResult = PrintSignLogReciprocal;
+	}
+
+
+	if ( Operator == "SquareRoot" ) {
+
+		SignLogSquareRootEaBin = ParseBinary(EaBinTwosComp, k);
+		SignLogSquareRootEbBin = ParseBinary(EbBinTwosComp, k);
+		SignLogSquareRootEaBinHalf = SignLogSquareRootEaBin / 2;
+		SignLogSquareRootEbBinHalf = SignLogSquareRootEbBin / 2;
+		RoundFactor = l + 2;
+
+		EaBinTwosCompHalf = PrintTwosComp(SignLogSquareRootEaBinHalf, k) 
+		EbBinTwosCompHalf = PrintTwosComp(SignLogSquareRootEbBinHalf, k) 
+		EaBinTwosCompHalfRoot = "0" + EaBinTwosCompHalf;
+		EbBinTwosCompHalfRoot = "0" + EbBinTwosCompHalf;
+
+		SignLogSquareRootAUnRound = Math.pow(2, SignLogSquareRootEaBinHalf);
+		SignLogSquareRootBUnRound = Math.pow(2, SignLogSquareRootEbBinHalf);
+
+		if ( ZeroInputA == "1" ) {
+			SignLogSquareRootAUnRound = 0;
+		}
+
+		if ( ZeroInputB == "1" ) {
+			SignLogSquareRootBUnRound = 0;
+		}
+
+		SignLogSquareRootA = RoundOff( SignLogSquareRootAUnRound, RoundFactor );
+		SignLogSquareRootB = RoundOff( SignLogSquareRootBUnRound, RoundFactor );
+		SignLogSquareRootASigned = SignDecimalNum( 0, SignLogSquareRootA );
+		SignLogSquareRootBSigned = SignDecimalNum( 0, SignLogSquareRootB );
+
+		SignLogSquareRootABinTwosComp = PrintTwosComp(SignLogSquareRootA, k); 
+		SignLogSquareRootBBinTwosComp = PrintTwosComp(SignLogSquareRootB, k); 
+
+		SignLogSquareRootADecTwosComp = ParseBinary(SignLogSquareRootABinTwosComp, k );
+		SignLogSquareRootBDecTwosComp = ParseBinary(SignLogSquareRootBBinTwosComp, k );
+
+		SignLogSquareRootADecTwosCompSigned = SignDecimalNum( 0, SignLogSquareRootADecTwosComp );
+		SignLogSquareRootBDecTwosCompSigned = SignDecimalNum( 0, SignLogSquareRootBDecTwosComp );
+
+		if ( SignA == "1" ) {
+			SignLogSquareRootABinTwosCompSigned = "0" + SignLogSquareRootABinTwosComp;
+			} else {
+				SignLogSquareRootABinTwosCompSigned = "0" + SignLogSquareRootABinTwosComp;
+		}
+		if ( SignB == "1" ) {
+			SignLogSquareRootBBinTwosCompSigned = "0" + SignLogSquareRootBBinTwosComp;
+			} else {
+				SignLogSquareRootBBinTwosCompSigned = "0" + SignLogSquareRootBBinTwosComp;
+		}
+
+		PrintSquareRootError = "<TR><TD>";
+
+		if ( SignA == "1" ) {
+			PrintSquareRootError += "<B>Please make Input A a positive Number</B><BR>";
+		}
+		if ( SignB == "1" ) {
+			PrintSquareRootError += "<B>Please make Input B a positive Number</B><BR>";
+		}
+		PrintSquareRootError += "</TD></TR>"
+
+		NumConvertResultA = KtoNumKoren( SignA, SignLogSquareRootEaBin, 1 ); 
+		NumConvertResultB = KtoNumKoren( SignB, SignLogSquareRootEbBin, 0 ); 
+		NumConvertResult = KtoNumKoren( SignA, SignLogSquareRootEaBin, 1 ); 
+
+		PrintEquation = "";
+
+		if ( ZeroInputA == "1" ) {
+		PrintSignLogSquareRoot = "<TR><TD><B>E<SUB>Asqrt</SUB></B> = 0";
+		} else {
+
+			PrintSignLogSquareRoot = "<TR><TD><B>E<SUB>Asqrt</SUB></B> = E<SUB>A</SUB> / 2 = E";
+			PrintSignLogSquareRoot += "<SUB>" + A + "</SUB> / 2";
+			PrintSignLogSquareRoot += " = " + SignLogSquareRootEaBin + " / 2 ";
+			PrintSignLogSquareRoot += " = " + EaBinTwosCompHalfRoot + "<SUB>2</SUB>";
+			PrintSignLogSquareRoot += " = " + SignLogSquareRootEaBinHalf + "<SUB>10</SUB></TD></TR>";
+//			PrintSignLogSquareRoot += " = " + SignLogSquareRootASigned + "</TD></TR>";
+	    	}
+
+		if ( ZeroInputB == "1" ) {
+			PrintSignLogSquareRoot += "<TR><TD><B>B<SUP>1/2</SUP></B> = 0";
+		} else {
+
+			PrintSignLogSquareRoot += "<TR><TD><B>E<SUB>Bsqrt</SUB></B> = E<SUB>B</SUB> / 2 = E";
+			PrintSignLogSquareRoot += "<SUB>" + B + "</SUB> / 2";
+			PrintSignLogSquareRoot += " = " + SignLogSquareRootEbBin + " / 2 ";
+			PrintSignLogSquareRoot += " = " + EbBinTwosCompHalfRoot + "<SUB>2</SUB>";
+			PrintSignLogSquareRoot += " = " + SignLogSquareRootEbBinHalf + "<SUB>10</SUB></TD></TR>";
+//			PrintSignLogSquareRoot += " = " + SignLogSquareRootBSigned + "</TD></TR>";
+		}
+
+		PrintSignLogSquareRoot += "<TR><TD><B>2<SUP>E a</SUP></B> = " + NumConvertResultA;
+		PrintSignLogSquareRoot += "" + "<SUB>10</SUB><BR>";
+		PrintSignLogSquareRoot += "<B>2<SUP>E b</SUP></B> = " + NumConvertResultB + "<SUB>10</SUB><BR>";
+		PrintSignLogSquareRoot += "<B>2<SUP>E<SUB>Asqrt</SUB></SUP> = A<SUP>1/2</SUP></B>";
+//		PrintSignLogSquareRoot += " = " + SignLogSquareRootABinTwosCompSigned + "<SUB>2</SUB> = ";
+		PrintSignLogSquareRoot += " = ";
+		PrintSignLogSquareRoot += "" + SignLogSquareRootADecTwosCompSigned + "<SUB>10</SUB><BR>";
+		PrintSignLogSquareRoot += "<B>2<SUP>E<SUB>Bsqrt</SUB></SUP> = B<SUP>1/2</SUP></B>";
+//		PrintSignLogSquareRoot += " = " + SignLogSquareRootBBinTwosCompSigned + "<SUB>2</SUB> = ";
+		PrintSignLogSquareRoot += " = ";
+		PrintSignLogSquareRoot += "" + SignLogSquareRootBDecTwosCompSigned + "<SUB>10</SUB><BR>";
+		PrintSignLogSquareRoot += "</TD></TR>";
+		PrintResult = PrintSignLogSquareRoot;
+		
+		if ( SignA == "1" || SignB == "1" ) {
+			PrintResult = PrintSquareRootError;
+		}
+
+
+	}
+
+
+
+	if ( Operator == "Square" ) {
+
+		SignLogSquareEaBin = ParseBinary(EaBinTwosComp, k);
+		SignLogSquareEbBin = ParseBinary(EbBinTwosComp, k);
+
+		if ( ZeroInputA == "0" ) {
+			SignLogSquareEaBinDouble = SignLogSquareEaBin * 2;
+			EaBinTwosCompDouble = PrintTwosComp(SignLogSquareEaBinDouble, k) 
+			EaBinTwosCompDoubleSquare = "0" + EaBinTwosCompDouble;
+			SignLogSquareAUnRound = Math.pow(2, SignLogSquareEaBinDouble);
+		} else {
+			SignLogSquareEaBinDouble = 0;
+			EaBinTwosCompDouble = PrintTwosComp(SignLogSquareEaBinDouble, k) 
+			EaBinTwosCompDoubleSquare = "0" + EaBinTwosCompDouble;
+			SignLogSquareAUnRound = 0;
+		}
+
+		if ( ZeroInputB == "0" ) {
+			SignLogSquareEbBinDouble = SignLogSquareEbBin * 2;
+			EbBinTwosCompDouble = PrintTwosComp(SignLogSquareEbBinDouble, k) 
+			EbBinTwosCompDoubleSquare = "0" + EbBinTwosCompDouble;
+			SignLogSquareBUnRound = Math.pow(2, SignLogSquareEbBinDouble);
+		} else {
+			SignLogSquareEbBinDouble = 0;
+			EbBinTwosCompDouble = PrintTwosComp(SignLogSquareEbBinDouble, k) 
+			EbBinTwosCompDoubleSquare = "0" + EbBinTwosCompDouble;
+			SignLogSquareBUnRound = 0;
+		}
+
+		RoundFactor = l + 2;
+
+		SignLogSquareA = RoundOff( SignLogSquareAUnRound, RoundFactor );
+		SignLogSquareB = RoundOff( SignLogSquareBUnRound, RoundFactor );
+		SignLogSquareASigned = SignDecimalNum( 0, SignLogSquareA );
+		SignLogSquareBSigned = SignDecimalNum( 0, SignLogSquareB );
+
+		SignLogSquareABinTwosComp = PrintTwosComp(SignLogSquareA, k); 
+		SignLogSquareBBinTwosComp = PrintTwosComp(SignLogSquareB, k); 
+
+		SignLogSquareADecTwosComp = ParseBinary(SignLogSquareABinTwosComp, k );
+		SignLogSquareBDecTwosComp = ParseBinary(SignLogSquareBBinTwosComp, k );
+
+		SignLogSquareADecTwosCompSigned = SignDecimalNum( 0, SignLogSquareADecTwosComp );
+		SignLogSquareBDecTwosCompSigned = SignDecimalNum( 0, SignLogSquareBDecTwosComp );
+
+		if ( SignA == "1" ) {
+			SignLogSquareABinTwosCompSigned = "0" + SignLogSquareABinTwosComp;
+			} else {
+				SignLogSquareABinTwosCompSigned = "0" + SignLogSquareABinTwosComp;
+		}
+		if ( SignB == "1" ) {
+			SignLogSquareBBinTwosCompSigned = "0" + SignLogSquareBBinTwosComp;
+			} else {
+				SignLogSquareBBinTwosCompSigned = "0" + SignLogSquareBBinTwosComp;
+		}
+
+		NumConvertResultA = KtoNumKoren( 0, SignLogSquareEaBin, 1 ); 
+		NumConvertResultB = KtoNumKoren( 0, SignLogSquareEbBin, 0 ); 
+		NumConvertResult = KtoNumKoren( 0, SignLogSquareEaBin, 1 ); 
+
+		PrintEquation = "<p><B>E<SUB>Asq</SUB></B> = E<SUB>A</SUB> * 2 = E";
+		PrintEquation += "<SUB>" + A + "</SUB> * 2";
+		PrintEquation += " = " + SignLogSquareEaBin + " * 2";
+		PrintEquation += " = " + EaBinTwosCompDoubleSquare + "<SUB>2</SUB>";
+		PrintEquation += " = " + SignLogSquareEaBinDouble + "<SUB>10</SUB>";
+		PrintSignLogSquare = "<TR><TD><B>E<SUB>Bsq</SUB></B> = E<SUB>B</SUB> * 2 = E";
+		PrintSignLogSquare += "<SUB>" + B + "</SUB> * 2";
+		PrintSignLogSquare += " = " + SignLogSquareEbBin + " * 2";
+	        PrintSignLogSquare += " = " + EbBinTwosCompDoubleSquare + "<SUB>2</SUB>";
+		PrintSignLogSquare += " = " + SignLogSquareEbBinDouble + "<SUB>10</SUB></TD></TR>";
+		PrintSignLogSquare += "<TR><TD><B>2<SUP>E a</SUP></B> = " + NumConvertResultA;
+		PrintSignLogSquare += "" + "<SUB>10</SUB><BR>";
+		PrintSignLogSquare += "<B>2<SUP>E b</SUP></B> = " + NumConvertResultB + "<SUB>10</SUB><BR>";
+		PrintSignLogSquare += "<B>2<SUP>E<SUB>Asq</SUB></SUP> = A<SUP>2</SUP></B>";
+//		PrintSignLogSquare += " = " + SignLogSquareABinTwosCompSigned + "<SUB>2</SUB> = ";
+		PrintSignLogSquare += " = ";
+		PrintSignLogSquare += "" + SignLogSquareADecTwosCompSigned + "<SUB>10</SUB><BR>";
+		PrintSignLogSquare += "<B>2<SUP>E<SUB>Bsq</SUB></SUP> = B<SUP>2</SUP></B>";
+//		PrintSignLogSquare += " = " + SignLogSquareBBinTwosCompSigned + "<SUB>2</SUB> = ";
+		PrintSignLogSquare += " = ";
+		PrintSignLogSquare += "" + SignLogSquareBDecTwosCompSigned + "<SUB>10</SUB><BR>";
+		PrintSignLogSquare += "</TD></TR>";
+		PrintResult = PrintSignLogSquare;
+	}
+
+	ConversionTable = "<TABLE border=1 cellpadding=10 cellspacing=1>"
+	ConversionTable += "<TR><TD colspan=1><B>Sign Logarithm " + Operator + " calculation for "
+	ConversionTable += "<B>k = " + k + " and " 
+	ConversionTable += "l = " + l + "</B>"; 
+	ConversionTable += "<TR> <TD> " + PrintConvertToLogKorenA; 
+	ConversionTable += "<TR> <TD> " + PrintConvertToLogKorenB; 
+	ConversionTable += "<TR> <TD> " + PrintEquation; 
+	ConversionTable += "<TR> <TD> " + PrintResult; 
+	ConversionTable += "</TABLE> <P>\n"
+
+	EquationTable = "<TABLE border=1 cellpadding=10 cellspacing=1>"
+	EquationTable += "<TR><TD colspan=1><B>Sign Logarithm " + Operator + " calculation for "
+	EquationTable += "<font face=\"Symbol\">t</font> = " + Tau + " and " 
+	EquationTable += "<font face=\"Symbol\">h</font> = " + Eta + "</B>"; 
+	EquationTable += "<TR> <TD> " + PrintConvertToLogEquation; 
+	EquationTable += "<TR> <TD> " + PrintConvertToLogA; 
+	EquationTable += "<TR> <TD> " + PrintConvertToLogB; 
+	EquationTable += "<TR> <TD> " + PrintConvertToLogTau; 
+	EquationTable += "<TR> <TD> " + PrintResult; 
+	EquationTable += "</TABLE> <P>\n"
+
+	AbsA = Math.abs(A);
+	AbsB = Math.abs(B);
+	AbsNumConvertResult = Math.abs(NumConvertResult);
+	MaxInput1 = Math.max(AbsA, AbsB);
+	MaxInput2 = Math.max(MaxInput1, AbsNumConvertResult);
+	MaxInput = Math.ceil(MaxInput2);
+	MinInput1 = Math.min(AbsA, AbsB);
+	MinInput2 = Math.min(MinInput1, AbsNumConvertResult);
+	MinInput = Math.ceil(MinInput2);
+	MaxTableKxValues = MaxInput - MinInput;
+	MaxTableKxValuesHalf1 = MaxTableKxValues/2;
+	MaxTableKxValuesHalf = MaxInput - MaxTableKxValuesHalf1;
+	AbsAPlus = AbsA + 2;
+	AbsAMinus = AbsA - 2;
+	AbsBPlus = AbsB + 2;
+	AbsBMinus = AbsB - 2;
+	AbsNumConvertResultPlus = AbsNumConvertResult + 2;
+	AbsNumConvertResultMinus = AbsNumConvertResult - 2;
+	Precision = Math.pow(2,-l);
+
+	TheTop = "<HTML><HEAD><TITLE>Tablet</TITLE></HEAD><BODY bgcolor=white>"
+
+	if ( Operator == "Subtract" ) {
+
+        MaxGammaResult0 = 0 - GammaResult;
+	MaxGammaResult1 = GammaResult + MaxGammaResult0;
+	MaxGammaResult = Math.ceil(MaxGammaResult1);
+	MinGammaResult1 = GammaResult - 4;
+	MinGammaResult = Math.floor(MinGammaResult1);
+	MaxTableGammaValues = MaxGammaResult + MinGammaResult;
+	MaxTableGammaValuesHalf = MaxTableGammaValues/2;
+
+	GammaTable = "<TABLE border=1 cellpadding=10 cellspacing=5>"
+	GammaTable += "<TR><TD colspan=5><B><font face=\"Symbol\">F</font>-<sub>X</sub> as a Function of X for "
+	GammaTable += "k = " + k + " and " 
+	GammaTable += "l = " + l + "</B>"; 
+	GammaTable += "<TR> <TD> <B>X</B> <TD> <B><font face=\"Symbol\">F</font>-<sub>X</sub></B> "
+	GammaTable += "<TD>  <TD> <B>X</B> <TD> <B><font face=\"Symbol\">F</font>-<sub>X</sub></B>" + "\n"
+	Xg1Col = ""	// initialize the five columns of the table
+	Gamma1Col = ""
+	SpaceCol = ""
+	Xg2Col = ""
+	Gamma2Col = ""
+
+	/*
+	for (i = MinGammaResult; i <= MaxTableGammaValuesHalf; i = i + Precision) {
+		Xg1Col += i + " <BR>\n";
+		Gamma1ColDec = GammaOfK(i);
+		Gamma1Col += PrintTwosComp(Gamma1ColDec, k) + " <BR>\n";
+	}
+
+	for (j = MaxTableGammaValuesHalf; j <= MaxGammaResult; j = j + Precision) {
+		Xg2Col += j + " <BR>\n"
+		Gamma2ColDec = GammaOfK(j);
+		Gamma2Col += PrintTwosComp(Gamma2ColDec, k) + " <BR>\n";
+	}
+	*/
+
+	GammaTable += "<TR> <TD> " + Xg1Col + "<TD align=left> " + Gamma1Col
+	GammaTable += "<TD align=right> " + SpaceCol
+	GammaTable += "<TD align=left> " + Xg2Col + "<TD align=left> " + Gamma2Col 
+	GammaTable += "</TABLE> <P>\n"
+
+        }
+
+	if ( Operator == "Add" ) {
+
+	MaxBetaResult0 = 0 - BetaResult;
+	MaxBetaResult1 = BetaResult + MaxBetaResult0;
+	MaxBetaResult = Math.ceil(MaxBetaResult1);
+	MinBetaResult1 = BetaResult - 4;
+	MinBetaResult = Math.floor(MinBetaResult1);
+	MaxTableBetaValues = MaxBetaResult + MinBetaResult;
+	MaxTableBetaValuesHalf = MaxTableBetaValues/2;
+
+	BetaTable = "<TABLE border=1 cellpadding=10 cellspacing=5>"
+	BetaTable += "<TR><TD colspan=5><B><font face=\"Symbol\">F</font>+<sub>X</sub> as a Function of X for "
+	BetaTable += "k = " + k + " and " 
+	BetaTable += "l = " + l + "</B>"; 
+	BetaTable += "<TR> <TD> <B>X</B> <TD> <B><font face=\"Symbol\">F</font>+<sub>X</sub></B> "
+	BetaTable += "<TD>  <TD> <B>X</B> <TD> <B><font face=\"Symbol\">F</font>+<sub>X</sub></B>" + "\n"
+	Xb1Col = ""	// initialize the five columns of the table
+	Beta1Col = ""
+	SpaceCol = ""
+	Xb2Col = ""
+	Beta2Col = ""
+
+	/*
+	for (i = MinBetaResult; i <= MaxTableBetaValuesHalf; i = i + Precision) {
+		Xb1Col += i + " <BR>\n";
+		Beta1ColDec = BetaOfK(i);
+		Beta1Col += PrintTwosComp(Beta1ColDec, k) + " <BR>\n";
+	}
+
+	for (j = MaxTableBetaValuesHalf; j <= MaxBetaResult; j = j + Precision) {
+		Xb2Col += j + " <BR>\n"
+		Beta2ColDec = BetaOfK(j);
+		Beta2Col += PrintTwosComp(Beta2ColDec, k) + " <BR>\n";
+	}
+	*/
+
+	BetaTable += "<TR> <TD> " + Xb1Col + "<TD align=left> " + Beta1Col
+	BetaTable += "<TD align=right> " + SpaceCol
+	BetaTable += "<TD align=left> " + Xb2Col + "<TD align=left> " + Beta2Col 
+	BetaTable += "</TABLE> <P>\n"
+
+        }
+
+	Bottom = "</BODY> </HTML>"
+
+	if ( Overflow == "0" && DivideByZero == "0" ) {
+
+	parent.frames[1].document.open()
+	parent.frames[1].document.write(TheTop);
+	parent.frames[1].document.write(TheSpace);
+	parent.frames[1].document.write(TheSpace);
+	parent.frames[1].document.write(ConversionTable);
+	parent.frames[1].document.write(TheSpace);
+	parent.frames[1].document.close()
+
+	} else { 
+
+		if ( Overflow == "1" ) {
+			parent.frames[1].document.open();
+			parent.frames[1].document.write(PrintError("Overflow: Increase k"));
+			parent.frames[1].document.close()
+		}
+
+		if ( DivideByZero == "1" ) {
+			parent.frames[1].document.open();
+			parent.frames[1].document.write(PrintError("Divide by Zero Error: Change Input value from zero for this operation"));
+			parent.frames[1].document.close()
+		}
+
+	}
+
+}
+
+function PrintPhiPlus(form) {
+
+	TheTop = "<HTML><HEAD><TITLE>Tablet</TITLE></HEAD><BODY bgcolor=white>"
+	Bottom = "</BODY> </HTML>"
+	A = parseFloat(form.A.value)
+	B = parseFloat(form.B.value) 
+	k = parseFloat(form.k.value)
+	l = parseFloat(form.l.value)
+	SignA = SignOrigNum(A);
+	SignB = SignOrigNum(B);
+	Maxk = FindMaxValuek( k );
+	Maxl = FindMaxValuel( l );
+	MaxEaNum = Maxk + "." + Maxl;
+	MaxDecimal = ParseBinaryMax(MaxEaNum, k);
+	SignedMaxEaNum = "1" + MaxEaNum;
+	ZeroInput = 0;
+
+	if ( A == "0" ) {
+		ZeroInput = 1;
+		SignA = 1;
+	}
+	if ( B == "0" ) {
+		ZeroInput = 1;
+		SignB = 1;
+	}
+	NumBits = k + l;
+
+	Ea = NumToSignLogKoren(A); 
+	Eb = NumToSignLogKoren(B); 
+	EaRound = RoundOff( Ea, 5 )
+	EbRound = RoundOff( Eb, 5 )
+	EaRoundSigned = SignDecimalNum( SignA, EaRound );
+	EbRoundSigned = SignDecimalNum( SignB, EbRound );
+	EaBin = PrintBinary(Ea, l )
+	EbBin = PrintBinary(Eb, l )
+	EaBinExtend = PrintLeadingZeros( EaBin );
+	EbBinExtend = PrintLeadingZeros( EbBin );
+	EaBinTwosComp = PrintTwosComp(Ea, k) 
+	EaBinTwosCompSigned = SignA + EaBinTwosComp;
+	EbBinTwosComp = PrintTwosComp(Eb, k) 
+	EbBinTwosCompSigned = SignB + EbBinTwosComp;
+	EaDecTwosComp = ParseBinary(EaBinTwosComp, k);
+	EbDecTwosComp = ParseBinary(EbBinTwosComp, k);
+	EaDecTwosCompSigned = SignDecimalNum( SignA, EaDecTwosComp );
+	EbDecTwosCompSigned = SignDecimalNum( SignB, EbDecTwosComp );
+	EaPlusEb = Ea + Eb;
+	EaPlusEbBin = PrintBinary(EaPlusEb,l);
+	EaPlusEbDec = ParseBinary(EaPlusEbBin);
+	ExtendedEaPlusEb = PrintLeadingZeros( EaBin );
+	AddValueDec = KtoNumKoren( 0, EaPlusEbDec, C) 
+	Precision = Math.pow(2,-l);
+
+	if ( Ea >= Eb ) {
+		EbMinusEa = Eb - Ea;
+		BetaEbMinusEa = BetaOfK( EbMinusEa );
+		Eadd = Ea + BetaEbMinusEa;
+		BetaResult = BetaEbMinusEa;
+
+	} else if ( Eb > Ea ) {
+		EaMinusEb = Ea - Eb;
+		BetaEaMinusEb = BetaOfK( EaMinusEb );
+		Eadd = Eb + BetaEaMinusEb;
+		BetaResult = BetaEaMinusEb;
+	}
+
+	MaxBetaResult0 = 0 - BetaResult;
+	MaxBetaResult1 = BetaResult + MaxBetaResult0;
+	MaxBetaResult = Math.ceil(MaxBetaResult1);
+	MinBetaResult1 = BetaResult - 4;
+	MinBetaResult = Math.floor(MinBetaResult1);
+	MaxTableBetaValues = MaxBetaResult + MinBetaResult;
+	MaxTableBetaValuesHalf = MaxTableBetaValues/2;
+
+	BetaTable = "<TABLE border=1 cellpadding=10 cellspacing=5>"
+	BetaTable += "<TR><TD colspan=5><B><font face=\"Symbol\">F</font>+<sub>X</sub> as a Function of X for "
+	BetaTable += "k = " + k + " and " 
+	BetaTable += "l = " + l + "</B>"; 
+	BetaTable += "<TR> <TD> <B>X</B> <TD> <B><font face=\"Symbol\">F</font>+<sub>X</sub></B> "
+	BetaTable += "<TD>  <TD> <B>X</B> <TD> <B><font face=\"Symbol\">F</font>+<sub>X</sub></B>" + "\n"
+	Xb1Col = ""	// initialize the five columns of the table
+	Beta1Col = ""
+	SpaceCol = ""
+	Xb2Col = ""
+	Beta2Col = ""
+
+	for (i = MinBetaResult; i <= MaxTableBetaValuesHalf; i = i + Precision) {
+		Xb1Col += i + " <BR>\n";
+		Beta1ColDec = BetaOfK(i);
+		Beta1Col += PrintTwosComp(Beta1ColDec, k) + " <BR>\n";
+	}
+
+	for (j = MaxTableBetaValuesHalf; j <= MaxBetaResult; j = j + Precision) {
+		Xb2Col += j + " <BR>\n"
+		Beta2ColDec = BetaOfK(j);
+		Beta2Col += PrintTwosComp(Beta2ColDec, k) + " <BR>\n";
+	}
+
+	BetaTable += "<TR> <TD> " + Xb1Col + "<TD align=left> " + Beta1Col
+	BetaTable += "<TD align=right> " + SpaceCol
+	BetaTable += "<TD align=left> " + Xb2Col + "<TD align=left> " + Beta2Col 
+	BetaTable += "</TABLE> <P>\n"
+
+	parent.frames[1].document.open()
+	parent.frames[1].document.write(TheTop);
+	parent.frames[1].document.write(BetaTable);
+	parent.frames[1].document.write(TheSpace);
+	parent.frames[1].document.write(Bottom);
+	parent.frames[1].document.close()
+
+
+}
+
+
+function PrintPhiMinus(form) {
+
+	TheTop = "<HTML><HEAD><TITLE>Tablet</TITLE></HEAD><BODY bgcolor=white>"
+	Bottom = "</BODY> </HTML>"
+	A = parseFloat(form.A.value)
+	B = parseFloat(form.B.value) 
+	k = parseFloat(form.k.value)
+	l = parseFloat(form.l.value)
+	SignA = SignOrigNum(A);
+	SignB = SignOrigNum(B);
+	Maxk = FindMaxValuek( k );
+	Maxl = FindMaxValuel( l );
+	MaxEaNum = Maxk + "." + Maxl;
+	MaxDecimal = ParseBinaryMax(MaxEaNum, k);
+	SignedMaxEaNum = "1" + MaxEaNum;
+	ZeroInput = 0;
+
+	if ( A == "0" ) {
+		ZeroInput = 1;
+		SignA = 1;
+	}
+	if ( B == "0" ) {
+		ZeroInput = 1;
+		SignB = 1;
+	}
+	NumBits = k + l;
+
+	Ea = NumToSignLogKoren(A); 
+	Eb = NumToSignLogKoren(B); 
+	EaRound = RoundOff( Ea, 5 )
+	EbRound = RoundOff( Eb, 5 )
+	EaRoundSigned = SignDecimalNum( SignA, EaRound );
+	EbRoundSigned = SignDecimalNum( SignB, EbRound );
+	EaBin = PrintBinary(Ea, l )
+	EbBin = PrintBinary(Eb, l )
+	EaBinExtend = PrintLeadingZeros( EaBin );
+	EbBinExtend = PrintLeadingZeros( EbBin );
+	EaBinTwosComp = PrintTwosComp(Ea, k) 
+	EaBinTwosCompSigned = SignA + EaBinTwosComp;
+	EbBinTwosComp = PrintTwosComp(Eb, k) 
+	EbBinTwosCompSigned = SignB + EbBinTwosComp;
+	EaDecTwosComp = ParseBinary(EaBinTwosComp, k);
+	EbDecTwosComp = ParseBinary(EbBinTwosComp, k);
+	EaDecTwosCompSigned = SignDecimalNum( SignA, EaDecTwosComp );
+	EbDecTwosCompSigned = SignDecimalNum( SignB, EbDecTwosComp );
+	EaPlusEb = Ea + Eb;
+	EaPlusEbBin = PrintBinary(EaPlusEb,l);
+	EaPlusEbDec = ParseBinary(EaPlusEbBin);
+	ExtendedEaPlusEb = PrintLeadingZeros( EaBin );
+	AddValueDec = KtoNumKoren( 0, EaPlusEbDec, C) 
+	Precision = Math.pow(2,-l);
+
+	if ( Ea >= Eb ) {
+		EbMinusEa = Eb - Ea;
+		GammaEbMinusEa = GammaOfK( EbMinusEa );
+		Esub = Ea + GammaEbMinusEa;
+		GammaResult = GammaEbMinusEa;
+
+	} else if ( Eb > Ea ) {
+		EaMinusEb = Ea - Eb;
+		GammaEaMinusEb = GammaOfK( EaMinusEb );
+		Esub = Eb + GammaEaMinusEb;
+		GammaResult = GammaEaMinusEb;
+	}
+
+
+  	MaxGammaResult0 = 0 - GammaResult;
+	MaxGammaResult1 = GammaResult + MaxGammaResult0;
+	MaxGammaResult = Math.ceil(MaxGammaResult1);
+	MinGammaResult1 = GammaResult - 4;
+	MinGammaResult = Math.floor(MinGammaResult1);
+	MaxTableGammaValues = MaxGammaResult + MinGammaResult;
+	MaxTableGammaValuesHalf = MaxTableGammaValues/2;
+
+	GammaTable = "<TABLE border=1 cellpadding=10 cellspacing=5>"
+	GammaTable += "<TR><TD colspan=5><B><font face=\"Symbol\">F</font>-<sub>X</sub> as a Function of X for "
+	GammaTable += "k = " + k + " and " 
+	GammaTable += "l = " + l + "</B>"; 
+	GammaTable += "<TR> <TD> <B>X</B> <TD> <B><font face=\"Symbol\">F</font>-<sub>X</sub></B> "
+	GammaTable += "<TD>  <TD> <B>X</B> <TD> <B><font face=\"Symbol\">F</font>-<sub>X</sub></B>" + "\n"
+	Xg1Col = ""	// initialize the five columns of the table
+	Gamma1Col = ""
+	SpaceCol = ""
+	Xg2Col = ""
+	Gamma2Col = ""
+
+	for (i = MinGammaResult; i <= MaxTableGammaValuesHalf; i = i + Precision) {
+		Xg1Col += i + " <BR>\n";
+		Gamma1ColDec = GammaOfK(i);
+		Gamma1Col += PrintTwosComp(Gamma1ColDec, k) + " <BR>\n";
+	}
+
+	for (j = MaxTableGammaValuesHalf; j <= MaxGammaResult; j = j + Precision) {
+		Xg2Col += j + " <BR>\n"
+		Gamma2ColDec = GammaOfK(j);
+		Gamma2Col += PrintTwosComp(Gamma2ColDec, k) + " <BR>\n";
+	}
+
+	GammaTable += "<TR> <TD> " + Xg1Col + "<TD align=left> " + Gamma1Col
+	GammaTable += "<TD align=right> " + SpaceCol
+	GammaTable += "<TD align=left> " + Xg2Col + "<TD align=left> " + Gamma2Col 
+	GammaTable += "</TABLE> <P>\n"
+
+	parent.frames[1].document.open()
+	parent.frames[1].document.write(TheTop);
+	parent.frames[1].document.write(GammaTable);
+	parent.frames[1].document.write(TheSpace);
+	parent.frames[1].document.write(Bottom);
+	parent.frames[1].document.close()
+
+
+}
+
+
+</SCRIPT>
+</HEAD>
+
+<BODY bgcolor="#945D28" text="black">
+
+<CENTER> <H2> Sign/Logarithm Arithmetic Operations </H2> </CENTER>
+<FORM>
+A: <INPUT type="text" name="A"><P>
+B: <INPUT type="text" name="B"><P>
+k: <INPUT type="text" name="k"><P>
+l: <INPUT type="text" name="l"><P>
+<BR>
+<EM>add</EM> <INPUT type="radio" name="Operation" value="Add">
+<EM>subtract</EM> <INPUT type="radio" name="Operation" value="Subtract"><BR>
+<EM>multiply</EM> <INPUT type="radio" name="Operation" value="Multiply" checked>
+<EM>divide</EM> <INPUT type="radio" name="Operation" value="Divide"><BR>
+<EM>reciprocal</EM> <INPUT type="radio" name="Operation" value="Reciprocal">
+<EM>square root</EM> <INPUT type="radio" name="Operation" value="SquareRoot"><BR>
+<EM>square</EM> <INPUT type="radio" name="Operation" value="Square">
+<BR>
+<P>
+<CENTER>
+<INPUT type="button" name="enter" value="Compute"
+onClick="SignLog(this.form)">
+</CENTER>
+<P>
+<CENTER>
+<INPUT type="button" name="enter" value="Show ROM PHI+"
+onClick="PrintPhiPlus(this.form)">
+</CENTER>
+<P>
+<CENTER>
+<INPUT type="button" name="enter" value="Show ROM PHI-"
+onClick="PrintPhiMinus(this.form)">
+</CENTER>
+<P>
+<CENTER>
+<INPUT TYPE="button"  VALUE="   Help    " onClick=parent.frames[1].location.href="help.html">
+</CENTER>
+</P>
+</FORM>
+</BODY>
+</HTML>

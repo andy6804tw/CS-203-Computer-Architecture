@@ -1,0 +1,98 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>ECC_FD_PoCM</title>
+<link href="twoColLiqLtHdr.css" rel="stylesheet" type="text/css" />
+<!--[if IE]>
+<style type="text/css"> 
+/* place css fixes for all versions of IE in this conditional comment */
+.twoColLiqLtHdr #sidebar1 { padding-top: 30px; }
+.twoColLiqLtHdr #mainContent { zoom: 1; padding-top: 15px; }
+/* the above proprietary zoom property gives IE the hasLayout it needs to avoid several bugs */
+</style>
+<![endif]-->
+<script src="SpryAssets/SpryMenuBar.js" type="text/javascript"></script>
+<link href="SpryAssets/SpryMenuBarVertical.css" rel="stylesheet" type="text/css" />
+<style type="text/css">
+<!--
+body {
+	background-color: #841B15;
+}
+body,td,th {
+	color: #000000;
+}
+.style1 {color: #FFFFFF}
+-->
+</style>
+<script src="Scripts/AC_RunActiveContent.js" type="text/javascript"></script>
+<style type="text/css">
+<!--
+p.MsoNormal {
+margin-top:0in;
+margin-right:0in;
+margin-bottom:10.0pt;
+margin-left:0in;
+line-height:115%;
+font-size:11.0pt;
+font-family:"Calibri","sans-serif";
+}
+.style5 {font-size: 100%}
+.style6 {
+	color: #841B15
+}
+-->
+</style>
+</head>
+
+<body class="twoColLiqLtHdr">
+
+<div id="container"> 
+  <div id="header">
+    <h1 class="style1">Fault Detection in Elliptic Curves </h1>
+    <h1 class="style1">Using  Point on Curve Method</h1>
+  <!-- end #header --></div>
+  <div id="sidebar1">
+    <ul id="MenuBar1" class="MenuBarVertical">
+          <li><a href="ecc_fd_pocm_index.html">Home</a>          </li>
+      <li><a href="ecc_fd_pocm_tutorial.html">Tutorial</a></li>
+      <li><a href="ecc_fd_pocm_lesson_page1.html">Overview</a>      </li>
+      <li><a href="ecc_fd_pocm_simulator.html">Simulator</a></li>
+    </ul>
+    <h3>&nbsp;</h3>
+  <!-- end #sidebar1 --></div>
+  <div id="mainContent">
+    <h1>Error Detection in Arithmetic Operations over Elliptic Curves</h1>
+    <table width="100%" border="0">
+      <tr>
+        <th scope="row">&nbsp;</th>
+        <td><div align="right" class="style6"><a href="ecc_fd_pocm_lesson_page2.html">Next&gt;&gt;</a></div></td>
+      </tr>
+    </table>
+    <p align="justify">Elliptic Curve Cryptography (ECC) is a class of cryptography which is based on the discrete logarithm problem (DLP). At the heart of ECC is an elliptic curve which is defined over an elliptic field consisting of a finite set of points with a set of arithmetic rules. Differences between standard arithmetic and elliptic curve arithmetic also lead to changes in fault detection schemes in ECC. In this simulator we explain a novel method of fault detection in elliptic curves known as the <em>Point on Curve Method</em>.</p>
+    <p align="justify">Fault detection is important in cryptography because in addition to random errors which may produce garbled results, intentionally induced errors (fault injection) can compromise the system. A simple example of an effective fault injection attack can be illustrated using RSA encryption. RSA is a well known algorithm which is based on the assumption that factoring a composite of two large primes is difficult. Encryption of message <em>m</em> using key <em>e</em> and public modulus <em>n</em> is the following arithmetic operation over real numbers:</p>
+    <p align="center"><em><span class="style5">m<sup>e</sup> </span></em><span class="style5">mod</span><em><span class="style5"> n</span></em></p>
+    <p align="justify">Since <em>n</em> is recommended to be at least 2048 bits, this operation is computationally expensive. A significant speed up can be achieved using the Chinese remainder theorem (CRT) because <em>n</em> is composed of two primes <em>p</em> and <em>q</em>. Typically <em>p</em> and <em>q</em> are roughly <em>√n</em> and computing <em><span class="style5">m<sup>e</sup> </span></em><span class="style5">mod</span><em><span class="style5"> p</span></em> and <em><span class="style5">m<sup>e</sup> </span></em><span class="style5">mod</span><em><span class="style5"> q</span></em> in parallel and then combining them using the CRT results in significant speedup. If a designer uses this common trick without adequate fault detection then an attacker can extract <em>p</em> and <em>q</em>, breaking the system.</p>
+    <p align="justify">To extract <em>p</em> and <em>q</em> (and thus break the system) the attacker tries to induce a fault in the register that holds either <em>p</em> or <em>q</em>. If a fault is successfully induced, the result of the CRT will be mod <em>n'</em> where <em>n'</em> is no longer composed of two large primes and the system can be broken. While this example is specific to RSA with CRT, other fault injection techniques are more general and apply to ECC algorithms.</p>
+    <table width="100%" border="0">
+      <tr>
+        <th scope="row">&nbsp;</th>
+        <td><div align="right" class="style6"><a href="ecc_fd_pocm_lesson_page2.html">Next&gt;&gt;</a></div></td>
+      </tr>
+    </table>
+  </div>
+  <!-- This clearing element should immediately follow the #mainContent div in order to force the #container div to contain all child floats --><br class="clearfloat" />
+  <div id="footer">
+    <p>
+      <p class="style1">UMASS ECE</p>
+    </p>
+  <!-- end #footer --></div>
+<!-- end #container --></div>
+<script type="text/javascript">
+<!--
+var MenuBar1 = new Spry.Widget.MenuBar("MenuBar1", {imgRight:"SpryAssets/SpryMenuBarRightHover.gif"});
+
+//-->
+</script>
+</body>
+</html>

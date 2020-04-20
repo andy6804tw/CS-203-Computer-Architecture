@@ -1,0 +1,167 @@
+<head>
+
+<TITLE>Systematic CRC Simulator Help</TITLE>
+
+</head>
+
+<body lang=EN-US link=blue vlink=purple>
+
+<H1>Systematic and Standard CRC Simulator Help</H1>
+
+<H2>Introduction:</H2>
+
+<p>An error-detection technique used widely in today’s computer
+networks and data storage devices is based on Cyclic Redundancy Check (CRC)
+codes.</p> 
+
+<p>In this simulator, we are implementing two different types
+of CRC codes: one is the Systematic CRC code and the other 
+is the standard CRC code. The Systematic CRC code is also called “Separable” CRC
+because data word can be located and retrieved from encoded word before the
+decoding process takes place. The standard CRC, on the other hand, is called 
+“Non-Separable” CRC code because the data word cannot be separated from encoded 
+word before it goes through a decoding process. </p>
+
+<p>The <i>basic</i> idea of CRC coding is to generate an encoded
+word of length n bits by using a k-bit data word and an (n-k+1)-bit
+generator polynomial whose degree is (n-k). </p>
+
+<p>An (n,k) CRC code is capable of detecting all single bit
+errors and all burst of adjacent bit errors with length less than or equal to
+the degree of the generator polynomial (i.e. up to n-k bits).</p>
+
+<H3><i>How to select a Generator Polynomial?</i></H3>
+
+<p>Not all polynomials are considered CRC generator polynomials. For a polynomial 
+to be a valid CRC generator polynomial to detects errors as expected, it has to be <i>irreducible
+</i>and <i>divides X<sup>n</sup>+1</i> where <i>n</i> is the length of the
+encoded word. A polynomial is <i>irreducible</i> if it cannot be factored into
+non-trivial polynomials. To find a valid generator polynomial, we apply the
+following theorem: “G(x) is the generator polynomial for a linear cyclic code
+of length n if and only if G(x) divides X<sup>n</sup>+1 (so X<sup>n</sup>+1 = H(x).G(x)). </p>
+
+<p>To pick a suitable generator polynomial,
+<a href="PolyHelp.html" target="_blank"><i><b>check this 
+table</b></i></a> that lists X<sup>n</sup>+1, for n=3...15, factored to its irreducible 
+polynomials.</p>
+
+<p><u>Example:</u></p>
+
+<p>Assume that we want to generate encoded words of length 6
+bits using a generator polynomial whose degree is 3. As the encoded word is of
+length 6 bits, then X<sup>n</sup>+1 will be X<sup>6</sup>+1. We find the
+irreducible factors of X<sup>6</sup>+1:</p>
+
+<p>X<sup>6</sup>+1 = (X+1)<sup>2</sup>.(X<sup>2</sup>+X+1)<sup>2</sup>.</p>
+
+<p>Using the obtained factors, a valid generator polynomial
+with degree 3 would be (X+1)(X<sup>2</sup>+X+1) = X<sup>3</sup>+1. </p>
+
+<p>Since the coefficients of CRC polynomials are based on
+modulo 2, i.e. their values are 1 or 0, 
+
+<br>X<sup>3</sup>+1 = X<sup>3 </sup>+ 0X<sup>2</sup>
++ 0X + 1 = 1001 in binary representation. </p>
+
+<p><i><u>Note:</u></i> When entering a code generator (polynomial) into the simulator, it will 
+be validated according to the above rule once you click &quot;Encode&quot; button. If the 
+code
+generator is invalid, simulator will issue a warning but will let you
+continue so you can also experiment on invalid code generators.</p>
+
+<H2>Description of Simulator Functions:</H2>
+
+<H3><i>Systematic CRC Encoder:</i></H3>
+
+<p>This module takes the two binary inputs, data word and generator
+polynomial, and carries out the necessary calculation to produce the encoded
+word. The calculation is done according to following expression:</p>
+
+<p>X<sup>n-k</sup> D(x) = Q(x) G(x) + R(x), </p>
+
+<p>Where D(x) is the data word of length k bits, G(x) is the
+generator polynomial of length (n-k+1) bits, X<sup>n-k</sup> is the (n-k) term
+of G(x), Q(x) is the quotient and R(x) is the remainder.</p>
+
+<p>The above expression can be written as:</p>
+
+<p>X<sup>n-k</sup> D(x) - R(x) = Q(x) G(x). </p>
+
+<p>And since we will be using modulo-2 arithmetic, addition and
+subtraction are the same, and this gives:</p>
+
+<p>X<sup>n-k</sup> D(x) + R(x) = Q(x) G(x) = E(x), which is the
+encoded word.</p>
+
+<p>This means that the encoded word E(x) the Systematic Encoder produces is 
+obtained by first left-shifting
+the data word n-k bits (identical to multiplying it by X<sup>n-k</sup>), and
+second by dividing the product by G(x) to get the remainder R(x). That
+remainder is then added to the left-shifted data word {X<sup>n-k</sup> D(x)} and the
+result will be the encoded word E(x). Note that all divisions and additions are done using
+modulo-2 arithmetic.</p>
+
+<p><u>Example:</u></p>
+
+<p>Let data word polynomial D(x) = X<sup>2</sup> + X, which
+represents data word (110) in binary. <br>
+
+Let the code generator polynomial G(x) = X<sup>4</sup>
++ X<sup>3</sup> + X<sup>2</sup> + 1 = 11101. <br>
+
+This gives, X<sup>4</sup>. D(x) = X<sup>6</sup> + X<sup>5</sup>
+= 1100000, <br>
+
+and R(x) = X<sup>4</sup>. D(x) mod G(x) = 1100000 mod 11101
+= 1001. <br>
+
+And finally, the generated encoded word is E(x) = X<sup>4</sup>
+. D(x) + R(x) = 1100000 + 1001 = 1101001. </p>
+
+<p>Note that the data bits are located in the leftmost k bits
+of the encoded word. This enables the receiver of the encoded word to separate
+and retrieve data word before doing the decoding. That explains why Systematic
+CRC code is also called “Separable”. </p>
+
+<H3><i>Systematic CRC Decoder</i></H3>
+
+<p>This module works by getting the input encoded word E(x),
+which might contain errors, and dividing
+it by the generator polynomial G(x) to get the remainder R(x). I.e. calculating
+E(x) mod G(x). If remainder of division R(x) is zero then the encoded word has
+no errors, otherwise error is detected with a non-zero remainder.</p>
+
+<H3><i>Standard CRC Encoder:</i></H3>
+
+<p>The standard CRC encoder is different from the Systematic
+CRC encoder in the way the encoded word is calculated. As will be noticed, the
+data bits cannot be separated from encoded word before decoding takes place. 
+The encoding in the standard (n,k) CRC codes is done using the following expression:</p>
+
+<p>Encoded word E(x) = D(x) . G(x)</p>
+
+<p>Where D(x) is the data word of length k bits and G(x) is the
+generator polynomial of length (n-k+1) bits and degree of (n-k). The result of
+this multiplication is the encoded word E(x) with length of n bits.</p>
+
+<p><u>Example:</u></p>
+
+<p>Let D(x) = X<sup>2</sup> + X = 110, G(x) = X<sup>4</sup> + X<sup>3</sup>
++ X<sup>2</sup> + 1 = 11101.<br>
+
+Then, E(x) = D(x) . G(x) = (110) (11101) = 1001110, using modulo-2
+multiplication.</p>
+
+<p>As seen above, data bits cannot be separated from encoded
+word before decoding.</p>
+
+<H3><i>Standard CRC Decoder:</i></H3>
+
+<p>The decoding process includes dividing the received encoded word
+E(x) by the generator polynomial G(x) to get remainder R(x). If remainder of
+division is zero then the received encoded word has no errors, otherwise error
+is detected with a non-zero remainder.</p>
+
+</body>
+
+</html>

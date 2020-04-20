@@ -1,0 +1,463 @@
+<HEAD>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<SCRIPT LANGUAGE="JavaScript">
+<!--Begin
+
+//this function detects if the input number is not binary.
+function BinNumber(dataWord) {
+
+	for (i=0;i<dataWord.length;i++) {
+		
+		if ((parseFloat(dataWord.substring(i,i+1)) != 1)
+			
+			&& (parseFloat(dataWord.substring(i,i+1)) != 0)) {
+			
+			return false
+		
+		}
+	
+	}
+	
+	return true
+}
+
+//-----------------------------------------------------------------
+//This function detects if the input is hex
+function is_hex(data)
+{
+	for (i=0;i<data.length;i++)
+	{
+
+		var digit=parseInt(data.substring(i,i+1),16);
+		if (!((digit >= 0) && (digit <= 15)))
+			return false;
+	}
+return true;
+}
+//-----------------------------------------------------
+
+
+//Convert the input from hex to binary
+function hex_to_binary(data)
+{
+	var decimal = parseInt(data, 16);
+	var binary = decimal.toString(2);
+	return binary;
+}
+//------------------------------------------------------
+
+//convert the input from binary to hex.
+
+function binary_to_hex(data)
+{
+	var decimal = parseInt(data, 2);
+	var hex = decimal.toString(16);
+	return hex;
+}
+//---------------------------------------------------------------------
+
+//Convert the input from hex to decimal
+function hex_to_dec(data)
+{
+	var hex = parseInt(data, 16);
+	var dec = hex.toString(10);
+	return dec;
+}
+//------------------------------------------------------
+
+//convert the input from decimal to hex.
+
+function dec_to_hex(data)
+{
+	var dec = parseInt(data, 10);
+	var hex = decimal.toString(16);
+	return hex;
+}
+//---------------------------------------------------------------------
+
+//This function takes two numbers x and y.  And returs x to the power Y
+function power_x_to_y(x,y){
+
+	power = 1	
+	
+	for (i=1; i<(y+1); i++) {
+	
+		power *= x
+
+	}
+
+	return power
+
+}
+
+//------------------------------------------------------------------------------
+
+
+//This Function Converts binary to decimal
+function bin_to_dec(bin_num){
+	
+	n = 0
+	Bin2Dec = 0
+
+	while(n < bin_num.length){
+		
+		bit_pos = (bin_num.length)-(n+1)
+
+		x = bin_num.charAt(bit_pos)
+		
+		if (x == "1") {Bin2Dec = Bin2Dec + power_x_to_y(2,n)} 	
+
+		n = n+1 
+	}
+
+
+	return Bin2Dec
+	
+}
+
+//-------------------------------------------------------------------------------
+
+
+//This function converts a decimal number from the input box to a binary in the output box
+function DecToBin(form) {
+
+	num = parseInt(form.dec_in.value);
+
+	form.bin_out.value = num.toString(2);
+}
+
+//----------------------------------------------------------------------------------
+
+//This function execute the block error detection encoding
+function Block_Encode_detect(){
+	
+	message=burst.block_in.value
+	
+	if (!BinNumber(message)) {
+		burst.block_in.value = "Data Word must be in binary form"
+		return
+	}
+	
+	k = message.length
+	t=burst.burst_length.value
+	
+	//pad the message with zeros so the total number of bits are divisible by t
+	if(k%t==0) message=message
+	else {
+		for (i=0; i<(t-(k%t)); i++) {
+			message ="0".concat(message)
+		}
+	}
+	
+	burst.block_in.value = message
+	
+	//now lets generate the parity bits.
+	paritybits = new Array(t)
+	
+	//initialize all parity bits to 0.
+	for (i=0; i<t; i++) paritybits[i]=0;
+
+	for (i=0; i<t; i++){
+		for(j=i; j<message.length; j=j+eval(t)){
+			if (message.charAt(j)==paritybits[i]) paritybits[i]=0
+			else paritybits[i]=1
+
+		}
+	}
+		
+	//form the parity bits string
+	paritystring = ""
+	for (i=0; i<t; i++) paritystring = paritystring.concat(paritybits[i])
+	
+	burst.parity.value = paritystring
+	
+	//The code word is
+	burst.block_codeword.value=message.concat(paritystring)
+
+}
+//----------------------------------------------------------------------------------
+
+//----------------------------------------------------------------------------------
+
+//This function execute the block error detection decoding
+function Block_Decode_detect(){
+	
+	codeword = burst.block_codeword.value
+	
+	k = codeword.length
+	t=burst.burst_length.value
+	
+	//now lets generate the equation bits.
+	equation_bits = new Array(t)
+	
+	//initialize all parity bits to 0.
+	for (i=0; i<t; i++) equation_bits[i]=0;
+
+	for (i=0; i<t; i++){
+		for(j=i; j<k; j=j+eval(t)){
+			if (codeword.charAt(j)==equation_bits[i]) equation_bits[i]=0
+			else equation_bits[i]=1
+
+		}
+	}
+		
+	//form the parity bits string
+	syndrome = ""
+	for (i=0; i<t; i++) syndrome = syndrome.concat(equation_bits[i])
+	
+	burst.block_syndrome.value = syndrome
+	
+	total_errors=0
+	
+	for (i=0; i<t; i++) total_errors = total_errors+equation_bits[i] 
+	
+	burst.totalerrors.value = total_errors
+	
+}
+//----------------------------------------------------------------------------------
+
+
+
+
+//This Function executes the CRC16 encoding
+function CRC16_encode(form){
+//Characteristic Polinomial X^16+X^15+X^2+1  --> decimal = 98309
+
+	dataword = form.crc16_in.value
+
+	if (!is_hex(dataword)) {
+
+		form.crc16_out.value = "Data Word must be in hex form"
+
+		return
+
+	}
+	
+	if (dataword.length > 9) {
+		form.crc16_out.value = "Input limit is 9 hex characters, Please try again"
+		return
+	}
+
+
+	data = hex_to_dec(dataword)
+	
+	encoded_word = data * 98309
+
+	form.crc16_out.value = encoded_word.toString(16)
+	form.crc16_encoded.value =  encoded_word.toString(16)
+
+
+}
+
+
+//----------------------------------------------------------------------------------
+
+//This Function executes the CRC16 decoding
+function CRC16_decode(form){
+//Generating Polinomial X^16+X^15+X^2+1  --> decimal = 98309
+
+	dataword = form.crc16_encoded.value
+
+	if (!is_hex(dataword)) {
+
+		form.crc16_decoded.value = "Data Word must be in hex form"
+
+		return
+
+	}
+	
+
+	data = hex_to_dec(dataword)
+
+	decoded_word = data / 98309
+
+	form.crc16_decoded.value = decoded_word.toString(16)
+	
+	crc16_rem = data % 98309
+	
+	form.crc16_remainder.value = crc16_rem
+
+	if (crc16_rem == 0) form.crc16_fault.value = "NO Failure Detected"
+	else form.crc16_fault.value = "Failure Detected"
+
+
+}
+
+//----------------------------------------------------------------------------------
+
+//This Function executes the C&#42276;&#308; C&#65535;&#65535;TT&#0;&#0;nc&#0;&#0;ing
+function CCITT_encode(form){
+//Generating Polinomial X^16+X^12+X^5+1  --> decimal = 69665
+
+	dataword = form.ccitt_in.value
+
+	if (!is_hex(dataword)) {
+
+		form.ccitt_out.value = "Data Word must be in hex form"
+
+		return
+
+	}
+
+	if (dataword.length > 9) {
+		form.ccitt_out.value = "Input limit is 9 hex characters, Please try again"
+		return
+	}
+	
+	data = hex_to_dec(dataword)
+
+	encoded_word = data * 69665
+
+	form.ccitt_out.value = encoded_word.toString(16)
+	form.ccitt_encoded.value =  encoded_word.toString(16)
+
+
+}
+
+
+//----------------------------------------------------------------------------------
+
+//This Function executes the CRC CCITT decoding
+function CCITT_decode(form){
+//Generating Polinomial X^16+X^12+X^5+1  --> decimal = 69665
+
+	dataword = form.ccitt_encoded.value
+
+	if (!is_hex(dataword)) {
+
+		form.ccitt_decoded.value = "Data Word must be in hex form"
+
+		return
+
+	}
+	
+	data = hex_to_dec(dataword)
+	
+	decoded_word = data / 69665
+
+	form.ccitt_decoded.value = decoded_word.toString(16)
+	
+	ccitt_rem = data % 69665
+	
+	form.ccitt_remainder.value = ccitt_rem
+
+	if (ccitt_rem == 0) form.ccitt_fault.value = "NO Failure Detected"
+	else form.ccitt_fault.value = "Failure Detected"
+
+
+}
+
+
+// END-->
+
+</script>
+</HEAD>
+
+<BODY bgcolor="#d0d0d0">
+<form name=burst>
+
+Reset all the boxes in the form:<input type="reset" value="RESET FORM"><br><br>
+<a href="burst_help.html"><font color="#0000ff">HELP AND INFORMATION</font></a>
+
+<!------------------------------------------------------------------------------------->
+
+<!-----------Block Code Tutorial--------------------------------------------------------->
+<h4><b><u><font face="Times New Roman" size="5" color="#008000">BURST ERROR DETECTION </font></u></b></h4>
+
+The purpose of this page is to provide an introduction to burst error 
+detection. <br>
+Also a burst error detection simulator is provided.<br><br>
+
+<b>Definitions:</b><br>
+k -> number of bits in the codeword<br>
+n -> number of bits in the message  <br>
+t -> burst length<br><br>
+
+In order to detect burst errors of length "t" a code word is generated 
+by appending "t" parity bits at the end (or beginning) of the message.
+The parity bits will be generated by doing an XOR of all of the bits 
+separated by t bits. <br><br>
+
+<b>Example</b><br>
+	t = 3<br>
+	Message = m<sub>1</sub>m<sub>2</sub>m<sub>3</sub>m<sub>4</sub>m<sub>5</sub>m<sub>6</sub>m<sub>7</sub>m<sub>8</sub>m<sub>9</sub>m<sub>10</sub><br>
+	n = 10 <br>
+	k = 13 <br><br>
+	First we pad the message by 0's so the number of bits is 
+divisible by t<br><br>
+	New Message = m<sub>0</sub>m<sub>1</sub>m<sub>2</sub>m<sub>3</sub>m<sub>4</sub>m<sub>5</sub>m<sub>6</sub>m<sub>7</sub>m<sub>8</sub>m<sub>9</sub>m<sub>10</sub>m<sub>11</sub> where m<sub>0</sub> and m<sub>1</sub> are filler zeros<br>
+	New n = 12 (n is now divisible by t)<br>
+	New k = 15<br><br>
+	Parity:<br>
+	 <DD>p<sub>1</sub> = m<sub>0</sub>^m<sub>3</sub>^m<sub>6</sub>^m<sub>9</sub><br>	
+	 <DD>p<sub>2</sub> = m<sub>1</sub>^m<sub>4</sub>^m<sub>7</sub>^m<sub>10</sub><br> 
+	 <DD>p<sub>3</sub> = m<sub>2</sub>^m<sub>5</sub>^m<sub>8</sub>^m<sub>11</sub><br><br>
+	
+	The codeword becomes m<sub>0</sub>m<sub>1</sub>m<sub>2</sub>m<sub>3</sub>m<sub>4</sub>m<sub>5</sub>m<sub>6</sub>m<sub>7</sub>m<sub>8</sub>m<sub>9</sub>m<sub>10</sub>m<sub>11</sub>p<sub>1</sub>p<sub>2</sub>p<sub>3</sub><br><br>
+	
+	At the receiving end t equations are used to check the parity 
+of the received codeword.<br><br>  
+	
+	<DD>e<sub>1</sub> = p<sub>1</sub>^(m<sub>0</sub>^m<sub>3</sub>^m<sub>6</sub>^m<sub>9</sub>)<br> 
+	<DD>e<sub>2</sub> = p<sub>2</sub>^(m<sub>1</sub>^m<sub>4</sub>^m<sub>7</sub>^m<sub>10</sub>)<br>
+	<DD>e<sub>3</sub> = p<sub>3</sub>^(m<sub>2</sub>^m<sub>5</sub>^m<sub>8</sub>^m<sub>11</sub>)<br><br>
+	
+	If any of these equations is not equal to zero, an error has 
+occurred.  The number of errors can be obtained by adding 
+e<sub>1</sub>+e<sub>2</sub>+....+e<sub>t</sub><br><br>
+
+<b>Example:</b><br><br>
+First provide the length of the burst ("t") you would like to detect
+<input type="text" name="burst_length" size="2" maxlength="2"><br>
+
+Enter a message word (binary) <input type="text" name="block_in" size="50" maxlength="50"><input type="button" name="block_encode" value="Encode" onclick="Block_Encode_detect()"><br>
+
+The resulting parity bits are
+<input type="text" name="parity" size="10" maxlength="256"><br>
+so the codeword is <input type="text" name="block_codeword" size="40" maxlength="256">
+(You can introduce a burst error smaller or equal to "t" in length, before continuing)
+<input type="button" name="block_decode" value="Decode" onclick="Block_Decode_detect()"><br>
+
+By decoding we get the syndrome
+<input type="text" name="block_syndrome" size="10" maxlength="256">,
+for a total number of 
+<input type="text" name="totalerrors" size="2" maxlength="2">
+errors.
+<br><br>
+<!---------------------------------------------------->
+Next, you can use simulators for two common burst error detection codes.
+<br>
+These codes can detect burst error of length t which is smaller than 
+or equal to 16<br><br>
+<font size="5" color="#008000"><b>CRC16</b></font><BR><BR>
+
+Note: All inputs should be in HEX format and include no more than 9 digits <br><br>
+
+Data Word: <INPUT TYPE="text" NAME="crc16_in" VALUE="" SIZE="50" MAXLENGTH="50">
+<INPUT TYPE="button" NAME="encode" VALUE="encode-->" onclick = "CRC16_encode(this.form)">
+<INPUT TYPE="text" NAME="crc16_out" SIZE="50" MAXLENGTH="50"> <BR>
+
+Encoded word: <INPUT TYPE="text" NAME="crc16_encoded" VALUE="" SIZE="50" MAXLENGTH="50">
+<INPUT TYPE="button" NAME="decode" VALUE="decode-->" onclick = "CRC16_decode(this.form)">
+<INPUT TYPE="text" NAME="crc16_decoded" SIZE="50" MAXLENGTH="50"><BR>
+Remainder: <INPUT TYPE="text" NAME="crc16_remainder" SIZE="20" MAXLENGTH="20">
+<DD>Fault:<INPUT TYPE="text" NAME="crc16_fault" SIZE="20" MAXLENGTH="20"><BR><BR><BR>
+
+<!--------------------------------------------------------------------->
+
+<font size="5" color="#008000"><b>CRC-CCITT</b></font> <BR><BR>
+
+Note: All inputs should be in HEX format and include no more than 9 digits <br><br>
+
+Data Word: <INPUT TYPE="text" NAME="ccitt_in" VALUE="" SIZE="50" MAXLENGTH="50">
+<INPUT TYPE="button" NAME="encode_ccitt" VALUE="encode-->" onclick = "CCITT_encode(this.form)">
+<INPUT TYPE="text" NAME="ccitt_out" SIZE="50" MAXLENGTH="50"> <BR>
+
+Encoded word: <INPUT TYPE="text" NAME="ccitt_encoded" VALUE="" SIZE="50" MAXLENGTH="50">
+<INPUT TYPE="button" NAME="decode_ccitt" VALUE="decode-->" onclick = "CCITT_decode(this.form)">
+<INPUT TYPE="text" NAME="ccitt_decoded" SIZE="50" MAXLENGTH="50"><BR>
+Remainder: <INPUT TYPE="text" NAME="ccitt_remainder" SIZE="20" MAXLENGTH="20">
+<DD>Fault:<INPUT TYPE="text" NAME="ccitt_fault" SIZE="20" MAXLENGTH="20">
+
+
+</BODY>

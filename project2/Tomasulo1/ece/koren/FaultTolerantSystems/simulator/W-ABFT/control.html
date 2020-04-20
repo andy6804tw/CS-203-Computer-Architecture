@@ -1,0 +1,57 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<!-- saved from url=(0083)http://www.ecs.umass.edu/ece/koren/FaultTolerantSystems/simulator/ABFT/control.html -->
+<HTML><HEAD>
+<META content="text/html; charset=gb2312" http-equiv=Content-Type>
+<SCRIPT language=JavaScript src="control_files/matrix.js">
+</SCRIPT>
+
+<SCRIPT language=JavaScript src="control_files/control.js">
+</SCRIPT>
+
+<META name=GENERATOR content="MSHTML 8.00.6001.18702"></HEAD>
+<BODY onunload=CloseHelp(); onload=loadComplete();>
+<CENTER><FONT size=+1><B>Algorithm Based Fault Tolerance (ABFT)</B></FONT> 
+<FORM name=main_form>
+<TABLE border=1>
+  <TBODY>
+  <TR>
+    <TD align=middle>
+      <TABLE border=0 cellSpacing=5 cellPadding=5>
+        <TBODY>
+        <TR>
+          <TD align=middle><INPUT onclick=OpenHelp(); value=Help type=button> 
+          </TD>
+          <TD align=middle><INPUT onclick="parent.location.href='main.html';" value=Reset type=button> 
+          </TD></TR>
+        <TR>
+          <TD colSpan=2 align=middle>Matrix Size: <SELECT 
+            onchange=setMatrixSize(parseFloat(this.options[this.selectedIndex].value)); 
+            name=matrix_size_combo> <OPTION selected value=2>2<OPTION 
+              value=3>3<OPTION value=4>4<OPTION value=5>5<OPTION 
+              value=6>6<OPTION value=7>7<OPTION value=8>8<OPTION 
+              value=9>9<OPTION value=10>10</OPTION></SELECT> </TD></TR>
+        <TR>
+          <TD colSpan=2 align=middle>
+            <TABLE border=1 cellPadding=5>
+              <TBODY>
+              <TR>
+                <TD align=middle>Maximum Value: <INPUT size=5 
+                  name=random_number_max> <BR>Decimal Places: <SELECT 
+                  name=random_decimal_places> <OPTION selected 
+                    value=0>0<OPTION value=1>1<OPTION value=2>2<OPTION 
+                    value=3>3<OPTION value=4>4<OPTION value=5>5<OPTION 
+                    value=6>6<OPTION value=7>7<OPTION value=8>8<OPTION 
+                    value=9>9<OPTION value=10>10</OPTION></SELECT> <BR><INPUT onclick=randomize_matrices(); value="Randomize Matrices" type=button> 
+                </TD></TR></TBODY></TABLE></TD></TR>
+        <TR>
+          <TD colSpan=2 align=middle><INPUT onclick=computeChecksumMatrices(); value="Compute Checksums" type=button name=computeChecksumButton> 
+          </TD></TR>
+        <TR>
+          <TD colSpan=2 align=middle>
+            <TABLE border=1 cellPadding=5>
+              <TBODY>
+              <TR>
+                <TD align=middle><INPUT value=Addition CHECKED type=radio 
+                  name=operation>Addition <INPUT value=Multiplication type=radio 
+                  name=operation>Multiplication <BR><INPUT disabled onclick=performMatrixOperation(); value="Perform Matrix Operation" type=button name=matrixOperationButton> 
+                </TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE></FORM></CENTER></BODY></HTML>

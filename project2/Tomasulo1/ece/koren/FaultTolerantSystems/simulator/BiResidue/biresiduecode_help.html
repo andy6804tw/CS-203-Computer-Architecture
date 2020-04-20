@@ -1,0 +1,111 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="en-us">
+<meta http-equiv="Content-Type" content="text/html; charset=gb2312">
+<meta name="GENERATOR" content="Microsoft FrontPage 4.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<title>New Page 1</title>
+</head>
+
+<body>
+
+<p align="center"><b><font size="5" color="#FF0000">Instruction for Bi-Residue 
+coder/decoder</font></b></p>
+<p><b><font color="#008080">Introduction</font></b>:</p>
+<p>For Residue code, one can refer to the <a href="../../../../../../euler.ecs.umass.edu/ece655/simulator/default.htm"><font color="#0000FF">course 
+webpages</font></a>. A separate code with two residue checks is called 
+bi-residue code. We study [N, |N|<b><sub>A1</sub></b>, |N|<sub><b>A2</b></sub>]. 
+<b>A<sub>1</sub></b>,<b>A<sub>2</sub></b> are called the check bases. We can 
+choose <b>A<sub>1</sub>=2<sup>c</sup>-1</b>,<b>A<sub>2</sub>=2<sup>d</sup>-1</b>, 
+for positive integers c and d. </p>
+<p><b><font color="#008080">Theorem</font></b>: <font face="Book Antiqua">Consider 
+a biresidue code with k-bit data, that is, N \in <b>2<sup>k</sup>-1</b>, <b>A<sub>1</sub>=2<sup>c</sup>-1,A<sub>2</sub>=2<sup>d</sup>-1</b> 
+for <b>c!=d</b>. The code can correct any single error in the adder or any error 
+in one of the checker if and only if <b>k=LCM(c,d)</b>.</font> </p>
+<p>The theorem tells us in order to single-bit error correction, the bits of 
+encoder/decoder and two check bases has the least common multiple relations. For 
+example, if the input data bit width is 24, we can choose (c=8,d=6) or 
+(c=12,d=8).&nbsp; If we want the data bit width is 32, we have to choose (c=32, 
+d=2 or 4 or ...). Obviously, this is not a good choose. </p>
+<p><b><font color="#008080">Syndrome and error correction</font></b>:</p>
+<p>The syndrome of a 3-turple <b>(x,y,z)</b> is given by <b>S(x,y,z)=(s<sub>1</sub>,s<sub>2</sub>)=(|x-y|<sub>A1</sub>,|x-z|<sub>A2</sub>)</b>. 
+It is assumed that the three components of the code are processed in separate 
+units, called the adder, check_1, and check_2, respectively, and therefore at 
+most one of the components of the result will be erroneous at any given time. We 
+have the following rules:</p>
+<ul>
+  <li><b>s<sub>1</sub>=0, s<sub>2</sub>=0</b>: no error.</li>
+  <li><b>s<sub>1</sub>!=0, s<sub>2</sub>!=0</b>: error in the adder.</li>
+  <li><b>s<sub>1</sub>!=0, s<sub>2</sub>=0</b>: error in check_1.</li>
+  <li><b>s<sub>1</sub>=0, s<sub>2</sub>!=0</b>: error in check_2.</li>
+</ul>
+<p>The following table is a detailed example of syndromes to detect and correct 
+the error for the adder. Here, k=6, c=2, d=3. That is, A<sub>1</sub>=3, A<sub>2</sub>=7. 
+Input data is in the range of (0-63). </p>
+<table border="1" width="40%">
+  <tr>
+    <td width="32%">&nbsp;error bit-i</td>
+    <td width="32%">&nbsp;0--&gt;1 error</td>
+    <td width="36%">&nbsp;1--&gt;0 error</td>
+  </tr>
+  <tr>
+    <td width="32%">0</td>
+    <td width="32%">(1,1)</td>
+    <td width="36%">(2,6)</td>
+  </tr>
+  <tr>
+    <td width="32%">1</td>
+    <td width="32%">(2,2)</td>
+    <td width="36%">(1,5)</td>
+  </tr>
+  <tr>
+    <td width="32%">2</td>
+    <td width="32%">(1,4)</td>
+    <td width="36%">(2,3)</td>
+  </tr>
+  <tr>
+    <td width="32%">3</td>
+    <td width="32%">(2,1)</td>
+    <td width="36%">(1,6)</td>
+  </tr>
+  <tr>
+    <td width="32%">4</td>
+    <td width="32%">(1,2)</td>
+    <td width="36%">(2,5)</td>
+  </tr>
+  <tr>
+    <td width="32%">5</td>
+    <td width="32%">(2,4)</td>
+    <td width="36%">(1,3)</td>
+  </tr>
+</table>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </p>
+<p><b><font size="3" color="#0000FF">How the Bi-Residue error correction program 
+works</font></b></p>
+<p><b><u>step 1</u></b>:&nbsp; Input the data word (DEC), with the corresponding 
+encoded bit width. Also input the bit width of the two check bases. If the LCM 
+requirement between the three inputs are not meet, a pop-up window indicating 
+errors will be shown. </p>
+<p><b><u>step 2</u></b>:&nbsp; Click the <u><font color="#FF0000">&quot;encode&quot;</font></u> 
+button, the encoded bit stream are turple (x,y,z) where x is the data-bit, y and 
+z are check-bits.&nbsp; At the same time, the fault-free bit will be appear at 
+the received word dialogs. </p>
+<p><u><b>step 3</b></u>:&nbsp; The user can change at most one bit error in 
+received word. If more than one errors are injected or the length of received 
+words is longer than the original encoded one, a pop-up window indicating errors 
+will be appear.&nbsp; </p>
+<p><b><u>step 4</u></b>:&nbsp; Click the <font color="#FF0000"><u>&quot;decode&quot;</u></font> 
+button, the decoded data will be appear at the decoded word part. At the same 
+time, the error-detected indicator and error-corrected indicator will indicate 
+whether the error is detected/corrected.</p>
+<p><b><u>step 5</u></b>: (optional) If the user clicks the <font color="#FF0000"><u>&quot;Error 
+info&quot;</u></font>, a pop-up window will be show up for detailed error 
+information and related syndrome. </p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+</p>
+<p>　</p>
+
+</body>
+
+</html>

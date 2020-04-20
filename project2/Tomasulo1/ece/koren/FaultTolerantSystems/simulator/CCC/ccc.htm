@@ -1,0 +1,756 @@
+<html>  
+  <head>  
+    <title>CCC network simulator</title>  
+    <style type="text/css">
+body
+{
+background-color:#d0e4fe;
+}
+h1
+{
+color:orange;
+text-align:center;
+}
+p
+{
+font-family:"Times New Roman";
+font-size:20px;
+}
+p.pos_fixed
+{
+position:absolute;
+top:30px;
+right:10px;
+}
+p.pos_help
+{
+position:absolute;
+bottom:30px;
+right:50px;
+}
+p1
+{
+font-size:14px;
+}
+p2{font-size:30px}
+</style>
+    <script>
+      function draw44(){  
+        var canvas = document.getElementById('tutorial');  
+        if (canvas.getContext){  
+          var ctx = canvas.getContext('2d');            
+          ctx.clearRect(0,0,1000,500);
+          ctx.strokeStyle="#0000FF";
+          for(i=0;i<16;i++) {
+          ctx.beginPath();
+          ctx.strokeRect(10+i*40,10,15,400);
+          ctx.arc(25+i*40,390,10,0,Math.PI*2,true);
+          if (i%2===0){
+          ctx.arc(25+i*40,360,10,0,Math.PI*2,true);
+          }
+          else if (i%2==1){
+          ctx.arc(25+i*40,335,10,0,Math.PI*2,true);
+          }
+          if (i%4===0){
+          ctx.arc(25+i*40,305,10,0,Math.PI*2,true);
+          }
+          else if (i%4==1){
+          ctx.arc(25+i*40,280,10,0,Math.PI*2,true);
+          }
+          else if (i%4==2){
+          ctx.arc(25+i*40,255,10,0,Math.PI*2,true);
+          }
+          else if (i%4==3){
+          ctx.arc(25+i*40,230,10,0,Math.PI*2,true);
+          }
+          if (i%8==0){
+          ctx.arc(25+i*40,200,10,0,Math.PI*2,true);
+          }
+          else if (i%8==1){
+          ctx.arc(25+i*40,175,10,0,Math.PI*2,true);
+          }
+          else if (i%8==2){
+          ctx.arc(25+i*40,150,10,0,Math.PI*2,true);
+          }
+          else if (i%8==3){
+          ctx.arc(25+i*40,125,10,0,Math.PI*2,true);
+          }
+          else if (i%8==4){
+          ctx.arc(25+i*40,100,10,0,Math.PI*2,true);
+          }
+          else if (i%8==5){
+          ctx.arc(25+i*40,75,10,0,Math.PI*2,true);
+          }
+          else if (i%8==6){
+          ctx.arc(25+i*40,50,10,0,Math.PI*2,true);
+          }
+          else if (i%8==7){
+          ctx.arc(25+i*40,25,10,0,Math.PI*2,true);
+          }
+          ctx.fillStyle="#FFA500";
+          ctx.fill();
+          }
+         
+          for(j=0;j<8;j++){
+          ctx.strokeStyle="#000000"
+          ctx.beginPath();
+          ctx.moveTo(33+j*80,390);
+          ctx.lineTo(58+j*80,390);
+          ctx.stroke();
+          if (j<=3){
+          ctx.beginPath();
+          ctx.moveTo(33+j*160,360);
+          ctx.lineTo(97+j*160,360);
+          ctx.stroke();
+          ctx.beginPath();
+          ctx.moveTo(73+j*160,335);
+          ctx.lineTo(137+j*160,335);
+          ctx.stroke();
+          ctx.beginPath();
+          ctx.moveTo(33+40*j,305-25*j);
+          ctx.lineTo(178+40*j,305-25*j);
+          ctx.moveTo(353+40*j,305-25*j);
+          ctx.lineTo(498+40*j,305-25*j);
+          ctx.stroke(); 
+          }
+          }
+          for(k=0;k<8;k++){
+          ctx.strokeStyle="#000000"
+          ctx.beginPath();
+          ctx.moveTo(33+40*k,200-25*k);
+          ctx.lineTo(337+40*k,200-25*k);
+          ctx.stroke();
+          }
+          ctx.fillStyle="#000000"
+          ctx.textAlign="right";
+          ctx.fillText("0,0",32,395); 
+          ctx.fillText("1,0",32+40*1,395);
+          ctx.fillText("2,0",32+40*2,395);
+          ctx.fillText("3,0",32+40*3,395);
+          ctx.fillText("4,0",32+40*4,395);
+          ctx.fillText("5,0",32+40*5,395);
+          ctx.fillText("6,0",32+40*6,395);
+          ctx.fillText("7,0",32+40*7,395);
+          ctx.fillText("8,0",32+40*8,395);
+          ctx.fillText("9,0",32+40*9,395);
+         ctx.fillText("10,0",32+40*10,395);
+         ctx.fillText("11,0",32+40*11,395);
+         ctx.fillText("12,0",32+40*12,395);
+         ctx.fillText("13,0",32+40*13,395);
+         ctx.fillText("14,0",32+40*14,395);
+          ctx.fillText("15,0",32+40*15,395);
+          ctx.fillText("0,1",32,365);
+          ctx.fillText("1,1",32+40*1,365-25*1);
+          ctx.fillText("2,1",32+40*2,365);
+          ctx.fillText("3,1",32+40*3,365-25*1);
+          ctx.fillText("4,1",32+40*4,365);
+          ctx.fillText("5,1",32+40*5,365-25*1);
+          ctx.fillText("6,1",32+40*6,365);
+          ctx.fillText("7,1",32+40*7,365-25*1);
+          ctx.fillText("8,1",32+40*8,365);
+          ctx.fillText("9,1",32+40*9,365-25*1);
+          ctx.fillText("10,1",32+40*10,365);
+          ctx.fillText("11,1",32+40*11,365-25*1);
+          ctx.fillText("12,1",32+40*12,365);
+          ctx.fillText("13,1",32+40*13,365-25*1);
+          ctx.fillText("14,1",32+40*14,365);
+          ctx.fillText("15,1",32+40*15,365-25*1);
+          ctx.fillText("0,2",32,310);
+          ctx.fillText("1,2",32+40*1,310-25*1);
+          ctx.fillText("2,2",32+40*2,310-25*2);
+          ctx.fillText("3,2",32+40*3,310-25*3);
+          ctx.fillText("4,2",32+40*4,310-25*0);
+          ctx.fillText("5,2",32+40*5,310-25*1);
+          ctx.fillText("6,2",32+40*6,310-25*2);
+          ctx.fillText("7,2",32+40*7,310-25*3);
+          ctx.fillText("8,2",32+40*8,310-25*0);
+          ctx.fillText("9,2",32+40*9,310-25*1);
+          ctx.fillText("10,2",32+40*10,310-25*2);
+          ctx.fillText("11,2",32+40*11,310-25*3);
+          ctx.fillText("12,2",32+40*12,310-25*0);
+          ctx.fillText("13,2",32+40*13,310-25*1);
+          ctx.fillText("14,2",32+40*14,310-25*2);
+          ctx.fillText("15,2",32+40*15,310-25*3);
+          ctx.fillText("0,3",32,205);
+          ctx.fillText("1,3",72,180);
+          ctx.fillText("2,3",72+40,155);
+          ctx.fillText("3,3",72+40*2,130);
+          ctx.fillText("4,3",72+40*3,180-25*3);
+          ctx.fillText("5,3",72+40*4,180-25*4);
+          ctx.fillText("6,3",72+40*5,180-25*5);
+          ctx.fillText("7,3",32+40*7,180-25*6);
+          ctx.fillText("8,3",32+40*1+280,205);
+          ctx.fillText("9,3",32+40*2+280,205-25*1); 
+          ctx.fillText("10,3",32+40*3+280,205-25*2); 
+          ctx.fillText("11,3",32+40*4+280,205-25*3); 
+          ctx.fillText("12,3",32+40*5+280,205-25*4); 
+          ctx.fillText("13,3",32+40*6+280,205-25*5); 
+          ctx.fillText("14,3",32+40*7+280,205-25*6);      
+          ctx.fillText("15,3",32+40*8+280,205-25*7);      
+      } 
+      }  
+      function draw33(){  
+        var canvas = document.getElementById('tutorial');  
+        if (canvas.getContext){  
+          var ctx = canvas.getContext('2d');            
+          ctx.clearRect(0,0,1000,500);
+          ctx.strokeStyle="#0000FF";
+          for(i=0;i<8;i++) {
+          ctx.beginPath();
+          ctx.strokeRect(10+i*60,10,30,200);
+          ctx.arc(40+i*60,190,10,0,Math.PI*2,true);
+          if (i%2===0){
+          ctx.arc(40+i*60,160,10,0,Math.PI*2,true);
+          }
+          else if (i%2==1){
+          ctx.arc(40+i*60,135,10,0,Math.PI*2,true);
+          }
+          if (i%4===0){
+          ctx.arc(40+i*60,105,10,0,Math.PI*2,true);
+          }
+          else if (i%4==1){
+          ctx.arc(40+i*60,80,10,0,Math.PI*2,true);
+          }
+          else if (i%4==2){
+          ctx.arc(40+i*60,55,10,0,Math.PI*2,true);
+          }
+          else if (i%4==3){
+          ctx.arc(40+i*60,30,10,0,Math.PI*2,true);
+          }
+          ctx.fillStyle="#FFA500";
+          ctx.fill();
+          }
+          for(j=0;j<4;j++){
+          ctx.strokeStyle="#000000"
+          ctx.beginPath();
+          ctx.moveTo(50+j*120,190);
+          ctx.lineTo(90+j*120,190);
+          ctx.stroke();
+          if (j<=1){
+          ctx.beginPath();
+          ctx.moveTo(50+j*240,160);
+          ctx.lineTo(150+j*240,160);
+          ctx.stroke();
+          ctx.beginPath();
+          ctx.moveTo(110+j*240,135);
+          ctx.lineTo(210+j*240,135);
+          ctx.stroke();
+          }
+          ctx.beginPath();
+          ctx.moveTo(50+60*j,105-25*j);
+          ctx.lineTo(270+60*j,105-25*j);
+          ctx.stroke(); 
+          }
+          ctx.fillStyle="#000000"
+          ctx.textAlign="right";
+          ctx.fillText("0,0",48,195); 
+          ctx.fillText("0,1",48,165);
+          ctx.fillText("0,2",48,110);
+          ctx.fillText("1,0",108,195);
+          ctx.fillText("1,1",108,140);
+          ctx.fillText("1,2",108,85);
+          ctx.fillText("2,0",168,195);
+          ctx.fillText("2,1",168,165);
+          ctx.fillText("2,2",168,60);
+          ctx.fillText("3,0",228,195);
+          ctx.fillText("3,1",228,140);
+          ctx.fillText("3,2",228,35);
+          ctx.fillText("4,0",288,195);
+          ctx.fillText("4,1",288,165);
+          ctx.fillText("4,2",288,110);
+          ctx.fillText("5,0",348,195);
+          ctx.fillText("5,1",348,140);
+          ctx.fillText("5,2",348,85);
+          ctx.fillText("6,0",408,195);
+          ctx.fillText("6,1",408,165);
+          ctx.fillText("6,2",408,60);
+          ctx.fillText("7,0",468,195);
+          ctx.fillText("7,1",468,140);
+          ctx.fillText("7,2",468,35);
+      } 
+      }
+      function draw34(){  
+        var canvas = document.getElementById('tutorial');  
+        if (canvas.getContext){  
+          var ctx = canvas.getContext('2d');            
+          ctx.clearRect(0,0,1000,500);
+          ctx.strokeStyle="#0000FF";
+          k=40;
+          for(i=0;i<8;i++) {
+          ctx.beginPath();
+          ctx.strokeRect(10+i*60,10,30,200+k);
+          ctx.arc(40+i*60,190+k,10,0,Math.PI*2,true);
+          ctx.arc(40+i*60,k-5,10,0,Math.PI*2,true);
+          if (i%2===0){
+          ctx.arc(40+i*60,160+k,10,0,Math.PI*2,true);
+          }
+          else if (i%2==1){
+          ctx.arc(40+i*60,135+k,10,0,Math.PI*2,true);
+          }
+          if (i%4===0){
+          ctx.arc(40+i*60,105+k,10,0,Math.PI*2,true);
+          }
+          else if (i%4==1){
+          ctx.arc(40+i*60,80+k,10,0,Math.PI*2,true);
+          }
+          else if (i%4==2){
+          ctx.arc(40+i*60,55+k,10,0,Math.PI*2,true);
+          }
+          else if (i%4==3){
+          ctx.arc(40+i*60,30+k,10,0,Math.PI*2,true);
+          }
+          ctx.fillStyle="#FFA500";
+          ctx.fill();
+          }
+          for(j=0;j<4;j++){
+          ctx.strokeStyle="#000000"
+          ctx.beginPath();
+          ctx.moveTo(50+j*120,190+k);
+          ctx.lineTo(90+j*120,190+k);
+          ctx.stroke();
+          if (j<=1){
+          ctx.beginPath();
+          ctx.moveTo(50+j*240,160+k);
+          ctx.lineTo(150+j*240,160+k);
+          ctx.stroke();
+          ctx.beginPath();
+          ctx.moveTo(110+j*240,135+k);
+          ctx.lineTo(210+j*240,135+k);
+          ctx.stroke();
+          }
+          ctx.beginPath();
+          ctx.moveTo(50+60*j,105-25*j+k);
+          ctx.lineTo(270+60*j,105-25*j+k);
+          ctx.stroke(); 
+          }
+          ctx.fillStyle="#000000"
+          ctx.textAlign="right";
+          ctx.fillText("0,0",48,195+k); 
+          ctx.fillText("0,1",48,165+k);
+          ctx.fillText("0,2",48,110+k);
+          ctx.fillText("1,0",108,195+k);
+          ctx.fillText("1,1",108,140+k);
+          ctx.fillText("1,2",108,85+k);
+          ctx.fillText("2,0",168,195+k);
+          ctx.fillText("2,1",168,165+k);
+          ctx.fillText("2,2",168,60+k);
+          ctx.fillText("3,0",228,195+k);
+          ctx.fillText("3,1",228,140+k);
+          ctx.fillText("3,2",228,35+k);
+          ctx.fillText("4,0",288,195+k);
+          ctx.fillText("4,1",288,165+k);
+          ctx.fillText("4,2",288,110+k);
+          ctx.fillText("5,0",348,195+k);
+          ctx.fillText("5,1",348,140+k);
+          ctx.fillText("5,2",348,85+k);
+          ctx.fillText("6,0",408,195+k);
+          ctx.fillText("6,1",408,165+k);
+          ctx.fillText("6,2",408,60+k);
+          ctx.fillText("7,0",468,195+k);
+          ctx.fillText("7,1",468,140+k);
+          ctx.fillText("7,2",468,35+k);
+          ctx.fillText("0,3",48,k-3);
+          ctx.fillText("1,3",108,k-3);
+          ctx.fillText("2,3",108+60*1,k-3);
+          ctx.fillText("3,3",108+60*2,k-3);
+          ctx.fillText("4,3",108+60*3,k-3);
+          ctx.fillText("5,3",108+60*4,k-3);
+          ctx.fillText("6,3",108+60*5,k-3);
+          ctx.fillText("7,3",108+60*6,k-3);
+          
+      } 
+      }
+      function draw45(){  
+        var canvas = document.getElementById('tutorial');  
+        if (canvas.getContext){  
+          var ctx = canvas.getContext('2d');            
+          ctx.clearRect(0,0,1000,500);
+          ctx.strokeStyle="#0000FF";
+          for(i=0;i<16;i++) {
+          ctx.beginPath();
+          ctx.strokeRect(10+i*40,10,15,400+40);
+          ctx.arc(25+i*40,25,10,0,Math.PI*2,true);
+          ctx.arc(25+i*40,390+40,10,0,Math.PI*2,true);
+          if (i%2===0){
+          ctx.arc(25+i*40,360+40,10,0,Math.PI*2,true);
+          }
+          else if (i%2==1){
+          ctx.arc(25+i*40,335+40,10,0,Math.PI*2,true);
+          }
+          if (i%4===0){
+          ctx.arc(25+i*40,305+40,10,0,Math.PI*2,true);
+          }
+          else if (i%4==1){
+          ctx.arc(25+i*40,280+40,10,0,Math.PI*2,true);
+          }
+          else if (i%4==2){
+          ctx.arc(25+i*40,255+40,10,0,Math.PI*2,true);
+          }
+          else if (i%4==3){
+          ctx.arc(25+i*40,230+40,10,0,Math.PI*2,true);
+          }
+          if (i%8==0){
+          ctx.arc(25+i*40,200+40,10,0,Math.PI*2,true);
+          }
+          else if (i%8==1){
+          ctx.arc(25+i*40,175+40,10,0,Math.PI*2,true);
+          }
+          else if (i%8==2){
+          ctx.arc(25+i*40,150+40,10,0,Math.PI*2,true);
+          }
+          else if (i%8==3){
+          ctx.arc(25+i*40,125+40,10,0,Math.PI*2,true);
+          }
+          else if (i%8==4){
+          ctx.arc(25+i*40,100+40,10,0,Math.PI*2,true);
+          }
+          else if (i%8==5){
+          ctx.arc(25+i*40,75+40,10,0,Math.PI*2,true);
+          }
+          else if (i%8==6){
+          ctx.arc(25+i*40,50+40,10,0,Math.PI*2,true);
+          }
+          else if (i%8==7){
+          ctx.arc(25+i*40,25+40,10,0,Math.PI*2,true);
+          }
+          ctx.fillStyle="#FFA500";
+          ctx.fill();
+          }
+         
+          for(j=0;j<8;j++){
+          ctx.strokeStyle="#000000"
+          ctx.beginPath();
+          ctx.moveTo(33+j*80,390+40);
+          ctx.lineTo(58+j*80,390+40);
+          ctx.stroke();
+          if (j<=3){
+          ctx.beginPath();
+          ctx.moveTo(33+j*160,360+40);
+          ctx.lineTo(97+j*160,360+40);
+          ctx.stroke();
+          ctx.beginPath();
+          ctx.moveTo(73+j*160,335+40);
+          ctx.lineTo(137+j*160,335+40);
+          ctx.stroke();
+          ctx.beginPath();
+          ctx.moveTo(33+40*j,305-25*j+40);
+          ctx.lineTo(178+40*j,305-25*j+40);
+          ctx.moveTo(353+40*j,305-25*j+40);
+          ctx.lineTo(498+40*j,305-25*j+40);
+          ctx.stroke(); 
+          }
+          }
+          for(k=0;k<8;k++){
+          ctx.strokeStyle="#000000"
+          ctx.beginPath();
+          ctx.moveTo(33+40*k,200-25*k+40);
+          ctx.lineTo(337+40*k,200-25*k+40);
+          ctx.stroke();
+          }
+          ctx.fillStyle="#000000"
+          ctx.textAlign="right";
+          ctx.fillText("0,0",32,395+40); 
+          ctx.fillText("1,0",32+40*1,395+40);
+          ctx.fillText("2,0",32+40*2,395+40);
+          ctx.fillText("3,0",32+40*3,395+40);
+          ctx.fillText("4,0",32+40*4,395+40);
+          ctx.fillText("5,0",32+40*5,395+40);
+          ctx.fillText("6,0",32+40*6,395+40);
+          ctx.fillText("7,0",32+40*7,395+40);
+          ctx.fillText("8,0",32+40*8,395+40);
+          ctx.fillText("9,0",32+40*9,395+40);
+         ctx.fillText("10,0",32+40*10,395+40);
+         ctx.fillText("11,0",32+40*11,395+40);
+         ctx.fillText("12,0",32+40*12,395+40);
+         ctx.fillText("13,0",32+40*13,395+40);
+         ctx.fillText("14,0",32+40*14,395+40);
+          ctx.fillText("15,0",32+40*15,395+40);
+          ctx.fillText("0,1",32,365+40);
+          ctx.fillText("1,1",32+40*1,365-25*1+40);
+          ctx.fillText("2,1",32+40*2,365+40);
+          ctx.fillText("3,1",32+40*3,365-25*1+40);
+          ctx.fillText("4,1",32+40*4,365+40);
+          ctx.fillText("5,1",32+40*5,365-25*1+40);
+          ctx.fillText("6,1",32+40*6,365+40);
+          ctx.fillText("7,1",32+40*7,365-25*1+40);
+          ctx.fillText("8,1",32+40*8,365+40);
+          ctx.fillText("9,1",32+40*9,365-25*1+40);
+          ctx.fillText("10,1",32+40*10,365+40);
+          ctx.fillText("11,1",32+40*11,365-25*1+40);
+          ctx.fillText("12,1",32+40*12,365+40);
+          ctx.fillText("13,1",32+40*13,365-25*1+40);
+          ctx.fillText("14,1",32+40*14,365+40);
+          ctx.fillText("15,1",32+40*15,365-25*1+40);
+          ctx.fillText("0,2",32,310+40);
+          ctx.fillText("1,2",32+40*1,310-25*1+40);
+          ctx.fillText("2,2",32+40*2,310-25*2+40);
+          ctx.fillText("3,2",32+40*3,310-25*3+40);
+          ctx.fillText("4,2",32+40*4,310-25*0+40);
+          ctx.fillText("5,2",32+40*5,310-25*1+40);
+          ctx.fillText("6,2",32+40*6,310-25*2+40);
+          ctx.fillText("7,2",32+40*7,310-25*3+40);
+          ctx.fillText("8,2",32+40*8,310-25*0+40);
+          ctx.fillText("9,2",32+40*9,310-25*1+40);
+          ctx.fillText("10,2",32+40*10,310-25*2+40);
+          ctx.fillText("11,2",32+40*11,310-25*3+40);
+          ctx.fillText("12,2",32+40*12,310-25*0+40);
+          ctx.fillText("13,2",32+40*13,310-25*1+40);
+          ctx.fillText("14,2",32+40*14,310-25*2+40);
+          ctx.fillText("15,2",32+40*15,310-25*3+40);
+          ctx.fillText("0,3",32,205+40);
+          ctx.fillText("1,3",72,180+40);
+          ctx.fillText("2,3",72+40,155+40);
+          ctx.fillText("3,3",72+40*2,130+40);
+          ctx.fillText("4,3",72+40*3,180-25*3+40);
+          ctx.fillText("5,3",72+40*4,180-25*4+40);
+          ctx.fillText("6,3",72+40*5,180-25*5+40);
+          ctx.fillText("7,3",32+40*7,180-25*6+40);
+          ctx.fillText("8,3",32+40*1+280,205+40);
+          ctx.fillText("9,3",32+40*2+280,205-25*1+40); 
+          ctx.fillText("10,3",32+40*3+280,205-25*2+40); 
+          ctx.fillText("11,3",32+40*4+280,205-25*3+40); 
+          ctx.fillText("12,3",32+40*5+280,205-25*4+40); 
+          ctx.fillText("13,3",32+40*6+280,205-25*5+40); 
+          ctx.fillText("14,3",32+40*7+280,205-25*6+40);      
+          ctx.fillText("15,3",32+40*8+280,205-25*7+40);
+          ctx.fillText("0,4",32,22); 
+          ctx.fillText("1,4",32+40*1,25);
+          ctx.fillText("2,4",32+40*2,25);
+          ctx.fillText("3,4",32+40*3,25);
+          ctx.fillText("4,4",32+40*4,25);
+          ctx.fillText("5,4",32+40*5,25);
+          ctx.fillText("6,4",32+40*6,25);
+          ctx.fillText("7,4",32+40*7,25);
+          ctx.fillText("8,4",32+40*8,25);
+          ctx.fillText("9,4",32+40*9,25);
+         ctx.fillText("10,4",32+40*10,25);
+         ctx.fillText("11,4",32+40*11,25);
+         ctx.fillText("12,4",32+40*12,25);
+         ctx.fillText("13,4",32+40*13,25);
+         ctx.fillText("14,4",32+40*14,25);
+          ctx.fillText("15,4",32+40*15,25)     
+      } 
+      }  
+    function choose()
+{
+var x=document.getElementById("choosepic").selectedIndex;
+if (document.getElementsByTagName("option")[x].value==33)
+{
+draw33();    
+}
+if (document.getElementsByTagName("option")[x].value==44)
+{
+draw44();
+}
+if (document.getElementsByTagName("option")[x].value==45)
+{
+draw45();
+}
+if (document.getElementsByTagName("option")[x].value==34)
+{
+draw34();
+}
+
+} 
+function caldia(form){
+var x;
+var k=form.cyc.value
+var d=form.dim.value
+if (k<3||d<3){
+    alert("k or d must be larger than 3")
+   x=""
+   }
+else if (k==d) {
+  if (k==3){
+  x=6;
+  }
+  if (d>3){
+  x=2*d+Math.round(d/2)-3
+  }
+}
+else{
+if (k>=(d+1)&&k<=(2*d-2)){
+  x=2*d+Math.round(d/2)-2
+}
+if (k>=(2*d-1)){
+  x=d+k
+}
+if (d>k){
+alert("k must be larger than d")
+x=""
+}
+}
+document.getElementById("diameter").value=x;
+}///diameter function ends
+
+function D2B(qs,k) 
+{ 
+     qs=qs.toString(2)  
+      t=qs+""; 
+        while(t.length<k)
+        t="0"+t;
+        return t   
+}
+function routing(form){
+var k=form.cyc.value
+var d=form.dim.value
+var qs=form.sorq.value;
+var ps=form.sorp.value;
+var qd=form.desq.value;
+var pd=form.desp.value;
+qs=parseInt(qs)
+ps=parseInt(ps)
+qd=parseInt(qd)
+pd=parseInt(pd)
+qsbin=D2B(qs,k)
+qdbin=D2B(qd,k)
+qdbinarr=qdbin.split("")
+qsbinarr=qsbin.split("")
+var rout_q=new Array(); 
+rout_q=rout_q.concat(qsbin);
+var rout_p=new Array();
+rout_p=rout_p.concat(ps);
+ if(qs>(Math.pow(2,d)-1)||ps>(d-1)||qd>(Math.pow(2,d)-1)||pd>(d-1)||pd==""||ps==""||qd==""||qs==""||d==""||k==""){
+  alert("Invalid parameter! Please read help")
+  disfinal=""
+ }
+ else{
+ if (qs==qd){
+    if (ps==pd){
+       alert("source point=destination point");
+       document.getElementById("rou").value="nothing";
+    }
+    else 
+       rout_p=rout_p.concat(pd);
+       rout_q=rout_q.concat(qdbin);
+       document.getElementById("rou").value=("(" + rout_p[0] + "," + rout_q[0] + ")"+"--"+"(" + rout_p[1] + "," + rout_q[1] + ")")
+    }
+else {
+     var presubrout_q=new Array();
+     var subrout_q=new Array();
+     var presubrout_p
+     var subrout_p;
+     presubrout_q=qsbinarr;
+     presubrout_p=ps;
+     for(i=0;i<100;i++){ 
+     if(presubrout_q[k-1-presubrout_p]!=qdbin[k-1-presubrout_p]){
+             subrout_q=presubrout_q
+            subrout_q[k-1-presubrout_p]=qdbin[k-1-presubrout_p];
+             subrout_p=presubrout_p
+             subrout_qdis=subrout_q.join("")
+             rout_q=rout_q.concat(subrout_qdis);
+             rout_p=rout_p.concat(subrout_p);
+            subrout_q=subrout_q.join("")
+            qdbinarr=qdbinarr.join("")
+        if (subrout_p==pd&&subrout_q==qdbinarr)  
+        {
+        break 
+        }  
+           else {
+            subrout_q=subrout_q.split("")
+            qdbinarr=qdbinarr.split("")
+           } 
+          
+           }
+       else {
+           subrout_p=(presubrout_p+1)%k
+           rout_p=rout_p.concat(subrout_p)
+           subrout_q=presubrout_q
+           subrout_qdis=subrout_q.join("")
+           rout_q=rout_q.concat(subrout_qdis)
+           presubrout_p=subrout_p; 
+           subrout_q=subrout_q.join("")
+            qdbinarr=qdbinarr.join("")
+        if (subrout_p==pd&&subrout_q==qdbinarr)  
+        {
+        break 
+        }  
+           else {
+            subrout_q=subrout_q.split("")
+            qdbinarr=qdbinarr.split("")
+           }                
+      }
+      }   
+      } 
+    var disfinal=new Array()
+    for(j=0;j<i+2;j++){
+    disfinal=disfinal.concat("  ("+rout_q[j],rout_p[j]+")  ")
+    }
+    }
+     document.getElementById("rou").value=(disfinal)
+     }
+      
+    </script>   
+  </head>  
+   <body>
+<canvas id="tutorial" width="1000" height="500"></canvas> 
+
+<form>
+<p class="pos_fixed">
+<p2>Cube Connected Cycle Network Simulator</p2>
+<br><br>
+Select parameter of CCC network:
+<select id="choosepic">
+  <option value="33">(3,3)</option>
+  <option value="34">(3,4)</option>
+  <option value="44">(4,4)</option>
+  <option value="45">(4,5)</option>
+</select>
+<button type="button" onclick="choose()">Get Graph</button><br>
+  
+  <table cellpadding="10">
+<tbody><tr>
+<br>Input Parameter:
+<td><b>d:</b><br><input type="text" name="dim" size="16"><br></td>
+<td><b>k:</b><br><input type="text" name="cyc" size="16"></td>
+</tr>
+</tbody></table>
+&nbsp;<p1>(please input integers for d and k. d>=3,k>=3,k>=d )</p1>
+<br><tr><td>&nbsp;<input type="button" name="diame" value="Diameter" onclick="caldia(this.form)">
+</tr>
+<tr><td><br>&nbsp;&nbsp;<input type="text" id="diameter" size="16"><br></td>
+ </tr>
+ <p1>&nbsp;(The diameter of a network is the longest distance between any two nodes)</p1><br>
+ <table cellpadding="10">
+ <tbody><tr> 
+  <br>&nbsp;&nbsp;Choose Source Node:
+ <td><b>Source q:</b><br><input type="text" id="sorq" size="16"><br></td>
+ <td><b>Source p</b><br><input type="text" id="sorp" size="16"></td>
+ </tr>
+ </tbody></table>
+ <p1>(please input parameter for source node,0 < p < d-1 and 0 < q < 2^d -1)) </p1>
+ <table cellpadding="10">
+ <tbody><tr> 
+  <br>&nbsp;&nbsp;Choose Destination Node:
+  <td><b>Destination q:</b><br><input type="text" id="desq" size="16"><br></td>
+ <td><b>Destination p:</b><br><input type="text" id="desp" size="16"></td>
+ </tr>
+  </tbody></table>
+ <p1>(please input parameter for destination node,0 < p < d-1 and 0 < q < 2^d -1)) </p1>
+<br><tr><td>&nbsp;<input type="button" name="ro" value="Routing" onclick="routing(this.form)">
+</tr>
+ <tr><br>&nbsp;&nbsp;<input type="text" id="rou" size="80"><br></td>
+ </tr>
+ <p1>(The shown routing is a way from source node to destination node, 
+which is not neccessarily the optimal route)</p1>
+</p>
+</form>
+<p class="pos_help">
+<a href="help.htm">HELP</a>
+</p>
+<br> 
+<br> 
+<br> 
+<br>
+<br> 
+<br> 
+<br> 
+<br>
+<p>
+&nbsp;&nbsp;&nbsp;Cube Connected Cycle is a d-dimension hypercube graph
+which instead of each node it has a ring with d nodes. Each
+node has a coordinate address such as (p , q), in which
+0 < p < d-1 and 0 < q < 2^d -1. Since a CCC(d, k) has 2^d cycles
+each having k nodess, there are k x 2^d nodes in all.
+</body>  
+</html>  

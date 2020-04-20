@@ -1,0 +1,2218 @@
+<HTML><HEAD>
+<TITLE>CSA Simulation</TITLE>
+</HEAD>
+<BODY BGCOLOR="#DDC440">
+<SCRIPT LANGUAGE="JavaScript">
+
+
+// ***************************************************************
+// 
+// 
+// ***************************************************************
+
+function BinToDec (BinStr) {
+        Num=0;
+//        if (fracmode!=0) {
+//        for (var i=0; i<=BinStr.length-1 ; i++) {
+//                if (BinStr[BinStr.length-1-i] !=".") {
+//                Num += eval(BinStr[BinStr.length-1-i])*Math.pow(2,-(BinStr.length-i-1));} }
+//        }
+//        else 
+{for (var i=0; i<=BinStr.length-1 ; i++) {
+                Num += eval(BinStr[BinStr.length-1-i])*Math.pow(2,i);}}
+        return Num;
+}
+
+function OrderOfMagnitude (TheNum) {
+        // returns the highest place which has a "1" in TheNum's
+        // binary representation - special non-2's complement version
+
+        LogBaseTwo = Math.log(TheNum)/Math.LN2;
+        return Math.floor(LogBaseTwo)
+        //return Math.round(LogBaseTwo)
+}
+
+function PrintBinary(TheNum, NumDecs) {
+
+        // initialize the string
+        S = "";
+
+        // deal with negative numbers
+        if (TheNum < 0) {
+        parent.frames[1].document.writeln(PrintError("This simulation works only with positive numbers."))
+        TheNum *= -1
+        }
+        StartPlace = OrderOfMagnitude(TheNum)
+        if (StartPlace < 0) {StartPlace = 0}
+
+        for (CurPlace = StartPlace; CurPlace >= -NumDecs; CurPlace--) {
+                if (CurPlace == -1) {S += "."}
+                CurPower = Math.pow(2, CurPlace)
+                if (TheNum >= CurPower) {
+                        S += "1"
+                        TheNum = TheNum - CurPower
+                } else  {
+                        S += "0"
+                }
+        }
+        return S
+}
+
+function PrintError(Message) {
+        Error = "<CENTER><H1> ERROR </H1></CENTER> <P>\n"
+        Error += "<CENTER> <EM>" + Message + "</EM> </CENTER>\n <HR>"
+        return Error
+}
+
+
+function Counter_3_2_Sum(bit_x,bit_y,bit_z) {
+        count=0
+        s="0"
+        if (bit_x=="1") {count+=1}
+        if (bit_y=="1") {count+=1}
+        if (bit_z=="1") {count+=1}
+        if (count >= 2) {count+=-2}
+        if (count==1) {s="1"}
+        return s        
+}
+
+function Counter_3_2_Carry(bit_x,bit_y,bit_z,s) {
+        count=0
+        if (bit_x=="1") {count+=1}
+        if (bit_y=="1") {count+=1}
+        if (bit_z=="1") {count+=1}
+        if (s=="1") {count+=-1}
+        count*=0.5;
+        return count    
+}
+
+function Levels_in_CSA_Tree(k) {
+// k is the number of operands, need err ctl still
+        if (k==0||k==1) {levels=0}
+        if (k==2||k==3) {levels=1}
+        if (k==4) {levels=2}
+        if (k>=5 && k<=6) {levels=3}
+        if (k>=7 && k<=9) {levels=4}
+        if (k>=10 && k<=13) {levels=5}
+        if (k>=14 && k<=19) {levels=6}
+        if (k>=20 && k<=28) {levels=7}
+        if (k>=29 && k<=42) {levels=8}
+        if (k>=43 && k<=63) {levels=9}
+        return levels
+}
+
+//*******************************
+
+
+function TIME_SUM(t1,t2){
+        t11=t1+T_SUM
+        t22=t2+(T_SUM/2)
+        tr=Math.max(t11,t22)       
+        return tr}
+
+function TIME_CARRY(t1,t2,t3){
+        t2= Math.max(Math.max(t1,t2),t3)+T_CARRY
+        return t2}
+//*******************************
+
+//******************************************************
+function CSA_n(op1,op2,op3,t1,t2,t3,callflag) {
+// need err ctl to ensure each op has same # of bits
+if (callflag==1){
+        parent.frames[1].document.writeln("<br> <b>Level 1</b> <br>")
+        parent.frames[1].document.writeln("<dd>X<sub>1,1</sub> = "+op1+"---> T<sub>1,1</sub>="+t1)
+        parent.frames[1].document.writeln("<br><dd>X<sub>1,2</sub> = "+op2+"---> T<sub>1,2</sub>="+t2)
+        parent.frames[1].document.writeln("<br><dd>X<sub>1,3</sub> = "+op3+"---> T<sub>1,3</sub>="+t3+"<br>")}
+
+        num_bits=op1.length
+        sum=""
+        carry=""
+
+        for (var i=0; i<num_bits; i++) {
+                sum+=Counter_3_2_Sum(op1[i],op2[i],op3[i])
+                carry+=Counter_3_2_Carry(op1[i],op2[i],op3[i],sum[i]) }
+
+        sum=Extend(sum);
+        carry=LeftShift(carry);
+//parent.frames[1].document.writeln(carry+" "+sum+"<br>")
+
+
+        result = carry + sum;  // c,s bits are just concatenated   
+//        carry=""
+//        sum=""
+//        for (var i=0; i<res.length/2; i++) {
+//                carry+=res[i]
+//                sum+=res[i+res.length/2]}
+        tc=TIME_CARRY(t1,t2,t3)
+        ts=TIME_SUM(Math.max(t1,t2),t3)
+        if(callflag==1){
+        parent.frames[1].document.writeln("<br><b>Tree result new (CPA Input)</b>")
+        parent.frames[1].document.writeln("<br><dd>C = "+carry+"--->Tc="+tc)
+        parent.frames[1].document.writeln("<br><dd>S = "+sum+"--->Ts="+ts+"<br>")}
+    
+        return result
+}
+//**************************************************
+function CSA(op1,op2,op3,callflag) {
+// need err ctl to ensure each op has same # of bits
+if (callflag==1){
+        parent.frames[1].document.writeln("<br> <b>Level 1</b> <br>")
+        parent.frames[1].document.writeln("<dd>X<sub>1</sub> = "+op1)
+        parent.frames[1].document.writeln("<br><dd>X<sub>2</sub> = "+op2)
+        parent.frames[1].document.writeln("<br><dd>X<sub>3</sub> = "+op3+"<br>")}
+
+        num_bits=op1.length
+//        parent.frames[1].document.writeln("CSA input: "+op1+" "+op2+""+op3+"<br>")
+        sum=""
+        carry=""
+
+        for (var i=0; i<num_bits; i++) {
+                sum+=Counter_3_2_Sum(op1[i],op2[i],op3[i])
+                carry+=Counter_3_2_Carry(op1[i],op2[i],op3[i],sum[i]) }
+
+        sum=Extend(sum);
+        carry=LeftShift(carry);
+//parent.frames[1].document.writeln(carry+" "+sum+"<br>")
+
+
+        result = carry + sum;  // c,s bits are just concatenated   
+
+
+        return result
+}
+
+function LeftShift(op) {
+        l=op.length
+        op+="0";
+        newop=""
+        for (var i=0; i<l+1; i++) {
+        newop+=op[i]}
+ 
+//      if 
+//(op[0]=="1"){parent.frames[1].document.writeln(PrintError("Overflow."))}
+        return newop}
+//**********************************************************************
+
+
+
+function CSA_2L_Tree_n(x1,x2,x3,x4,t1,t2,t3,t4) {
+        parent.frames[1].document.writeln("<br> <b>Level 2</b> <br>")
+        parent.frames[1].document.writeln("<dd>X<sub>2,1</sub> = "+x1+"--->T<sub>2,1</sub>="+t1)
+        parent.frames[1].document.writeln("<br><dd>X<sub>2,2</sub> = "+x2+"--->T<sub>2,2</sub>="+t2)
+        parent.frames[1].document.writeln("<br><dd>X<sub>2,3</sub> = "+x3+"--->T<sub>2,3</sub>="+t3)
+        parent.frames[1].document.writeln("<br><dd>X<sub>2,4</sub> = "+x4+"--->T<sub>2,4</sub>="+t4+"<br>")
+
+        num_bits=x1.length
+        result2=CSA_n(x2,x3,x4,t2,t3,t4,0)
+        carry1=""
+        sum1=""
+        for (var i=0; i<result2.length/2; i++) {
+                carry1+=result2[i]
+                sum1+=result2[i+result2.length/2] }
+ //         parent.frames[1].document.writeln("<br>NOOSHA<br>") 
+        t2_n=Math.max(t2,t3)
+        result1=CSA_n(Append_0(carry1),Extend(Extend(x1)),Extend(sum1),TIME_CARRY(t2,t3,t4),t1,TIME_SUM(t2_n,t4),1)
+
+       return result
+}
+
+//********************************************************************
+function CSA_2L_Tree(x1,x2,x3,x4) {
+        parent.frames[1].document.writeln("<br> <b>Level 2</b> <br>")
+        parent.frames[1].document.writeln("<dd>X<sub>1</sub> = "+x1)
+        parent.frames[1].document.writeln("<br><dd>X<sub>2</sub> = "+x2)
+        parent.frames[1].document.writeln("<br><dd>X<sub>3</sub> = "+x3)
+        parent.frames[1].document.writeln("<br><dd>X<sub>4</sub> = "+x4+"<br>")
+
+        num_bits=x1.length
+        result2=CSA(x2,x3,x4,0)
+        carry1=""
+        sum1=""
+        for (var i=0; i<result2.length/2; i++) {
+                carry1+=result2[i]
+                sum1+=result2[i+result2.length/2] }
+        if (Show_Detail=='True') {
+                parent.frames[1].document.writeln("<br><dd>S2 = "+sum1+"<BR>")
+                parent.frames[1].document.writeln("<dd>C = "+carry1+"<BR>")}
+
+        result1=CSA(Extend(Extend(x1)),Append_0(carry1),Extend(sum1),1)
+        return result
+}
+
+function Extend(bits) {
+        new_bits=Reverse_Bits(bits);
+        if (Twos==0) {new_bits+="0";}
+        else {new_bits+=bits[0];}
+        new_bits=Reverse_Bits(new_bits);
+        return new_bits;
+        }
+
+function Append_0(bits) {
+        new_bits=Reverse_Bits(bits);
+        new_bits+="0";
+        new_bits=Reverse_Bits(new_bits);
+        return new_bits;
+        }
+//***************************************************************************
+   function CSA_3aL_Tree_n(x1,x2,x3,x4,x5,t1,t2,t3,t4,t5) {
+        num_bits=x1.length
+        parent.frames[1].document.writeln("<br> <b>Level 3</b> <br>")
+        parent.frames[1].document.writeln("<dd>X<sub>3,1</sub> = "+x1+"--->T<sub>3,1</sub>="+t1)
+        parent.frames[1].document.writeln("<br><dd>X<sub>3,2</sub> = "+x2+"--->T<sub>3,2</sub>="+t2)
+        parent.frames[1].document.writeln("<br><dd>X<sub>3,3</sub> = "+x3+"--->T<sub>3,3</sub>="+t3)
+        parent.frames[1].document.writeln("<br><dd>X<sub>3,4</sub> = "+x4+"--->T<sub>3,4</sub>="+t4)
+        parent.frames[1].document.writeln("<br><dd>X<sub>3,5</sub> = "+x5+"--->T<sub>3,5</sub>="+t5+"<br>")
+
+        result31=CSA_n(x1,x2,x3,t1,t2,t3,0)
+
+        carry31=""
+        sum31=""
+
+        for (var i=0; i<result31.length/2; i++) {
+                carry31+=result31[i]
+                sum31+=result31[i+result31.length/2]
+		}
+ 
+        t1_n=Math.max(t1,t2)
+
+        return CSA_2L_Tree_n(Extend(sum31),Append_0(carry31),Extend(Extend(x4)),Extend(Extend(x5)),TIME_SUM(t1_n,t3),TIME_CARRY(t1,t2,t3),t4,t5)
+ }     
+function CSA_3L_Tree_n(x1,x2,x3,x4,x5,x6,t1,t2,t3,t4,t5,t6) {
+        num_bits=x1.length
+        parent.frames[1].document.writeln("<br> <b>Level 3</b> <br>")
+        parent.frames[1].document.writeln("<dd>X<sub>3,1</sub> = "+x1+"--->T<sub>3,1</sub>="+t1)
+        parent.frames[1].document.writeln("<br><dd>X<sub>3,2</sub> = "+x2+"--->T<sub>3,2</sub>="+t2)
+        parent.frames[1].document.writeln("<br><dd>X<sub>3,3</sub> = "+x3+"--->T<sub>3,3</sub>="+t3)
+        parent.frames[1].document.writeln("<br><dd>X<sub>3,4</sub> = "+x4+"--->T<sub>3,4</sub>="+t4)
+        parent.frames[1].document.writeln("<br><dd>X<sub>3,5</sub> = "+x5+"--->T<sub>3,5</sub>="+t5)
+        parent.frames[1].document.writeln("<br><dd>X<sub>3,6</sub> = "+x6+"--->T<sub>3,6</sub>="+t6+"<br>")
+        result31=CSA_n(x1,x2,x3,t1,t2,t3,0)
+        result32=CSA_n(x4,x5,x6,t4,t5,t6,0)
+        carry31=""
+        sum31=""
+        carry32=""
+        sum32=""
+        for (var i=0; i<result31.length/2; i++) {
+                carry31+=result31[i]
+                sum31+=result31[i+result31.length/2]
+                carry32+=result32[i]
+                sum32+=result32[i+result31.length/2] }
+ 
+        t1_n=Math.max(t1,t2)
+        t2_n=Math.max(t4,t5)
+        return CSA_2L_Tree_n(Extend(sum31),Append_0(carry31),Append_0(carry32),Extend(sum32),TIME_SUM(t1_n,t3),TIME_CARRY(t1,t2,t3),TIME_CARRY(t4,t5,t6),TIME_SUM(t2_n,t6))
+ }
+
+
+//************************************************************************************
+
+
+//********************
+
+function CSA_4aL_Tree_n(x1,x2,x3,x4,x5,x6,x7,t1,t2,t3,t4,t5,t6,t7) {
+        num_bits=x1.length
+        parent.frames[1].document.writeln("<br> <b>Level 4</b> <br>")
+        parent.frames[1].document.writeln("<dd>X<sub>4,1</sub> = "+x1+"--->T<sub>4,1</sub>="+t1)
+        parent.frames[1].document.writeln("<br><dd>X<sub>4,2</sub> = "+x2+"--->T<sub>4,2</sub>="+t2)
+        parent.frames[1].document.writeln("<br><dd>X<sub>4,3</sub> = "+x3+"--->T<sub>4,3</sub>="+t3)
+        parent.frames[1].document.writeln("<br><dd>X<sub>4,4</sub> = "+x4+"--->T<sub>4,4</sub>="+t4)
+        parent.frames[1].document.writeln("<br><dd>X<sub>4,5</sub> = "+x5+"--->T<sub>4,5</sub>="+t5)
+        parent.frames[1].document.writeln("<br><dd>X<sub>4,6</sub> = "+x6+"--->T<sub>4,6</sub>="+t6)
+        parent.frames[1].document.writeln("<br><dd>X<sub>4,7</sub> = "+x7+"--->T<sub>4,7</sub>="+t7+"<br>")
+
+        result41=CSA_n(x2,x3,x4,t2,t3,t4,0)
+        result42=CSA_n(x5,x6,x7,t5,t6,t7,0)
+        carry41=""
+        sum41=""
+        carry42=""
+        sum42=""
+
+ for (var i=0; i<result41.length/2; i++) {
+                carry41+=result41[i]
+                sum41+=result41[i+result41.length/2]
+                carry42+=result42[i]
+                sum42+=result42[i+result41.length/2]
+                }
+        t1_n=Math.max(t2,t3)
+        t2_n=Math.max(t5,t6)
+        zero_n=FillBits(sum41.length)
+        return CSA_3aL_Tree_n(Extend(Extend(x1)),Append_0(carry41),Append_0(carry42),Extend(sum41),Extend(sum42),t1,TIME_CARRY(t2,t3,t4),TIME_CARRY(t5,t6,t7),TIME_SUM(t1_n,t4),TIME_SUM(t2_n,t7))
+}
+function CSA_4bL_Tree_n(x1,x2,x3,x4,x5,x6,x7,x8,x9,t1,t2,t3,t4,t5,t6,t7,t8,t9) {
+        num_bits=x1.length
+        parent.frames[1].document.writeln("<br> <b>Level 4</b> <br>")
+        parent.frames[1].document.writeln("<dd>X<sub>4,1</sub> = "+x1+"--->T<sub>4,1</sub>="+t1)
+        parent.frames[1].document.writeln("<br><dd>X<sub>4,2</sub> = "+x2+"--->T<sub>4,2</sub>="+t2)
+        parent.frames[1].document.writeln("<br><dd>X<sub>4,3</sub> = "+x3+"--->T<sub>4,3</sub>="+t3)
+        parent.frames[1].document.writeln("<br><dd>X<sub>4,4</sub> = "+x4+"--->T<sub>4,4</sub>="+t4)
+        parent.frames[1].document.writeln("<br><dd>X<sub>4,5</sub> = "+x5+"--->T<sub>4,5</sub>="+t5)
+        parent.frames[1].document.writeln("<br><dd>X<sub>4,6</sub> = "+x6+"--->T<sub>4,6</sub>="+t6)
+        parent.frames[1].document.writeln("<br><dd>X<sub>4,7</sub> = "+x7+"--->T<sub>4,7</sub>="+t7)
+        parent.frames[1].document.writeln("<br><dd>X<sub>4,8</sub> = "+x8+"--->T<sub>4,8</sub>="+t8)
+        parent.frames[1].document.writeln("<br><dd>X<sub>4,9</sub> = "+x9+"--->T<sub>4,9</sub>="+t9+"<br>")
+        result41=CSA_n(x1,x2,x3,t1,t2,t3,0)
+        result42=CSA_n(x4,x5,x6,t4,t5,t6,0)
+        result43=CSA_n(x7,x8,x9,t7,t8,t9,0)
+
+        carry41=""
+        sum41=""
+        carry42=""
+        sum42=""
+       carry43=""
+        sum43=""
+
+ for (var i=0; i<result41.length/2; i++) {
+                carry41+=result41[i]
+                sum41+=result41[i+result41.length/2]
+                carry42+=result42[i]
+                sum42+=result42[i+result41.length/2]
+                carry43+=result43[i]
+                sum43+=result43[i+result41.length/2]
+                }
+        t1_n=Math.max(t1,t2)
+        t2_n=Math.max(t4,t5)
+        t3_n=Math.max(t7,t8)
+
+        return CSA_3L_Tree_n(Extend(sum41),Extend(sum42),Extend(sum43),Append_0(carry41),Append_0(carry42),Append_0(carry43),TIME_SUM(t1_n,t3),TIME_SUM(t2_n,t6),TIME_SUM(t3_n,t9),TIME_CARRY(t1,t2,t3),TIME_CARRY(t4,t5,t6),TIME_CARRY(t7,t8,t9))
+}
+
+function CSA_4cL_Tree_n(x1,x2,x3,x4,x5,x6,x7,x8,x9,t1,t2,t3,t4,t5,t6,t7,t8,t9) {
+        num_bits=x1.length
+        parent.frames[1].document.writeln("<br> <b>Level 4</b> <br>")
+        parent.frames[1].document.writeln("<dd>X<sub>4,1</sub> = "+x1+"--->T<sub>4,1</sub>="+t1)
+        parent.frames[1].document.writeln("<br><dd>X<sub>4,2</sub> = "+x2+"--->T<sub>4,2</sub>="+t2)
+        parent.frames[1].document.writeln("<br><dd>X<sub>4,3</sub> = "+x3+"--->T<sub>4,3</sub>="+t3)
+        parent.frames[1].document.writeln("<br><dd>X<sub>4,4</sub> = "+x4+"--->T<sub>4,4</sub>="+t4)
+        parent.frames[1].document.writeln("<br><dd>X<sub>4,5</sub> = "+x5+"--->T<sub>4,5</sub>="+t5)
+        parent.frames[1].document.writeln("<br><dd>X<sub>4,6</sub> = "+x6+"--->T<sub>4,6</sub>="+t6)
+        parent.frames[1].document.writeln("<br><dd>X<sub>4,7</sub> = "+x7+"--->T<sub>4,7</sub>="+t7)
+        parent.frames[1].document.writeln("<br><dd>X<sub>4,8</sub> = "+x8+"--->T<sub>4,8</sub>="+t8)
+        parent.frames[1].document.writeln("<br><dd>X<sub>4,9</sub> = "+x9+"--->T<sub>4,9</sub>="+t9+"<br>")
+        result41=CSA_n(x1,x2,x3,t1,t2,t3,0)
+        result42=CSA_n(x4,x5,x6,t4,t5,t6,0)
+        result43=CSA_n(x7,x8,x9,t7,t8,t9,0)
+
+        carry41=""
+        sum41=""
+        carry42=""
+        sum42=""
+       carry43=""
+        sum43=""
+
+ for (var i=0; i<result41.length/2; i++) {
+                carry41+=result41[i]
+                sum41+=result41[i+result41.length/2]
+                carry42+=result42[i]
+                sum42+=result42[i+result41.length/2]
+                carry43+=result43[i]
+                sum43+=result43[i+result41.length/2]
+                }
+        t1_n=Math.max(t1,t2)
+        t2_n=Math.max(t4,t5)
+        t3_n=Math.max(t7,t8)
+
+        return CSA_3L_Tree_n(Append_0(carry41),Extend(sum42),Extend(sum41),Append_0(carry42),Append_0(carry43),Extend(sum43),TIME_CARRY(t1,t2,t3),TIME_SUM(t2_n,t6),TIME_SUM(t1_n,t3),TIME_CARRY(t4,t5,t6),TIME_CARRY(t7,t8,t9),TIME_SUM(t3_n,t9))
+}
+
+function CSA_4dL_Tree_n(x1,x2,x3,x4,x5,x6,x7,x8,t1,t2,t3,t4,t5,t6,t7,t8) {
+
+        num_bits=x1.length
+        parent.frames[1].document.writeln("<br> <b>Level 4</b> <br>")
+        parent.frames[1].document.writeln("<dd>X<sub>4,1</sub> = "+x1+"--->T<sub>4,1</sub>="+t1)
+         parent.frames[1].document.writeln("<br><dd>X<sub>4,2</sub> = "+x2+"--->T<sub>4,2</sub>="+t2)
+        parent.frames[1].document.writeln("<br><dd>X<sub>4,3</sub> = "+x3+"--->T<sub>4,3</sub>="+t3)
+        parent.frames[1].document.writeln("<br><dd>X<sub>4,4</sub> = "+x4+"--->T<sub>4,4</sub>="+t4)
+        parent.frames[1].document.writeln("<br><dd>X<sub>4,5</sub> = "+x5+"--->T<sub>4,5</sub>="+t5)
+        parent.frames[1].document.writeln("<br><dd>X<sub>4,6</sub> = "+x6+"--->T<sub>4,6</sub>="+t6)
+        parent.frames[1].document.writeln("<br><dd>X<sub>4,7</sub> = "+x7+"--->T<sub>4,7</sub>="+t7)
+        parent.frames[1].document.writeln("<br><dd>X<sub>4,8</sub> = "+x8+"--->T<sub>4,8</sub>="+t8+"<br>")
+
+        result41=CSA_n(x1,x2,x3,t1,t2,t3,0)
+        result42=CSA_n(x4,x5,x6,t4,t5,t6,0)
+
+        carry41=""
+        sum41=""
+        carry42=""
+        sum42=""
+
+ for (var i=0; i<result41.length/2; i++) {
+                carry41+=result41[i]
+                sum41+=result41[i+result41.length/2]
+                carry42+=result42[i]
+                sum42+=result42[i+result41.length/2]
+               
+                }
+        t1_n=Math.max(t1,t2)
+        t2_n=Math.max(t4,t5)
+ 
+
+        return CSA_3L_Tree_n(Append_0(carry41),Append_0(carry42),Extend(sum41),Extend(Extend(x7)),Extend(Extend(x8)),Extend(sum42),TIME_CARRY(t1,t2,t3),TIME_CARRY(t4,t5,t6),TIME_SUM(t1_n,t3),t7,t8,TIME_SUM(t2_n,t6))
+}
+
+
+
+
+function CSA_5aL_Tree_n(x1,x2,x3,x4,x5,x6,x7,x8,x9,x10,t1,t2,t3,t4,t5,t6,t7,t8,t9,t10) {
+        num_bits=x1.length
+        parent.frames[1].document.writeln("<br> <b>Level 5</b> <br>")
+        parent.frames[1].document.writeln("<dd>X<sub>5,1</sub> = "+x1+"--->T<sub>5,1</sub>="+t1)
+        parent.frames[1].document.writeln("<br><dd>X<sub>5,2</sub> = "+x2+"--->T<sub>5,2</sub>="+t2)
+        parent.frames[1].document.writeln("<br><dd>X<sub>5,3</sub> = "+x3+"--->T<sub>5,3</sub>="+t3)
+        parent.frames[1].document.writeln("<br><dd>X<sub>5,4</sub> = "+x4+"--->T<sub>5,4</sub>="+t4)
+        parent.frames[1].document.writeln("<br><dd>X<sub>5,5</sub> = "+x5+"--->T<sub>5,5</sub>="+t5)
+        parent.frames[1].document.writeln("<br><dd>X<sub>5,6</sub> = "+x6+"--->T<sub>5,6</sub>="+t6)
+        parent.frames[1].document.writeln("<br><dd>X<sub>5,7</sub> = "+x7+"--->T<sub>5,7</sub>="+t7)
+        parent.frames[1].document.writeln("<br><dd>X<sub>5,8</sub> = "+x8+"--->T<sub>5,8</sub>="+t8)
+        parent.frames[1].document.writeln("<br><dd>X<sub>5,9</sub> = "+x9+"--->T<sub>5,9</sub>="+t9)
+        parent.frames[1].document.writeln("<br><dd>X<sub>5,10</sub> = "+x10+"--->T<sub>5,10</sub>="+t10+"<br>")
+        result51=CSA_n(x1,x2,x3,t1,t2,t3,0)
+        result52=CSA_n(x4,x5,x6,t4,t5,t6,0)
+        result53=CSA_n(x7,x8,x9,t7,t8,t9,0)
+
+        carry51=""
+        sum51=""
+        carry52=""
+        sum52=""
+       carry53=""
+        sum53=""
+
+ for (var i=0; i<result51.length/2; i++) {
+                carry51+=result51[i]
+                sum51+=result51[i+result51.length/2]
+                carry52+=result52[i]
+                sum52+=result52[i+result51.length/2]
+                carry53+=result53[i]
+                sum53+=result53[i+result51.length/2]
+                }
+        t1_n=Math.max(t1,t2)
+        t2_n=Math.max(t4,t5)
+        t3_n=Math.max(t7,t8)
+
+        return CSA_4aL_Tree_n(Extend(sum51),Append_0(carry51),Append_0(carry52),Extend(sum52),Append_0(carry53),Extend(Extend(x10)),Extend(sum53),TIME_SUM(t1_n,t3),TIME_CARRY(t1,t2,t3),TIME_CARRY(t4,t5,t6),TIME_SUM(t2_n,t6),TIME_CARRY(t7,t8,t9),t10,TIME_SUM(t3_n,t9))
+}
+
+function CSA_5bL_Tree_n(x1,x2,x3,x4,x5,x6,x7,x8,x9,x10,x11,x12,t1,t2,t3,t4,t5,t6,t7,t8,t9,t10,t11,t12) {
+        num_bits=x1.length
+        parent.frames[1].document.writeln("<br> <b>Level 5</b> <br>")
+        parent.frames[1].document.writeln("<dd>X<sub>5,1</sub> = "+x1+"--->T<sub>5,1</sub>="+t1)
+        parent.frames[1].document.writeln("<br><dd>X<sub>5,2</sub> = "+x2+"--->T<sub>5,2</sub>="+t2)
+        parent.frames[1].document.writeln("<br><dd>X<sub>5,3</sub> = "+x3+"--->T<sub>5,3</sub>="+t3)
+        parent.frames[1].document.writeln("<br><dd>X<sub>5,4</sub> = "+x4+"--->T<sub>5,4</sub>="+t4)
+        parent.frames[1].document.writeln("<br><dd>X<sub>5,5</sub> = "+x5+"--->T<sub>5,5</sub>="+t5)
+        parent.frames[1].document.writeln("<br><dd>X<sub>5,6</sub> = "+x6+"--->T<sub>5,6</sub>="+t6)
+        parent.frames[1].document.writeln("<br><dd>X<sub>5,7</sub> = "+x7+"--->T<sub>5,7</sub>="+t7)
+        parent.frames[1].document.writeln("<br><dd>X<sub>5,8</sub> = "+x8+"--->T<sub>5,8</sub>="+t8)
+        parent.frames[1].document.writeln("<br><dd>X<sub>5,9</sub> = "+x9+"--->T<sub>5,9</sub>="+t9)
+        parent.frames[1].document.writeln("<br><dd>X<sub>5,10</sub> = "+x10+"--->T<sub>5,10</sub>="+t10)
+        parent.frames[1].document.writeln("<br><dd>X<sub>5,11</sub> = "+x11+"--->T<sub>5,11</sub>="+t11)
+        parent.frames[1].document.writeln("<br><dd>X<sub>5,12</sub> = "+x12+"--->T<sub>5,12</sub>="+t12+"<br>")
+        result51=CSA_n(x1,x2,x3,t1,t2,t3,0)
+        result52=CSA_n(x4,x5,x6,t4,t5,t6,0)
+        result53=CSA_n(x7,x8,x9,t7,t8,t9,0)
+        result54=CSA_n(x10,x11,x12,t10,t11,t12,0)
+        carry51=""
+        sum51=""
+        carry52=""
+        sum52=""
+       carry53=""
+        sum53=""
+       carry54=""
+        sum54=""
+ for (var i=0; i<result51.length/2; i++) {
+                carry51+=result51[i]
+                sum51+=result51[i+result51.length/2]
+                carry52+=result52[i]
+                sum52+=result52[i+result51.length/2]
+                carry53+=result53[i]
+                sum53+=result53[i+result51.length/2]
+                carry54+=result54[i]
+                sum54+=result54[i+result51.length/2]
+                }
+        t1_n=Math.max(t1,t2)
+        t2_n=Math.max(t4,t5)
+        t3_n=Math.max(t7,t8)
+        t4_n=Math.max(t10,t11)
+        zero_in = FillBits(sum51.length)
+        return CSA_4dL_Tree_n(Extend(sum51),Extend(sum52),Extend(sum53),Append_0(carry51),Append_0(carry52),Append_0(carry53),Append_0(carry54),Extend(sum54),TIME_SUM(t1_n,t3),TIME_SUM(t2_n,t6),TIME_SUM(t3_n,t9),TIME_CARRY(t1,t2,t3),TIME_CARRY(t4,t5,t6),TIME_CARRY(t7,t8,t9),TIME_CARRY(t10,t11,t12),TIME_SUM(t4_n,t12))
+}
+function CSA_5cL_Tree_n(x1,x2,x3,x4,x5,x6,x7,x8,x9,x10,x11,x12,x13,t1,t2,t3,t4,t5,t6,t7,t8,t9,t10,t11,t12,t13) {
+        num_bits=x1.length
+        parent.frames[1].document.writeln("<br> <b>Level 5</b> <br>")
+        parent.frames[1].document.writeln("<dd>X<sub>5,1</sub> = "+x1+"--->T<sub>5,1</sub>="+t1)
+        parent.frames[1].document.writeln("<br><dd>X<sub>5,2</sub> = "+x2+"--->T<sub>5,2</sub>="+t2)
+        parent.frames[1].document.writeln("<br><dd>X<sub>5,3</sub> = "+x3+"--->T<sub>5,3</sub>="+t3)
+        parent.frames[1].document.writeln("<br><dd>X<sub>5,4</sub> = "+x4+"--->T<sub>5,4</sub>="+t4)
+        parent.frames[1].document.writeln("<br><dd>X<sub>5,5</sub> = "+x5+"--->T<sub>5,5</sub>="+t5)
+        parent.frames[1].document.writeln("<br><dd>X<sub>5,6</sub> = "+x6+"--->T<sub>5,6</sub>="+t6)
+        parent.frames[1].document.writeln("<br><dd>X<sub>5,7</sub> = "+x7+"--->T<sub>5,7</sub>="+t7)
+        parent.frames[1].document.writeln("<br><dd>X<sub>5,8</sub> = "+x8+"--->T<sub>5,8</sub>="+t8)
+        parent.frames[1].document.writeln("<br><dd>X<sub>5,9</sub> = "+x9+"--->T<sub>5,9</sub>="+t9)
+        parent.frames[1].document.writeln("<br><dd>X<sub>5,10</sub> = "+x10+"--->T<sub>5,10</sub>="+t10)
+        parent.frames[1].document.writeln("<br><dd>X<sub>5,11</sub> = "+x11+"--->T<sub>5,11</sub>="+t11)
+        parent.frames[1].document.writeln("<br><dd>X<sub>5,12</sub> = "+x12+"--->T<sub>5,12</sub>="+t12)
+        parent.frames[1].document.writeln("<br><dd>X<sub>5,13</sub> = "+x13+"--->T<sub>5,13</sub>="+t13+"<br>")
+        result51=CSA_n(x1,x2,x3,t1,t2,t3,0)
+        result52=CSA_n(x4,x5,x6,t4,t5,t6,0)
+        result53=CSA_n(x7,x8,x9,t7,t8,t9,0)
+        result54=CSA_n(x10,x11,x12,t10,t11,t12,0)
+        carry51=""
+        sum51=""
+        carry52=""
+        sum52=""
+       carry53=""
+        sum53=""
+       carry54=""
+        sum54=""
+ for (var i=0; i<result51.length/2; i++) {
+                carry51+=result51[i]
+                sum51+=result51[i+result51.length/2]
+                carry52+=result52[i]
+                sum52+=result52[i+result51.length/2]
+                carry53+=result53[i]
+                sum53+=result53[i+result51.length/2]
+                carry54+=result54[i]
+                sum54+=result54[i+result51.length/2]
+                }
+        t1_n=Math.max(t1,t2)
+        t2_n=Math.max(t4,t5)
+        t3_n=Math.max(t7,t8)
+        t4_n=Math.max(t10,t11)
+        return CSA_4cL_Tree_n(Extend(sum51),Extend(sum52),Extend(sum53),Append_0(carry51),Append_0(carry52),Append_0(carry53),Append_0(carry54),Extend(Extend(x13)),Extend(sum54),TIME_SUM(t1_n,t3),TIME_SUM(t2_n,t6),TIME_SUM(t3_n,t9),TIME_CARRY(t1,t2,t3),TIME_CARRY(t4,t5,t6),TIME_CARRY(t7,t8,t9),TIME_CARRY(t10,t11,t12),t3,TIME_SUM(t4_n,t12))
+}
+function CSA_5dL_Tree_n(x1,x2,x3,x4,x5,x6,x7,x8,x9,x10,x11,t1,t2,t3,t4,t5,t6,t7,t8,t9,t10,t11) {
+        num_bits=x1.length
+        parent.frames[1].document.writeln("<br> <b>Level 5</b> <br>")
+        parent.frames[1].document.writeln("<dd>X<sub>5,1</sub> = "+x1+"--->T<sub>5,1</sub>="+t1)
+        parent.frames[1].document.writeln("<br><dd>X<sub>5,2</sub> = "+x2+"--->T<sub>5,2</sub>="+t2)
+        parent.frames[1].document.writeln("<br><dd>X<sub>5,3</sub> = "+x3+"--->T<sub>5,3</sub>="+t3)
+        parent.frames[1].document.writeln("<br><dd>X<sub>5,4</sub> = "+x4+"--->T<sub>5,4</sub>="+t4)
+        parent.frames[1].document.writeln("<br><dd>X<sub>5,5</sub> = "+x5+"--->T<sub>5,5</sub>="+t5)
+        parent.frames[1].document.writeln("<br><dd>X<sub>5,6</sub> = "+x6+"--->T<sub>5,6</sub>="+t6)
+        parent.frames[1].document.writeln("<br><dd>X<sub>5,7</sub> = "+x7+"--->T<sub>5,7</sub>="+t7)
+        parent.frames[1].document.writeln("<br><dd>X<sub>5,8</sub> = "+x8+"--->T<sub>5,8</sub>="+t8)
+        parent.frames[1].document.writeln("<br><dd>X<sub>5,9</sub> = "+x9+"--->T<sub>5,9</sub>="+t9)
+        parent.frames[1].document.writeln("<br><dd>X<sub>5,10</sub> = "+x10+"--->T<sub>5,10</sub>="+t10)
+        parent.frames[1].document.writeln("<br><dd>X<sub>5,11</sub> = "+x11+"--->T<sub>5,11</sub>="+t11+"<br>")
+
+        result51=CSA_n(x1,x2,x3,t1,t2,t3,0)
+        result52=CSA_n(x4,x5,x6,t4,t5,t6,0)
+        result53=CSA_n(x7,x8,x9,t7,t8,t9,0)
+
+        carry51=""
+        sum51=""
+        carry52=""
+        sum52=""
+       carry53=""
+        sum53=""
+
+ for (var i=0; i<result51.length/2; i++) {
+                carry51+=result51[i]
+                sum51+=result51[i+result51.length/2]
+                carry52+=result52[i]
+                sum52+=result52[i+result51.length/2]
+                carry53+=result53[i]
+                sum53+=result53[i+result51.length/2]
+
+                }
+        t1_n=Math.max(t1,t2)
+        t2_n=Math.max(t4,t5)
+        t3_n=Math.max(t7,t8)
+
+
+        return CSA_4dL_Tree_n(Extend(sum51),Extend(sum52),Extend(sum53),Append_0(carry51),Append_0(carry52),Append_0(carry53),Extend(Extend(x10)),Extend(Extend(x11)),TIME_SUM(t1_n,t3),TIME_SUM(t2_n,t6),TIME_SUM(t3_n,t9),TIME_CARRY(t1,t2,t3),TIME_CARRY(t4,t5,t6),TIME_CARRY(t7,t8,t9),t10,t11)
+}
+
+function CSA_5eL_Tree_n(x1,x2,x3,x4,x5,x6,x7,x8,x9,x10,x11,t1,t2,t3,t4,t5,t6,t7,t8,t9,t10,t11) {
+        num_bits=x1.length
+        parent.frames[1].document.writeln("<br> <b>Level 5</b> <br>")
+        parent.frames[1].document.writeln("<dd>X<sub>5,1</sub> = "+x1+"--->T<sub>5,1</sub>="+t1)
+        parent.frames[1].document.writeln("<br><dd>X<sub>5,2</sub> = "+x2+"--->T<sub>5,2</sub>="+t2)
+        parent.frames[1].document.writeln("<br><dd>X<sub>5,3</sub> = "+x3+"--->T<sub>5,3</sub>="+t3)
+        parent.frames[1].document.writeln("<br><dd>X<sub>5,4</sub> = "+x4+"--->T<sub>5,4</sub>="+t4)
+        parent.frames[1].document.writeln("<br><dd>X<sub>5,5</sub> = "+x5+"--->T<sub>5,5</sub>="+t5)
+        parent.frames[1].document.writeln("<br><dd>X<sub>5,6</sub> = "+x6+"--->T<sub>5,6</sub>="+t6)
+        parent.frames[1].document.writeln("<br><dd>X<sub>5,7</sub> = "+x7+"--->T<sub>5,7</sub>="+t7)
+        parent.frames[1].document.writeln("<br><dd>X<sub>5,8</sub> = "+x8+"--->T<sub>5,8</sub>="+t8)
+        parent.frames[1].document.writeln("<br><dd>X<sub>5,9</sub> = "+x9+"--->T<sub>5,9</sub>="+t9)
+        parent.frames[1].document.writeln("<br><dd>X<sub>5,10</sub> = "+x10+"--->T<sub>5,10</sub>="+t10)
+        parent.frames[1].document.writeln("<br><dd>X<sub>5,11</sub> = "+x11+"--->T<sub>5,11</sub>="+t11+"<br>")
+
+        result51=CSA_n(x1,x2,x3,t1,t2,t3,0)
+        result52=CSA_n(x4,x5,x6,t4,t5,t6,0)
+        result53=CSA_n(x7,x8,x9,t7,t8,t9,0)
+
+        carry51=""
+        sum51=""
+        carry52=""
+        sum52=""
+       carry53=""
+        sum53=""
+
+ for (var i=0; i<result51.length/2; i++) {
+                carry51+=result51[i]
+                sum51+=result51[i+result51.length/2]
+                carry52+=result52[i]
+                sum52+=result52[i+result51.length/2]
+                carry53+=result53[i]
+                sum53+=result53[i+result51.length/2]
+
+                }
+        t1_n=Math.max(t1,t2)
+        t2_n=Math.max(t4,t5)
+        t3_n=Math.max(t7,t8)
+
+
+        return CSA_4dL_Tree_n(Append_0(carry51),Append_0(carry52),Extend(sum51),Extend(Extend(x10)),Extend(Extend(x11)),Append_0(carry53),Extend(sum52),Extend(sum53),TIME_CARRY(t1,t2,t3),TIME_CARRY(t4,t5,t6),TIME_SUM(t1_n,t3),t10,t11,TIME_CARRY(t7,t8,t9),TIME_SUM(t2_n,t6),TIME_SUM(t3_n,t9))
+}
+//**************************************************
+//**************************************************
+
+function CSA_6aL_Tree_n(x1,x2,x3,x4,x5,x6,x7,x8,x9,x10,x11,x12,x13,x14,x15,t1,t2,t3,t4,t5,t6,t7,t8,t9,t10,t11,t12,t13,t14,t15) {
+        num_bits=x1.length
+        parent.frames[1].document.writeln("<br> <b>Level 6</b> <br>")
+        parent.frames[1].document.writeln("<dd>X<sub>6,1</sub> = "+x1+"--->T<sub>6,1</sub>="+t1)
+        parent.frames[1].document.writeln("<br><dd>X<sub>6,2</sub> = "+x2+"--->T<sub>6,2</sub>="+t2)
+        parent.frames[1].document.writeln("<br><dd>X<sub>6,3</sub> = "+x3+"--->T<sub>6,3</sub>="+t3)
+        parent.frames[1].document.writeln("<br><dd>X<sub>6,4</sub> = "+x4+"--->T<sub>6,4</sub>="+t4)
+        parent.frames[1].document.writeln("<br><dd>X<sub>6,5</sub> = "+x5+"--->T<sub>6,5</sub>="+t5)
+        parent.frames[1].document.writeln("<br><dd>X<sub>6,6</sub> = "+x6+"--->T<sub>6,6</sub>="+t6)
+        parent.frames[1].document.writeln("<br><dd>X<sub>6,7</sub> = "+x7+"--->T<sub>6,7</sub>="+t7)
+        parent.frames[1].document.writeln("<br><dd>X<sub>6,8</sub> = "+x8+"--->T<sub>6,8</sub>="+t8)
+        parent.frames[1].document.writeln("<br><dd>X<sub>6,9</sub> = "+x9+"--->T<sub>6,9</sub>="+t9)
+        parent.frames[1].document.writeln("<br><dd>X<sub>6,10</sub> = "+x10+"--->T<sub>6,10</sub>="+t10)
+        parent.frames[1].document.writeln("<br><dd>X<sub>6,11</sub> = "+x11+"--->T<sub>6,11</sub>="+t11)
+        parent.frames[1].document.writeln("<br><dd>X<sub>6,12</sub> = "+x12+"--->T<sub>6,12</sub>="+t12)
+        parent.frames[1].document.writeln("<br><dd>X<sub>6,13</sub> = "+x13+"--->T<sub>6,13</sub>="+t13)
+        parent.frames[1].document.writeln("<br><dd>X<sub>6,14</sub> = "+x14+"--->T<sub>6,14</sub>="+t14)
+        parent.frames[1].document.writeln("<br><dd>X<sub>6,15</sub> = "+x15+"--->T<sub>6,15</sub>="+t15+"<br>")
+        result61=CSA_n(x1,x2,x3,t1,t2,t3,0)
+        result62=CSA_n(x4,x5,x6,t4,t5,t6,0)
+        result63=CSA_n(x7,x8,x9,t7,t8,t9,0)
+        result64=CSA_n(x10,x11,x12,t10,t11,t12,0)
+        result65=CSA_n(x13,x14,x15,t13,t14,t15,0)  
+        carry61=""
+        sum61=""
+        carry62=""
+        sum62=""
+       carry63=""
+        sum63=""
+       carry64=""
+        sum64=""
+       carry65=""
+        sum65=""
+ for (var i=0; i<result61.length/2; i++) {
+                carry61+=result61[i]
+                sum61+=result61[i+result61.length/2]
+                carry62+=result62[i]
+                sum62+=result62[i+result61.length/2]
+                carry63+=result63[i]
+                sum63+=result63[i+result61.length/2]
+                carry64+=result64[i]
+                sum64+=result64[i+result61.length/2]
+                carry65+=result65[i]
+                sum65+=result65[i+result61.length/2]
+                }
+        t1_n=Math.max(t1,t2)
+        t2_n=Math.max(t4,t5)
+        t3_n=Math.max(t7,t8)
+        t4_n=Math.max(t10,t11)
+        t5_n=Math.max(t13,t14)
+        return CSA_5aL_Tree_n(Extend(sum61),Extend(sum62),Extend(sum63),Append_0(carry61),Append_0(carry62),Append_0(carry63),Append_0(carry64),Append_0(carry65),Extend(sum64),Extend(sum65),TIME_SUM(t1_n,t3),TIME_SUM(t2_n,t6),TIME_SUM(t3_n,t9),TIME_CARRY(t1,t2,t3),TIME_CARRY(t4,t5,t6),TIME_CARRY(t7,t8,t9),TIME_CARRY(t10,t11,t12),TIME_CARRY(t13,t14,t15),TIME_SUM(t4_n,t12),TIME_SUM(t5_n,t15))
+}
+
+function CSA_6bL_Tree_n(x1,x2,x3,x4,x5,x6,x7,x8,x9,x10,x11,x12,x13,x14,x15,x16,x17,t1,t2,t3,t4,t5,t6,t7,t8,t9,t10,t11,t12,t13,t14,t15,t16,t17) {
+        num_bits=x1.length
+        parent.frames[1].document.writeln("<br> <b>Level 6</b> <br>")
+        parent.frames[1].document.writeln("<dd>X<sub>6,1</sub> = "+x1+"--->T<sub>6,1</sub>="+t1)
+        parent.frames[1].document.writeln("<br><dd>X<sub>6,2</sub> = "+x2+"--->T<sub>6,2</sub>="+t2)
+        parent.frames[1].document.writeln("<br><dd>X<sub>6,3</sub> = "+x3+"--->T<sub>6,3</sub>="+t3)
+        parent.frames[1].document.writeln("<br><dd>X<sub>6,4</sub> = "+x4+"--->T<sub>6,4</sub>="+t4)
+        parent.frames[1].document.writeln("<br><dd>X<sub>6,5</sub> = "+x5+"--->T<sub>6,5</sub>="+t5)
+        parent.frames[1].document.writeln("<br><dd>X<sub>6,6</sub> = "+x6+"--->T<sub>6,6</sub>="+t6)
+        parent.frames[1].document.writeln("<br><dd>X<sub>6,7</sub> = "+x7+"--->T<sub>6,7</sub>="+t7)
+        parent.frames[1].document.writeln("<br><dd>X<sub>6,8</sub> = "+x8+"--->T<sub>6,8</sub>="+t8)
+        parent.frames[1].document.writeln("<br><dd>X<sub>6,9</sub> = "+x9+"--->T<sub>6,9</sub>="+t9)
+        parent.frames[1].document.writeln("<br><dd>X<sub>6,10</sub> = "+x10+"--->T<sub>6,10</sub>="+t10)
+        parent.frames[1].document.writeln("<br><dd>X<sub>6,11</sub> = "+x11+"--->T<sub>6,11</sub>="+t11)
+        parent.frames[1].document.writeln("<br><dd>X<sub>6,12</sub> = "+x12+"--->T<sub>6,12</sub>="+t12)
+        parent.frames[1].document.writeln("<br><dd>X<sub>6,13</sub> = "+x13+"--->T<sub>6,13</sub>="+t13)
+        parent.frames[1].document.writeln("<br><dd>X<sub>6,14</sub> = "+x14+"--->T<sub>6,14</sub>="+t14)
+        parent.frames[1].document.writeln("<br><dd>X<sub>6,15</sub> = "+x15+"--->T<sub>6,15</sub>="+t15)
+        parent.frames[1].document.writeln("<br><dd>X<sub>6,16</sub> = "+x16+"--->T<sub>6,16</sub>="+t16)
+        parent.frames[1].document.writeln("<br><dd>X<sub>6,17</sub> = "+x17+"--->T<sub>6,17</sub>="+t17+"<br>")
+   
+        result61=CSA_n(x2,x3,x4,t2,t3,t4,0)
+        result62=CSA_n(x5,x6,x7,t5,t6,t7,0)
+        result63=CSA_n(x8,x9,x10,t8,t9,t10,0)
+        result64=CSA_n(x11,x12,x13,t11,t12,t13,0)
+        result65=CSA_n(x14,x15,x16,t14,t15,t16,0)  
+        carry61=""
+        sum61=""
+        carry62=""
+        sum62=""
+       carry63=""
+        sum63=""
+       carry64=""
+        sum64=""
+       carry65=""
+        sum65=""
+ for (var i=0; i<result61.length/2; i++) {
+                carry61+=result61[i]
+                sum61+=result61[i+result61.length/2]
+                carry62+=result62[i]
+                sum62+=result62[i+result61.length/2]
+                carry63+=result63[i]
+                sum63+=result63[i+result61.length/2]
+                carry64+=result64[i]
+                sum64+=result64[i+result61.length/2]
+                carry65+=result65[i]
+                sum65+=result65[i+result61.length/2]
+                }
+
+        t1_n=Math.max(t2,t3)
+        t2_n=Math.max(t5,t6)
+        t3_n=Math.max(t8,t9)
+        t4_n=Math.max(t11,t12)
+        t5_n=Math.max(t14,t15)
+       return CSA_5bL_Tree_n(Extend(Extend(x1)),Extend(sum61),Extend(sum62),Append_0(carry61),Append_0(carry62),Extend(sum63),Append_0(carry63),Append_0(carry64),Extend(sum64),Append_0(carry65),Extend(Extend(x17)),Extend(sum65),t1,TIME_SUM(t1_n,t4),TIME_SUM(t2_n,t7),TIME_CARRY(t2,t3,t4),TIME_CARRY(t5,t6,t7),TIME_SUM(t3_n,t10),TIME_CARRY(t8,t9,t10),TIME_CARRY(t11,t12,t13),TIME_SUM(t4_n,t13),TIME_CARRY(t14,t15,t16),t17,TIME_SUM(t5_n,t16))
+}
+
+function CSA_6cL_Tree_n(x1,x2,x3,x4,x5,x6,x7,x8,x9,x10,x11,x12,x13,x14,x15,x16,x17,x18,t1,t2,t3,t4,t5,t6,t7,t8,t9,t10,t11,t12,t13,t14,t15,t16,t17,t18) {
+        num_bits=x1.length
+        parent.frames[1].document.writeln("<br> <b>Level 6</b> <br>")
+        parent.frames[1].document.writeln("<dd>X<sub>6,1</sub> = "+x1+"--->T<sub>6,1</sub>="+t1)
+        parent.frames[1].document.writeln("<br><dd>X<sub>6,2</sub> = "+x2+"--->T<sub>6,2</sub>="+t2)
+        parent.frames[1].document.writeln("<br><dd>X<sub>6,3</sub> = "+x3+"--->T<sub>6,3</sub>="+t3)
+        parent.frames[1].document.writeln("<br><dd>X<sub>6,4</sub> = "+x4+"--->T<sub>6,4</sub>="+t4)
+        parent.frames[1].document.writeln("<br><dd>X<sub>6,5</sub> = "+x5+"--->T<sub>6,5</sub>="+t5)
+        parent.frames[1].document.writeln("<br><dd>X<sub>6,6</sub> = "+x6+"--->T<sub>6,6</sub>="+t6)
+        parent.frames[1].document.writeln("<br><dd>X<sub>6,7</sub> = "+x7+"--->T<sub>6,7</sub>="+t7)
+        parent.frames[1].document.writeln("<br><dd>X<sub>6,8</sub> = "+x8+"--->T<sub>6,8</sub>="+t8)
+        parent.frames[1].document.writeln("<br><dd>X<sub>6,9</sub> = "+x9+"--->T<sub>6,9</sub>="+t9)
+        parent.frames[1].document.writeln("<br><dd>X<sub>6,10</sub> = "+x10+"--->T<sub>6,10</sub>="+t10)
+        parent.frames[1].document.writeln("<br><dd>X<sub>6,11</sub> = "+x11+"--->T<sub>6,11</sub>="+t11)
+        parent.frames[1].document.writeln("<br><dd>X<sub>6,12</sub> = "+x12+"--->T<sub>6,12</sub>="+t12)
+        parent.frames[1].document.writeln("<br><dd>X<sub>6,13</sub> = "+x13+"--->T<sub>6,13</sub>="+t13)
+        parent.frames[1].document.writeln("<br><dd>X<sub>6,14</sub> = "+x14+"--->T<sub>6,14</sub>="+t14)
+        parent.frames[1].document.writeln("<br><dd>X<sub>6,15</sub> = "+x15+"--->T<sub>6,15</sub>="+t15)
+        parent.frames[1].document.writeln("<br><dd>X<sub>6,16</sub> = "+x16+"--->T<sub>6,16</sub>="+t16)
+        parent.frames[1].document.writeln("<br><dd>X<sub>6,17</sub> = "+x17+"--->T<sub>6,17</sub>="+t17)
+        parent.frames[1].document.writeln("<br><dd>X<sub>6,18</sub> = "+x18+"--->T<sub>6,18</sub>="+t18+"<br>")
+   
+        result61=CSA_n(x1,x2,x3,t1,t2,t3,0)
+        result62=CSA_n(x4,x5,x6,t4,t5,t6,0)
+        result63=CSA_n(x7,x8,x9,t7,t8,t9,0)
+        result64=CSA_n(x10,x11,x12,t10,t11,t12,0)
+        result65=CSA_n(x13,x14,x15,t13,t14,t15,0)
+        result66=CSA_n(x16,x17,x18,t16,t17,t18,0) 
+        carry61=""
+        sum61=""
+        carry62=""
+        sum62=""
+       carry63=""
+        sum63=""
+       carry64=""
+        sum64=""
+       carry65=""
+        sum65=""
+       carry66=""
+        sum66=""
+ for (var i=0; i<result61.length/2; i++) {
+                carry61+=result61[i]
+                sum61+=result61[i+result61.length/2]
+                carry62+=result62[i]
+                sum62+=result62[i+result61.length/2]
+                carry63+=result63[i]
+                sum63+=result63[i+result61.length/2]
+                carry64+=result64[i]
+                sum64+=result64[i+result61.length/2]
+                carry65+=result65[i]
+                sum65+=result65[i+result61.length/2]
+                carry66+=result66[i]
+                sum66+=result66[i+result61.length/2]
+                }
+        t1_n=Math.max(t1,t2)
+        t2_n=Math.max(t4,t5)
+        t3_n=Math.max(t7,t8)
+        t4_n=Math.max(t10,t11)
+        t5_n=Math.max(t13,t14)
+        t6_n=Math.max(t16,t17)
+       return CSA_5bL_Tree_n(Extend(sum61),Extend(sum62),Extend(sum63),Append_0(carry61),Append_0(carry62),Append_0(carry63),Extend(sum64),Extend(sum65),Extend(sum66),Append_0(carry64),Append_0(carry65),Append_0(carry66),TIME_SUM(t1_n,t3),TIME_SUM(t2_n,t6),TIME_SUM(t3_n,t9),TIME_CARRY(t1,t2,t3),TIME_CARRY(t4,t5,t6),TIME_CARRY(t7,t8,t9),TIME_SUM(t4_n,t12),TIME_SUM(t5_n,t15),TIME_SUM(t6_n,t18),TIME_CARRY(t10,t11,t12),TIME_CARRY(t13,t14,t15),TIME_CARRY(t16,t17,t18))
+}
+
+function CSA_6dL_Tree_n(x1,x2,x3,x4,x5,x6,x7,x8,x9,x10,x11,x12,x13,x14,x15,x16,x17,x18,x19,t1,t2,t3,t4,t5,t6,t7,t8,t9,t10,t11,t12,t13,t14,t15,t16,t17,t18,t19) {
+        num_bits=x1.length
+        parent.frames[1].document.writeln("<br> <b>Level 6</b> <br>")
+        parent.frames[1].document.writeln("<dd>X<sub>6,1</sub> = "+x1+"--->T<sub>6,1</sub>="+t1)
+        parent.frames[1].document.writeln("<br><dd>X<sub>6,2</sub> = "+x2+"--->T<sub>6,2</sub>="+t2)
+        parent.frames[1].document.writeln("<br><dd>X<sub>6,3</sub> = "+x3+"--->T<sub>6,3</sub>="+t3)
+        parent.frames[1].document.writeln("<br><dd>X<sub>6,4</sub> = "+x4+"--->T<sub>6,4</sub>="+t4)
+        parent.frames[1].document.writeln("<br><dd>X<sub>6,5</sub> = "+x5+"--->T<sub>6,5</sub>="+t5)
+        parent.frames[1].document.writeln("<br><dd>X<sub>6,6</sub> = "+x6+"--->T<sub>6,6</sub>="+t6)
+        parent.frames[1].document.writeln("<br><dd>X<sub>6,7</sub> = "+x7+"--->T<sub>6,7</sub>="+t7)
+        parent.frames[1].document.writeln("<br><dd>X<sub>6,8</sub> = "+x8+"--->T<sub>6,8</sub>="+t8)
+        parent.frames[1].document.writeln("<br><dd>X<sub>6,9</sub> = "+x9+"--->T<sub>6,9</sub>="+t9)
+        parent.frames[1].document.writeln("<br><dd>X<sub>6,10</sub> = "+x10+"--->T<sub>6,10</sub>="+t10)
+        parent.frames[1].document.writeln("<br><dd>X<sub>6,11</sub> = "+x11+"--->T<sub>6,11</sub>="+t11)
+        parent.frames[1].document.writeln("<br><dd>X<sub>6,12</sub> = "+x12+"--->T<sub>6,12</sub>="+t12)
+        parent.frames[1].document.writeln("<br><dd>X<sub>6,13</sub> = "+x13+"--->T<sub>6,13</sub>="+t13)
+        parent.frames[1].document.writeln("<br><dd>X<sub>6,14</sub> = "+x14+"--->T<sub>6,14</sub>="+t14)
+        parent.frames[1].document.writeln("<br><dd>X<sub>6,15</sub> = "+x15+"--->T<sub>6,15</sub>="+t15)
+        parent.frames[1].document.writeln("<br><dd>X<sub>6,16</sub> = "+x16+"--->T<sub>6,16</sub>="+t16)
+        parent.frames[1].document.writeln("<br><dd>X<sub>6,17</sub> = "+x17+"--->T<sub>6,17</sub>="+t17)
+        parent.frames[1].document.writeln("<br><dd>X<sub>6,18</sub> = "+x18+"--->T<sub>6,18</sub>="+t18)
+        parent.frames[1].document.writeln("<br><dd>X<sub>6,19</sub> = "+x19+"--->T<sub>6,19</sub>="+t19+"<br>")
+   
+        result61=CSA_n(x1,x2,x3,t1,t2,t3,0)
+        result62=CSA_n(x4,x5,x6,t4,t5,t6,0)
+        result63=CSA_n(x7,x8,x9,t7,t8,t9,0)
+        result64=CSA_n(x10,x11,x12,t10,t11,t12,0)
+        result65=CSA_n(x13,x14,x15,t13,t14,t15,0)
+        result66=CSA_n(x16,x17,x18,t16,t17,t18,0) 
+        carry61=""
+        sum61=""
+        carry62=""
+        sum62=""
+       carry63=""
+        sum63=""
+       carry64=""
+        sum64=""
+       carry65=""
+        sum65=""
+       carry66=""
+        sum66=""
+ for (var i=0; i<result61.length/2; i++) {
+                carry61+=result61[i]
+                sum61+=result61[i+result61.length/2]
+                carry62+=result62[i]
+                sum62+=result62[i+result61.length/2]
+                carry63+=result63[i]
+                sum63+=result63[i+result61.length/2]
+                carry64+=result64[i]
+                sum64+=result64[i+result61.length/2]
+                carry65+=result65[i]
+                sum65+=result65[i+result61.length/2]
+                carry66+=result66[i]
+                sum66+=result66[i+result61.length/2]
+                }
+        t1_n=Math.max(t1,t2)
+        t2_n=Math.max(t4,t5)
+        t3_n=Math.max(t7,t8)
+        t4_n=Math.max(t10,t11)
+        t5_n=Math.max(t13,t14)
+        t6_n=Math.max(t16,t17)
+        return CSA_5cL_Tree_n(Extend(sum61),Extend(sum62),Extend(sum63),Append_0(carry61),Append_0(carry62),Append_0(carry63),Extend(sum64),Extend(sum65),Extend(sum66),Append_0(carry64),Append_0(carry65),Append_0(carry66),Extend(Extend(x19)),TIME_SUM(t1_n,t3),TIME_SUM(t2_n,t6),TIME_SUM(t3_n,t9),TIME_CARRY(t1,t2,t3),TIME_CARRY(t4,t5,t6),TIME_CARRY(t7,t8,t9),TIME_SUM(t4_n,t12),TIME_SUM(t5_n,t15),TIME_SUM(t6_n,t18),TIME_CARRY(t10,t11,t12),TIME_CARRY(t13,t14,t15),TIME_CARRY(t16,t17,t18),t19)
+}
+
+function CSA_6eL_Tree_n(x1,x2,x3,x4,x5,x6,x7,x8,x9,x10,x11,x12,x13,x14,t1,t2,t3,t4,t5,t6,t7,t8,t9,t10,t11,t12,t13,t14) {
+        num_bits=x1.length
+        parent.frames[1].document.writeln("<br> <b>Level 6</b> <br>")
+        parent.frames[1].document.writeln("<dd>X<sub>6,1</sub> = "+x1+"--->T<sub>6,1</sub>="+t1)
+        parent.frames[1].document.writeln("<br><dd>X<sub>6,2</sub> = "+x2+"--->T<sub>6,2</sub>="+t2)
+        parent.frames[1].document.writeln("<br><dd>X<sub>6,3</sub> = "+x3+"--->T<sub>6,3</sub>="+t3)
+        parent.frames[1].document.writeln("<br><dd>X<sub>6,4</sub> = "+x4+"--->T<sub>6,4</sub>="+t4)
+        parent.frames[1].document.writeln("<br><dd>X<sub>6,5</sub> = "+x5+"--->T<sub>6,5</sub>="+t5)
+        parent.frames[1].document.writeln("<br><dd>X<sub>6,6</sub> = "+x6+"--->T<sub>6,6</sub>="+t6)
+        parent.frames[1].document.writeln("<br><dd>X<sub>6,7</sub> = "+x7+"--->T<sub>6,7</sub>="+t7)
+        parent.frames[1].document.writeln("<br><dd>X<sub>6,8</sub> = "+x8+"--->T<sub>6,8</sub>="+t8)
+        parent.frames[1].document.writeln("<br><dd>X<sub>6,9</sub> = "+x9+"--->T<sub>6,9</sub>="+t9)
+        parent.frames[1].document.writeln("<br><dd>X<sub>6,10</sub> = "+x10+"--->T<sub>6,10</sub>="+t10)
+        parent.frames[1].document.writeln("<br><dd>X<sub>6,11</sub> = "+x11+"--->T<sub>6,11</sub>="+t11)
+        parent.frames[1].document.writeln("<br><dd>X<sub>6,12</sub> = "+x12+"--->T<sub>6,12</sub>="+t12)
+        parent.frames[1].document.writeln("<br><dd>X<sub>6,13</sub> = "+x13+"--->T<sub>6,13</sub>="+t13)
+        parent.frames[1].document.writeln("<br><dd>X<sub>6,14</sub> = "+x14+"--->T<sub>6,14</sub>="+t14+"<br>")
+
+        result61=CSA_n(x1,x2,x3,t1,t2,t3,0)
+        result62=CSA_n(x4,x5,x6,t4,t5,t6,0)
+        result63=CSA_n(x7,x8,x9,t7,t8,t9,0)
+        result64=CSA_n(x10,x11,x12,t10,t11,t12,0)
+
+        carry61=""
+        sum61=""
+        carry62=""
+        sum62=""
+       carry63=""
+        sum63=""
+       carry64=""
+        sum64=""
+
+ for (var i=0; i<result61.length/2; i++) {
+                carry61+=result61[i]
+                sum61+=result61[i+result61.length/2]
+                carry62+=result62[i]
+                sum62+=result62[i+result61.length/2]
+                carry63+=result63[i]
+                sum63+=result63[i+result61.length/2]
+                carry64+=result64[i]
+                sum64+=result64[i+result61.length/2]
+
+                }
+        t1_n=Math.max(t1,t2)
+        t2_n=Math.max(t4,t5)
+        t3_n=Math.max(t7,t8)
+        t4_n=Math.max(t10,t11)
+
+        return CSA_5aL_Tree_n(Extend(sum61),Extend(sum62),Extend(sum63),Append_0(carry61),Append_0(carry62),Append_0(carry63),Extend(Extend(x13)),Extend(Extend(x14)),Append_0(carry64),Extend(sum64),TIME_SUM(t1_n,t3),TIME_SUM(t2_n,t6),TIME_SUM(t3_n,t9),TIME_CARRY(t1,t2,t3),TIME_CARRY(t4,t5,t6),TIME_CARRY(t7,t8,t9),t13,t14,TIME_CARRY(t10,t11,t12),TIME_SUM(t4_n,t12))
+}
+function CSA_6fL_Tree_n(x1,x2,x3,x4,x5,x6,x7,x8,x9,x10,x11,x12,x13,x14,x15,x16,t1,t2,t3,t4,t5,t6,t7,t8,t9,t10,t11,t12,t13,t14,t15,t16) {
+        num_bits=x1.length
+        parent.frames[1].document.writeln("<br> <b>Level 6</b> <br>")
+        parent.frames[1].document.writeln("<dd>X<sub>6,1</sub> = "+x1+"--->T<sub>6,1</sub>="+t1)
+        parent.frames[1].document.writeln("<br><dd>X<sub>6,2</sub> = "+x2+"--->T<sub>6,2</sub>="+t2)
+        parent.frames[1].document.writeln("<br><dd>X<sub>6,3</sub> = "+x3+"--->T<sub>6,3</sub>="+t3)
+        parent.frames[1].document.writeln("<br><dd>X<sub>6,4</sub> = "+x4+"--->T<sub>6,4</sub>="+t4)
+        parent.frames[1].document.writeln("<br><dd>X<sub>6,5</sub> = "+x5+"--->T<sub>6,5</sub>="+t5)
+        parent.frames[1].document.writeln("<br><dd>X<sub>6,6</sub> = "+x6+"--->T<sub>6,6</sub>="+t6)
+        parent.frames[1].document.writeln("<br><dd>X<sub>6,7</sub> = "+x7+"--->T<sub>6,7</sub>="+t7)
+        parent.frames[1].document.writeln("<br><dd>X<sub>6,8</sub> = "+x8+"--->T<sub>6,8</sub>="+t8)
+        parent.frames[1].document.writeln("<br><dd>X<sub>6,9</sub> = "+x9+"--->T<sub>6,9</sub>="+t9)
+        parent.frames[1].document.writeln("<br><dd>X<sub>6,10</sub> = "+x10+"--->T<sub>6,10</sub>="+t10)
+        parent.frames[1].document.writeln("<br><dd>X<sub>6,11</sub> = "+x11+"--->T<sub>6,11</sub>="+t11)
+        parent.frames[1].document.writeln("<br><dd>X<sub>6,12</sub> = "+x12+"--->T<sub>6,12</sub>="+t12)
+        parent.frames[1].document.writeln("<br><dd>X<sub>6,13</sub> = "+x13+"--->T<sub>6,13</sub>="+t13)
+        parent.frames[1].document.writeln("<br><dd>X<sub>6,14</sub> = "+x14+"--->T<sub>6,14</sub>="+t14)
+        parent.frames[1].document.writeln("<br><dd>X<sub>6,15</sub> = "+x15+"--->T<sub>6,15</sub>="+t15)
+        parent.frames[1].document.writeln("<br><dd>X<sub>6,16</sub> = "+x16+"--->T<sub>6,16</sub>="+t16+"<br>")
+
+   
+        result61=CSA_n(x2,x3,x4,t2,t3,t4,0)
+        result62=CSA_n(x5,x6,x7,t5,t6,t7,0)
+        result63=CSA_n(x8,x9,x10,t8,t9,t10,0)
+        result64=CSA_n(x11,x12,x13,t11,t12,t13,0)
+        result65=CSA_n(x14,x15,x16,t14,t15,t16,0)  
+        carry61=""
+        sum61=""
+        carry62=""
+        sum62=""
+       carry63=""
+        sum63=""
+       carry64=""
+        sum64=""
+       carry65=""
+        sum65=""
+ for (var i=0; i<result61.length/2; i++) {
+                carry61+=result61[i]
+                sum61+=result61[i+result61.length/2]
+                carry62+=result62[i]
+                sum62+=result62[i+result61.length/2]
+                carry63+=result63[i]
+                sum63+=result63[i+result61.length/2]
+                carry64+=result64[i]
+                sum64+=result64[i+result61.length/2]
+                carry65+=result65[i]
+                sum65+=result65[i+result61.length/2]
+                }
+
+        t1_n=Math.max(t2,t3)
+        t2_n=Math.max(t5,t6)
+        t3_n=Math.max(t8,t9)
+        t4_n=Math.max(t11,t12)
+        t5_n=Math.max(t14,t15)
+       return CSA_5eL_Tree_n(Extend(Extend(x1)),Extend(sum61),Extend(sum62),Append_0(carry61),Append_0(carry62),Extend(sum63),Append_0(carry63),Append_0(carry64),Extend(sum64),Extend(sum65),Append_0(carry65),t1,TIME_SUM(t1_n,t4),TIME_SUM(t2_n,t7),TIME_CARRY(t2,t3,t4),TIME_CARRY(t5,t6,t7),TIME_SUM(t3_n,t10),TIME_CARRY(t8,t9,t10),TIME_CARRY(t11,t12,t13),TIME_SUM(t4_n,t13),TIME_SUM(t5_n,t16),TIME_CARRY(t14,t15,t16))
+}
+
+
+//**************************************************************************************
+
+function CSA_7aL_Tree_n(x1,x2,x3,x4,x5,x6,x7,x8,x9,x10,x11,x12,x13,x14,x15,x16,x17,x18,x19,x20,x21,t1,t2,t3,t4,t5,t6,t7,t8,t9,t10,t11,t12,t13,t14,t15,t16,t17,t18,t19,t20,t21) {
+        num_bits=x1.length
+        parent.frames[1].document.writeln("<br> <b>Level 7</b> <br>")
+        parent.frames[1].document.writeln("<dd>X<sub>7,1</sub> = "+x1+"--->T<sub>7,1</sub>="+t1)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,2</sub> = "+x2+"--->T<sub>7,2</sub>="+t2)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,3</sub> = "+x3+"--->T<sub>7,3</sub>="+t3)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,4</sub> = "+x4+"--->T<sub>7,4</sub>="+t4)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,5</sub> = "+x5+"--->T<sub>7,5</sub>="+t5)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,6</sub> = "+x6+"--->T<sub>7,6</sub>="+t6)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,7</sub> = "+x7+"--->T<sub>7,7</sub>="+t7)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,8</sub> = "+x8+"--->T<sub>7,8</sub>="+t8)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,9</sub> = "+x9+"--->T<sub>7,9</sub>="+t9)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,10</sub> = "+x10+"--->T<sub>7,10</sub>="+t10)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,11</sub> = "+x11+"--->T<sub>7,11</sub>="+t11)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,12</sub> = "+x12+"--->T<sub>7,12</sub>="+t12)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,13</sub> = "+x13+"--->T<sub>7,13</sub>="+t13)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,14</sub> = "+x14+"--->T<sub>7,14</sub>="+t14)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,15</sub> = "+x15+"--->T<sub>7,15</sub>="+t15)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,16</sub> = "+x16+"--->T<sub>7,16</sub>="+t16)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,17</sub> = "+x17+"--->T<sub>7,17</sub>="+t17)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,18</sub> = "+x18+"--->T<sub>7,18</sub>="+t18)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,19</sub> = "+x19+"--->T<sub>7,19</sub>="+t19)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,20</sub> = "+x20+"--->T<sub>7,20</sub>="+t20)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,21</sub> = "+x21+"--->T<sub>7,21</sub>="+t21+"<br>")
+   
+        result71=CSA_n(x1,x2,x3,t1,t2,t3,0)
+        result72=CSA_n(x4,x5,x6,t4,t5,t6,0)
+        result73=CSA_n(x7,x8,x9,t7,t8,t9,0)
+        result74=CSA_n(x10,x11,x12,t10,t11,t12,0)
+        result75=CSA_n(x13,x14,x15,t13,t14,t15,0)
+        result76=CSA_n(x16,x17,x18,t16,t17,t18,0) 
+        result77=CSA_n(x19,x20,x21,t19,t20,t21,0)
+        carry71=""
+        sum71=""
+        carry72=""
+        sum72=""
+       carry73=""
+        sum73=""
+       carry74=""
+        sum74=""
+       carry75=""
+        sum75=""
+       carry76=""
+        sum76=""
+       carry77=""
+        sum77=""
+ for (var i=0; i<result71.length/2; i++) {
+                carry71+=result71[i]
+                sum71+=result71[i+result71.length/2]
+                carry72+=result72[i]
+                sum72+=result72[i+result71.length/2]
+                carry73+=result73[i]
+                sum73+=result73[i+result71.length/2]
+                carry74+=result74[i]
+                sum74+=result74[i+result71.length/2]
+                carry75+=result75[i]
+                sum75+=result75[i+result71.length/2]
+                carry76+=result76[i]
+                sum76+=result76[i+result71.length/2]
+                carry77+=result77[i]
+                sum77+=result77[i+result71.length/2]
+
+                }
+        t1_n=Math.max(t1,t2)
+        t2_n=Math.max(t4,t5)
+        t3_n=Math.max(t7,t8)
+        t4_n=Math.max(t10,t11)
+        t5_n=Math.max(t13,t14)
+        t6_n=Math.max(t16,t17)
+        t7_n=Math.max(t19,t20)
+        zero_in=FillBits(sum71.length)      
+        return CSA_6aL_Tree_n(Extend(sum71),Extend(sum72),Extend(sum73),Append_0(carry71),Append_0(carry72),Append_0(carry73),Extend(sum74),Extend(sum75),Extend(sum76),Append_0(carry74),Append_0(carry75),Append_0(carry76),Extend(zero_in),Append_0(carry77),Extend(sum77),TIME_SUM(t1_n,t3),TIME_SUM(t2_n,t6),TIME_SUM(t3_n,t9),TIME_CARRY(t1,t2,t3),TIME_CARRY(t4,t5,t6),TIME_CARRY(t7,t8,t9),TIME_SUM(t4_n,t12),TIME_SUM(t5_n,t15),TIME_SUM(t6_n,t18),TIME_CARRY(t10,t11,t12),TIME_CARRY(t13,t14,t15),TIME_CARRY(t16,t17,t18),0,TIME_CARRY(t19,t20,t21),TIME_SUM(t7_n,t21))
+}
+
+function CSA_7bL_Tree_n(x1,x2,x3,x4,x5,x6,x7,x8,x9,x10,x11,x12,x13,x14,x15,x16,x17,x18,x19,x20,x21,x22,t1,t2,t3,t4,t5,t6,t7,t8,t9,t10,t11,t12,t13,t14,t15,t16,t17,t18,t19,t20,t21,t22) {
+        num_bits=x1.length
+        parent.frames[1].document.writeln("<br> <b>Level 7</b> <br>")
+        parent.frames[1].document.writeln("<dd>X<sub>7,1</sub> = "+x1+"--->T<sub>7,1</sub>="+t1)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,2</sub> = "+x2+"--->T<sub>7,2</sub>="+t2)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,3</sub> = "+x3+"--->T<sub>7,3</sub>="+t3)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,4</sub> = "+x4+"--->T<sub>7,4</sub>="+t4)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,5</sub> = "+x5+"--->T<sub>7,5</sub>="+t5)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,6</sub> = "+x6+"--->T<sub>7,6</sub>="+t6)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,7</sub> = "+x7+"--->T<sub>7,7</sub>="+t7)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,8</sub> = "+x8+"--->T<sub>7,8</sub>="+t8)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,9</sub> = "+x9+"--->T<sub>7,9</sub>="+t9)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,10</sub> = "+x10+"--->T<sub>7,10</sub>="+t10)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,11</sub> = "+x11+"--->T<sub>7,11</sub>="+t11)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,12</sub> = "+x12+"--->T<sub>7,12</sub>="+t12)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,13</sub> = "+x13+"--->T<sub>7,13</sub>="+t13)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,14</sub> = "+x14+"--->T<sub>7,14</sub>="+t14)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,15</sub> = "+x15+"--->T<sub>7,15</sub>="+t15)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,16</sub> = "+x16+"--->T<sub>7,16</sub>="+t16)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,17</sub> = "+x17+"--->T<sub>7,17</sub>="+t17)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,18</sub> = "+x18+"--->T<sub>7,18</sub>="+t18)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,19</sub> = "+x19+"--->T<sub>7,19</sub>="+t19)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,20</sub> = "+x20+"--->T<sub>7,20</sub>="+t20)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,21</sub> = "+x21+"--->T<sub>7,21</sub>="+t21)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,22</sub> = "+x22+"--->T<sub>7,22</sub>="+t22+"<br>")
+   
+        result71=CSA_n(x1,x2,x3,t1,t2,t3,0)
+        result72=CSA_n(x4,x5,x6,t4,t5,t6,0)
+        result73=CSA_n(x7,x8,x9,t7,t8,t9,0)
+        result74=CSA_n(x10,x11,x12,t10,t11,t12,0)
+        result75=CSA_n(x13,x14,x15,t13,t14,t15,0)
+        result76=CSA_n(x16,x17,x18,t16,t17,t18,0) 
+        result77=CSA_n(x19,x20,x21,t19,t20,t21,0)
+        carry71=""
+        sum71=""
+        carry72=""
+        sum72=""
+       carry73=""
+        sum73=""
+       carry74=""
+        sum74=""
+       carry75=""
+        sum75=""
+       carry76=""
+        sum76=""
+       carry77=""
+        sum77=""
+ for (var i=0; i<result71.length/2; i++) {
+                carry71+=result71[i]
+                sum71+=result71[i+result71.length/2]
+                carry72+=result72[i]
+                sum72+=result72[i+result71.length/2]
+                carry73+=result73[i]
+                sum73+=result73[i+result71.length/2]
+                carry74+=result74[i]
+                sum74+=result74[i+result71.length/2]
+                carry75+=result75[i]
+                sum75+=result75[i+result71.length/2]
+                carry76+=result76[i]
+                sum76+=result76[i+result71.length/2]
+                carry77+=result77[i]
+                sum77+=result77[i+result71.length/2]
+
+                }
+        t1_n=Math.max(t1,t2)
+        t2_n=Math.max(t4,t5)
+        t3_n=Math.max(t7,t8)
+        t4_n=Math.max(t10,t11)
+        t5_n=Math.max(t13,t14)
+        t6_n=Math.max(t16,t17)
+        t7_n=Math.max(t19,t20)      
+        return CSA_6aL_Tree_n(Extend(sum71),Extend(sum72),Extend(sum73),Append_0(carry71),Append_0(carry72),Append_0(carry73),Extend(sum74),Extend(sum75),Extend(sum76),Append_0(carry74),Append_0(carry75),Append_0(carry76),Extend(Extend(x22)),Append_0(carry77),Extend(sum77),TIME_SUM(t1_n,t3),TIME_SUM(t2_n,t6),TIME_SUM(t3_n,t9),TIME_CARRY(t1,t2,t3),TIME_CARRY(t4,t5,t6),TIME_CARRY(t7,t8,t9),TIME_SUM(t4_n,t12),TIME_SUM(t5_n,t15),TIME_SUM(t6_n,t18),TIME_CARRY(t10,t11,t12),TIME_CARRY(t13,t14,t15),TIME_CARRY(t16,t17,t18),t22,TIME_CARRY(t19,t20,t21),TIME_SUM(t7_n,t21))
+}
+
+function CSA_7cL_Tree_n(x1,x2,x3,x4,x5,x6,x7,x8,x9,x10,x11,x12,x13,x14,x15,x16,x17,x18,x19,x20,x21,x22,x23,x24,t1,t2,t3,t4,t5,t6,t7,t8,t9,t10,t11,t12,t13,t14,t15,t16,t17,t18,t19,t20,t21,t22,t23,t24) {
+        num_bits=x1.length
+        parent.frames[1].document.writeln("<br> <b>Level 7</b> <br>")
+        parent.frames[1].document.writeln("<dd>X<sub>7,1</sub> = "+x1+"--->T<sub>7,1</sub>="+t1)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,2</sub> = "+x2+"--->T<sub>7,2</sub>="+t2)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,3</sub> = "+x3+"--->T<sub>7,3</sub>="+t3)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,4</sub> = "+x4+"--->T<sub>7,4</sub>="+t4)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,5</sub> = "+x5+"--->T<sub>7,5</sub>="+t5)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,6</sub> = "+x6+"--->T<sub>7,6</sub>="+t6)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,7</sub> = "+x7+"--->T<sub>7,7</sub>="+t7)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,8</sub> = "+x8+"--->T<sub>7,8</sub>="+t8)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,9</sub> = "+x9+"--->T<sub>7,9</sub>="+t9)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,10</sub> = "+x10+"--->T<sub>7,10</sub>="+t10)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,11</sub> = "+x11+"--->T<sub>7,11</sub>="+t11)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,12</sub> = "+x12+"--->T<sub>7,12</sub>="+t12)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,13</sub> = "+x13+"--->T<sub>7,13</sub>="+t13)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,14</sub> = "+x14+"--->T<sub>7,14</sub>="+t14)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,15</sub> = "+x15+"--->T<sub>7,15</sub>="+t15)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,16</sub> = "+x16+"--->T<sub>7,16</sub>="+t16)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,17</sub> = "+x17+"--->T<sub>7,17</sub>="+t17)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,18</sub> = "+x18+"--->T<sub>7,18</sub>="+t18)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,19</sub> = "+x19+"--->T<sub>7,19</sub>="+t19)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,20</sub> = "+x20+"--->T<sub>7,20</sub>="+t20)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,21</sub> = "+x21+"--->T<sub>7,21</sub>="+t21)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,22</sub> = "+x22+"--->T<sub>7,22</sub>="+t22)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,23</sub> = "+x23+"--->T<sub>7,23</sub>="+t23)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,24</sub> = "+x24+"--->T<sub>7,24</sub>="+t24+"<br>")
+   
+        result71=CSA_n(x1,x2,x3,t1,t2,t3,0)
+        result72=CSA_n(x4,x5,x6,t4,t5,t6,0)
+        result73=CSA_n(x7,x8,x9,t7,t8,t9,0)
+        result74=CSA_n(x10,x11,x12,t10,t11,t12,0)
+        result75=CSA_n(x13,x14,x15,t13,t14,t15,0)
+        result76=CSA_n(x16,x17,x18,t16,t17,t18,0) 
+        result77=CSA_n(x19,x20,x21,t19,t20,t21,0)
+        result78=CSA_n(x22,x23,x24,t22,t23,t24,0)
+
+        carry71=""
+        sum71=""
+        carry72=""
+        sum72=""
+       carry73=""
+        sum73=""
+       carry74=""
+        sum74=""
+       carry75=""
+        sum75=""
+       carry76=""
+        sum76=""
+       carry77=""
+        sum77=""
+       carry78=""
+        sum78=""
+
+ for (var i=0; i<result71.length/2; i++) {
+                carry71+=result71[i]
+                sum71+=result71[i+result71.length/2]
+                carry72+=result72[i]
+                sum72+=result72[i+result71.length/2]
+                carry73+=result73[i]
+                sum73+=result73[i+result71.length/2]
+                carry74+=result74[i]
+                sum74+=result74[i+result71.length/2]
+                carry75+=result75[i]
+                sum75+=result75[i+result71.length/2]
+                carry76+=result76[i]
+                sum76+=result76[i+result71.length/2]
+                carry77+=result77[i]
+                sum77+=result77[i+result71.length/2]
+                carry78+=result78[i]
+                sum78+=result78[i+result71.length/2]
+                }
+
+        t1_n=Math.max(t1,t2)
+        t2_n=Math.max(t4,t5)
+        t3_n=Math.max(t7,t8)
+        t4_n=Math.max(t10,t11)
+        t5_n=Math.max(t13,t14)
+        t6_n=Math.max(t16,t17)
+        t7_n=Math.max(t19,t20)      
+        t8_n=Math.max(t22,t23)
+        zero_in = FillBits(sum71.length)
+return CSA_6bL_Tree_n(Extend(sum71),Append_0(carry71),Append_0(carry72),Extend(sum72),Append_0(carry73),Append_0(carry74),Extend(sum73),Append_0(carry75),Append_0(carry76),Extend(sum74),Append_0(carry77),Append_0(carry78),Extend(sum75),Extend(sum76),Extend(sum77),Extend(sum78),Extend(zero_in),TIME_SUM(t1_n,t3),TIME_CARRY(t1,t2,t3),TIME_CARRY(t4,t5,t6),TIME_SUM(t2_n,t6),TIME_CARRY(t7,t8,t9),TIME_CARRY(t10,t11,t12),TIME_SUM(t3_n,t9),TIME_CARRY(t13,t14,t15),TIME_CARRY(t16,t17,t18),TIME_SUM(t4_n,t12),TIME_CARRY(t19,t20,t21),TIME_CARRY(t22,t23,t24),TIME_SUM(t5_n,t15),TIME_SUM(t6_n,t18),TIME_SUM(t7_n,t21),TIME_SUM(t8_n,t24),0)
+}
+function CSA_7dL_Tree_n(x1,x2,x3,x4,x5,x6,x7,x8,x9,x10,x11,x12,x13,x14,x15,x16,x17,x18,x19,x20,x21,x22,x23,x24,x25,t1,t2,t3,t4,t5,t6,t7,t8,t9,t10,t11,t12,t13,t14,t15,t16,t17,t18,t19,t20,t21,t22,t23,t24,t25) {
+        num_bits=x1.length
+        parent.frames[1].document.writeln("<br> <b>Level 7</b> <br>")
+        parent.frames[1].document.writeln("<dd>X<sub>7,1</sub> = "+x1+"--->T<sub>7,1</sub>="+t1)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,2</sub> = "+x2+"--->T<sub>7,2</sub>="+t2)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,3</sub> = "+x3+"--->T<sub>7,3</sub>="+t3)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,4</sub> = "+x4+"--->T<sub>7,4</sub>="+t4)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,5</sub> = "+x5+"--->T<sub>7,5</sub>="+t5)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,6</sub> = "+x6+"--->T<sub>7,6</sub>="+t6)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,7</sub> = "+x7+"--->T<sub>7,7</sub>="+t7)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,8</sub> = "+x8+"--->T<sub>7,8</sub>="+t8)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,9</sub> = "+x9+"--->T<sub>7,9</sub>="+t9)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,10</sub> = "+x10+"--->T<sub>7,10</sub>="+t10)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,11</sub> = "+x11+"--->T<sub>7,11</sub>="+t11)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,12</sub> = "+x12+"--->T<sub>7,12</sub>="+t12)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,13</sub> = "+x13+"--->T<sub>7,13</sub>="+t13)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,14</sub> = "+x14+"--->T<sub>7,14</sub>="+t14)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,15</sub> = "+x15+"--->T<sub>7,15</sub>="+t15)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,16</sub> = "+x16+"--->T<sub>7,16</sub>="+t16)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,17</sub> = "+x17+"--->T<sub>7,17</sub>="+t17)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,18</sub> = "+x18+"--->T<sub>7,18</sub>="+t18)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,19</sub> = "+x19+"--->T<sub>7,19</sub>="+t19)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,20</sub> = "+x20+"--->T<sub>7,20</sub>="+t20)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,21</sub> = "+x21+"--->T<sub>7,21</sub>="+t21)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,22</sub> = "+x22+"--->T<sub>7,22</sub>="+t22)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,23</sub> = "+x23+"--->T<sub>7,23</sub>="+t23)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,24</sub> = "+x24+"--->T<sub>7,24</sub>="+t24+"<br>")
+   
+        result71=CSA_n(x1,x2,x3,t1,t2,t3,0)
+        result72=CSA_n(x4,x5,x6,t4,t5,t6,0)
+        result73=CSA_n(x7,x8,x9,t7,t8,t9,0)
+        result74=CSA_n(x10,x11,x12,t10,t11,t12,0)
+        result75=CSA_n(x13,x14,x15,t13,t14,t15,0)
+        result76=CSA_n(x16,x17,x18,t16,t17,t18,0) 
+        result77=CSA_n(x19,x20,x21,t19,t20,t21,0)
+        result78=CSA_n(x22,x23,x24,t22,t23,t24,0)
+
+        carry71=""
+        sum71=""
+        carry72=""
+        sum72=""
+       carry73=""
+        sum73=""
+       carry74=""
+        sum74=""
+       carry75=""
+        sum75=""
+       carry76=""
+        sum76=""
+       carry77=""
+        sum77=""
+       carry78=""
+        sum78=""
+
+ for (var i=0; i<result71.length/2; i++) {
+                carry71+=result71[i]
+                sum71+=result71[i+result71.length/2]
+                carry72+=result72[i]
+                sum72+=result72[i+result71.length/2]
+                carry73+=result73[i]
+                sum73+=result73[i+result71.length/2]
+                carry74+=result74[i]
+                sum74+=result74[i+result71.length/2]
+                carry75+=result75[i]
+                sum75+=result75[i+result71.length/2]
+                carry76+=result76[i]
+                sum76+=result76[i+result71.length/2]
+                carry77+=result77[i]
+                sum77+=result77[i+result71.length/2]
+                carry78+=result78[i]
+                sum78+=result78[i+result71.length/2]
+                }
+
+        t1_n=Math.max(t1,t2)
+        t2_n=Math.max(t4,t5)
+        t3_n=Math.max(t7,t8)
+        t4_n=Math.max(t10,t11)
+        t5_n=Math.max(t13,t14)
+        t6_n=Math.max(t16,t17)
+        t7_n=Math.max(t19,t20)      
+        t8_n=Math.max(t22,t23)
+return CSA_6bL_Tree_n(Extend(sum71),Append_0(carry71),Append_0(carry72),Extend(sum72),Append_0(carry73),Append_0(carry74),Extend(sum73),Append_0(carry75),Append_0(carry76),Extend(sum74),Append_0(carry77),Append_0(carry78),Extend(sum75),Extend(sum76),Extend(sum77),Extend(sum78),Extend(Extend(x25)),TIME_SUM(t1_n,t3),TIME_CARRY(t1,t2,t3),TIME_CARRY(t4,t5,t6),TIME_SUM(t2_n,t6),TIME_CARRY(t7,t8,t9),TIME_CARRY(t10,t11,t12),TIME_SUM(t3_n,t9),TIME_CARRY(t13,t14,t15),TIME_CARRY(t16,t17,t18),TIME_SUM(t4_n,t12),TIME_CARRY(t19,t20,t21),TIME_CARRY(t22,t23,t24),TIME_SUM(t5_n,t15),TIME_SUM(t6_n,t18),TIME_SUM(t7_n,t21),TIME_SUM(t8_n,t24),t25)
+}
+
+function CSA_7eL_Tree_n(x1,x2,x3,x4,x5,x6,x7,x8,x9,x10,x11,x12,x13,x14,x15,x16,x17,x18,x19,x20,x21,x22,x23,x24,x25,x26,x27,t1,t2,t3,t4,t5,t6,t7,t8,t9,t10,t11,t12,t13,t14,t15,t16,t17,t18,t19,t20,t21,t22,t23,t24,t25,t26,t27) {
+        num_bits=x1.length
+        parent.frames[1].document.writeln("<br> <b>Level 7</b> <br>")
+        parent.frames[1].document.writeln("<dd>X<sub>7,1</sub> = "+x1+"--->T<sub>7,1</sub>="+t1)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,2</sub> = "+x2+"--->T<sub>7,2</sub>="+t2)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,3</sub> = "+x3+"--->T<sub>7,3</sub>="+t3)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,4</sub> = "+x4+"--->T<sub>7,4</sub>="+t4)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,5</sub> = "+x5+"--->T<sub>7,5</sub>="+t5)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,6</sub> = "+x6+"--->T<sub>7,6</sub>="+t6)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,7</sub> = "+x7+"--->T<sub>7,7</sub>="+t7)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,8</sub> = "+x8+"--->T<sub>7,8</sub>="+t8)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,9</sub> = "+x9+"--->T<sub>7,9</sub>="+t9)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,10</sub> = "+x10+"--->T<sub>7,10</sub>="+t10)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,11</sub> = "+x11+"--->T<sub>7,11</sub>="+t11)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,12</sub> = "+x12+"--->T<sub>7,12</sub>="+t12)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,13</sub> = "+x13+"--->T<sub>7,13</sub>="+t13)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,14</sub> = "+x14+"--->T<sub>7,14</sub>="+t14)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,15</sub> = "+x15+"--->T<sub>7,15</sub>="+t15)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,16</sub> = "+x16+"--->T<sub>7,16</sub>="+t16)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,17</sub> = "+x17+"--->T<sub>7,17</sub>="+t17)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,18</sub> = "+x18+"--->T<sub>7,18</sub>="+t18)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,19</sub> = "+x19+"--->T<sub>7,19</sub>="+t19)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,20</sub> = "+x20+"--->T<sub>7,20</sub>="+t20)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,21</sub> = "+x21+"--->T<sub>7,21</sub>="+t21)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,22</sub> = "+x22+"--->T<sub>7,22</sub>="+t22)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,23</sub> = "+x23+"--->T<sub>7,23</sub>="+t23)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,24</sub> = "+x24+"--->T<sub>7,24</sub>="+t24)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,25</sub> = "+x25+"--->T<sub>7,25</sub>="+t25)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,26</sub> = "+x26+"--->T<sub>7,26</sub>="+t26)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,27</sub> = "+x27+"--->T<sub>7,27</sub>="+t27+"<br>")
+   
+        result71=CSA_n(x1,x2,x3,t1,t2,t3,0)
+        result72=CSA_n(x4,x5,x6,t4,t5,t6,0)
+        result73=CSA_n(x7,x8,x9,t7,t8,t9,0)
+        result74=CSA_n(x10,x11,x12,t10,t11,t12,0)
+        result75=CSA_n(x13,x14,x15,t13,t14,t15,0)
+        result76=CSA_n(x16,x17,x18,t16,t17,t18,0) 
+        result77=CSA_n(x19,x20,x21,t19,t20,t21,0)
+        result78=CSA_n(x22,x23,x24,t22,t23,t24,0)
+        result79=CSA_n(x25,x26,x27,t25,t26,t27,0)
+
+        carry71=""
+        sum71=""
+        carry72=""
+        sum72=""
+       carry73=""
+        sum73=""
+       carry74=""
+        sum74=""
+       carry75=""
+        sum75=""
+       carry76=""
+        sum76=""
+       carry77=""
+        sum77=""
+       carry78=""
+        sum78=""
+       carry79=""
+        sum79=""
+
+ for (var i=0; i<result71.length/2; i++) {
+                carry71+=result71[i]
+                sum71+=result71[i+result71.length/2]
+                carry72+=result72[i]
+                sum72+=result72[i+result71.length/2]
+                carry73+=result73[i]
+                sum73+=result73[i+result71.length/2]
+                carry74+=result74[i]
+                sum74+=result74[i+result71.length/2]
+                carry75+=result75[i]
+                sum75+=result75[i+result71.length/2]
+                carry76+=result76[i]
+                sum76+=result76[i+result71.length/2]
+                carry77+=result77[i]
+                sum77+=result77[i+result71.length/2]
+                carry78+=result78[i]
+                sum78+=result78[i+result71.length/2]
+                carry79+=result79[i]
+                sum79+=result79[i+result71.length/2]
+                }
+
+        t1_n=Math.max(t1,t2)
+        t2_n=Math.max(t4,t5)
+        t3_n=Math.max(t7,t8)
+        t4_n=Math.max(t10,t11)
+        t5_n=Math.max(t13,t14)
+        t6_n=Math.max(t16,t17)
+        t7_n=Math.max(t19,t20)      
+        t8_n=Math.max(t22,t23)
+        t9_n=Math.max(t25,t26)     
+
+return CSA_6cL_Tree_n(Extend(sum71),Extend(sum72),Extend(sum73),Append_0(carry71),Append_0(carry72),Append_0(carry73),Extend(sum74),Extend(sum75),Extend(sum76),Append_0(carry74),Append_0(carry75),Append_0(carry76),Extend(sum77),Extend(sum78),Extend(sum79),Append_0(carry77),Append_0(carry78),Append_0(carry79),TIME_SUM(t1_n,t3),TIME_SUM(t2_n,t6),TIME_SUM(t3_n,t9),TIME_CARRY(t1,t2,t3),TIME_CARRY(t4,t5,t6),TIME_CARRY(t7,t8,t9),TIME_SUM(t4_n,t12),TIME_SUM(t5_n,t15),TIME_SUM(t6_n,t18),TIME_CARRY(t10,t11,t12),TIME_CARRY(t13,t14,t15),TIME_CARRY(t16,t17,t18),TIME_SUM(t7_n,t21),TIME_SUM(t8_n,t24),TIME_SUM(t9_n,t27),TIME_CARRY(t19,t20,t21),TIME_CARRY(t22,t23,t24),TIME_CARRY(t25,t26,t27))
+}
+
+function CSA_7fL_Tree_n(x1,x2,x3,x4,x5,x6,x7,x8,x9,x10,x11,x12,x13,x14,x15,x16,x17,x18,x19,x20,t1,t2,t3,t4,t5,t6,t7,t8,t9,t10,t11,t12,t13,t14,t15,t16,t17,t18,t19,t20) {
+        num_bits=x1.length
+        parent.frames[1].document.writeln("<br> <b>Level 7</b> <br>")
+        parent.frames[1].document.writeln("<dd>X<sub>7,1</sub> = "+x1+"--->T<sub>7,1</sub>="+t1)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,2</sub> = "+x2+"--->T<sub>7,2</sub>="+t2)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,3</sub> = "+x3+"--->T<sub>7,3</sub>="+t3)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,4</sub> = "+x4+"--->T<sub>7,4</sub>="+t4)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,5</sub> = "+x5+"--->T<sub>7,5</sub>="+t5)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,6</sub> = "+x6+"--->T<sub>7,6</sub>="+t6)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,7</sub> = "+x7+"--->T<sub>7,7</sub>="+t7)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,8</sub> = "+x8+"--->T<sub>7,8</sub>="+t8)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,9</sub> = "+x9+"--->T<sub>7,9</sub>="+t9)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,10</sub> = "+x10+"--->T<sub>7,10</sub>="+t10)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,11</sub> = "+x11+"--->T<sub>7,11</sub>="+t11)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,12</sub> = "+x12+"--->T<sub>7,12</sub>="+t12)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,13</sub> = "+x13+"--->T<sub>7,13</sub>="+t13)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,14</sub> = "+x14+"--->T<sub>7,14</sub>="+t14)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,15</sub> = "+x15+"--->T<sub>7,15</sub>="+t15)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,16</sub> = "+x16+"--->T<sub>7,16</sub>="+t16)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,17</sub> = "+x17+"--->T<sub>7,17</sub>="+t17)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,18</sub> = "+x18+"--->T<sub>7,18</sub>="+t18)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,19</sub> = "+x19+"--->T<sub>7,19</sub>="+t19)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,20</sub> = "+x20+"--->T<sub>7,20</sub>="+t20+"<br>")
+   
+        result71=CSA_n(x1,x2,x3,t1,t2,t3,0)
+        result72=CSA_n(x4,x5,x6,t4,t5,t6,0)
+        result73=CSA_n(x7,x8,x9,t7,t8,t9,0)
+        result74=CSA_n(x10,x11,x12,t10,t11,t12,0)
+        result75=CSA_n(x13,x14,x15,t13,t14,t15,0)
+        result76=CSA_n(x16,x17,x18,t16,t17,t18,0) 
+
+        carry71=""
+        sum71=""
+        carry72=""
+        sum72=""
+       carry73=""
+        sum73=""
+       carry74=""
+        sum74=""
+       carry75=""
+        sum75=""
+       carry76=""
+        sum76=""
+
+ for (var i=0; i<result71.length/2; i++) {
+                carry71+=result71[i]
+                sum71+=result71[i+result71.length/2]
+                carry72+=result72[i]
+                sum72+=result72[i+result71.length/2]
+                carry73+=result73[i]
+                sum73+=result73[i+result71.length/2]
+                carry74+=result74[i]
+                sum74+=result74[i+result71.length/2]
+                carry75+=result75[i]
+                sum75+=result75[i+result71.length/2]
+                carry76+=result76[i]
+                sum76+=result76[i+result71.length/2]
+
+                }
+        t1_n=Math.max(t1,t2)
+        t2_n=Math.max(t4,t5)
+        t3_n=Math.max(t7,t8)
+        t4_n=Math.max(t10,t11)
+        t5_n=Math.max(t13,t14)
+        t6_n=Math.max(t16,t17)
+
+        return CSA_6eL_Tree_n(Extend(sum71),Extend(sum72),Extend(sum73),Append_0(carry71),Append_0(carry72),Append_0(carry73),Extend(sum74),Extend(sum75),Extend(sum76),Append_0(carry74),Append_0(carry75),Append_0(carry76),Extend(Extend(x19)),Extend(Extend(x20)),TIME_SUM(t1_n,t3),TIME_SUM(t2_n,t6),TIME_SUM(t3_n,t9),TIME_CARRY(t1,t2,t3),TIME_CARRY(t4,t5,t6),TIME_CARRY(t7,t8,t9),TIME_SUM(t4_n,t12),TIME_SUM(t5_n,t15),TIME_SUM(t6_n,t18),TIME_CARRY(t10,t11,t12),TIME_CARRY(t13,t14,t15),TIME_CARRY(t16,t17,t18),t19,t20)
+}
+
+
+function CSA_7gL_Tree_n(x1,x2,x3,x4,x5,x6,x7,x8,x9,x10,x11,x12,x13,x14,x15,x16,x17,x18,x19,x20,x21,x22,x23,t1,t2,t3,t4,t5,t6,t7,t8,t9,t10,t11,t12,t13,t14,t15,t16,t17,t18,t19,t20,t21,t22,t23) {
+        num_bits=x1.length
+        parent.frames[1].document.writeln("<br> <b>Level 7</b> <br>")
+        parent.frames[1].document.writeln("<dd>X<sub>7,1</sub> = "+x1+"--->T<sub>7,1</sub>="+t1)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,2</sub> = "+x2+"--->T<sub>7,2</sub>="+t2)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,3</sub> = "+x3+"--->T<sub>7,3</sub>="+t3)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,4</sub> = "+x4+"--->T<sub>7,4</sub>="+t4)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,5</sub> = "+x5+"--->T<sub>7,5</sub>="+t5)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,6</sub> = "+x6+"--->T<sub>7,6</sub>="+t6)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,7</sub> = "+x7+"--->T<sub>7,7</sub>="+t7)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,8</sub> = "+x8+"--->T<sub>7,8</sub>="+t8)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,9</sub> = "+x9+"--->T<sub>7,9</sub>="+t9)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,10</sub> = "+x10+"--->T<sub>7,10</sub>="+t10)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,11</sub> = "+x11+"--->T<sub>7,11</sub>="+t11)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,12</sub> = "+x12+"--->T<sub>7,12</sub>="+t12)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,13</sub> = "+x13+"--->T<sub>7,13</sub>="+t13)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,14</sub> = "+x14+"--->T<sub>7,14</sub>="+t14)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,15</sub> = "+x15+"--->T<sub>7,15</sub>="+t15)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,16</sub> = "+x16+"--->T<sub>7,16</sub>="+t16)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,17</sub> = "+x17+"--->T<sub>7,17</sub>="+t17)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,18</sub> = "+x18+"--->T<sub>7,18</sub>="+t18)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,19</sub> = "+x19+"--->T<sub>7,19</sub>="+t19)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,20</sub> = "+x20+"--->T<sub>7,20</sub>="+t20)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,21</sub> = "+x21+"--->T<sub>7,21</sub>="+t21)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,22</sub> = "+x22+"--->T<sub>7,22</sub>="+t22)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,23</sub> = "+x23+"--->T<sub>7,23</sub>="+t23+"<br>")
+   
+        result71=CSA_n(x1,x2,x3,t1,t2,t3,0)
+        result72=CSA_n(x4,x5,x6,t4,t5,t6,0)
+        result73=CSA_n(x7,x8,x9,t7,t8,t9,0)
+        result74=CSA_n(x10,x11,x12,t10,t11,t12,0)
+        result75=CSA_n(x13,x14,x15,t13,t14,t15,0)
+        result76=CSA_n(x16,x17,x18,t16,t17,t18,0) 
+        result77=CSA_n(x19,x20,x21,t19,t20,t21,0)
+
+
+        carry71=""
+        sum71=""
+        carry72=""
+        sum72=""
+       carry73=""
+        sum73=""
+       carry74=""
+        sum74=""
+       carry75=""
+        sum75=""
+       carry76=""
+        sum76=""
+       carry77=""
+        sum77=""
+
+
+ for (var i=0; i<result71.length/2; i++) {
+                carry71+=result71[i]
+                sum71+=result71[i+result71.length/2]
+                carry72+=result72[i]
+                sum72+=result72[i+result71.length/2]
+                carry73+=result73[i]
+                sum73+=result73[i+result71.length/2]
+                carry74+=result74[i]
+                sum74+=result74[i+result71.length/2]
+                carry75+=result75[i]
+                sum75+=result75[i+result71.length/2]
+                carry76+=result76[i]
+                sum76+=result76[i+result71.length/2]
+                carry77+=result77[i]
+                sum77+=result77[i+result71.length/2]
+                }
+
+        t1_n=Math.max(t1,t2)
+        t2_n=Math.max(t4,t5)
+        t3_n=Math.max(t7,t8)
+        t4_n=Math.max(t10,t11)
+        t5_n=Math.max(t13,t14)
+        t6_n=Math.max(t16,t17)
+        t7_n=Math.max(t19,t20)      
+
+return CSA_6fL_Tree_n(Extend(sum71),Append_0(carry71),Append_0(carry72),Extend(sum72),Append_0(carry73),Append_0(carry74),Extend(sum73),Append_0(carry75),Append_0(carry76),Extend(sum74),Extend(Extend(x22)),Append_0(carry77),Extend(sum75),Extend(sum76),Extend(sum77),Extend(Extend(x23)),TIME_SUM(t1_n,t3),TIME_CARRY(t1,t2,t3),TIME_CARRY(t4,t5,t6),TIME_SUM(t2_n,t6),TIME_CARRY(t7,t8,t9),TIME_CARRY(t10,t11,t12),TIME_SUM(t3_n,t9),TIME_CARRY(t13,t14,t15),TIME_CARRY(t16,t17,t18),TIME_SUM(t4_n,t12),t22,TIME_CARRY(t19,t20,t21),TIME_SUM(t5_n,t15),TIME_SUM(t6_n,t18),TIME_SUM(t7_n,t21),t23)
+}
+
+function CSA_7hL_Tree_n(x1,x2,x3,x4,x5,x6,x7,x8,x9,x10,x11,x12,x13,x14,x15,x16,x17,x18,x19,x20,x21,x22,x23,x24,x25,x26,t1,t2,t3,t4,t5,t6,t7,t8,t9,t10,t11,t12,t13,t14,t15,t16,t17,t18,t19,t20,t21,t22,t23,t24,t25,t26) {
+        num_bits=x1.length
+        parent.frames[1].document.writeln("<br> <b>Level 7</b> <br>")
+        parent.frames[1].document.writeln("<dd>X<sub>7,1</sub> = "+x1+"--->T<sub>7,1</sub>="+t1)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,2</sub> = "+x2+"--->T<sub>7,2</sub>="+t2)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,3</sub> = "+x3+"--->T<sub>7,3</sub>="+t3)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,4</sub> = "+x4+"--->T<sub>7,4</sub>="+t4)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,5</sub> = "+x5+"--->T<sub>7,5</sub>="+t5)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,6</sub> = "+x6+"--->T<sub>7,6</sub>="+t6)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,7</sub> = "+x7+"--->T<sub>7,7</sub>="+t7)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,8</sub> = "+x8+"--->T<sub>7,8</sub>="+t8)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,9</sub> = "+x9+"--->T<sub>7,9</sub>="+t9)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,10</sub> = "+x10+"--->T<sub>7,10</sub>="+t10)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,11</sub> = "+x11+"--->T<sub>7,11</sub>="+t11)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,12</sub> = "+x12+"--->T<sub>7,12</sub>="+t12)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,13</sub> = "+x13+"--->T<sub>7,13</sub>="+t13)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,14</sub> = "+x14+"--->T<sub>7,14</sub>="+t14)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,15</sub> = "+x15+"--->T<sub>7,15</sub>="+t15)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,16</sub> = "+x16+"--->T<sub>7,16</sub>="+t16)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,17</sub> = "+x17+"--->T<sub>7,17</sub>="+t17)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,18</sub> = "+x18+"--->T<sub>7,18</sub>="+t18)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,19</sub> = "+x19+"--->T<sub>7,19</sub>="+t19)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,20</sub> = "+x20+"--->T<sub>7,20</sub>="+t20)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,21</sub> = "+x21+"--->T<sub>7,21</sub>="+t21)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,22</sub> = "+x22+"--->T<sub>7,22</sub>="+t22)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,23</sub> = "+x23+"--->T<sub>7,23</sub>="+t23)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,24</sub> = "+x24+"--->T<sub>7,24</sub>="+t24)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,25</sub> = "+x25+"--->T<sub>7,25</sub>="+t25)
+        parent.frames[1].document.writeln("<br><dd>X<sub>7,26</sub> = "+x26+"--->T<sub>7,26</sub>="+t26+"<br>")
+   
+        result71=CSA_n(x1,x2,x3,t1,t2,t3,0)
+        result72=CSA_n(x4,x5,x6,t4,t5,t6,0)
+        result73=CSA_n(x7,x8,x9,t7,t8,t9,0)
+        result74=CSA_n(x10,x11,x12,t10,t11,t12,0)
+        result75=CSA_n(x13,x14,x15,t13,t14,t15,0)
+        result76=CSA_n(x16,x17,x18,t16,t17,t18,0) 
+        result77=CSA_n(x19,x20,x21,t19,t20,t21,0)
+        result78=CSA_n(x22,x23,x24,t22,t23,t24,0)
+
+        carry71=""
+        sum71=""
+        carry72=""
+        sum72=""
+       carry73=""
+        sum73=""
+       carry74=""
+        sum74=""
+       carry75=""
+        sum75=""
+       carry76=""
+        sum76=""
+       carry77=""
+        sum77=""
+       carry78=""
+        sum78=""
+
+ for (var i=0; i<result71.length/2; i++) {
+                carry71+=result71[i]
+                sum71+=result71[i+result71.length/2]
+                carry72+=result72[i]
+                sum72+=result72[i+result71.length/2]
+                carry73+=result73[i]
+                sum73+=result73[i+result71.length/2]
+                carry74+=result74[i]
+                sum74+=result74[i+result71.length/2]
+                carry75+=result75[i]
+                sum75+=result75[i+result71.length/2]
+                carry76+=result76[i]
+                sum76+=result76[i+result71.length/2]
+                carry77+=result77[i]
+                sum77+=result77[i+result71.length/2]
+                carry78+=result78[i]
+                sum78+=result78[i+result71.length/2]
+                }
+
+        t1_n=Math.max(t1,t2)
+        t2_n=Math.max(t4,t5)
+        t3_n=Math.max(t7,t8)
+        t4_n=Math.max(t10,t11)
+        t5_n=Math.max(t13,t14)
+        t6_n=Math.max(t16,t17)
+        t7_n=Math.max(t19,t20)      
+        t8_n=Math.max(t22,t23)
+
+return CSA_6cL_Tree_n(Extend(sum71),Extend(sum72),Extend(sum73),Append_0(carry71),Append_0(carry72),Append_0(carry73),Extend(sum74),Extend(sum75),Extend(sum76),Append_0(carry74),Append_0(carry75),Append_0(carry76),Extend(sum77),Extend(sum78),Extend(Extend(x25)),Append_0(carry77),Append_0(carry78),Extend(Extend(x26)),TIME_SUM(t1_n,t3),TIME_SUM(t2_n,t6),TIME_SUM(t3_n,t9),TIME_CARRY(t1,t2,t3),TIME_CARRY(t4,t5,t6),TIME_CARRY(t7,t8,t9),TIME_SUM(t4_n,t12),TIME_SUM(t5_n,t15),TIME_SUM(t6_n,t18),TIME_CARRY(t10,t11,t12),TIME_CARRY(t13,t14,t15),TIME_CARRY(t16,t17,t18),TIME_SUM(t7_n,t21),TIME_SUM(t8_n,t24),t25,TIME_CARRY(t19,t20,t21),TIME_CARRY(t22,t23,t24),t26)
+}
+
+//**************************************************************************************
+function CPA(carrysum) {
+        s_bit=""
+        l=carrysum.length
+        c="0"
+        for (var j=l/2; j>0; j--) {
+        if (Show_Detail=='True')
+                {parent.frames[1].document.writeln("<dd>Bit "+(carrysum.length/2-j))}
+        result=CSA(c,carrysum[(j-1)],carrysum[(j+carrysum.length/2-1)],0)
+        c=result[0]
+        s_bit+=result[3]
+        if (fracmode!=0&&i==1) {s_bit+="."} 
+        if (Show_Detail=='True')
+        {parent.frames[1].document.writeln("(3,2) Result: C = "+c+" S = "+result[3]+"<BR>")}
+        if (j==1&&c==1){parent.frames[1].document.writeln(PrintError("Overflow."))}
+        }
+        return Reverse_Bits(s_bit)
+}
+
+function FillBits(len) {
+        s=""
+        for (var i=len;i>0;i--) {
+        s+="0"}
+        return s
+}
+
+function strip_decimal(op) {
+        new_op="";
+        for (var i=fracmode;i<op.length;i++) {
+                if (op[i]==".") {new_op+="0"}
+                else {new_op+=op[i]}
+        }
+        return new_op
+}
+
+
+function Reverse_Bits(bits) {
+
+        rev_bits=""
+        for (var i=bits.length-1; i>-1; i--) {
+        rev_bits+=bits[i]
+        }
+        return rev_bits
+}
+
+// *********************************************************
+//       Main program
+// *********************************************************
+
+
+
+function FPU(form){
+
+        parent.frames[1].document.open()
+        parent.frames[2].document.open()
+// *********************************************************
+//  Begin form parsing
+// *********************************************************
+                                              
+        Show_Detail='False';
+
+        formatbin = form.TypeNumber[0].checked;
+        formatdec = form.TypeNumber[1].checked;
+        if (formatbin) {decimal=0} else {decimal=1}
+
+        Continue = 1;
+                
+                T_SUM=parseFloat(form.ts1.value);
+                T_CARRY=parseFloat(form.ts2.value);
+//        if (navigator.appVersion[0] > 3 ){
+                opr1 = form.o1.value;
+                opr2 = form.o2.value;   
+                opr3 = form.o3.value;
+                opr4 = form.o4.value;
+                opr5 = form.o5.value;
+                opr6 = form.o6.value;
+                opr7 = form.o7.value;
+                opr8 = form.o8.value;
+                opr9 = form.o9.value;              
+               opr10 = form.o10.value;
+               opr11 = form.o11.value;
+               opr12 = form.o12.value;
+               opr13 = form.o13.value;
+               opr14 = form.o14.value;
+               opr15 = form.o15.value;
+               opr16 = form.o16.value;
+               opr17 = form.o17.value;
+               opr18 = form.o18.value;
+               opr19 = form.o19.value;
+               opr20 = form.o20.value;
+               opr21 = form.o21.value;
+               opr22 = form.o22.value;
+               opr23 = form.o23.value;
+               opr24 = form.o24.value;
+               opr25 = form.o25.value;
+               opr26 = form.o26.value;
+              opr27 = form.o27.value;
+//                }
+
+
+    if (decimal!=1){
+//               parent.frames[1].document.writeln("NOOSHA!");
+               if (opr1!="")  {opr1 = BinToDec(opr1);}
+               if (opr2!="")  {opr2 = BinToDec(opr2);} 
+               if (opr3!="")  {opr3 = BinToDec(opr3);}
+               if (opr4!="")  {opr4 = BinToDec(opr4);}
+               if (opr5!="")  {opr5 = BinToDec(opr5);}
+               if (opr6!="")  {opr6 = BinToDec(opr6);}
+               if (opr7!="")  {opr7 = BinToDec(opr7);}
+               if (opr8!="")  {opr8 = BinToDec(opr8);}
+               if (opr9!="")  {opr9 = BinToDec(opr9);}   
+               if (opr10!="")  {opr10 = BinToDec(opr10);}
+               if (opr11!="")  {opr11 = BinToDec(opr11);}
+               if (opr12!="")  {opr12 = BinToDec(opr12);}
+               if (opr13!="")  {opr13 = BinToDec(opr13);}
+               if (opr14!="")  {opr14 = BinToDec(opr14);}
+               if (opr15!="")  {opr15 = BinToDec(opr15);}
+               if (opr16!="")  {opr16 = BinToDec(opr16);}
+               if (opr17!="")  {opr17 = BinToDec(opr17);}
+               if (opr18!="") { opr18 = BinToDec(opr18);}
+               if (opr19!="") {opr1 = BinToDec(opr19);}
+               if (opr20!="") {opr2 = BinToDec(opr20);}   
+               if (opr21!="") {opr3 = BinToDec(opr21);}
+               if (opr22!="") {opr4 = BinToDec(opr22);}
+               if (opr23!="") {opr5 = BinToDec(opr23);}
+               if (opr24!="") {opr6 = BinToDec(opr24);}
+               if (opr25!="") {opr7 = BinToDec(opr25);}
+               if (opr26!="") {opr8 = BinToDec(opr26);}
+               if (opr27!="") {opr9 = BinToDec(opr27);}       
+
+               decimal = 1;
+//               parent.frames[1].document.writeln("NOOSHA!");
+} 
+
+
+
+
+        if (decimal) {
+//        max_val=Math.max(Math.max(Math.max(Math.max(Math.max(Math.max(Math.max(Math.max(opr1,opr2),opr3),opr4),opr5),opr6),opr7),opr8),opr9);
+        max_val1=Math.max(Math.max(Math.max(Math.max(Math.max(Math.max(Math.max(Math.max(opr1,opr2),opr3),opr4),opr5),opr6),opr7),opr8),opr9);
+        max_val2=Math.max(Math.max(Math.max(Math.max(Math.max(Math.max(Math.max(Math.max(Math.max(opr10,opr11),opr12),opr13),opr14),opr15),opr16),opr17),opr18),opr19);
+        max_val3=Math.max(Math.max(Math.max(Math.max(Math.max(Math.max(Math.max(opr20,opr21),opr22),opr23),opr24),opr25),opr26),opr27);        
+        max_val=Math.max(Math.max(max_val1,max_val2),max_val3);
+        convert_hi=PrintBinary(max_val,0);
+        bit_len=convert_hi.length;
+        if (opr1.length!=0){opr1=PrintBinary(opr1,0);
+        while (opr1.length<bit_len) {opr1=Append_0(opr1)}}
+        if (opr2.length!=0){opr2=PrintBinary(opr2,0);
+        while (opr2.length<bit_len) {opr2=Append_0(opr2)}}
+        if (opr3.length!=0){opr3=PrintBinary(opr3,0);
+        while (opr3.length<bit_len) {opr3=Append_0(opr3)}}
+        if (opr4.length!=0){opr4=PrintBinary(opr4,0);
+        while (opr4.length<bit_len) {opr4=Append_0(opr4)}}
+        if (opr5.length!=0){opr5=PrintBinary(opr5,0);
+        while (opr5.length<bit_len) {opr5=Append_0(opr5)}}
+        if (opr6.length!=0){opr6=PrintBinary(opr6,0);
+        while (opr6.length<bit_len) {opr6=Append_0(opr6)}}
+        if (opr7.length!=0){opr7=PrintBinary(opr7,0);
+        while (opr7.length<bit_len) {opr7=Append_0(opr7)}}
+        if (opr8.length!=0){opr8=PrintBinary(opr8,0);
+        while (opr8.length<bit_len) {opr8=Append_0(opr8)}}
+        if (opr9.length!=0){opr9=PrintBinary(opr9,0);
+        while (opr9.length<bit_len) {opr9=Append_0(opr9)}}
+        if (opr10.length!=0){opr10=PrintBinary(opr10,0);
+        while (opr10.length<bit_len) {opr10=Append_0(opr10)}}
+        if (opr11.length!=0){opr11=PrintBinary(opr11,0);
+        while (opr11.length<bit_len) {opr11=Append_0(opr11)}}
+        if (opr12.length!=0){opr12=PrintBinary(opr12,0);
+        while (opr12.length<bit_len) {opr12=Append_0(opr12)}}
+        if (opr13.length!=0){opr13=PrintBinary(opr13,0);
+        while (opr13.length<bit_len) {opr13=Append_0(opr13)}}
+        if (opr14.length!=0){opr14=PrintBinary(opr14,0);
+        while (opr14.length<bit_len) {opr14=Append_0(opr14)}}
+        if (opr15.length!=0){opr15=PrintBinary(opr15,0);
+        while (opr15.length<bit_len) {opr15=Append_0(opr15)}}
+        if (opr16.length!=0){opr16=PrintBinary(opr16,0);
+        while (opr16.length<bit_len) {opr16=Append_0(opr16)}}
+        if (opr17.length!=0){opr17=PrintBinary(opr17,0);
+        while (opr17.length<bit_len) {opr17=Append_0(opr17)}}
+        if (opr18.length!=0){opr18=PrintBinary(opr18,0);
+        while (opr18.length<bit_len) {opr18=Append_0(opr18)}}
+        if (opr19.length!=0){opr19=PrintBinary(opr19,0);
+        while (opr19.length<bit_len) {opr19=Append_0(opr19)}}
+        if (opr20.length!=0){opr20=PrintBinary(opr20,0);
+        while (opr20.length<bit_len) {opr20=Append_0(opr20)}}
+        if (opr21.length!=0){opr21=PrintBinary(opr21,0);
+        while (opr21.length<bit_len) {opr21=Append_0(opr21)}}
+        if (opr22.length!=0){opr22=PrintBinary(opr22,0);
+        while (opr22.length<bit_len) {opr22=Append_0(opr22)}}
+        if (opr23.length!=0){opr23=PrintBinary(opr23,0);
+        while (opr23.length<bit_len) {opr23=Append_0(opr23)}}
+        if (opr24.length!=0){opr24=PrintBinary(opr24,0);
+        while (opr24.length<bit_len) {opr24=Append_0(opr24)}}
+        if (opr25.length!=0){opr25=PrintBinary(opr25,0);
+        while (opr25.length<bit_len) {opr25=Append_0(opr25)}}
+        if (opr26.length!=0){opr26=PrintBinary(opr26,0);
+        while (opr26.length<bit_len) {opr26=Append_0(opr26)}}
+        if (opr27.length!=0){opr27=PrintBinary(opr27,0);
+        while (opr27.length<bit_len) {opr27=Append_0(opr27)}}
+        }
+
+        if (opr1.length==1){opr1=Append_0(opr1)};
+        if (opr2.length==1){opr2=Append_0(opr2)};
+        if (opr3.length==1){opr3=Append_0(opr3)};
+        if (opr4.length==1){opr4=Append_0(opr4)};
+        if (opr5.length==1){opr5=Append_0(opr5)};
+        if (opr6.length==1){opr6=Append_0(opr6)};
+        if (opr7.length==1){opr7=Append_0(opr7)};
+        if (opr8.length==1){opr8=Append_0(opr8)};
+        if (opr9.length==1){opr9=Append_0(opr9)};
+        if (opr10.length==1){opr10=Append_0(opr10)};
+        if (opr11.length==1){opr11=Append_0(opr11)};
+        if (opr12.length==1){opr12=Append_0(opr12)};
+        if (opr13.length==1){opr13=Append_0(opr13)};
+        if (opr14.length==1){opr14=Append_0(opr14)};
+        if (opr15.length==1){opr15=Append_0(opr15)};
+        if (opr16.length==1){opr16=Append_0(opr16)};
+        if (opr17.length==1){opr17=Append_0(opr17)};
+        if (opr18.length==1){opr18=Append_0(opr18)};
+        if (opr19.length==1){opr19=Append_0(opr19)};
+        if (opr20.length==1){opr20=Append_0(opr20)};
+        if (opr21.length==1){opr21=Append_0(opr21)};
+        if (opr22.length==1){opr22=Append_0(opr22)};
+        if (opr23.length==1){opr23=Append_0(opr23)};
+        if (opr24.length==1){opr24=Append_0(opr24)};
+        if (opr25.length==1){opr25=Append_0(opr25)};
+        if (opr26.length==1){opr26=Append_0(opr26)};
+        if (opr27.length==1){opr27=Append_0(opr27)};
+
+
+        fracmode=0;
+        if (opr1[0]==".") {fracmode=1}
+        if (opr1[1]==".") {fracmode=2}
+
+        if (fracmode!=0) {
+                opr1 = strip_decimal(opr1);
+                opr2 = strip_decimal(opr2);
+                opr3 = strip_decimal(opr3);
+                opr4 = strip_decimal(opr4);
+                opr5 = strip_decimal(opr5);
+                opr6 = strip_decimal(opr6);     
+                opr7 = strip_decimal(opr7);
+                opr8 = strip_decimal(opr8);
+                opr9 = strip_decimal(opr9);
+                opr10 = strip_decimal(opr10);
+                opr11 = strip_decimal(opr11);
+                opr12 = strip_decimal(opr12);
+                opr13 = strip_decimal(opr13);
+                opr14 = strip_decimal(opr14);
+                opr15 = strip_decimal(opr15);
+                opr16 = strip_decimal(opr16);     
+                opr17 = strip_decimal(opr17);
+                opr18 = strip_decimal(opr18);
+                opr19 = strip_decimal(opr19);
+                opr20 = strip_decimal(opr20);
+                opr21 = strip_decimal(opr21);
+                opr22 = strip_decimal(opr22);
+                opr23 = strip_decimal(opr23);
+                opr24 = strip_decimal(opr24);
+                opr25 = strip_decimal(opr25);
+                opr26 = strip_decimal(opr26);     
+                opr27 = strip_decimal(opr27);
+ 
+        }
+        
+
+if (Continue){
+
+parent.frames[1].document.writeln("<body bgcolor=#ffffff></body>")
+parent.frames[2].document.writeln("<body bgcolor=#ffffff></body>")
+
+/// Code goes here
+
+scan_op="";
+scan_op=opr1+opr2+opr3+opr4+opr5+opr6+opr7+opr8+opr9+opr10+opr11+opr12+opr13+opr14+opr15+opr16+opr17+opr18+opr19+opr20+opr21+opr22+opr23+opr24+opr25+opr26+opr27;
+//scan_op=opr1+opr2+opr3+opr4+opr5+opr6+opr7+opr8+opr9;
+
+ok=1;
+
+if (formatbin) {for (var i=0; i<scan_op.length;i++) {if (scan_op[i]!="0"&&scan_op[i]!="1") {ok=0}}}
+if (ok) {
+
+num_ops=27;
+if (opr1=="") {num_ops+=-1}
+if (opr2=="") {num_ops+=-1}
+if (opr3=="") {num_ops+=-1}
+if (opr4=="") {num_ops+=-1}
+if (opr5=="") {num_ops+=-1}
+if (opr6=="") {num_ops+=-1}
+if (opr7=="") {num_ops+=-1}
+if (opr8=="") {num_ops+=-1}
+if (opr9=="") {num_ops+=-1}
+if (opr10=="") {num_ops+=-1}
+if (opr11=="") {num_ops+=-1}
+if (opr12=="") {num_ops+=-1}
+if (opr13=="") {num_ops+=-1}
+if (opr14=="") {num_ops+=-1}
+if (opr15=="") {num_ops+=-1}
+if (opr16=="") {num_ops+=-1}
+if (opr17=="") {num_ops+=-1}
+if (opr18=="") {num_ops+=-1}
+if (opr19=="") {num_ops+=-1}
+if (opr20=="") {num_ops+=-1}
+if (opr21=="") {num_ops+=-1}
+if (opr22=="") {num_ops+=-1}
+if (opr23=="") {num_ops+=-1}
+if (opr24=="") {num_ops+=-1}
+if (opr25=="") {num_ops+=-1}
+if (opr26=="") {num_ops+=-1}
+if (opr27=="") {num_ops+=-1}
+
+
+if (num_ops==2) {opr3=FillBits(opr1.length)}
+
+if (num_ops==7) {opr8=FillBits(opr1.length)
+                 opr9=FillBits(opr1.length)}
+//if (num_ops==8) {opr9=FillBits(opr1.length)}
+if (num_ops==10) {opr11=FillBits(opr1.length) 
+                  opr12=FillBits(opr1.length)}
+if (num_ops==11) {opr12=FillBits(opr1.length)}
+if (num_ops==14) {opr15=FillBits(opr1.length)}
+if (num_ops==16) {opr17=FillBits(opr1.length)}
+if (num_ops==20) {opr21=FillBits(opr1.length)}
+if (num_ops==23) {opr24=FillBits(opr1.length)}
+if (num_ops==26) {opr27=FillBits(opr1.length)}
+
+treesize=Levels_in_CSA_Tree(num_ops);
+Twos=0;
+
+if (treesize==0) {parent.frames[1].document.writeln(PrintError("--->There must be at least two operands."))}
+else {parent.frames[1].document.writeln("For "+num_ops+" operands, a "+treesize+"-level Wallace tree is required.<BR>")
+        if (treesize==1) {parent.frames[2].document.writeln("<img src=\"a3to2.gif\" align=\"left\" wrap></a>")
+                res=CSA_n(opr1,opr2,opr3,0,0,0,1)}
+        if (treesize==2) {parent.frames[2].document.writeln("<img src=\"a4to2.gif\" align=\"left\" wrap></a>")
+                res=CSA_2L_Tree_n(opr1,opr2,opr3,opr4,0,0,0,0)}
+
+         if(treesize==3 && num_ops==5){ parent.frames[2].document.writeln("<img src=\"a5to2a.gif\" align=\"left\" wrap></a>")
+                         res=CSA_3aL_Tree_n(opr1,opr2,opr3,opr4,opr5,0,0,0,0,0)}
+        if(treesize==3 && num_ops==6){ parent.frames[2].document.writeln("<img src=\"a6to2a.gif\" align=\"left\" wrap></a>")
+                         res=CSA_3L_Tree_n(opr1,opr2,opr3,opr4,opr5,opr6,0,0,0,0,0,0)}
+        if (treesize==4&&num_ops==7) {parent.frames[2].document.writeln("<img src=\"a7to2a.gif\" align=\"left\" wrap></a>")
+                res=CSA_4aL_Tree_n(opr1,opr2,opr3,opr4,opr5,opr6,opr7,0,0,0,0,0,0,0)}
+        if (treesize==4 && num_ops==8) {parent.frames[2].document.writeln("<img src=\"a8to2a.gif\" align=\"left\" wrap></a>")
+                res=CSA_4dL_Tree_n(opr1,opr2,opr3,opr4,opr5,opr6,opr7,opr8,0,0,0,0,0,0,0,0)}
+        if (treesize==4&& num_ops==9) {parent.frames[2].document.writeln("<img src=\"a9to2a.gif\" align=\"left\" wrap></a>")
+                res=CSA_4bL_Tree_n(opr1,opr2,opr3,opr4,opr5,opr6,opr7,opr8,opr9,0,0,0,0,0,0,0,0,0)}
+         
+        if (treesize==5&& num_ops==10) {parent.frames[2].document.writeln("<img src=\"a10to2a.gif\" align=\"left\" wrap></a>")
+                res=CSA_5aL_Tree_n(opr1,opr2,opr3,opr4,opr5,opr6,opr7,opr8,opr9,opr10,0,0,0,0,0,0,0,0,0,0)}
+
+        if (treesize==5&& num_ops==11) {parent.frames[2].document.writeln("<img src=\"a11to2a.gif\" align=\"left\" wrap></a>")
+                res=CSA_5dL_Tree_n(opr1,opr2,opr3,opr4,opr5,opr6,opr7,opr8,opr9,opr10,opr11,0,0,0,0,0,0,0,0,0,0,0)}
+
+        if (treesize==5&&num_ops==12) {parent.frames[2].document.writeln("<img src=\"a12to2a.gif\" align=\"left\" wrap></a>")
+                res=CSA_5bL_Tree_n(opr1,opr2,opr3,opr4,opr5,opr6,opr7,opr8,opr9,opr10,opr11,opr12,0,0,0,0,0,0,0,0,0,0,0,0)}
+      
+        if (treesize==5 && num_ops==13) {parent.frames[2].document.writeln("<img src=\"a13to2a.gif\" align=\"left\" wrap></a>")
+                res=CSA_5cL_Tree_n(opr1,opr2,opr3,opr4,opr5,opr6,opr7,opr8,opr9,opr10,opr11,opr12,opr13,0,0,0,0,0,0,0,0,0,0,0,0,0)}
+
+        if (treesize==6 && num_ops==14) {parent.frames[2].document.writeln("<img src=\"a14to2a.gif\" align=\"left\" wrap></a>")
+                res=CSA_6eL_Tree_n(opr1,opr2,opr3,opr4,opr5,opr6,opr7,opr8,opr9,opr10,opr11,opr12,opr13,opr14,0,0,0,0,0,0,0,0,0,0,0,0,0,0)}
+
+        if (treesize==6 && num_ops==15) {parent.frames[2].document.writeln("<img src=\"a15to2a.gif\" align=\"left\" wrap></a>")
+                res=CSA_6aL_Tree_n(opr1,opr2,opr3,opr4,opr5,opr6,opr7,opr8,opr9,opr10,opr11,opr12,opr13,opr14,opr15,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0)}
+
+        if (treesize==6 && num_ops==16) {parent.frames[2].document.writeln("<img src=\"a16to2a.gif\" align=\"left\" wrap></a>")
+                res=CSA_6fL_Tree_n(opr1,opr2,opr3,opr4,opr5,opr6,opr7,opr8,opr9,opr10,opr11,opr12,opr13,opr14,opr15,opr16,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0)}
+     
+        if (treesize==6 && num_ops==17) {parent.frames[2].document.writeln("<img src=\"a17to2a.gif\" align=\"left\" wrap></a>")
+                res=CSA_6bL_Tree_n(opr1,opr2,opr3,opr4,opr5,opr6,opr7,opr8,opr9,opr10,opr11,opr12,opr13,opr14,opr15,opr16,opr17,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0)}
+
+        if (treesize==6 && num_ops==18) {parent.frames[2].document.writeln("<img src=\"a18to2a.gif\" align=\"left\" wrap></a>")
+                res=CSA_6cL_Tree_n(opr1,opr2,opr3,opr4,opr5,opr6,opr7,opr8,opr9,opr10,opr11,opr12,opr13,opr14,opr15,opr16,opr17,opr18,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0)}
+
+        if (treesize==6 && num_ops==19) {parent.frames[2].document.writeln("<img src=\"a19to2a.gif\" align=\"left\" wrap></a>")
+                res=CSA_6dL_Tree_n(opr1,opr2,opr3,opr4,opr5,opr6,opr7,opr8,opr9,opr10,opr11,opr12,opr13,opr14,opr15,opr16,opr17,opr18,opr19,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0)}
+
+       if (treesize==7 && num_ops==20) {parent.frames[2].document.writeln("<img src=\"a20to2a.gif\" align=\"left\" wrap></a>")
+                res=CSA_7fL_Tree_n(opr1,opr2,opr3,opr4,opr5,opr6,opr7,opr8,opr9,opr10,opr11,opr12,opr13,opr14,opr15,opr16,opr17,opr18,opr19,opr20,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0)}
+
+       if (treesize==7 && num_ops==21) {parent.frames[2].document.writeln("<img src=\"a21to2a.gif\" align=\"left\" wrap></a>")
+                res=CSA_7aL_Tree_n(opr1,opr2,opr3,opr4,opr5,opr6,opr7,opr8,opr9,opr10,opr11,opr12,opr13,opr14,opr15,opr16,opr17,opr18,opr19,opr20,opr21,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0)}
+       if (treesize==7 && num_ops==22) {parent.frames[2].document.writeln("<img src=\"a22to2a.gif\" align=\"left\" wrap></a>")
+                res=CSA_7bL_Tree_n(opr1,opr2,opr3,opr4,opr5,opr6,opr7,opr8,opr9,opr10,opr11,opr12,opr13,opr14,opr15,opr16,opr17,opr18,opr19,opr20,opr21,opr22,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0)}
+
+       if (treesize==7 && num_ops==23) {parent.frames[2].document.writeln("<img src=\"a23to2a.gif\" align=\"left\" wrap></a>")
+                res=CSA_7gL_Tree_n(opr1,opr2,opr3,opr4,opr5,opr6,opr7,opr8,opr9,opr10,opr11,opr12,opr13,opr14,opr15,opr16,opr17,opr18,opr19,opr20,opr21,opr22,opr23,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0)}
+
+       if (treesize==7 && num_ops==24) {parent.frames[2].document.writeln("<img src=\"a24to2a.gif\" align=\"left\" wrap></a>")
+                res=CSA_7cL_Tree_n(opr1,opr2,opr3,opr4,opr5,opr6,opr7,opr8,opr9,opr10,opr11,opr12,opr13,opr14,opr15,opr16,opr17,opr18,opr19,opr20,opr21,opr22,opr23,opr24,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0)}
+
+       if (treesize==7 && num_ops==25) {parent.frames[2].document.writeln("<img src=\"a25to2a.gif\" align=\"left\" wrap></a>")
+                res=CSA_7dL_Tree_n(opr1,opr2,opr3,opr4,opr5,opr6,opr7,opr8,opr9,opr10,opr11,opr12,opr13,opr14,opr15,opr16,opr17,opr18,opr19,opr20,opr21,opr22,opr23,opr24,opr25,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0)}
+
+        if (treesize==7 && num_ops==26) {parent.frames[2].document.writeln("<img src=\"a26to2a.gif\" align=\"left\" wrap></a>")
+                res=CSA_7hL_Tree_n(opr1,opr2,opr3,opr4,opr5,opr6,opr7,opr8,opr9,opr10,opr11,opr12,opr13,opr14,opr15,opr16,opr17,opr18,opr19,opr20,opr21,opr22,opr23,opr24,opr25,opr26,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0)}
+
+       if (treesize==7 && num_ops==27) {parent.frames[2].document.writeln("<img src=\"a27to2a.gif\" align=\"left\" wrap></a>")
+                res=CSA_7eL_Tree_n(opr1,opr2,opr3,opr4,opr5,opr6,opr7,opr8,opr9,opr10,opr11,opr12,opr13,opr14,opr15,opr16,opr17,opr18,opr19,opr20,opr21,opr22,opr23,opr24,opr25,opr26,opr27,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0)}
+
+//        carry=""
+//       sum=""
+//        for (var i=0; i<res.length/2; i++) {
+//                carry+=res[i]
+//                sum+=res[i+res.length/2]}
+
+//        parent.frames[1].document.writeln("<br><b>Tree result (CPA Input)</b>")
+//        parent.frames[1].document.writeln("<br><dd>C = "+carry)
+//        parent.frames[1].document.writeln("<br><dd>S = "+sum+"<br>")
+
+        if (Show_Detail=='True')
+                {parent.frames[1].document.writeln("<br><b>CPA Details</b><br>")}
+
+        final_res=CPA(res);
+        delay=final_res.length+treesize;
+        parent.frames[1].document.writeln("<br><b>Final Result:</b> "+final_res+"<sub>2</sub>")
+        if (Twos==0) {parent.frames[1].document.writeln(" = "+BinToDec(final_res)+"<sub>10</sub><BR>")}
+        parent.frames[1].document.writeln("<br>")
+        }
+
+} } 
+
+if (ok==0) {parent.frames[1].document.writeln(PrintError("Binary number must contain only 0 or 1."))}
+
+ parent.frames[1].document.close()
+ parent.frames[2].document.close()
+}
+
+</SCRIPT>
+<CENTER> 
+<H3>CSA Tree</H3>
+
+<I>[Note: this simulator currently works with almost all browsers
+except Internet Explorer.]</I>
+
+<FORM>
+
+        <I>bin</I>
+        <INPUT NAME="TypeNumber" TYPE=Radio VALUE="Bin" >
+        <I>dec</I>
+        <INPUT NAME="TypeNumber" TYPE=Radio VALUE="Dec" CHECKED>
+<br>
+<br>  
+        <I>Sum Delay </I>
+        <INPUT TYPE="Text" SIZE="7" NAME="ts1" VALUE=2.0 >
+<br>
+        <I>Carry Delay </I>
+        <INPUT TYPE="Text" SIZE="7" NAME="ts2" VALUE=1.5 >
+<br> 
+<br>
+                        
+      <INPUT TYPE="Button" VALUE="  Compute  " onClick="FPU(this.form)">    
+<br>
+      <INPUT TYPE="Reset" VALUE="  Reset  " >    
+
+<br>                  <INPUT TYPE="Button" VALUE="Help " onClick=parent.frames[2].location.href="help.html">                          
+
+<br>
+                        <I> Operand 1 </I><BR>
+                        <INPUT TYPE="Text" SIZE="16" NAME="o1" >
+<br>
+                        <I> Operand 2 </I><BR>
+                        <INPUT TYPE="Text" SIZE="16" NAME="o2" >
+<br>
+                        <I> Operand 3 </I><BR>
+                        <INPUT TYPE="Text" SIZE="16" NAME="o3" >
+<br>
+                        <I> Operand 4 </I><BR>
+                        <INPUT TYPE="Text" SIZE="16" NAME="o4">
+<br>
+                        <I> Operand 5 </I><BR>
+                        <INPUT TYPE="Text" SIZE="16" NAME="o5" >
+<br>
+                        <I> Operand 6 </I><BR>
+                        <INPUT TYPE="Text" SIZE="16" NAME="o6">
+<br>
+                        <I> Operand 7 </I><BR>
+                        <INPUT TYPE="Text" SIZE="16" NAME="o7">
+<br>
+                        <I> Operand 8 </I><BR>
+                        <INPUT TYPE="Text" SIZE="16" NAME="o8" >
+<br>
+                        <I> Operand 9 </I><BR>
+                        <INPUT TYPE="Text" SIZE="16" NAME="o9" >
+<br>
+                        <I>Operand 10</I><BR>
+                        <INPUT TYPE="Text" SIZE="16" NAME="o10" >
+<br>                  
+                        <I>Operand 11</I><BR>
+                        <INPUT TYPE="Text" SIZE="16" NAME="o11" >
+<br>
+                        <i>Operand 12</i><br>
+                        <input TYPE="Text" SIZE="16" NAME="o12" >
+<br>
+                        <i>Operand 13</i><br>
+                        <input TYPE="Text" SIZE="16" NAME="o13">
+<br>
+                        <i>Operand 14</i><br>
+                        <input TYPE="Text" SIZE="16" NAME="o14" >
+<br>
+                        <i>Operand 15</i><br>
+                        <input TYPE="Text" SIZE="16" NAME="o15">
+<br>
+                        <i>Operand 16</i><br>
+                        <input TYPE="Text" SIZE="16" NAME="o16">
+<br>
+                        <i>Operand 17</i><br>
+                        <input TYPE="Text" SIZE="16" NAME="o17" >
+<br>
+                        <i>Operand 18</i><br>
+                        <input TYPE="Text" SIZE="16" NAME="o18" >
+<br>
+                        <i>Operand 19</i><br>
+                        <input TYPE="Text" SIZE="16" NAME="o19" >
+<br>
+                        <i>Operand 20</i><br>
+                        <input TYPE="Text" SIZE="16" NAME="o20" >
+<br>
+                        <i>Operand 21</i><br>
+                        <input TYPE="Text" SIZE="16" NAME="o21" >
+<br>
+                        <i>Operand 22</i><br>
+                        <input TYPE="Text" SIZE="16" NAME="o22">
+<br>
+                        <i>Operand 23</i><br>
+                        <input TYPE="Text" SIZE="16" NAME="o23" >
+<br>
+                        <i>Operand 24</i><br>
+                        <input TYPE="Text" SIZE="16" NAME="o24">
+<br>
+                        <i>Operand 25</i><br>
+                        <input TYPE="Text" SIZE="16" NAME="o25">
+<br>
+                        <i>Operand 26</i><br>
+		        <input TYPE="Text" SIZE="16" NAME="o26" >
+<br>
+                        <i>Operand 27</i><br>
+                        <input TYPE="Text" SIZE="16" NAME="o27" >
+
+<br>
+                        
+                      <INPUT TYPE="Button" VALUE="  Compute  " onClick="FPU(this.form)">    
+<br>
+                      <INPUT TYPE="Reset" VALUE="  Reset  " >    
+
+<br>                  <INPUT TYPE="Button" VALUE="Help " onClick=parent.frames[2].location.href="help.html">                          
+
+<br>
+
+ </CENTER>
+                        
+</FORM>
+</BODY>
+</HTML>
+

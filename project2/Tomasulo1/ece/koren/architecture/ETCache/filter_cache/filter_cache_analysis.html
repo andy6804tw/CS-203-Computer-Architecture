@@ -1,0 +1,158 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Filter Cache Analysis</title>
+<style type="text/css">
+<!--
+body {
+	font: 100% Verdana, Arial, Helvetica, sans-serif;
+	background: #666666;
+	margin: 0; /* it's good practice to zero the margin and padding of the body element to account for differing browser defaults */
+	padding: 0;
+	text-align: center; /* this centers the container in IE 5* browsers. The text is then set to the left aligned default in the #container selector */
+	color: #000000;
+	background-color: #999999;
+}
+
+/* Tips for Elastic layouts 
+1. Since the elastic layouts overall sizing is based on the user's default fonts size, they are more unpredictable. Used correctly, they are also more accessible for those that need larger fonts size since the line length remains proportionate.
+2. Sizing of divs in this layout are based on the 100% font size in the body element. If you decrease the text size overall by using a font-size: 80% on the body element or the #container, remember that the entire layout will downsize proportionately. You may want to increase the widths of the various divs to compensate for this.
+3. If font sizing is changed in differing amounts on each div instead of on the overall design (ie: #sidebar1 is given a 70% font size and #mainContent is given an 85% font size), this will proportionately change each of the divs overall size. You may want to adjust based on your final font sizing.
+*/
+.oneColElsCtrHdr #container {
+	width: 46em;  /* this width will create a container that will fit in an 800px browser window if text is left at browser default font sizes */
+	background: #FFFFFF;
+	margin: 0 auto; /* the auto margins (in conjunction with a width) center the page */
+	border: 1px solid #000000;
+	text-align: left; /* this overrides the text-align: center on the body element. */
+}
+.oneColElsCtrHdr #header { 
+	background: #000033; 
+	padding: 0 10px 0 20px;  /* this padding matches the left alignment of the elements in the divs that appear beneath it. If an image is used in the #header instead of text, you may want to remove the padding. */
+	color:#FFFFFF;
+} 
+.oneColElsCtrHdr #header h1 {
+	margin: 0; /* zeroing the margin of the last element in the #header div will avoid margin collapse - an unexplainable space between divs. If the div has a border around it, this is not necessary as that also avoids the margin collapse */
+	padding: 10px 0; /* using padding instead of margin will allow you to keep the element away from the edges of the div */
+}
+.oneColElsCtrHdr #mainContent {
+	padding: 0 20px; /* remember that padding is the space inside the div box and margin is the space outside the div box */
+	background: #FFFFFF;
+}
+.oneColElsCtrHdr #footer { 
+	padding: 0 10px; /* this padding matches the left alignment of the elements in the divs that appear above it. */
+	background:#000033;
+	color:#FFFFFF;
+} 
+.oneColElsCtrHdr #footer p {
+	margin: 0; /* zeroing the margins of the first element in the footer will avoid the possibility of margin collapse - a space between divs */
+	padding: 10px 0; /* padding on this element will create space, just as the the margin would have, without the margin collapse issue */
+}
+.style1 {font-family: "Comic Sans MS"}
+.style2 {	font-family: "Comic Sans MS";
+	font-size: 16px;
+}
+-->
+</style>
+<script type="text/javascript" src="../hotspot_cache/includes/jquery.js"></script>
+<script type="text/javascript" src="../hotspot_cache/includes/json.js"></script>
+<script type="text/javascript" src="../hotspot_cache/includes/chartplugin.js"></script>
+<script type="text/javascript" src="../hotspot_cache/includes/excanvas.js"></script>
+<script type="text/javascript" src="../hotspot_cache/includes/wz_jsgraphics.js"></script>
+<script type="text/javascript" src="../hotspot_cache/includes/chart.js"></script>
+<script type="text/javascript" src="../hotspot_cache/includes/canvaschartpainter.js"></script>
+<script type="text/javascript" src="../hotspot_cache/includes/jgchartpainter.js"></script>
+<link rel="stylesheet" type="text/css" href="../hotspot_cache/styles.css" />
+<link rel="stylesheet" type="text/css" href="../hotspot_cache/includes/canvaschart.css" />
+<link rel="stylesheet" href="../hotspot_cache/star-light/star-light.css" type="text/css"/>
+<script type="text/javascript">
+function hs_access() 
+{	
+	if( document.getElementById("bench_choose").value == "bzip")
+	{
+		if (document.getElementById("l0cache_size").value == "128")
+			{
+				window.location = "bzip/fil_cache_128.html";
+			}
+		else if (document.getElementById("l0cache_size").value == "256")
+			{
+				window.location = "bzip/fil_cache_5F256.html";
+			}
+	}
+	else if( document.getElementById("bench_choose").value == "gzip")
+	{
+		if (document.getElementById("l0cache_size").value == "128")
+			{
+				window.location = "gzip/fil_cache_128.html";
+			}	
+		else if (document.getElementById("l0cache_size").value == "256")
+		{
+			window.location = "gzip/fil_cache_5F256.html";
+		}
+	}
+	else if( document.getElementById("bench_choose").value == "art00")
+	{
+		if (document.getElementById("l0cache_size").value == "128")
+		{
+			window.location = "art00/fil_cache_128.html";
+		}
+		else if (document.getElementById("l0cache_size").value == "256")
+		{
+			window.location = "art00/hs_cache_5F256.html";
+		}
+	}
+}
+</script>
+<style type="text/css">
+<!--
+body,td,th {
+	font-family: Comic Sans MS;
+}
+-->
+</style></head>
+
+<body class="oneColElsCtrHdr">
+<div id="container">
+  <div id="header">
+    <h1 align="center" class="style1">Filter Cache Analysis</h1>
+  <!-- end #header --></div>
+  <div id="mainContent">
+    <blockquote>
+      <h2 align="justify" class="style1"><strong>Experimental  approach</strong></h2>
+    </blockquote>
+    <ol>
+      <li>For  a fixed L1 cache size (64kB) and L2 cache size (512kB), the following  parameters were varied: block-size, replacement-policy and associativity.  3 SPEC2000 benchmarks were used for experimentation, namely: bzip00, gzip00 and  art00*. These PISA binaries (WATTCH can only run binaries in PISA format) were  obtained from the SimpleScalar website: <a href="../../../../../../www.eecs.umich.edu/mirv/benchmarks/benchmarks.html">http://www.eecs.umich.edu/mirv/benchmarks/benchmarks.html</a></li>
+      <li>The  power values for the different functional units and the # of simulation cycles  needed were obtained by executing the binaries using WATTCH (in 180nm  technology). HOTSPOT is an architectural level thermal simulator that intakes a  power-trace file and a floorplan file and outputs the  steady-state temperature values for the different functional units (block-level  granularity). We used the default Alpha EV6 floorplan  and used the power traces obtained from WATTCH (for each of the benchmarks) to  run HOTSPOT. The corresponding temperature values were stored in a database  along with the energy and delay values obtained previously.</li>
+      <li><span class="style1">The  following modules of WATTCH were modified: power.c, sim-outorder.c and cache.c, to  implement a Filter Cache of size 128/256 bytes with block size varying from 8bytes  to 32 bytes and with the option of direct-mapping or full-associativity.  The power values of the Instruction Cache and the total # of simulation cycles  were obtained for each of the 3 benchmarks for all possible configurations of  the Filter Cache and a corresponding database was formed. As in the case of the  traditional 2-level cache, the power values obtained from WATTCH were used to  generate the power trace file. The EV6 floorplan was  modified to account for the area-addition due to the Filter Cache. HOTSPOT was run  and temperature values of the I-Cache for each of the benchmarks were obtained  (for different configurations of the Filter Cache).</span></li>
+      <li>A  web-based tool was developed to perform energy and temperature comparison of  the 3 cache configurations: traditional 2-level, Filter and HotSpot.
+        <p class="style1">*  SPEC 2000 benchmarks like gcc00, vpr00 and vortex00 require more than 1 hour  for a single performance simulation using SimpleScalar  and hence, were not used for this analysis (given the wide variety of  configurations that had to be tested).</p>
+        <p class="style1">Benchmark --&gt; 
+          <select name="bench_choose" id="bench_choose">
+            <option>- select -</option>
+            <option value="bzip">bzip00</option>
+            <option value="art00">art00</option>
+            <option value="gzip">gzip00</option>
+            </select>
+&nbsp;&nbsp;&nbsp;&nbsp; L0 Cache Size --&gt; 
+        <select name="l0cache_size" id="l0cache_size">
+          <option>- select -</option>
+          <option value="128">128</option>
+          <option value="256">256</option>
+        </select>
+        </p>
+        </li>
+    </ol>
+    <blockquote>
+      <p class="style2">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+        <input type="submit" name="go_hs" id="go_hs" value="Go" onclick="hs_access()" />
+        </p>
+    </blockquote>
+    <h1>&nbsp;</h1>
+  <!-- end #mainContent --></div>
+  <div id="footer">
+    <p class="style1">ECE 668 Computer Architecture - Fall 2006</p>
+    <!-- end #footer --></div>
+<!-- end #container --></div>
+</body>
+</html>

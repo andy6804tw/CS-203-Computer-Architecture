@@ -1,0 +1,244 @@
+.Subnav, TD.Subnav, P.Subnav {
+	line-height : 140%;
+	font-size : 11px;
+	word-spacing : 2px;
+	text-decoration : none;
+	top : 120%;
+	color : #FFFFFF;
+	}
+	
+.newscopy, td.newscopy {
+	line-height : 130%;
+	font-size : 100%;
+	word-spacing : 2px;
+	text-decoration : none;
+	color : Black;
+	font-family : "Times New Roman", Times, serif;
+	}
+	
+body, body.p, td.body, body.td,  P, TD, TD.P, P.TD {
+	word-spacing : .1em;
+	font-family : Verdana, Geneva, Arial, Helvetica, sans-serif;
+	font-size : 85%;
+	color : Black;
+	text-decoration : none;
+}
+
+
+
+blockquote, blockquote.p {
+	word-spacing : .1em;
+	font-family : Verdana, Geneva, Arial, Helvetica, sans-serif;
+	font-size : 95%;
+	color : Black;
+	line-height : 135%;
+	text-decoration : none;
+}
+
+ .callout, td.callout, p.callout, .pbold, TD.pbold {
+	word-spacing : .1em;
+	font-size : 85%;
+	color : #CC6600;
+	line-height : 140%;
+	text-decoration : none;
+}
+
+ 
+
+.Button {
+	background-image : url(../images/GlobalNav_button.gif);
+	background-repeat : repeat;
+	line-height : 16px;
+	font-size : 11px;
+	font-weight : normal;
+}
+
+
+ .Indent {
+	word-spacing : .1em;
+	font-size : 85%;
+	color : #5B5B5B;
+	line-height : normal;
+	text-decoration : none;
+	margin-left : 15;
+}
+
+A:LINK, A:ACTIVE{
+	text-decoration : none;
+	}
+
+A:HOVER {
+	color : White;
+	background-color : #CC3300;
+	background-repeat : repeat-x;
+	text-decoration : none;
+}
+
+A:VISITED {
+	text-decoration : none;
+}
+
+A {
+	text-decoration : none;
+	color : #333333;
+}
+
+
+
+
+LI, UL,TD.LI,TD.UL {
+	
+	word-spacing : .1em;
+	font-size : 95%;
+	color : #FFFFFF;
+	line-height : 130%;
+	text-align : left;
+	list-style-position : outside;
+	list-style-type : square;
+	font-style : normal;
+}
+TH {
+	background-color : #7A7A7A;
+	word-spacing : .1em;
+	font-size : x-small;
+	color : #FFFFFF;
+	height : auto;
+	line-height : normal;
+	font-weight : bold;
+	text-align : left;
+	font-family : Verdana, Geneva, Arial, Helvetica, sans-serif;
+}
+
+.h2wbkgrd, td.h2wbkgrd, p.h2wbkgrd {
+	background-color : #EEEEEE;
+	font-size : 85%;
+	color : #CC3300;
+	height : auto;
+	line-height : normal;
+	font-weight : bold;
+	text-align : left;
+	padding-left : 6;
+	padding-bottom : 2;
+	padding-top : 2;
+	padding-right : 6;
+	background-image : url(../images/H2_tile.gif);
+	background-repeat : repeat-x;
+}
+
+
+
+H3{
+	word-spacing : .1em;
+	font-family : Verdana, Geneva, Arial, Helvetica, sans-serif;
+	font-size : 85%;
+	color : #CC3300;
+	height : auto;
+	line-height : 130%;
+	font-weight : bold;
+	text-align : left;
+}
+
+H4, TD.H4, TH.H4 {
+	word-spacing : .1em;
+	font-size : 110%;
+	color : #FFFFFF;
+	height : auto;
+	line-height : 130%;
+	font-weight : 800;
+	text-align : left;
+}
+
+H5, TD.H5, TH.H5 {
+	word-spacing : .1em;
+	font-family : Verdana, Geneva, Arial, Helvetica, sans-serif;
+	font-size : 85%;
+	color : #666699;
+	font-weight : bold;
+	text-align : left;
+}
+TD.H2, TH.H1, TH.H2 {
+	font-size : 85%;
+	color : #CC3300;
+	text-align : left;
+	font-weight : bold;
+	padding-top : 1px;
+	padding-bottom : 1px;
+	}
+	
+.newshead, TD.newshead {
+	font-size : 85%;
+	color : #666699;
+	text-align : left;
+	font-weight : bold;
+	border-top-width : 1px;
+	border-color : #BDBDBD;
+	padding-top : 6px;
+	padding-bottom : 6px;
+	border-style : solid;
+	border-right-width : 1px;
+	border-left-width : 1px;
+	border-bottom-width : 1px;
+	background-color : #EEEEEE;
+	padding-left : 6px;
+	padding-right : 6;
+	}
+	
+	
+	
+H1, TD.H1 {
+	font-size : 110%;
+	color : #CC3300;
+	text-align : left;
+	font-weight : bold;
+	padding-top : 6px;
+	padding-bottom : 6px;
+	
+	clear : none;
+	}
+	
+.breadcrumb {  
+	color: Black;
+	font-size : 10px;
+	text-indent : 10px;
+	}
+	
+
+
+TD.H3  { 
+	font-size : 85%;
+	word-spacing : .1em;
+	color : #CC3300;
+	height : auto;
+	text-align : left;
+	text-decoration: none;
+ 	} 
+ 
+.pwhite { 
+	word-spacing : .1em; 
+	font-size : 80%; 
+	color : #FFFFFF; 
+	line-height : 120%; 
+	text-decoration : none; 
+	font-weight : normal;
+	}
+
+.pwhiteserif { 
+	word-spacing : .1em; 
+	font-family : "Times New Roman", Times, serif; 
+	font-size : 90%; 
+	color : #FFFFFF; 
+	line-height : 125%; 
+	text-decoration : none; 
+	font-weight : normal;
+	 }
+
+
+H2 { 
+	font-size : 85%;
+	color : #CC3300;
+	font-weight : bold;
+	padding-top : 1px;
+	padding-bottom : 1px;
+ } 
+	
+body { background-color: #FFFFFF }

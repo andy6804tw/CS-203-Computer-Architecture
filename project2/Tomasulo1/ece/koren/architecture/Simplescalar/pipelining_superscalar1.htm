@@ -1,0 +1,267 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<meta name="GENERATOR" content="Microsoft FrontPage 4.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<title>Pipelining and Superscalar using SimpleScalar</title>
+</head>
+
+<body>
+
+<p align="center"><span style="font-family: Comic Sans MS; mso-fareast-font-family: SimSun; mso-bidi-font-family: Times New Roman; mso-ansi-language: EN-US; mso-fareast-language: ZH-CN; mso-bidi-language: AR-SA"><font size="5" color="#FF0000"><b>Pipelining
+and Superscalar using SimpleScalar (1)</b></font></span></p>
+<p class="MsoNormal"><span style="font-family:&quot;Comic Sans MS&quot;">In this
+lab we shall implement pipelined and superscalar configurations on <span style="color:fuchsia">PISA
+ISA</span> and compare the two. You can do the same for <font color="#FF00FF">Alpha
+ISA</font>. We shall also see if forwarding is being implemented or not.<o:p>
+</o:p>
+</span></p>
+<p class="MsoNormal"><span style="font-family:&quot;Comic Sans MS&quot;"><o:p>
+&nbsp;We shall be using <span style="color:green">sim-outorder</span> as the
+simulator to calculate IPC or CPI in various processor configurations.<o:p>
+</o:p>
+</span></p>
+<p class="MsoNormal"><span style="font-family:&quot;Comic Sans MS&quot;"><o:p>
+&nbsp;</span><span style="font-family:&quot;Comic Sans MS&quot;;color:red">Quick
+fact about</span><span style="font-family:&quot;Comic Sans MS&quot;"> <span style="color:green">sim-outorder</span>
+<span style="color:red">simulator<o:p>
+</o:p>
+</span></span></p>
+<p class="MsoNormal" style="mso-layout-grid-align:none;text-autospace:none"><span style="font-family:&quot;Comic Sans MS&quot;">It
+is a detailed microarchitectural simulator and models timing. This tool models
+in detail in-order and out-of-order microprocessor with all of the bells and
+whistles, including branch prediction, caches, and external memory. This
+simulator is highly parameterized and can emulate machines of varying numbers of
+execution units. Refer to reference #4 of introduction to SimpleScalar to get a
+visual description of this simulator. You should read the references to know the
+5 stages in <font color="#FF00FF">PISA</font> architecture.</span><span style="font-size:10.0pt"><o:p>
+</o:p>
+</span></p>
+<p class="MsoNormal"><span style="font-family:&quot;Comic Sans MS&quot;"><o:p>
+&nbsp;All the simulators including <span style="color:green">sim-outorder</span>
+are available in the <span style="color:#993300">home/simplesim-3.0</span>
+directory.<o:p>
+</o:p>
+</span></p>
+<p class="MsoNormal"><span style="font-family:&quot;Comic Sans MS&quot;"><o:p>
+&nbsp;Go to <span style="color:#993300">home/simplesim-3.0</span> directory and
+type the following to seek help about <span style="color:green">sim-order</span>.
+<o:p>
+</o:p>
+</span></p>
+<p class="MsoNormal"><span style="font-family:&quot;Comic Sans MS&quot;;color:#993300">&nbsp;
+home/simplesim-3.0</span><span style="font-family:&quot;Comic Sans MS&quot;">$<span style="color:#003366">./sim-order
+–h<o:p>
+</o:p>
+</span></span></p>
+<p class="MsoNormal"><span style="font-family:&quot;Comic Sans MS&quot;;color:#003366"><o:p>
+&nbsp;</span><span style="font-family:&quot;Comic Sans MS&quot;">Help can also
+be invoked just by typing simulator name without any arguments.<o:p>
+</o:p>
+</span></p>
+<p class="MsoNormal"><span style="font-family:&quot;Comic Sans MS&quot;"><o:p>
+&nbsp;1) In this part, we shall see whether <span style="color:green">sim-outorder</span>
+implements forwarding to reduce stalls due to data hazards or not. </span></p>
+<p class="MsoNormal"><span style="font-family: Comic Sans MS">&nbsp;&nbsp; </span><span style="font-family:&quot;Comic Sans MS&quot;">Follow
+the procedure described below.<o:p>
+</o:p>
+</span></p>
+<p class="MsoNormal"><span style="font-family:&quot;Comic Sans MS&quot;"><o:p>
+&nbsp;&nbsp;&nbsp; &nbsp;</span><span style="mso-list: Ignore; font-family: Comic Sans MS; mso-fareast-font-family: Comic Sans MS; mso-bidi-font-family: Comic Sans MS">a)<span style="font:7.0pt &quot;Times New Roman&quot;">&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span><span style="font-family:&quot;Comic Sans MS&quot;" dir="LTR">Create
+new directory e.g., <span style="color:#993300">labs</span> in the <span style="color:#993300">/home/SimpleScalar</span>
+directory. This is where you shall keep all the files<br>
+&nbsp;&nbsp; </span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="font-family:&quot;Comic Sans MS&quot;" dir="LTR">for
+this lab.<o:p>
+</o:p>
+</span></p>
+<p class="MsoNormal" style="margin-left:.5in;text-indent:-.25in;mso-list:l1 level1 lfo1;
+tab-stops:list .5in"><span style="mso-list: Ignore; font-family: Comic Sans MS; mso-fareast-font-family: Comic Sans MS; mso-bidi-font-family: Comic Sans MS; color: #003366">b)<span style="font:7.0pt &quot;Times New Roman&quot;">&nbsp;&nbsp;&nbsp;
+</span></span><span style="font-family:&quot;Comic Sans MS&quot;" dir="LTR">Copy
+<span style="color:navy">default.cfg</span> configuration file from <span style="color:#993300">/home/SimpleScalar/simplesim-3.0/config/
+</span>into the <span style="color:#993300">labs</span> directory.<span style="color:#003366"><o:p>
+</o:p>
+</span></span></p>
+<p class="MsoNormal" style="margin-left:.5in;text-indent:-.25in;mso-list:l1 level1 lfo1;
+tab-stops:list .5in"><span style="mso-list: Ignore; font-family: Comic Sans MS; mso-fareast-font-family: Comic Sans MS; mso-bidi-font-family: Comic Sans MS; color: #003366">c)<span style="font:7.0pt &quot;Times New Roman&quot;">&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span><span style="font-family:&quot;Comic Sans MS&quot;" dir="LTR"><span style="mso-spacerun:yes">&nbsp;</span>Make
+a copy of the file <span style="color:navy">default.cfg</span> and name it e.g.,
+<span style="mso-spacerun:yes">&nbsp;</span><span style="color:navy">config_a.cfg.</span><span style="color:#003366"><o:p>
+</o:p>
+</span></span></p>
+<p class="MsoNormal" style="margin-left:.5in;text-indent:-.25in;mso-list:l1 level1 lfo1;
+tab-stops:list .5in"><span style="mso-list: Ignore; font-family: Comic Sans MS; mso-fareast-font-family: Comic Sans MS; mso-bidi-font-family: Comic Sans MS">d)<span style="font:7.0pt &quot;Times New Roman&quot;">&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span><span style="font-family:&quot;Comic Sans MS&quot;" dir="LTR">Copy
+<span style="color:navy">test-math</span> binary file from <span style="color:#993300">/home/SimpleScalar/testsimplesim-3.0/tests-pisa/bin/
+</span>into the<span style="color:#993300"> labs </span>directory.<o:p>
+</o:p>
+</span></p>
+<p class="MsoNormal" style="margin-left:.5in;text-indent:-.25in;mso-list:l1 level1 lfo1;
+tab-stops:list .5in"><span style="mso-list: Ignore; font-family: Comic Sans MS; mso-fareast-font-family: Comic Sans MS; mso-bidi-font-family: Comic Sans MS">e)<span style="font:7.0pt &quot;Times New Roman&quot;">&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span><span style="font-family:&quot;Comic Sans MS&quot;" dir="LTR">View
+<span style="color:navy">config_a.cfg</span> file in an editor or text viewer.
+This file is used by <span style="color:green">sim-outorder</span> simulator.
+The file is easy to understand. To dig into the details, refer to reference #2
+of </span><span style="font-family:&quot;Comic Sans MS&quot;">introduction to
+SimpleScalar</span><span style="font-family:&quot;Comic Sans MS&quot;" dir="LTR">.<o:p>
+</o:p>
+</span></p>
+<p class="MsoNormal" style="margin-left:.5in;text-indent:-.25in;mso-list:l1 level1 lfo1;
+tab-stops:list .5in"><span style="mso-list: Ignore; font-family: Comic Sans MS; mso-fareast-font-family: Comic Sans MS; mso-bidi-font-family: Comic Sans MS">f)<span style="font:7.0pt &quot;Times New Roman&quot;">&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span><span style="font-family:&quot;Comic Sans MS&quot;" dir="LTR">Modify
+<span style="color:navy">config_a.cfg </span>file according to the following
+specifications.<o:p>
+</o:p>
+</span></p>
+<p class="MsoNormal" style="margin-left:1.0in"><span style="font-family:&quot;Comic Sans MS&quot;">Decode:width<span style="mso-spacerun:yes">&nbsp;
+</span>= 1,<br>
+Fetch queue size = 1,<br>
+Load store queue size = 8,<br>
+Register update unit (ruu) size = 8,&nbsp;&nbsp;&nbsp; //This is the same as the
+number of reservation stations<br>
+Issue width = 1,<br>
+Memory ports = 1,<span style="mso-tab-count:1">&nbsp; <br>
+</span>Inorder = true,<br>
+Resources all types = 1.<o:p>
+</o:p>
+</span></p>
+<p class="MsoNormal" style="margin-left:.5in;text-indent:-.25in;mso-list:l1 level1 lfo1;
+tab-stops:list .5in"><span style="mso-list: Ignore; font-family: Comic Sans MS; mso-fareast-font-family: Comic Sans MS; mso-bidi-font-family: Comic Sans MS">g)<span style="font:7.0pt &quot;Times New Roman&quot;">&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span><span style="font-family:&quot;Comic Sans MS&quot;" dir="LTR">Create
+aliases for <span style="color:green">sim-outorder</span> and <span style="color:green">pipeview.pl
+</span>by executing the following commands. Pipeview.pl is a perl script that
+helps in visualizing pipeline trace. <o:p>
+</o:p>
+</span></p>
+<p class="MsoNormal" style="margin-left:.25in;text-indent:.25in"><span style="font-family:&quot;Comic Sans MS&quot;;color:#993300">labs/
+</span><span style="font-family:&quot;Comic Sans MS&quot;;color:#003366">alias
+soo /home/simplescalar/simplesim-3.0/sim-outorder<o:p>
+</o:p>
+</span></p>
+<p class="MsoNormal" style="margin-left:.25in;text-indent:.25in"><span style="font-family:&quot;Comic Sans MS&quot;;color:#993300">labs/
+</span><span style="font-family:&quot;Comic Sans MS&quot;;color:#003366">alias
+pv /home/simplescalar/simplesim-3.0/pipeview.pl<o:p>
+</o:p>
+</span></p>
+<p class="MsoNormal" style="margin-left:.5in;text-indent:-.25in;mso-list:l1 level1 lfo1;
+tab-stops:list .5in"><span style="mso-list: Ignore; font-family: Comic Sans MS; mso-fareast-font-family: Comic Sans MS; mso-bidi-font-family: Comic Sans MS">h)<span style="font:7.0pt &quot;Times New Roman&quot;">&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span><span style="font-family:&quot;Comic Sans MS&quot;" dir="LTR">Run <span style="color:green">sim-outorder</span>
+with the <span style="color:navy">config_a.cfg</span> file by executing the
+following<span style="mso-spacerun:yes">&nbsp; </span></span><span style="font-family:&quot;Comic Sans MS&quot;">Command<o:p>
+</o:p>
+</span></p>
+<p class="MsoNormal" style="margin-left:.5in"><span style="font-family:&quot;Comic Sans MS&quot;;
+color:#993300">labss/ </span><span style="font-family:&quot;Comic Sans MS&quot;;
+color:#003366">soo –config config_a.cfg –ptrace config_a.trc 0:1024 –redir:sim
+sim_configa.out ./test-math<o:p>
+</o:p>
+</span></p>
+<p class="MsoNormal" style="margin-left:.5in;text-indent:-.25in;mso-list:l1 level1 lfo1;
+tab-stops:list .5in"><span style="mso-list: Ignore; font-family: Comic Sans MS; mso-fareast-font-family: Comic Sans MS; mso-bidi-font-family: Comic Sans MS">i)<span style="font:7.0pt &quot;Times New Roman&quot;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span><span style="font-family:&quot;Comic Sans MS&quot;" dir="LTR">You
+should be able to see the output of the <font color="#008080">test-math</font>
+file in the command window which means successful execution of the simulation.<o:p>
+</o:p>
+</span></p>
+<p class="MsoNormal" style="margin-left:.5in;text-indent:-.25in;mso-list:l1 level1 lfo1;
+tab-stops:list .5in"><span style="mso-list: Ignore; font-family: Comic Sans MS; mso-fareast-font-family: Comic Sans MS; mso-bidi-font-family: Comic Sans MS">j)<span style="font:7.0pt &quot;Times New Roman&quot;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span><span style="font-family:&quot;Comic Sans MS&quot;" dir="LTR">View
+the simulation results by viewing the <span style="color:navy">sim_configa.out</span>
+file.<o:p>
+</o:p>
+</span></p>
+<p class="MsoNormal"><span style="font-family:&quot;Comic Sans MS&quot;"><o:p>
+&nbsp;</o:p>
+</span></p>
+<p class="MsoNormal"><span style="font-family:&quot;Comic Sans MS&quot;"><span style="mso-spacerun:yes">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span>Now Answer the following Questions.<o:p>
+</o:p>
+</span></p>
+<p class="MsoNormal"><span style="font-family:&quot;Comic Sans MS&quot;"><o:p>
+&nbsp;<span style="mso-spacerun:yes">&nbsp;</span>Q1: Describe the
+configuration.<br>
+<span style="mso-spacerun:yes">&nbsp;&nbsp; </span>Q2: What is the IPC
+(Instructions per cycle) of the <span style="color:navy">test-math</span>
+program using this configuration?<br>
+<span style="mso-spacerun:yes">&nbsp;&nbsp; </span>Q3: Is the forwarding
+implemented? <span style="mso-spacerun:yes">&nbsp;</span>To answer this
+question, consider<span style="mso-spacerun:yes"> </span>the following two
+instructions<o:p>
+</o:p>
+</span></p>
+<p class="MsoNormal"><span style="font-family:&quot;Comic Sans MS&quot;"><o:p>
+&nbsp;<span style="mso-tab-count:1">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span>ag:<span style="mso-tab-count:1">&nbsp;&nbsp;&nbsp;&nbsp; </span>sll <span style="mso-tab-count:1">&nbsp;&nbsp;&nbsp;&nbsp;
+</span>r2,r16,2<o:p>
+</o:p>
+<br>
+<span style="mso-tab-count:1">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span>ah:<span style="mso-tab-count:1">&nbsp;&nbsp;&nbsp;&nbsp; </span>addu<span style="mso-spacerun:yes">&nbsp;&nbsp;
+</span>r3,r3,r2<o:p>
+</o:p>
+</span></p>
+<p class="MsoNormal"><span style="font-family:&quot;Comic Sans MS&quot;"><span style="mso-tab-count:1">&nbsp;
+</span>You can see RAW hazard between ag and ah instructions. This means that
+you can not execute ah until ag has&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; written r2 into the
+register file. So without forwarding it is not possible to execute ah in the
+execution phase &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; with ag
+being in the WB phase.<o:p>
+</o:p>
+</span></p>
+<p class="MsoNormal"><span style="font-family:&quot;Comic Sans MS&quot;">&nbsp; View the
+pipeline trace <span style="color:navy">config_a.trc</span> by executing the
+following command and see if you can find the two<br>
+</span>&nbsp;&nbsp;&nbsp;&nbsp; <span style="font-family:&quot;Comic Sans MS&quot;">instructions
+such that ag is in the WB stage and ah is in the EX stage.<o:p>
+</o:p>
+</span></p>
+<p class="MsoNormal" style="text-indent:.5in"><span style="font-family:&quot;Comic Sans MS&quot;"><o:p>
+&nbsp;</span><span style="font-family:&quot;Comic Sans MS&quot;;
+color:#993300">labss/ </span><span style="font-family:&quot;Comic Sans MS&quot;;
+color:#003366">pv config_a.trc | less</span></p>
+<p class="MsoNormal" style="text-indent:.5in"><span style="font-family:&quot;Comic Sans MS&quot;;
+color:#003366"><o:p>
+</o:p>
+</span></p>
+<p class="MsoNormal"><span style="font-family:&quot;Comic Sans MS&quot;">2)&nbsp;&nbsp;&nbsp;&nbsp;
+In this part, we shall change the configuration. Every thing else remains <span style="mso-spacerun:yes">
+</span>the same as in part 1)<o:p>
+</o:p>
+</span></p>
+<p class="MsoNormal"><span style="font-family:&quot;Comic Sans MS&quot;"><o:p>
+ &nbsp;</span><span style="mso-list: Ignore; font-family: Comic Sans MS; mso-fareast-font-family: Comic Sans MS; mso-bidi-font-family: Comic Sans MS">a)<span style="font:7.0pt &quot;Times New Roman&quot;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span><span style="font-family:&quot;Comic Sans MS&quot;" dir="LTR">For
+this, make a copy of <span style="color:navy">default.cfg</span>, call it <span style="color:navy">config_b.cfg.
+</span>Make </span><span style="font-family:&quot;Comic Sans MS&quot;">changes
+as in part 1) except that <span style="color:navy"><o:p>
+</o:p>
+</span></span></p>
+<p class="MsoNormal" style="margin-left:1.0in"><span style="font-family:&quot;Comic Sans MS&quot;">Inorder
+= false<o:p>
+</o:p>
+</span></p>
+<p class="MsoNormal" style="margin-left:.5in;text-indent:-28.5pt;mso-list:l0 level1 lfo2;
+tab-stops:list .5in"><span style="mso-list: Ignore; font-family: Comic Sans MS; mso-fareast-font-family: Comic Sans MS; mso-bidi-font-family: Comic Sans MS">b)<span style="font:7.0pt &quot;Times New Roman&quot;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span><span style="font-family:&quot;Comic Sans MS&quot;" dir="LTR">Run <span style="color:green">sim-outorder</span>
+with the <span style="color:navy">config_b.cfg</span> file.<o:p>
+</o:p>
+</span></p>
+<p class="MsoNormal" style="margin-left:7.5pt"><span style="font-family:&quot;Comic Sans MS&quot;">&nbsp;&nbsp;
+</span> <span style="font-family:&quot;Comic Sans MS&quot;">Now Answer the
+following questions<o:p>
+</o:p>
+</span></p>
+<p class="MsoNormal" style="margin-left:7.5pt"><span style="font-family:&quot;Comic Sans MS&quot;"><o:p>
+ Q1:&nbsp; Describe the configuration.<br>
+Q2: What is the IPC (Instructions per cycle)&nbsp; of the <span style="color:navy">test-math</span> program
+using this configuration?<br>
+Q3: Compared to part 1) or configuration A, what can you say about this</o:p>
+ configuration?<br>
+Q4: The commit stage CT reorders the execution of instructions, explain<o:p></o:p>
+<span style="mso-spacerun:yes"> </span>why is it necessary?</span></p>
+
+</body>
+
+</html>

@@ -1,0 +1,100 @@
+<HTML>
+<HEAD>
+   <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+   <META NAME="Author" CONTENT="zhan">
+   <META NAME="GENERATOR" CONTENT="Mozilla/4.04 [en] (Win95; I) [Netscape]">
+   <TITLE>help for manchester Adder</TITLE>
+</HEAD>
+<BODY>
+
+<DL>
+<CENTER>
+<H1>
+Manchester Adder Online help</H1></CENTER>
+
+<CENTER><B><U><FONT SIZE=+2>How to Run</FONT></U></B></CENTER>
+</DL>
+
+<UL>
+<LI>
+Two numbers are added in this program. The two numbers can be given in
+the boxes named as <I>A</I> and <I>B</I>.</LI>
+
+<LI>
+Numbers can be given in either <I>bin</I> (binary) or <I>dec</I> (decimal)
+number system.</LI>
+
+<LI>
+Next, the total number of bits in the adder should be specified in <I>Total
+Bits</I> field.</LI>
+
+<LI>
+In this adder, the total number of bits are divided into a number of groups
+and a separating device (<I>buffer</I>) is placed between each of these
+groups. So, in the field <I>Buffer Distance, </I>you should specify the
+distance between two buffers. In other words, you need to provide there
+the number of bits present between two consecutive buffers. This buffer
+distance will be limited by the maximum number of switches that can be
+placed in cascade and that number is technology dependent.</LI>
+
+<LI>
+After that, you have to specify a few delays in the <I>Signal Delays</I>
+section. Those delays are:</LI>
+
+<UL>
+<LI>
+Delay to calculate S<SUB>i</SUB> once the C<SUB>i</SUB> is available (<I>C<SUB>i</SUB>
+to S<SUB>i</SUB></I>).;</LI>
+
+<LI>
+Delay to calculate S<SUB>i</SUB> once the A<SUB>i</SUB> is available (<I>A<SUB>i</SUB>
+to S<SUB>i</SUB></I>).</LI>
+
+<LI>
+delay of a single Switch or Transmission Gate (<I>Switch</I>).</LI>
+
+<LI>
+delay of a single Buffer (Buffer).</LI>
+
+<LI>
+delay of a single basic AND/OR gate (Basic<I> Gate</I>).</LI>
+
+<LI>
+delay of a single EX-OR gate (EX-OR<I> Gate</I>).</LI>
+</UL>
+</UL>
+
+<CENTER><B><U><FONT SIZE=+2>Format of Output</FONT></U></B></CENTER>
+
+<UL>After giving all the above mentioned inputs, when you click on the
+<I>Compute</I> button, in the right frame of the page, you can see a diagram
+of the manchester adder circuit and the timing data.
+<UL>
+<LI>
+In the topmost diagram, a number of rectangular blocks are shown in cascade.
+Those are the blocks which can find out the sum of two bits and a carry-in.
+The following figure shows that in such a block, two inputs are 1 and 0
+and the sum output is 1 (assuming no carry).</LI>
+
+
+<CENTER><IMG SRC="10_hlp.gif" ></CENTER>
+
+<CENTER><IMG SRC="plusbox.gif" HEIGHT=32 WIDTH=47></CENTER>
+
+<CENTER><IMG SRC="sum1_hlp.gif" ></CENTER><BR>
+
+<LI>
+Below that, we show the carry generation blocks with proper carry-in and
+carry-out bits. from each such carry-generator circuit, we have shown a
+path to the adder block also. We also put the buffers in between two carry
+generation blocks (wherever needed). Each such carry generation block is
+represented by following figure:</LI>
+
+<CENTER><IMG SRC="emptybox.gif" HEIGHT=32 WIDTH=47></CENTER><BR>
+</UL>
+
+
+<P>At the bottom, we show the time taken to generate eachi sum bit.</UL>
+
+</BODY>
+</HTML>

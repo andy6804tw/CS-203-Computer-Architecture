@@ -1,0 +1,476 @@
+<HTML>
+<HEAD>
+<TITLE> Radix Conversions </TITLE>
+<SCRIPT language="JavaScript">
+
+
+function MakeLine(NumColumns) {
+        return "<TR> <TD colspan=" + NumColumns + "> <HR noshade size=1>\n";
+}
+
+function PrintError(Message) {
+        Error = "<CENTER><H1> ERROR </H1></CENTER> <P>\n"
+        Error += "<CENTER> <EM>" + Message + "</EM> </CENTER>\n"
+        return Error
+}
+ 
+ 
+function RoundOff(TheNum) { 
+	TheNum=Math.floor((TheNum+Math.pow(10,-5-NumFracDigits))*Math.pow(10, 3+NumFracDigits))/Math.pow(10,3+NumFracDigits) 
+	return TheNum
+} 
+
+function RadixComp(TheNum) { 
+        StartPlace = NumIntDigits
+        if (StartPlace < 0) {StartPlace = 0}
+
+        // first deal with negative numbers...
+        if (TheNum < 0) {TheNum += Math.pow(Radix, StartPlace +1)}
+	 
+        // now initialize the string
+        S=""
+	x=""
+        for (CurPlace = StartPlace; CurPlace >= -NumFracDigits; CurPlace--) {
+		if (CurPlace == -1) {
+			S += "."
+		}
+                CurPower=RoundOff(Math.pow(Radix, CurPlace))   
+		 
+		if  (TheNum<CurPower) {
+			S+="0" 
+		}	
+	 	else  {
+			for(n=1; n<Radix; n++){
+				if ((TheNum>=RoundOff(CurPower*n))&&(TheNum< RoundOff(CurPower*(n+1)))) {
+					x=n
+					if(x==10) S+="A"
+					else if(x==11) S+="B"
+					else if(x==12) S+="C"
+					else if (x==13) S+="D"
+					else if (x==14) S+="E"
+					else if (x==15) S+="F"
+					else  S+= x
+                       			TheNum -= CurPower*n
+					TheNum=RoundOff(TheNum)  
+              			}           
+        		}
+		}
+	}
+        return S
+}
+ 
+ 
+function DiminishedRadixComp(TheNum) {
+        StartPlace = NumIntDigits
+        if (StartPlace < 0) {StartPlace = 0}
+ 	 
+        // first deal with negative numbers...
+        if (TheNum < 0) {
+		TheNum += Math.pow(Radix, StartPlace +1)-Math.pow(Radix,-NumFracDigits)	 
+	}
+
+        // now initialize the string
+        S="";
+	x=""
+        for (CurPlace = StartPlace; CurPlace >= -NumFracDigits; CurPlace--) {
+		if (CurPlace == -1) {
+			S += "."
+		}
+                CurPower = Math.pow(Radix, CurPlace)  
+  		CurPower=RoundOff(CurPower)
+		if  (TheNum<CurPower) {
+			S+="0"
+		}	
+	 	else  {
+			for(n=1; n<Radix; n++){
+				if ((TheNum>=CurPower*n)&&(TheNum<= CurPower*(n+1))) {
+					x=n
+					if(x==10) S+="A"
+					else if(x==11) S+="B"
+					else if(x==12) S+="C"
+					else if (x==13) S+="D"
+					else if (x==14) S+="E"
+					else if (x==15) S+="F"
+					else  S+= x
+                       			 
+                       			TheNum -= CurPower*n
+					TheNum=Math.floor((TheNum+Math.pow(10,-2-NumFracDigits))*Math.pow(10, 3+NumFracDigits))/Math.pow(10,3+NumFracDigits) 			  	 
+              			} 
+			}
+		}
+	}
+        return S;
+}
+
+/*----------------------------------------------------------------------*/
+//This function is used to read a number in the format of result in any radix and 
+//convert it to the RealNumber in radix of 10 and return RealNumber. This function
+//will be used when the number is negative and need to get its radix complement or 
+//diminished radix complement
+
+function ParseBinary (BinNum) {
+    
+	NumBits=NumIntDigits+NumFracDigits+1; 
+  
+        IsNeg = false
+        D=0
+        RealNum = 0
+	j=0
+	for(i=0; i<=NumIntDigits+NumFracDigits+1; i++){
+		if(i==0){
+			if (BinNum.charAt(0)=="-") { 
+                		IsNeg = true
+				D=0
+       			 } 
+			else if( BinNum.charAt(0)=="F") D=15
+			else if( BinNum.charAt(0)=="E") D=14
+			else if( BinNum.charAt(0)=="D") D=13
+			else if( BinNum.charAt(0)=="C") D=12
+			else if( BinNum.charAt(0)=="B") D=11
+			else if( BinNum.charAt(0)=="A") D=10
+			else D=BinNum.charAt(0)
+			if (D=="."){
+				j=1
+			}
+			else RealNum+=D*Math.pow(Radix,NumIntDigits+1)
+		}
+		else{
+			D=BinNum.charAt(i)
+			if (D=="F") D=15
+			else if(D=="E") D=14
+			else if(D=="D") D=13
+			else if(D=="C") D=12
+			else if(D=="B") D=11
+			else if(D=="A") D=10
+			if(D==".") { 
+				j=1
+			} 
+			else RealNum+=D*Math.pow(Radix,NumIntDigits-i+j)
+		}
+	}
+	if(IsNeg) RealNum*=-1
+        return RealNum
+}
+
+/*----------------------------------------------------------------------*/
+//This function is used to read an integer number in any radix and convert it to
+//the RealNumber in radix of 10 and return RealNumber
+
+function ParseNumber(Number) {
+	RealNumber = 0
+ 	  
+	//IntDigitalsC includes negative sign "-"
+	if (IsNeg)j=1
+	else j=0
+	D=0
+ 
+	for(i=0; i<IntDigitsC; i++){
+		D=Number.charAt(i)
+	 
+		if (D=="F") D=15
+		else if(D=="E") D=14
+		else if(D=="D") D=13
+		else if(D=="C") D=12
+		else if(D=="B") D=11
+		else if(D=="A") D=10
+ 
+		RealNumber+=D*Math.pow(InputRadix,IntDigitsC-i-j-1) 
+	}
+        return RealNumber
+}
+ 
+/*----------------------------------------------------------------------*/
+//This function is used to read a fractional Number in any radix and 
+//convert it to the RealNumber in radix of 10 and return the RealNumber
+
+function ParseFraction(Number) {
+ 	RealNumber =0
+ 	D=0
+	//The first char is ".", so we begin at the second char and i=1
+	for(i=1; i<=FracDigitsC; i++){
+		D=Number.charAt(i)
+		if (D=="F") D=15
+		else if(D=="E") D=14
+		else if(D=="D") D=13
+		else if(D=="C") D=12
+		else if(D=="B") D=11
+		else if(D=="A") D=10
+		 
+		RealNumber+=D*Math.pow(InputRadix,-i)
+	}     
+        return RealNumber
+}
+
+/*----------------------------------------------------------------------*/
+//This function is used to read a integer number in radix of 10 and 
+//convert it to S in input radix and return the S
+function BackRadix(RealNumb){
+	S=""	
+	r=RealNumb
+
+	while (r>InputRadix){
+		t=Math.floor(r/InputRadix)
+
+		if (t==10) S+="A"
+		else if (t==11) S+="B"
+		else if (t==12) S+="C"
+		else if (t==13) S+="D"
+		else if (t==14) S+="E"
+		else if (t==15) S+="F"
+		else S+=t
+		r=r-t*InputRadix
+	}
+	// To deal with the last digit	
+	if (r==10) S+="A"
+	else if (r==11) S+="B"
+	else if (r==12) S+="C"
+	else if (r==13) S+="D"
+	else if (r==14) S+="E"
+	else if (r==15) S+="F"
+	else S+=r
+ 
+	return S
+}
+
+/*----------------------------------------------------------------------*/
+//This function is used to read a fractional number in radix of 10 and 
+//convert it to S in input radix and return the S
+function BackFracRadix(RealNumb){
+	 
+	S="."	
+	r=RealNumb
+
+	for(i=0; i<FracDigitsC; i++){
+	t=Math.floor(r*Math.pow(InputRadix, i+1))
+
+	if (t==10) S+="A"
+	else if (t==11) S+="B"
+	else if (t==12) S+="C"
+	else if (t==13) S+="D"
+	else if (t==14) S+="E"
+	else if (t==15) S+="F"
+	 
+	else S+=t
+	r=r-t/Math.pow(InputRadix,i+1)
+	} 
+	if (S==".") S=".0"
+	return S
+}
+ 
+function Conver(form) {
+	TheTop = "<HTML><HEAD><TITLE>Tablet</TITLE></HEAD><BODY bgcolor=white>"
+     	Middle= "<TABLE>"
+   	IsNeg=false
+	WrongInputC=false
+	Message=""
+ 	 
+	InputRadix= parseInt(form.InputRadix.value)
+	charInputRadix=form.InputRadix.value
+	if(charInputRadix==10) charInputRadix="A"
+	else if(charInputRadix==11) charInputRadix="B"
+	else if(charInputRadix==12) charInputRadix="C"
+	else if(charInputRadix==13) charInputRadix="D"
+	else if(charInputRadix==14) charInputRadix="E"
+	else if(charInputRadix==15) charInputRadix="F"
+	else if(charInputRadix==16) charInputRadix="G"
+	else if(charInputRadix>16) { 
+		WrongInputC=true	
+		Message+="Input radix of C must be <=16"+"<p>"
+	}
+
+	C=form.C.value
+	FracDigitsC=0
+	IntDigitsC=0
+	i=0
+ 	IsFraction=false
+	 
+	if (C.charAt(0)==" ") {
+		WrongInputC=true
+		Message+="No blank at the beginning of input C"+"<p>"
+		 
+	}
+	if( C.charAt(0)=="-") IsNeg=true
+
+	while(C.charAt(i)!="" ){
+		if (IsFraction==false){ 
+			if (C.charAt(i)==".") IsFraction=true
+			else IntDigitsC++
+		}
+		if(C.charAt(i)>=charInputRadix )  {
+			WrongInputC=true
+			Message+="Wrong input "+C.charAt(i)+" in C"+", it should be less than input radix"+"<p>"
+		}
+ 		if(C.charAt(i)==" "&&i!=0) {
+			if (C.charAt(i+1)!=""){
+		   		WrongInputC=true
+				Message+="No blank inside input C: "+C +"<p>" 
+			}
+     			else {
+		   		WrongInputC=true
+				Message+="No blank after input C: "+C +"<p>" 
+			}
+		}
+		i++
+	}  
+	if (IsFraction==false)	FracDigitsC=i-IntDigitsC
+	else FracDigitsC=i-1-IntDigitsC
+	 
+	InputDigits=FracDigitsC+IntDigitsC
+	Radix=parseInt(form.Radix.value)
+ 
+ 	NumFracDigits = parseInt(form.NumFracDigits.value)
+	NumIntDigits = parseInt(form.NumIntDigits.value)
+ 
+	Middle+="<TD>Input number C in radix "+InputRadix+" is : "+C 
+	IntC=""
+	DecC="."
+	
+	
+	if (IsNeg==true) p=1
+	else p=0
+	
+	for (i=p; i<IntDigitsC; i++){
+		IntC+=C.charAt(i)
+	}
+	if (IntDigitsC==0) IntC="0"
+	
+	if (IsFraction==true){
+		for (i=IntDigitsC+1; i<=InputDigits;i++){
+			DecC+=C.charAt(i)
+		}
+		if (FracDigitsC==0) DecC=".0"
+	}
+	else DecC=".0"
+	
+        Overflow = false       
+	Result=""
+ 
+	Middle +="<TR><TD>Absolute integer part of C is : "+IntC
+	Middle+="<TR>"+"<TD>"+"Quotient"+"<TD><TD>"+"Remainder"+"<TR>"
+ 	Middle += MakeLine(23)
+	Middle+="<TR>"
+	R=0
+	Q=0
+	PreQ=0
+	 
+	//To read a string and convert it to a number in radix of 10 
+	IntC=ParseNumber(IntC)
+ 
+	for (Q=IntC, i=0; i<NumIntDigits; i++){
+		Middle+="<TD>"
+		PreQ=Q
+		
+		Q=Math.floor(Q/Radix)
+		R=PreQ-Radix*Math.floor(Q)
+		Middle+=BackRadix(Q)+"\n"+"<TD><TD>" 
+		if (R==15) Middle+="F"+"=x<sub>"+i+"</sub>"+"<TR>"
+		else if (R==14) Middle+="E"+"=x<sub>"+i+"</sub>"+"<TR>"
+		else if (R==13) Middle+="D"+"=x<sub>"+i+"</sub>"+"<TR>"
+		else if (R==12) Middle+="C"+"=x<sub>"+i+"</sub>"+"<TR>"
+		else if (R==11) Middle+="B"+"=x<sub>"+i+"</sub>"+"<TR>"
+		else if (R==10) Middle+="A"+"=x<sub>"+i+"</sub>"+"<TR>"
+		else   Middle+=R+"=x<sub>"+i+"</sub>"+"<TR>"
+		if(R==10) Result="A"+Result
+		else if(R==11) Result="B"+Result
+		else if(R==12) Result="C"+Result
+		else if(R==13) Result="D"+Result
+		else if(R==14) Result="E"+Result
+		else if(R==15) Result="F"+Result
+		else Result=R+Result
+	}
+	 
+	if (Q!=0) Overflow=true
+	Middle+="<TR>"
+	Middle += MakeLine(23)
+ 
+	Middle+="<TR>"+"<TD>"+"Absolute fractional part of C is : "+"<TD>"+DecC
+	FractionalRes=0
+	PreFracpart=0
+	Integerpart=0
+	Middle+="<TR>"+"<TD>"+"Integer part"+"<TD> <TD>"+"Fractional part"+"<TR>"
+	Middle += MakeLine(23)+"<TR>"
+ 
+ 	DecC=ParseFraction(DecC)
+ 
+	if (NumFracDigits>0) Result+="."	
+	for(j=-1, Fracpart=DecC; -j<=NumFracDigits; j--){
+		Middle+="<TD>"
+		Integerpart=Math.floor(Fracpart*Radix)
+		Fracpart=Fracpart*Radix-Integerpart
+		Fracpart=RoundOff(Fracpart)
+
+ 		if (Integerpart==15) Middle+="F"+"=x<sub>"+j+"</sub>"+"<TD>"
+		else if (Integerpart==14) Middle+="E"+"=x<sub>"+j+"</sub>"+"<TD>"
+		else if (Integerpart==13) Middle+="D"+"=x<sub>"+j+"</sub>"+"<TD>"
+		else if (Integerpart==12) Middle+="C"+"=x<sub>"+j+"</sub>"+"<TD>"
+		else if (Integerpart==11) Middle+="B"+"=x<sub>"+j+"</sub>"+"<TD>"
+		else if (Integerpart==10) Middle+="A"+"=x<sub>"+j+"</sub>"+"<TD>"
+		else Middle+=Integerpart+"=x<sub>"+j+"</sub>"+"<TD>" 
+		
+		if (Integerpart==10) Result+="A"
+		else if (Integerpart==11) Result+="B"
+		else if (Integerpart==12) Result+="C"
+		else if (Integerpart==13) Result+="D"
+		else if (Integerpart==14) Result+="E"
+		else if (Integerpart==15) Result+="F"
+		else Result+=Integerpart
+		
+		Middle+=BackFracRadix(Fracpart)+"<TR>"
+	} 
+ 
+ 	Middle += MakeLine(23) + "<TR> <TD><TD> <TD> "
+	m=0
+	if(IsNeg){ 
+		Result="-"+Result
+		m=Result
+		 
+		FinalResult=RadixComp(ParseBinary (Result))
+		 
+		Result="The final result in radix "+Radix+" is : "+Result
+		Result+="<p>"+"Its radix "+Radix+" complement is :"+FinalResult 
+		Result+="<p>"+"Its diminished-radix "+Radix+" complement is :"+DiminishedRadixComp(ParseBinary(m)) 
+	}
+	else Result="The final result in radix "+Radix+" is : "+Result 
+       
+	Middle += "</TABLE> <P>\n";
+     	Bottom =  "</BODY> </HTML>";
+    
+        if (Overflow) {
+		Middle = PrintError("Overflow"+"<p>"+"Integer digits of result is too small.")	 
+		 Result=""
+	} 
+  	if (WrongInputC==true) {
+		Middle=PrintError(Message)
+		Result=""
+	}
+        Middle += "</TABLE> <P>\n";
+        parent.frames[1].document.open()
+        parent.frames[1].document.write(TheTop);
+        parent.frames[1].document.write(Middle);
+	parent.frames[1].document.write(Result);
+        parent.frames[1].document.write(Bottom);
+        parent.frames[1].document.close()
+
+}
+
+</SCRIPT>
+</HEAD>
+<BODY bgcolor="#DDC440">
+<CENTER> <H2> Radix Conversions </H2> </CENTER>
+<FORM>
+Input C : <INPUT type="text" name="C">
+<p>
+Radix of C : <INPUT type="text" name="InputRadix">
+<p>
+ 
+Fractional digits of result: <INPUT type="text" name="NumFracDigits">
+<p>
+Integer digits of result: <INPUT type="text" name="NumIntDigits">
+<p>
+Radix of result: <INPUT type="text" name="Radix">
+<P><CENTER>
+<INPUT type="button" name="enter" value="Compute" onClick="Conver(this.form)">
+</CENTER>
+</FORM>
+</BODY>
+</HTML>

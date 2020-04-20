@@ -1,0 +1,104 @@
+<html>
+<head>
+<script language="JavaScript" SRC="matrix.js">
+</script>
+
+<script language="JavaScript" SRC="control.js">
+</script>
+</head>
+
+<body onLoad="loadComplete();" onUnload="CloseHelp();">
+<center>
+<font size="+1"><b>Algorithm Based Fault Tolerance (ABFT)</b></font>
+<form name="main_form">
+<table border="1">
+<tr>
+<td align="center">
+
+    <table border="0" cellpadding=5 cellspacing=5>
+
+    <tr>
+    <td align="center">
+    <input type="button" value="Help" onClick="OpenHelp();">
+    </td>
+    <td align="center">
+    <input type="button" value="Reset" onClick="parent.location.href='main.html';">
+    </td>
+    </tr>
+
+    <tr>
+    <td align="center" colspan=2>
+    Matrix Size:
+    <select name="matrix_size_combo" 
+        onChange="setMatrixSize(parseFloat(this.options[this.selectedIndex].value));">
+    <option value="2">2
+    <option value="3">3
+    <option value="4">4
+    <option value="5">5
+    <option value="6">6
+    <option value="7">7
+    <option value="8">8
+    <option value="9">9
+    <option value="10">10
+    </select>
+    </td>
+    </tr>
+
+    <tr>
+        <td colspan=2 align="center">
+        <table border="1" cellpadding=5><tr><td align="center">
+        Maximum Value:
+        <input name="random_number_max" size="5"> 
+        <br>Decimal Places: 
+        <select name="random_decimal_places">
+        <option value="0">0
+        <option value="1">1
+        <option value="2">2
+        <option value="3">3
+        <option value="4">4
+        <option value="5">5
+        <option value="6">6
+        <option value="7">7
+        <option value="8">8
+        <option value="9">9
+        <option value="10">10
+        </select>
+        <br>
+        <input type="button" value="Randomize Matrices" onClick="randomize_matrices();">
+        </td></tr></table>
+        </td>
+    </tr>
+
+    <tr>
+    <td colspan=2 align="center">
+    <input type="button" name="computeChecksumButton" value="Compute Checksums" 
+        onClick="computeChecksumMatrices();">
+    </td>
+    </tr>
+
+    <tr>
+        <td colspan=2 align="center">
+        <table border="1" cellpadding=5><tr><td align="center">
+        <input type="radio" name="operation" value="Addition" checked="1">Addition
+        <input type="radio" name="operation" value="Multiplication">Multiplication
+        <br>
+        <input type="button" name="matrixOperationButton" value="Perform Matrix Operation" 
+           onClick="performMatrixOperation();" disabled="true">
+        </td></tr></table>
+        </td>
+    </tr>
+
+    </table>
+
+</td>
+</tr>
+
+
+</table>
+
+</form>
+</center>
+
+
+</body>
+</html>

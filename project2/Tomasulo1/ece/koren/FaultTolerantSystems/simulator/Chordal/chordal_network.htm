@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Chordal Network Reliability Calculator</title>
+</head>
+
+<body>
+<p align="center"><b><font face="Times New Roman" size="6">
+<span style="background-color: #FFFFFF">Chordal Network Simulator</span></font></b></p>
+
+<p align="justified"><font face="Times New Roman" size="4.5"color="green"><span style="background-color: #FFFFFF">Instructions: Enter the parameters to observe the network. Routing scheme for nodes selected and total network reliability will be calculated by the simulator</span></font></b></p>
+
+<p align="center"><font face="Times New Roman" size="4.5">Enter number of nodes</font>
+<input type="text" id="nodeInput" value="2" />
+
+<font face="Times New Roman"size="4.5">Enter skip distance</font>
+<input type="text" id="skipInput" value="1" />
+<input type="button" id="btnSearch" value="Construct" onclick="doConstruct(nodeInput.value,skipInput.value);diaOpt.value = doDia(nodeInput.value,skipInput.value); skipOpt.value = doSkip(nodeInput.value);" />
+
+<canvas id="myCanvas" width="200" height="100" style="border:1px solid #c3c3c3;">
+Your browser does not support the canvas element.
+</canvas>
+
+<script type="text/javascript" src="canvasutilities.js"></script>
+</p>
+<p align="center">
+<font face="Times New Roman"size="4.5">Network Diameter </font><input type="text" id="diaOpt"; />
+<font face="Times New Roman"size="4.5">Optimum Skip Distance </font><input type="text" id="skipOpt"; />
+</p>
+
+
+<p align="center"><font face="Times New Roman" size="4.5">
+<span style="background-color: #FFFFFF">Routing from </span></font>
+<font face="Times New Roman"size="4.5">Source Node</font><input type="text" id="source" value="0"; />
+<font face="Times New Roman"size="4.5">Destination Node </font><input type="text" id="destination" value="1"; />
+
+<input type="button" id="btnRoute" value="Route" onclick= "document.routenodes.routing.value = doRoute(nodeInput.value,skipInput.value,source.value,destination.value)" />
+</p>
+
+<FORM ACTION="#" NAME="routenodes" align="center">
+<TEXTAREA NAME="routing" COLS=100 ROWS=4 >
+</TEXTAREA>
+</FORM>
+
+
+<p align="center"><b><font face="Times New Roman" size="5">
+<span style="background-color: #FFFFFF">Reliability Calculation</span></font></b></p>
+
+<p align="center"><font face="Times New Roman"size="4.5">Enter link reliability</font>
+<input type="text" id="pLink" />
+<input type="button" id="btnSearch" value="Enter" onclick= "document.reliability.setNode(nodeInput.value,skipInput.value,pLink.value)" />
+
+
+<applet code="myApplet.class" name="reliability" width="500" height="50" align="center">
+Java applet that calculates reliability.
+</applet>
+
+
+
+<script type="text/javascript">
+doConstruct(0);
+
+function canvas_arrow(context, fromx, fromy, tox, toy){
+    var headlen = 20;   // length of head in pixels
+    var angle = Math.atan2(toy-fromy,tox-fromx);
+    context.moveTo(fromx, fromy);
+    context.lineTo(tox, toy);
+    context.lineTo(tox-headlen*Math.cos(angle-Math.PI/6),toy-headlen*Math.sin(angle-Math.PI/6));
+    context.moveTo(tox, toy);
+    context.lineTo(tox-headlen*Math.cos(angle+Math.PI/6),toy-headlen*Math.sin(angle+Math.PI/6));
+    context.stroke();
+}
+
+
+function canvas_arcarrow(context, fromx, fromy, tox, toy){
+    var headlen = 20;   // length of head in pixels
+    var angle = Math.atan2(toy-fromy,tox-fromx);
+    context.moveTo(fromx, fromy);
+    context.lineTo(tox-headlen*Math.cos(angle-Math.PI/6),toy-headlen*Math.sin(angle-Math.PI/6));
+    context.moveTo(tox, toy);
+    context.lineTo(tox-headlen*Math.cos(angle+Math.PI/6),toy-headlen*Math.sin(angle+Math.PI/6));
+    context.stroke();
+}
+
+
+function doConstruct(num_sub_circles,skip_distance) {
+
+var c=document.getElementById("myCanvas");
+var ctx=c.getContext("2d");
+ctx.beginPath();
+
+ctx.canvas.width  = window.innerWidth*(2/3);
+ctx.canvas.height = window.innerHeight*(2/3);
+var origin_x=ctx.canvas.width/2;
+var origin_y=ctx.canvas.height/2;
+var radius=ctx.canvas.width/5;
+if(skip_distance<num_sub_circles/3.5)
+	var arc_radius=ctx.canvas.width/2.8;
+else
+	var arc_radius=ctx.canvas.width/1.5;
+var default_line_width=15;
+
+ctx.fillStyle="none";
+ctx.lineWidth=default_line_width/num_sub_circles;
+ctx.strokeStyle="black";
+ctx.stroke();
+ctx.closePath();
+if(num_sub_circles<5){
+		var subradius=ctx.canvas.width/25;
+		radius = radius*0.8;
+	}
+else
+		var subradius=(ctx.canvas.width/5)/num_sub_circles;
+
+if(num_sub_circles==0) return;
+
+var skip_angle=2*Math.PI*skip_distance/num_sub_circles;
+var a = origin_x+arc_radius*Math.cos(skip_angle/2);
+var b = origin_y+arc_radius*Math.sin(skip_angle/2);
+var c = origin_x+radius;
+var d = origin_y;
+var arc_rad = Math.sqrt((a-c)*(a-c)+(b-d)*(b-d));
+var e = Math.sin(skip_angle/2);
+var f = radius*e/arc_rad;
+var theta = Math.asin(f);
+var beta = (2*Math.PI/num_sub_circles);
+
+var alpha = Math.asin(subradius/arc_rad);
+var gamma = Math.asin(subradius/radius);
+var i=0;
+var num = num_sub_circles - 1;
+var text_rad = radius*1.25;
+if(num_sub_circles<5)
+	text_rad = radius*1.4;
+if((num_sub_circles>4)&&(num_sub_circles<7))
+	text_rad = radius*1.3;
+
+for(sub_angle=0;sub_angle<2*Math.PI;sub_angle+=(2*Math.PI/num_sub_circles)) {
+	ctx.fillStyle="none";
+	ctx.strokeStyle="black";
+	ctx.lineWidth=default_line_width/num_sub_circles;
+	
+	var subcir_origin_x = origin_x+radius*Math.cos(sub_angle);
+	var subcir_origin_y = origin_y+radius*Math.sin(sub_angle);
+	var text_origin_x = origin_x+text_rad*Math.cos(sub_angle);
+	var text_origin_y = origin_y+text_rad*Math.sin(sub_angle);
+
+	
+	ctx.moveTo(origin_x,origin_y);
+	ctx.beginPath();
+	//ctx.arc(origin_x,origin_y,radius,sub_angle+gamma,sub_angle+beta-gamma);
+	drawArcedArrow(ctx,origin_x,origin_y,radius,sub_angle+gamma,sub_angle+beta-gamma,false,0,1);
+	ctx.stroke();
+	
+	ctx.moveTo(subcir_origin_x,subcir_origin_y);
+	ctx.beginPath();
+	ctx.arc(subcir_origin_x,subcir_origin_y,subradius,0,2*Math.PI);
+	
+	ctx.fillStyle="green";
+	ctx.lineStyle="#0000ff";
+	ctx.font="20px Arial";
+	ctx.moveTo(origin_x,origin_y);
+	if(num!=-1)
+		ctx.fillText(num,text_origin_x,text_origin_y);
+	ctx.closePath();
+	ctx.fill();
+	num--;
+	ctx.stroke();
+
+	var arc_x=origin_x+arc_radius*Math.cos(sub_angle+skip_angle/2);
+	var arc_y=origin_y+arc_radius*Math.sin(sub_angle+skip_angle/2);
+	var arc_angle=sub_angle+skip_angle/2;
+	ctx.beginPath();
+	
+	//refer http://dbp-consulting.com/tutorials/canvas/CanvasArrow.html
+	drawArcedArrow(ctx,arc_x,arc_y,arc_rad,arc_angle+Math.PI-theta+alpha,arc_angle+Math.PI+theta-alpha,false,0,1);
+	ctx.fill();
+	ctx.stroke();
+	}
+
+}
+
+function doRoute(nd,sk,src,destination) {
+var source = 1*src;
+var skip = 1*sk;
+var node = 1*nd;
+var dest = 1*destination;
+if(source>=node){
+	var string = " Source node incorrect. Enter a value less than number of nodes"; ;
+	return string;
+	}
+if(dest>=node){
+	var string = "Destination node incorrect. Enter a value less than number of nodes"; 
+	return string;
+	}
+var d = source-dest;
+if(d==0){
+	var string = "Enter again";
+	return string;
+	}
+if(d<0){
+	var string = "Path is : " + source;
+	d=dest - source;
+	var s=source+2-1;
+	if(d<=skip){
+			while(d!=0){
+				string = string + " go forward to " + s;
+				s = s+1;
+				d--;
+				}
+			return string;
+		}
+	else{
+		s = source-skip;
+		if(s<0)
+				s = node + s;
+		string = string + " go backward to "+s;
+		while(s>destination){
+			s = s-skip;
+			string = string + " go backward to " +s;
+		}
+		if(s!=dest){
+			var to = s;
+				while(to!=dest){
+					to = to+1;
+					string = string + " go forward to " + to;
+					}
+			}
+		return string;
+		}
+	}
+if(d>0){
+	var string = "Path is : " + source;
+	if(d<=skip){
+		var s = source-skip;
+		if(s<0)
+				s = node + s;
+		string = string + " go backward to "+ s;
+		if(s!=dest){
+			var to = s;
+				while(to!=dest){
+					to = to+1;
+					string = string + " go forward to " + to;
+					}
+			}
+		return string;
+		}
+	else{
+		d = skip;
+		var s = source + 1;
+		while(d!=0){
+			string = string + " go forward to " + s;
+			s = s+1;
+			if(s==node)
+				s=0;
+			d--;
+			}
+		return string;
+		}
+
+	}
+
+
+}
+
+
+
+
+
+
+
+
+/*if(source>destination){
+	var string = "Start from " + source;
+	var s = skip;
+	var from = source;
+	var to = destination;
+	var h=0;
+	while(from>to){
+		from = from-s;
+		h++;
+		//if(from!=to)
+		string = string + " go backward to " + from;
+		if(from==to)
+			return string;
+		}
+	if(from<0){
+			from = from+node;
+		}		
+		
+	if(from - to==0){
+		string = string + " and then to " + to;
+		return string;
+		}
+	else{
+		while(from!=to){
+			from = from + 1;
+			if(from!=to)
+			string = string + " go forward to " + from;
+			}
+		if(from - to ==0){
+			string = string + " and then forward to " + to;
+			return string;
+			}
+		}
+	}
+if(source<destination){
+	var d = destination-source;
+	var s = source+2-1;
+	var from = source;
+	var to = destination;
+	if(d==1){
+		var string = "Start from " +source + " go forward to "+ destination;
+		return string;
+		}
+	else {
+		if(d<=skip){
+			var string = "Start from " + source;
+			while(d!=0){
+				string = string + " go forward to " + s;
+				s = s+1;
+				d--;
+				}
+			return string;
+			}
+		else{
+			var string = "Start from "+source;
+			s = source-skip;
+			if(s<0)
+				s = node + s;
+			s = s % node;
+			string = string + " go backward to "+s;
+			if(s!=destination){
+				to = s;
+				while(to!=destination){
+				string = string + " go forward to " +to;
+				}
+			}
+		}
+	}
+	}*/
+
+
+function doDia(n,s) {
+	var num = n*Math.cos(0);
+	var skip = s*Math.cos(0);
+	skip = skip+1;
+	if(s!=0)
+		var frac = Math.floor(num/skip);
+	skip = skip -1;
+	while(skip!=1){
+		frac = frac +1;
+		skip--;
+		}
+	return frac;
+}
+
+function doSkip(n) {
+	var x = Math.sqrt(n);
+	var skipOpt = Math.floor(x);
+	return skipOpt;
+}
+
+
+</script>
+
+</p>
+
+</body>
+
+</html>
+

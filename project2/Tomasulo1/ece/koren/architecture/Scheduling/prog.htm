@@ -1,0 +1,245 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="en-us">
+<meta name="GENERATOR" content="Microsoft FrontPage 5.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<title>New Page 1</title>
+</head>
+
+<body bgcolor="#CCCCCC">
+
+<h2 align="center">
+<u><font color="#FF0000">Time chart for different scheduling algorithms </font>
+</u>
+</h2>
+
+<p><font color="#FF0000" style="font-size: 14pt">For Programmers</font></p>
+<p>The software provides two .jar files to do further programming for static 
+scheduling (with forwarding and without forwarding) and dynamic scheduling 
+(Tomasulo and Scoreboarding).</p>
+<ul>
+  <li><font color="#0000FF"><b><a href="../project/scheduling.jar">scheduling.jar</a>:</b> </font>Contains 
+  implementation of static scheduling with and without forwarding and dynamic 
+  scheduling (Tomasulo and Scoreboarding).</li>
+  <li><b><font color="#0000FF">
+  <a href="../../../../../www.cs.williams.edu/~bailey/JavaStructures/default.htm">baieley.jar:</a></font></b> Contains implementation 
+  of java graph library (From Duane A. Bailey, Williams College).</li>
+</ul>
+<p>Some of the important classes used for implementation which are visible to 
+programmers are:</p>
+<ul>
+  <li><font color="#0000FF"><b>&quot;Instruction&quot;: </b></font>Attributes of each 
+  instruction (type, destination, source1, source2).</li>
+  <li><font color="#0000FF"><b>&quot;Stages&quot;:</b> </font>Time of start for each 
+  pipeline phase (Issue, Decode, ExecStart, ExecEnd, Write) for each instruction</li>
+  <li><font color="#0000FF"><b>&quot;FunctionalUnit&quot;: </b></font>Number of functional 
+  units for each function (load/store, add/sub, multiply, and divide)</li>
+  <li><font color="#0000FF"><b>&quot;PipelineUnit&quot;: </b></font>Whether different 
+  functional units (load/store, add/sub, multiply, and divide) are pipelined or 
+  not</li>
+  <li><font color="#0000FF"><b>&quot;InstructionNode&quot;: </b></font>Contains a 
+  &quot;instruction&quot; structure and corresponding &quot;stages&quot; structure.</li>
+</ul>
+<p>Getters and setters are defined corresponding to each of these primary 
+classes to access the private fields. Source code is available for these classes 
+and various fields and functions are self-explanatory.</p>
+<p>Four main classes which implements the different scheduling algorithms are:</p>
+<ul>
+  <li><font color="#0000FF"><b>WithForwardingInstructionGraph: </b></font>
+  Implements static scheduling with forwarding.</li>
+  <li><font color="#0000FF"><b>WithoutForwardingInstructionGraph: </b></font>
+  Implements static scheduling without forwarding.</li>
+  <li><font color="#0000FF"><b>TomasuloInstructionGraph: </b></font>Implements 
+  dynamic scheduling algorithm - Tomasulo</li>
+  <li><font color="#0000FF"><b>ScoreboardingInstructionGraph:&nbsp; </b></font>
+  Implements dynamic scheduling algorithm - Scoreboarding.</li>
+</ul>
+<p>All these four main classes implements following two functions which are 
+visible to programmers are:</p>
+<ul>
+  <li><font color="#0000FF"><b>GenerateDataHazardGraph:</b></font> Construct a 
+  dependency graph with nodes as a instruction and a directed edge between two 
+  nodes showing data and structural hazards between two instructions.</li>
+  <li><font color="#0000FF"><b>TopologicalTraversal: </b></font>Performs a 
+  topological traversal of the generated dependency graph showing data and 
+  structural hazards and calculated the time cycle for each phase of the 
+  pipeline execution.</li>
+</ul>
+<p>Output is stored in 2-D string array called <font color="#0000FF"><b>&quot;timechart&quot;</b></font> 
+which is defined in all the four main classes implementing various scheduling 
+algorithms.</p>
+<p>&nbsp;</p>
+<p><font size="4" color="#FF0000">Sample code for implementing &quot;static 
+scheduling with forwarding&quot;</font></p>
+<font size="3">
+<p style="margin-top: 0; margin-bottom: 0">WithForwardingInstructionGraph 
+withforwardingInstrGraph = </font><font COLOR="#7f0055" size="3"><b>new</b></font><font size="3"> 
+WithForwardingInstructionGraph (<i>int number_of_instruction, PipelineUnit p, 
+FunctionalUnit f</i>);</font></p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<font SIZE="2">
+<p style="margin-top: 0; margin-bottom: 0"></p>
+<p style="margin-top: 0; margin-bottom: 0"></p>
+<p style="margin-top: 0; margin-bottom: 0"></p>
+<p style="margin-top: 0; margin-bottom: 0"></p>
+<p style="margin-top: 0; margin-bottom: 0"></p>
+<p style="margin-top: 0; margin-bottom: 0"></p>
+<p style="margin-top: 0; margin-bottom: 0"></font>
+<font COLOR="#7f0055" size="3"><b>for</b></font><font size="3">(</font><font COLOR="#7f0055" size="3"><b>int</b></font><font size="3"> 
+i=0; i&lt;number_of_instruction; i++) {</p>
+<blockquote>
+  <p style="margin-top: 0; margin-bottom: 0">Instruction tempInstr = </font>
+  <font COLOR="#7f0055" size="3"><b>new</b></font><font size="3"> Instruction (<i>String 
+  type, String destination, String source1, String source2, int execution_cycle</i>)<i>;</i></p>
+  <p style="margin-top: 0; margin-bottom: 0">InstructionNode tempNode = </font>
+  <font COLOR="#7f0055" size="3"><b>new</b></font><font size="3"> 
+  InstructionNode(tempInstr, i);</p>
+  <p style="margin-top: 0; margin-bottom: 0">
+  withforwardingInstrGraph.addInstr(tempNode);</p>
+</blockquote>
+<p style="margin-top: 0; margin-bottom: 0">}</p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+</font><font SIZE="2">
+<p style="margin-top: 0; margin-bottom: 0"></p>
+<font size="3">
+<p style="margin-top: 0; margin-bottom: 0">
+withforwardingInstrGraph.generateDateHazardGraph();</p>
+<p style="margin-top: 0; margin-bottom: 0">
+withforwardingInstrGraph.topologicalTraversal();</p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0">// output is available in 2-D string 
+array called &quot;<i>timechart&quot;</i> which is a element of <i>
+withforwardingInstrGraph.</i></p>
+</font></font>
+<p><font size="4" color="#FF0000">Sample code for implementing &quot;static 
+scheduling without forwarding&quot;</font></p>
+<font size="3">
+<p style="margin-top: 0; margin-bottom: 0">WithoutForwardingInstructionGraph 
+withoutforwardingInstrGraph = </font><font COLOR="#7f0055" size="3"><b>new</b></font><font size="3"> 
+WithoutForwardingInstructionGraph (<i>int number_of_instruction, PipelineUnit p, 
+FunctionalUnit f</i>);</font></p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<font SIZE="2">
+<p style="margin-top: 0; margin-bottom: 0"></p>
+<p style="margin-top: 0; margin-bottom: 0"></p>
+<p style="margin-top: 0; margin-bottom: 0"></p>
+<p style="margin-top: 0; margin-bottom: 0"></p>
+<p style="margin-top: 0; margin-bottom: 0"></p>
+<p style="margin-top: 0; margin-bottom: 0"></p>
+<p style="margin-top: 0; margin-bottom: 0"></font>
+<font COLOR="#7f0055" size="3"><b>for</b></font><font size="3">(</font><font COLOR="#7f0055" size="3"><b>int</b></font><font size="3"> 
+i=0; i&lt;number_of_instruction; i++) {</p>
+<blockquote>
+  <p style="margin-top: 0; margin-bottom: 0">Instruction tempInstr = </font>
+  <font COLOR="#7f0055" size="3"><b>new</b></font><font size="3"> Instruction (<i>String 
+  type, String destination, String source1, String source2, int execution_cycle</i>)<i>;</i></p>
+  <p style="margin-top: 0; margin-bottom: 0">InstructionNode tempNode = </font>
+  <font COLOR="#7f0055" size="3"><b>new</b></font><font size="3"> 
+  InstructionNode(tempInstr, i);</p>
+  <p style="margin-top: 0; margin-bottom: 0">
+  withoutforwardingInstrGraph.addInstr(tempNode);</p>
+</blockquote>
+<p style="margin-top: 0; margin-bottom: 0">}</p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+</font><font SIZE="2">
+<p style="margin-top: 0; margin-bottom: 0"></p>
+<font size="3">
+<p style="margin-top: 0; margin-bottom: 0">
+withoutforwardingInstrGraph.generateDateHazardGraph();</p>
+<p style="margin-top: 0; margin-bottom: 0">
+withoutforwardingInstrGraph.topologicalTraversal();</p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0">// output is available in 2-D string 
+array called &quot;<i>timechart&quot;</i> which is a element of <i>
+withoutforwardingInstrGraph.</i></p>
+</font></font>
+<p><font size="4" color="#FF0000">Sample code for implementing &quot;dynamic 
+scheduling - Tomasulo&quot;</font></p>
+<font size="3">
+<p style="margin-top: 0; margin-bottom: 0">TomasuloInstructionGraph 
+tomasuloInstrGraph = </font><font COLOR="#7f0055" size="3"><b>new</b></font><font size="3"> 
+TomasuloInstructionGraph (<i>int number_of_instruction, PipelineUnit p, 
+FunctionalUnit f, FunctionalUnit reservation_stations</i>);</font></p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<font SIZE="2">
+<p style="margin-top: 0; margin-bottom: 0"></p>
+<p style="margin-top: 0; margin-bottom: 0"></p>
+<p style="margin-top: 0; margin-bottom: 0"></p>
+<p style="margin-top: 0; margin-bottom: 0"></p>
+<p style="margin-top: 0; margin-bottom: 0"></p>
+<p style="margin-top: 0; margin-bottom: 0"></p>
+<p style="margin-top: 0; margin-bottom: 0"></font>
+<font COLOR="#7f0055" size="3"><b>for</b></font><font size="3">(</font><font COLOR="#7f0055" size="3"><b>int</b></font><font size="3"> 
+i=0; i&lt;number_of_instruction; i++) {</p>
+<blockquote>
+  <p style="margin-top: 0; margin-bottom: 0">Instruction tempInstr = </font>
+  <font COLOR="#7f0055" size="3"><b>new</b></font><font size="3"> Instruction (<i>String 
+  type, String destination, String source1, String source2, int execution_cycle</i>)<i>;</i></p>
+  <p style="margin-top: 0; margin-bottom: 0">InstructionNode tempNode = </font>
+  <font COLOR="#7f0055" size="3"><b>new</b></font><font size="3"> 
+  InstructionNode(tempInstr, i);</p>
+  <p style="margin-top: 0; margin-bottom: 0">
+  tomasuloInstrGraph.addInstr(tempNode);</p>
+</blockquote>
+<p style="margin-top: 0; margin-bottom: 0">}</p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+</font><font SIZE="2">
+<p style="margin-top: 0; margin-bottom: 0"></p>
+<font size="3">
+<p style="margin-top: 0; margin-bottom: 0">
+tomasuloIInstrGraph.generateDateHazardGraph();</p>
+<p style="margin-top: 0; margin-bottom: 0">
+tomasuloIInstrGraph.topologicalTraversal();</p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0">// output is available in 2-D string 
+array called &quot;<i>timechart&quot;</i> which is a element of <i>tomasuloInstrGraph.</i></p>
+</font></font>
+<p><font size="4" color="#FF0000">Sample code for implementing &quot;dynamic 
+scheduling - Scoreboarding&quot;</font></p>
+<font size="3">
+<p style="margin-top: 0; margin-bottom: 0">ScoreboardingInstructionGraph 
+withoutforwardingInstrGraph = </font><font COLOR="#7f0055" size="3"><b>new</b></font><font size="3"> 
+ScoreboardingInstructionGraph (<i>int number_of_instruction, PipelineUnit p, 
+FunctionalUnit f</i>);</font></p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<font SIZE="2">
+<p style="margin-top: 0; margin-bottom: 0"></p>
+<p style="margin-top: 0; margin-bottom: 0"></p>
+<p style="margin-top: 0; margin-bottom: 0"></p>
+<p style="margin-top: 0; margin-bottom: 0"></p>
+<p style="margin-top: 0; margin-bottom: 0"></p>
+<p style="margin-top: 0; margin-bottom: 0"></p>
+<p style="margin-top: 0; margin-bottom: 0"></font>
+<font COLOR="#7f0055" size="3"><b>for</b></font><font size="3">(</font><font COLOR="#7f0055" size="3"><b>int</b></font><font size="3"> 
+i=0; i&lt;number_of_instruction; i++) {</p>
+<blockquote>
+  <p style="margin-top: 0; margin-bottom: 0">Instruction tempInstr = </font>
+  <font COLOR="#7f0055" size="3"><b>new</b></font><font size="3"> Instruction (<i>String 
+  type, String destination, String source1, String source2, int execution_cycle</i>)<i>;</i></p>
+  <p style="margin-top: 0; margin-bottom: 0">InstructionNode tempNode = </font>
+  <font COLOR="#7f0055" size="3"><b>new</b></font><font size="3"> 
+  InstructionNode(tempInstr, i);</p>
+  <p style="margin-top: 0; margin-bottom: 0">
+  scoreboardingInstrGraph.addInstr(tempNode);</p>
+</blockquote>
+<p style="margin-top: 0; margin-bottom: 0">}</p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+</font><font SIZE="2">
+<p style="margin-top: 0; margin-bottom: 0"></p>
+<font size="3">
+<p style="margin-top: 0; margin-bottom: 0">
+scoreboardingInstrGraph.generateDateHazardGraph();</p>
+<p style="margin-top: 0; margin-bottom: 0">
+scoreboardingInstrGraph.topologicalTraversal();</p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p style="margin-top: 0; margin-bottom: 0">// output is available in 2-D string 
+array called &quot;<i>timechart&quot;</i> which is a element of <i>scoreboardingInstrGraph.</i></p>
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+</font></font>
+<p>&nbsp;</p>
+
+</body>
+
+</html>

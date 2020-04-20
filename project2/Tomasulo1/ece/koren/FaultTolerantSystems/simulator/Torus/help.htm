@@ -1,0 +1,63 @@
+<html>
+
+<head>
+<meta name="GENERATOR" content="Microsoft FrontPage 5.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<title>Following are the instructions to operate the simulator</title>
+</head>
+
+<body>
+<u><b>Following are the instructions to operate the simulator.</b></u><p>1. Enter N- 
+Number of nodes in a row: The Torus Network will have total nodes as N * N. The 
+value of N should be less than or equal to 10. </p>
+<p>2. Enter R-Reliability of each node: Each of the nodes constituting the Torus 
+network will have failure probability as 1-R. The value of R should be less than 
+1.0 </p>
+<p>3. Click Draw: A Torus network is drawn with specified number of nodes. Nodes 
+are numbered from left to right and top to bottom.</p>
+<p>4. Enter Source/Destination: In order to calculate terminal 
+reliability, a source and destination pair needs to specified. Source and 
+destination can be chosen from any or the nodes in the Torus network that is 
+drawn. Nodes are identified by the numbers that appear against them. </p>
+<p>6. Select Links: The links that connect any two nodes in the network can be 
+Unidirectional or Bidirectional. The links are assumed to be fault-free. </p>
+<p>7. Start Simulation: Once all the parameters are entered, simulation can be 
+started. To do this two different options are available:<ol type="a">
+  <li>Complete Run: On pressing this button, the simulation will run to its end. 
+  The total number of iterations executed is determined by the position of 
+  slider. For all simulations, a default value of 500000 is set<br>
+&nbsp;</li>
+  <li>Step : On pressing 'Step' the simulation will execute the first 5000 
+  iterations. To execute next set of iterations, press &quot;Step&quot; again. This can be 
+  executed till simulation runs to completion. At any time of simulation run, 
+  stop can be pressed. This will exit the simulation and calculate the terminal reliability 
+also indicating the number of iterations in 'Current Iteration' that have been 
+used to determine the terminal reliability.
+  </li>
+  </ol><p>
+<i>On the simulation run, following colors denote the node characteristics:</i><ul>
+  <li><i>RED: A red node denotes a faulty node.</i></li>
+  <li><i>BLACK: All nodes that remain black, are up or fault-free</i></li>
+  <li><i>GREEN: A path between a source and destination pair is illustrated with 
+  all nodes and links in path as green. This obviously means that all green 
+  nodes are also fault free.</i></li>
+  </ul>
+  <p>
+<i>In a certain simulation if no green nodes/links appear, this symbolizes 
+absence of path from source to destination. One such scenario is when the source 
+or the destination itself is faulty.</i><p>&nbsp;8. Performance: After completion, the impact of performance can be 
+viewed by clicking 'Performance'. This shows the average distance in presence of 
+faults. </p>
+<p>9. Clear: Click 'Clear' to clear all fields and enter new values for another 
+simulation. </p>
+
+  <hr>
+  <p><u><b>System Requirements</b></u> </p>
+  <p>For correct viewing of this&nbsp; project Java run time environment is 
+  required. Click <a href="../../../../../../java.sun.com/j2se/1.4.2/download.html">here</a> 
+  to download the java run time environment. </p>
+
+</body>
+
+</html>

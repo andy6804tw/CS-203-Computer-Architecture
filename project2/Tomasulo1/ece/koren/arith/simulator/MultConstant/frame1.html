@@ -1,0 +1,902 @@
+<HTML>
+<meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+<meta content="utf-8" http-equiv="encoding">
+<HEAD>
+<TITLE> Multiplication by a constant operand </TITLE>
+<SCRIPT language="JavaScript">
+
+ Boothresult=new Array();
+
+stop=0;
+ emit="";
+
+ node_value= new Array();
+ node_opcode=new  Array();
+ node_shift= new Array();
+ node_cost=new Array();
+
+ function DoublyLinkedList() {
+     this._length = 0;
+     this._head = null;
+     this._tail = null;
+ }
+
+ DoublyLinkedList.prototype = {
+
+     add: function (data,opcode,cost,shift){
+
+         //create a new item object, place data in
+         var node = {
+             data: data,
+             opcode: opcode,
+             cost: cost,
+             lshift: shift,
+             next: null,
+             prev: null
+         };
+
+         //special case: no items in the list yet
+         if (this._length == 0) {
+             this._head = node;
+             this._tail = node;
+         } else {
+
+             //attach to the tail node
+             this._tail.next = node;
+             node.prev = this._tail;
+             this._tail = node;
+         }
+
+         //don't forget to update the count
+         this._length++;
+
+     },
+
+     updatenode: function (data,opcode,cost,shift,tmp_node){
+
+
+
+                 var current = this._tail
+
+
+             current.opcode=opcode;
+             current.cost=cost;
+             current.lshift=shift;
+             current.prev=tmp_node;
+
+
+
+     },
+     size: function(){
+         return this._length;
+     },
+
+     getvalue: function(){
+
+
+           var current= this._tail;
+             return current.data;
+
+     },
+     getopcode: function(){
+
+         var current= this._tail;
+         return current.opcode;
+     },
+     getcost: function(){
+
+         var current= this._tail;
+         return current.cost;
+     },
+     getshift: function(){
+
+         var current= this._tail;
+         return current.lshift;
+     },
+
+     /**
+      * Converts the list into an array.
+      * @return {Array} An array containing all of the data in the list.
+      * @method toArray
+      */
+     toArray: function(){
+         var result = [],
+                 current = this._head;
+
+         while(current){
+             result.push(current.data);
+             current = current.next;
+         }
+
+         return result;
+     }
+
+
+ };
+
+
+ countNode=0;
+
+var hashTable ={};
+
+
+ hashTable.setNode=function(key,node)
+ {
+
+     hashTable[key]=node;
+ }
+
+ hashTable.getNode=function(key)
+ {
+     return hashTable[key];
+ }
+
+ var hash_size=65535;
+
+
+
+non=0; // number of nodes
+ var a;
+
+function MakeLine(NumColumns) {
+    return "<TR> <TD colspan=" + NumColumns + "> <HR noshade size=4>\n";
+}
+
+
+
+
+function IsInteger(Num) {
+    return (Num == Math.floor(Num))
+}
+
+ function OrderOfMagnitude (TheNum) {
+     // returns the highest place which has a "1" in TheNum's
+     // binary representation
+
+     // to account for 2's complement representation...
+     TheNum < 0 ? TheNum = (-2 * TheNum) - 2 : TheNum *= 2
+     LogBaseTwo = Math.log(TheNum)/Math.LN2;
+     return Math.floor(LogBaseTwo)
+ }
+
+function ParseBinary (BinNum) {
+    // Turns a binary number into a decimal, sets a flag to true if
+    // BinNum is not actually binary
+
+    IsNeg = false  // has a - sign before it
+    if (BinNum < 0) {
+        IsNeg = true
+        BinNum *= -1
+    }
+
+    BinNum += Math.pow(10, -1 - NumBits) // kludge so processor
+    // won't mess up
+    RealNum = 0
+    LogBaseTen = Math.log(BinNum)/Math.LN10
+    HighestPlace = Math.ceil(LogBaseTen)
+
+    for (CurPlace = HighestPlace; CurPlace >= -NumBits; CurPlace--) {
+        CurEntry = Math.round(BinNum / Math.pow(10, CurPlace))
+        if (CurEntry != 0 && CurEntry != 1) {
+            NotBinary = true
+            CurEntry = 1 // feed it something normal, to avoid
+            // wierd Javascript errors
+        }
+        if (CurEntry == 1) {
+            RealNum += Math.pow(2, CurPlace)
+            BinNum -= Math.pow(10, CurPlace)
+        }
+    }
+    if (IsNeg) {RealNum *= -1} // reverse it back at the end
+
+    // now check if the number was negative according to two's complement
+    // representation - if it was, set the decimal value to this negative
+    // number
+    if (HighestPlace == NumBits) {
+        RealNum -= Math.pow(2, NumBits)
+    }
+
+    return RealNum
+}
+
+function RoundOff (TheNum) {
+    // returns the value TheNum would have if it were represented by
+    // NumDecimals bits after the decimal point
+    Scaling = Math.pow(2, NumDecimals)
+    return (Math.round(TheNum * Scaling) / Scaling)
+}
+
+function PrintTwosComp(TheNum, StartPlace) {
+
+    // first deal with negative numbers...
+    if (TheNum < 0) {TheNum += Math.pow(2, StartPlace)}
+
+    // now initialize the string
+    S = "";
+    for (CurPlace = StartPlace - 1; CurPlace >= -NumDecimals; CurPlace--) {
+        S += "<TD> ";
+        if (CurPlace == -1) {
+            S += ".";
+        }
+        CurPower = Math.pow(2, CurPlace);
+        if (TheNum >= CurPower) {
+            S += "1 ";
+            TheNum -= CurPower
+        } else {S += "0 "}
+    }
+    return S;
+}
+
+function PrintRegular(TheNum, StartPlace) {
+
+    // first deal with negative numbers...
+    if (TheNum < 0) {TheNum += Math.pow(2, StartPlace)}
+
+    // now initialize the string
+    S = "\n";
+    var weight=0;
+    for (CurPlace = StartPlace - 1; CurPlace >= -NumDecimals; CurPlace--) {
+
+        if (CurPlace == -1) {
+            S += ".";
+        }
+        CurPower = Math.pow(2, CurPlace);
+        if (TheNum >= CurPower) {
+            if(CurPlace==-NumDecimals) {S +="x"}
+
+         else{   S += "x<<"+CurPlace+"+";
+                weight++;
+           TheNum -= CurPower}
+        }
+
+    }
+    S += "<TR> <TD>Total "+weight+" times operation"
+    return S;
+}
+
+function PrintBooth(StartPlace) {
+
+    // first deal with negative numbers...
+
+
+    // now initialize the string
+    S = "\n";
+    var weight=0;
+    var flag=0;
+    for (CurPlace = StartPlace - 1; CurPlace >= -NumDecimals; CurPlace--) {
+
+      if(CurPlace!=0)
+      {
+
+          if(flag==0&&YArr[CurPlace]==1){
+              if(YArr[CurPlace]==1)
+              { S += "x<<"+CurPlace;
+                  weight++; flag=1; }
+              if(YArr[CurPlace]==-1)
+              { S += "-"+"x<<"+CurPlace;
+                  weight++; flag=1}
+          }
+          else{
+                 if(YArr[CurPlace]==1)
+                     { S += "+"+"x<<"+CurPlace;
+                         weight++;  }
+                  if(YArr[CurPlace]==-1)
+                      { S += "-"+"x<<"+CurPlace;
+                         weight++;
+                         }
+          }
+      }
+
+      else{
+          if(YArr[CurPlace]==1)
+          { S += "+"+"x";
+              }
+          if(YArr[CurPlace]==-1)
+          { S += "-"+"x";
+
+          }
+      }
+
+}
+
+    S += "<TR> <TD>Total "+weight+" times operation"
+    return S;
+}
+
+function PrintModBooth(StartPlace) {
+
+    // first deal with negative numbers...
+
+
+    // now initialize the string
+    S = "\n";
+    var weight=0;
+    var flag=0;
+    for (CurPlace = StartPlace - 1; CurPlace >= -NumDecimals; CurPlace--) {
+
+        if(CurPlace!=0)
+        {
+
+            if(flag==0&&YArr[CurPlace]==1){
+                if(YArr[CurPlace]==1)
+                { S += "x<<"+CurPlace;
+                    weight++; flag=1; }
+                if(YArr[CurPlace]==-1)
+                { S += "-"+"x<<"+CurPlace;
+                    weight++; flag=1}
+            }
+            else{
+                if(YArr[CurPlace]==1)
+                { S += "+"+"x<<"+CurPlace;
+                    weight++;  }
+                if(YArr[CurPlace]==-1)
+                { S += "-"+"x<<"+CurPlace;
+                    weight++;
+                }
+            }
+        }
+
+        else{
+            if(YArr[CurPlace]==1)
+            { S += "+"+"x";
+            }
+            if(YArr[CurPlace]==-1)
+            { S += "-"+"x";
+
+            }
+        }
+
+    }
+
+    S += "<TR> <TD>Total "+weight+" times operation"
+    return S;
+}
+
+function Boothenize(TheNum, NumDigs) {
+    // First, create array representing Two's Complement of
+    // original number
+
+    if (TheNum < 0) {TheNum += Math.pow(2, NumDigs)}
+
+    XArr = new Array()
+    for (CurPlace = NumDigs - 1; CurPlace >= -NumDecimals; CurPlace--) {
+        CurPower = Math.pow(2, CurPlace);
+        if (TheNum >= CurPower) {
+            XArr[CurPlace] = 1;
+            TheNum -= CurPower
+        } else {XArr[CurPlace] = 0} }
+
+    // Then, make array representing recoded multiplier
+    YArr = new Array()
+    YArr[-NumDecimals] = - XArr[-NumDecimals]
+    for (CurPlace = -NumDecimals + 1; CurPlace < NumDigs; CurPlace++) {
+        YArr[CurPlace] = XArr[CurPlace - 1] - XArr[CurPlace]
+    }
+}
+
+function ModBoothenizeInteger(TheNum) {
+    // alert ("BoothenizeInteger called - NumDigits is "+ NumDigits+ ", NumDecimals is "+ NumDecimals);
+    // First, create array representing Two's Complement of
+    // original number
+
+    if (TheNum < 0) {TheNum += Math.pow(2, NumDigits)}
+
+    XArr = new Array()
+    for (CurPlace = NumDigits - 1; CurPlace >= 0; CurPlace--) {
+        CurPower = Math.pow(2, CurPlace);
+        if (TheNum >= CurPower) {
+            XArr[CurPlace] = 1;
+            TheNum -= CurPower
+        } else {XArr[CurPlace] = 0} }
+
+    // Then, make array representing recoded multiplier
+    YArr = new Array()
+
+    PreviousTwoMatched = (XArr[0] == 0)
+    for (i = 1; i <= NumDigits; i += 2) {
+        YArr[i] = 0
+        YArr[i-1] = 0
+        if ((XArr[i] != XArr[i-1]) & PreviousTwoMatched) {
+            {XArr[i] == 0 ? YArr[i] = 1 : YArr[i] = -1}
+        }
+        if (!PreviousTwoMatched) {
+            {XArr[i] == 0 ? YArr[i-1] = 1 : YArr[i-1] = -1}
+        }
+        // set variable for next iteration...
+        PreviousTwoMatched = (XArr[i] == XArr[i+1])
+    }
+}
+
+function resetin(){
+    document.getElementById("num").value="";
+    document.getElementById("X").value="";
+
+}
+
+
+
+
+
+function get_node(n){
+    var hash;
+    node_value[countNode]=n;
+
+    emit_detail+="<TR><TD>"+"get node"+n+"\n"
+
+
+    hash= n%hash_size;
+   if(hashTable.getNode(hash)==null)
+   {
+       var node=new DoublyLinkedList();
+     //  hashTable.setNode(hash,node)
+   }
+    else{
+    var node=hashTable.getNode(hash);
+       var hashindex=0;
+       while(node.getvalue()!=null)
+       {
+
+           if(node.getvalue()==n)
+               return node;
+           hashindex++;
+         node=  node._tail.next
+
+       }
+   }
+
+
+
+    //node=hashTable.getNode(hash);
+
+    node.add(n,null,0,0);
+    node._tail.prev=null;
+    hashTable.setNode(hash,node);
+
+
+
+/*
+   var arrayNode= new Array();
+  var value=n,
+      cost=0,
+      opcode=null,
+      shift=0;
+    arrayNode.push([value,opcode,cost,shift]);
+*/
+
+    if(n==1)
+    {
+      node.updatenode(n,0,0,0);
+      //  opcode 0, cost 0, shift 0
+    }
+    else{
+        var d= 4, dsup;
+        var ishift=2;
+        dsup=n>>1;
+// 1:+  2:-
+        while(d<=dsup)
+        {
+            if (n % (d - 1) == 0)
+                tryTo(n / (d - 1), node, 4, 1, ishift );  //n,array,opcode,cost(shift(0)+add/sub[1]),shift
+            if (n % (d + 1) == 0)
+                tryTo(n / (d + 1), node, 3, 1, ishift );  //n,array,opcode,cost(shift(0)+add/sub[1]),shift
+            d <<= 1;
+            ishift++;
+
+        }
+        tryTo(n - 1, node, 1, 1,  0 ); //n,array,opcode,cost(shift(0)+add/sub[1]),shift=0
+        tryTo(n + 1, node, 2, 1,  0 ); //n,array,opcode,cost(shift(0)+add/sub[1]),shift
+
+
+    }
+    return node;
+}
+function even(n)
+{
+    return (!odd(n));
+
+}
+ function odd(n)
+ {
+     return (n&1);
+ }
+
+
+ function tryTo(n,node,opcode, cost, shift)
+ {
+     var tmp_node=new DoublyLinkedList();
+
+     while(even(n))
+     {
+         n>>=1;
+         shift++;
+     }
+     tmp_node=get_node(n);
+     var temp_value=tmp_node.getvalue()
+     var temp_cost=tmp_node.getcost()
+     var temp_opcode=tmp_node.getopcode()
+     var temp_shift=tmp_node.getshift()
+
+     cost+=temp_cost;
+     var testn=node.getcost()
+     if(node._tail.prev==null || cost<node.getcost()){
+
+         //this node.prev = tmp_node
+         node.updatenode(n,opcode,cost,shift,tmp_node);
+         var nodep=node._tail.prev
+         emit_detail+="<TR><TD>"+"node:"+node.getvalue()+"  previous:"+nodep.getvalue()+" operation:"+opcode
+         +" cost:"+cost+" shift:"+shift+"\n"
+
+     }
+
+ }
+
+function BrenstainJ(n,shift){
+
+
+BrenArr= new Array();
+
+    var b=YArr.length-1;
+    while(YArr[b]!=1) {b--;}
+
+ for(var i=YArr.length-1;i>b;i--){
+     BrenArr[i]=0
+ }
+    BrenArr[b]=1;
+
+     posB=b;
+emit=" ";
+    //if n is even, then make it be a odd.
+    var m=n;
+   n= n>>shift;
+   var node= get_node(n);
+    finalnodes= new Array();
+   emit+="<TR><TD>Total cost: "+node.getcost()
+   emit+="<TR><TD>Start";
+    for(var i=YArr.length-1;i>=0;i--){
+        if(BrenArr[i]!=null) emit+="<TD>"+BrenArr[i];
+        else    emit+="<TD>"
+    }
+    emit+="<TD><TD><TD>1";
+   emit_code(node);
+    if(shift>0){
+       emit+="<TR><TD>"+shift+"bits shift only"
+        for(var a=BrenArr.length-1;a>=posB;a--){emit+="<TD>"+BrenArr[a];}
+        var b=shift;
+        while(b-->0){emit+="<TD>0"; }
+
+       emit+="<TD><TD><TD>"+m+"<TD>"+m+"x<TD>"+"="+"<TD>"+n+"x<<"+shift;
+    }
+
+  return 1;
+
+
+
+}
+
+function emit_code(node)
+{
+    var i;
+
+
+
+   if(node == null)
+   {
+       return 0;
+   }
+
+  i= emit_code(node._tail.prev)
+    finalnodes[i]=node.getvalue();
+    if(finalnodes[i]!=1)
+    {
+    emit+="<TR><TD>"+print_opB(node)+print_binaryB(node)+"<TD>"+node.getvalue()+"<TD>"+node.getvalue()+"x<TD>="
+
+
+        emit+="<TD>"+finalnodes[i-1]+"x<<"+node.getshift()+"<TD>"+get_opcode(node.getopcode())
+        if (node.getopcode() ==1  || node.getopcode() == 2)
+        { emit+="x"}
+        else
+         emit+=finalnodes[i-1]+"x";
+
+
+  emit+="\n";
+    }
+
+return i+1;
+
+}
+ function print_binaryB(node){
+
+var printResult="";
+     var a=0
+     while(BrenArr[BrenArr.length-1-a++]!=1){printResult+="<TD>0" }
+     printResult+="<TD>1"
+     for(var b=YArr.length-1-a; b>=posB;b--){ printResult+="<TD>"+BrenArr[b]}
+  for(var i=1;i<node.getshift();i++){
+      posB--;
+   BrenArr[posB]=0;
+      printResult+="<TD>"+BrenArr[posB];
+  }
+     posB--;
+    if(node.getopcode()==1||node.getopcode()==3) BrenArr[posB]=1;
+     else BrenArr[posB]=-1;
+     printResult+="<TD>"+BrenArr[posB];
+     for(var i=posB-1;i>=0;i--){
+         printResult+="<TD>";
+     }
+     printResult+="<TD>"+"<TD>";
+     return printResult;
+ }
+
+ function print_opB(node)
+ {
+     var printResult="";
+     var a=node.getopcode();
+     var b=node.getshift();
+     if(a==1||a==3) printResult+=b+"bits shift and add";
+     else printResult+=b+"bits shift and sub";
+     return printResult;
+
+ }
+
+ function get_opcode(n){
+     var m
+     if(n==1||n==3) m="+"
+     if(n==2||n==4) m="-"
+     return m;
+ }
+
+ function print_binary(bren,pos)
+ {
+     var result="";
+     for(var i=bren.length-1;i>=pos;i--) {result+="<TD>"+bren[i]}
+     for(var i=pos-1;i>=0;i--){result+="<TD>"}
+     result+="<TD>"
+     return result;
+
+ }
+ function print_op(bren,pos,shift){
+     var result;
+     if(bren[pos]=="1") result=shift+"bits shift and add"+"<TD>"
+     if(bren[pos]=="-1") result=shift+"bits shift and sub"+"<TD>"
+
+
+     return result;
+ }
+
+function Brenstain(bren,a){
+    // b is the head position of YArr
+    var b=bren.length-1;
+    while(bren[b]!=1) {b--;}
+    var pos=b;
+    var length=bren.length;
+    var i=0,j=0;
+    var shift=0;
+    var writeout="";
+    var result=new Array();
+    result[0]=0;
+    writeout+="<TR><TD>"+"Start<TD>"+print_binary(bren,pos)+"<TD>"+1+"<TD>"+"\n";
+
+    sum=1;
+    result[0]=1;
+    for(i=pos-1;i>=0;i--)
+    {
+
+        while(bren[i]==0)
+        {
+            i--;
+            shift=shift+1;
+            sum=sum*2;
+            b=b-1;
+        }
+
+         if(bren[i]=="-1"){
+             shift=shift+1;
+             b=b-1;
+             sum=sum*2;
+            sum=sum-1;
+              pos=pos-shift;
+             writeout+="<TR><TD>"+print_op(bren,pos,shift)+print_binary(bren,pos)+"<TD>"+sum+"<TD>"+sum+"x="+"<TD>"+result[0]+"x<<"+shift+"<TD>"+"-x"+"\n";
+             result[0]=sum;
+         }
+
+         if(bren[i]=="1"){
+             shift=shift+1;
+             b=b-1;
+             sum=sum*2;
+             sum=sum+1;
+             pos=pos-shift;
+             writeout+="<TR><TD>"+print_op(bren,pos,shift)+print_binary(bren,pos)+"<TD>"+sum+"<TD>"+sum+"x="+"<TD>"+result[0]+"x<<"+shift+"<TD>"+"+x"+"\n";
+             result[0]=sum;
+         }
+
+        shift=0;
+
+    }
+   shift=0;
+    if(bren[0]=="0")
+    {
+        j=0
+        while(bren[j]==0){
+            j=j+1;
+            sum=sum*2;
+        shift=shift+1;
+        }
+        pos=pos-shift;
+        writeout+="<TR><TD>"+print_op(bren,pos,shift)+print_binary(bren,pos)+"<TD>"+sum+"<TD>"+sum+"x="+"<TD>"+result[0]+"x<<"+shift+"<TD>"+"\n"
+    }
+ if(a>0)
+ {
+     var c=a;
+     var fsum=sum<<a;
+     writeout+="<TR><TD>shift"+a+"bits only"+"<TD>";
+     for(var i=bren.length-1;i>=pos;i--) {writeout+="<TD>"+bren[i]}
+     while(c-->0){writeout+="<TD>0"}
+     writeout+="<TD>"+fsum+"<TD>"+fsum+"x=<Td>"+sum+"x<<"+a+"<TD>"+"\n";
+ }
+
+   return writeout;
+
+
+}
+
+function makeOdd(input){
+    var count=0;
+    while(!odd(input)){
+        input=input>>1;
+        count++;
+
+    }
+    return count;
+
+}
+
+function Booth(form) {
+
+    X = parseFloat(form.X.value)
+
+
+
+    ChoseBin = form.Base[0].checked
+    NumBits = parseInt(form.NumBits.value)
+    NotBinary = false
+    if (ChoseBin) {
+
+        X = ParseBinary(X)
+    }
+
+    Mixed = false
+    Overflow = false
+    if (IsInteger(X)) {
+        NumDecimals = 0
+        NumDigits = NumBits
+        if (Math.max(OrderOfMagnitude(X)) + 1 >
+                NumDigits) {
+            NumDigits = 0
+            NumDecimals = 0
+            Overflow = true
+        }
+    } else {
+        if ( Math.abs(X) < 1) {
+            NumDigits = 1
+            NumDecimals = NumBits
+        } else {
+            Mixed = true
+            NumDigits = 0
+            NumDecimals = 0 // just filler values
+        }
+    }
+
+    NumCols = 2 * NumDigits + NumDecimals
+
+
+    X = RoundOff(X)
+
+    TheTop = "<HTML><HEAD><TITLE>frame2</TITLE></HEAD><BODY bgcolor=\"white\">";
+    Middle = "<TABLE>"
+
+    Middle += "<TR> <TD>Constant<TD>" + PrintTwosComp(X, NumDigits)
+    //  for (i = 1; i <= 7; i++) {Middle += "<TD> "}
+
+    Middle += "<TD>"+"<TD>"+ X + "\n"
+    ModBoothenizeInteger(X)
+
+    Middle += "<TR><TD>"+"Booth Recoding<TD>"
+    for(var o=YArr.length-1; o>=0;o--) {Middle +="<TD>"+YArr[o]}
+    Middle += "<TD>"+"<TD>"+X+ "\n"
+    Middle  += MakeLine(NumCols + 3)
+    Middle+= "Binary Method:";
+    for (i = NumDigits + NumDecimals + 1; i <= NumCols+7; i++) {Middle += "<TD> "}
+
+
+
+
+    sum=0;
+    emit_detail="implementation details";
+    LAST = "<TABLE>";
+    var a=0;
+    while(YArr[a]==0){
+        a++
+    }
+    BArr=new Array();
+
+    for(var b=a;b<YArr.length;b++)
+    {
+        BArr.push(YArr[b]);}
+    Middle += Brenstain(BArr,a)
+    Middle += MakeLine(NumCols + 3)
+    LAST += "Bernstein Algorithm:";
+    var input=X;
+    var shift=makeOdd(input);
+    BrenstainJ(input,shift)
+    LAST += emit;
+    LAST += MakeLine(NumCols + 3)
+
+    var show=form.check.checked;
+    if(show){
+
+    LAST+=emit_detail
+      }
+
+
+
+    Middle += "</TABLE> <P>\n";
+    Bottom = "</BODY> </HTML>";
+    LAST += "</TABLE> <P>\n";
+
+    parent.frames[1].document.open();
+    parent.frames[1].document.write(TheTop);
+    parent.frames[1].document.write(Middle);
+    parent.frames[1].document.write(Bottom);
+    parent.frames[1].document.write(LAST);
+    parent.frames[1].document.close();
+
+}
+
+</SCRIPT>
+</HEAD>
+
+<BODY bgcolor="#FFFF1C">
+<hr>
+
+<CENTER> <H2> Multiplication by a Constant Operand </H2> </CENTER>
+
+<hr>
+<FORM>
+    <p>Assume Multiplicand is x</p>
+    <P>
+        Constant: <INPUT type="text" name="X" value="11111011101" id="X" >
+    <P>
+    <hr>
+        <EM>bin</EM> <INPUT type="radio" name="Base" value="Binary" checked>
+        <EM>dec</EM> <INPUT type="radio" name="Base" value="Decimal">
+
+    <P>
+        Number of bits: <INPUT type="text" name="NumBits" size=4 value="14" id="num"> (must be even)
+    <P>
+    <P>Details of Bernstein Algorithm <INPUT name="check" type=checkbox value=ShowDetails>
+    <P>
+    <hr>
+    <CENTER>
+        <INPUT type="button" name="enter" value="Compute"
+               onClick="Booth(this.form)">
+    </CENTER> <P>
+
+    <CENTER>
+        <INPUT type=button  VALUE="   Reset   " onClick="resetin()" > <P>
+    </CENTER>
+    <CENTER>
+        <INPUT type=button  VALUE="   Help   " onClick=parent.frames[1].location.href="help.html"
+        >
+    </CENTER>
+
+
+
+
+
+</FORM>
+
+</BODY>
+
+
+
+</HTML>

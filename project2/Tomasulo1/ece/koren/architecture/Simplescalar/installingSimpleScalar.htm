@@ -1,0 +1,209 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<meta name="GENERATOR" content="Microsoft FrontPage 4.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<title>This document is a guide for installing SimpleScalar on a Linux system</title>
+</head>
+
+<body>
+
+<p><span style="font-size:16.0pt;font-family:&quot;Comic Sans MS&quot;;color:red"><span style="mso-bidi-font-weight: normal"><b>Installing</b></span><b style="mso-bidi-font-weight:normal">
+SimpleScalar</b><b style="mso-bidi-font-weight: normal; font-size: 16.0pt; font-family: Comic Sans MS; color: red">
+using Cygwin/SSH Secure Shell Client</b></span></p>
+<pre><span style="font-size:12.0pt;font-family:&quot;Comic Sans MS&quot;">This document is a guide to installing SimpleScalar on any of the ECS machines  you have been given access to.
+You can access any of these ECS machines using Cygwin or SSH secure shell software which is available on all the
+machines in Computer labs in Marston Hall as well as ELAB. You can follow this procedure if you have your own
+machine with Linux distribution. Note that there could be issues during installation if you are using Ubuntu Linux
+distribution. Cygwin is available for free at <a href="../../../../../www.cygwin.com/mirrors.html">http://www.cygwin.com/mirrors.html</a></span></pre>
+<pre><span style="font-size: 12.0pt; font-family: Comic Sans MS">Please follow the following steps.</span></pre>
+<pre><span style="font-size: 12.0pt; font-family: Comic Sans MS">1) <span style="font-size:12.0pt;font-family:&quot;Comic Sans MS&quot;;
+mso-fareast-font-family:SimSun;mso-bidi-font-family:&quot;Times New Roman&quot;;
+mso-ansi-language:EN-US;mso-fareast-language:ZH-CN;mso-bidi-language:AR-SA"><font color="#808000">Download SimpleScalar Tool Set</font></span></span></pre>
+<pre><span style="font-size: 12.0pt; font-family: Comic Sans MS; mso-fareast-font-family: SimSun; mso-bidi-font-family: Times New Roman; mso-ansi-language: EN-US; mso-fareast-language: ZH-CN; mso-bidi-language: AR-SA">Download the SimpleScalar v3.0d installation file by clicking here  <a href="simplesim-3v0d.tgz">simplesim-3v0d.tgz</a>    or go to the SimpleScalar
+website at <a href="../../../../../www.simplescalar.com/default.htm">www.simplescalar.com</a> and make sure you download <font color="#008000">simplesim-3v0d.tgz</font> in the <font color="#800080">tools</font> menu.</span></pre>
+<pre><span style="font-size: 12.0pt; font-family: Comic Sans MS; mso-fareast-font-family: SimSun; mso-bidi-font-family: Times New Roman; mso-ansi-language: EN-US; mso-fareast-language: ZH-CN; mso-bidi-language: AR-SA">Transfer or copy <font color="#008000">simplesim-3v0d.tgz file </font>onto the ECS machine using<font color="#008000"> </font>SSH Secure File Transfer Client. It is 
+recommended that you make a directory by the name of simplescalar on the ECS machine (See fig 1 below) and 
+transfer the file into this directory using SSH Secure File Transfer Client (See fig 2 below).</span></pre>
+<pre>&nbsp;</pre>
+<blockquote>
+  <blockquote>
+    <pre><img border="0" src="fig1.jpg" width="600" height="550"></pre>
+    <div align="center">
+      <center>
+      <pre><font size="3"><b>(Fig 1)</b></font></pre>
+      </center>
+    </div>
+    <pre>&nbsp;</pre>
+    <pre><img border="0" src="fig2.jpg" width="600" height="550"></pre>
+    <div align="center">
+      <center>
+      <blockquote>
+        <pre><font size="3"><b>(Fig 2)</b></font></pre>
+      </blockquote>
+      </center>
+    </div>
+  </blockquote>
+</blockquote>
+<pre><span style="font-size: 12.0pt; font-family: Comic Sans MS">2) <span style="font-size:12.0pt;font-family:&quot;Comic Sans MS&quot;;
+mso-fareast-font-family:SimSun;mso-bidi-font-family:&quot;Times New Roman&quot;;
+mso-ansi-language:EN-US;mso-fareast-language:ZH-CN;mso-bidi-language:AR-SA"><font color="#808000">Install the SimpleScalar Tool Set</font></span></span></pre>
+<pre><span style="font-size: 12.0pt; font-family: Comic Sans MS; mso-fareast-font-family: SimSun; mso-bidi-font-family: Times New Roman; mso-ansi-language: EN-US; mso-fareast-language: ZH-CN; mso-bidi-language: AR-SA">Now  Unzip &amp; untar the <font color="#008000">simplesim-3v0d.tgz </font>file by logging into your account using Cygwin Shell or SSH Secure Shell
+client. Go to the simplesclar directory that you have just created and where you have transferred the <font color="#008000">simplesim-3v0d.tgz
+</font>file (See figure 3 below). Enter the following commands (see figures 4 &amp; 5 below ) to unzip and untar the file. Both Cygwin
+and Secure Shell views are shown.</span></pre>
+<pre>&nbsp;</pre>
+<pre>&nbsp;</pre>
+<pre><img border="0" src="fig3.jpg" width="492" height="343">		<img border="0" src="fig3b.jpg" width="596" height="496"></pre>
+<blockquote>
+  <blockquote>
+    <blockquote>
+      <blockquote>
+        <pre>					  <b><font size="3">(Fig 3)</font></b></pre>
+        <pre>&nbsp;</pre>
+        <pre>&nbsp;</pre>
+        <pre>&nbsp;</pre>
+        <pre>&nbsp;</pre>
+      </blockquote>
+    </blockquote>
+  </blockquote>
+</blockquote>
+<pre><img border="0" src="fig4.jpg" width="492" height="343">		<img border="0" src="fig4b.jpg" width="596" height="496"></pre>
+<blockquote>
+  <blockquote>
+    <blockquote>
+      <blockquote>
+        <pre><font size="3"><b>					(Fig 4)</b></font></pre>
+        <pre>&nbsp;</pre>
+        <pre>&nbsp;</pre>
+        <pre>&nbsp;</pre>
+      </blockquote>
+    </blockquote>
+  </blockquote>
+</blockquote>
+        <pre><img border="0" src="fig5.gif" width="492" height="343">		<img border="0" src="fig5b.jpg" width="596" height="496"></pre>
+<blockquote>
+  <blockquote>
+    <blockquote>
+      <blockquote>
+        <pre>					<b><font size="3">(Fig 5)</font></b>	</pre>
+        <pre>&nbsp;</pre>
+        <pre>&nbsp;</pre>
+        <pre>&nbsp;</pre>
+      </blockquote>
+    </blockquote>
+  </blockquote>
+</blockquote>
+<pre><span style="font-size: 12.0pt; font-family: Comic Sans MS; mso-fareast-font-family: SimSun; mso-bidi-font-family: Times New Roman; mso-ansi-language: EN-US; mso-fareast-language: ZH-CN; mso-bidi-language: AR-SA">You should see the simplesim-3.0 created as a result of executing the above two commands (See figure 6 below).</span></pre>
+        <pre><img border="0" src="fig6.gif" width="492" height="343">		<img border="0" src="fig6b.jpg" width="596" height="496"></pre>
+<pre><span style="font-size: 12.0pt; font-family: Comic Sans MS; mso-fareast-font-family: SimSun; mso-bidi-font-family: Times New Roman; mso-ansi-language: EN-US; mso-fareast-language: ZH-CN; mso-bidi-language: AR-SA">						</span><span style="font-size: 12.0pt; font-family: Comic Sans MS; mso-fareast-font-family: SimSun; mso-bidi-font-family: Times New Roman; mso-ansi-language: EN-US; mso-fareast-language: ZH-CN; mso-bidi-language: AR-SA">		</span><font size="3"><b>(Fig 6)</b></font></pre>
+<pre><span style="font-size: 12.0pt; font-family: Comic Sans MS; mso-fareast-font-family: SimSun; mso-bidi-font-family: Times New Roman; mso-ansi-language: EN-US; mso-fareast-language: ZH-CN; mso-bidi-language: AR-SA">Enter the simplesim-3.0 directory and execute the following three commands to configure the SimpleScalar simulator as
+<font color="#FF00FF">ALPHA simulator</font>.</span></pre>
+<pre><span style="font-size:12.0pt;font-family:&quot;Comic Sans MS&quot;;
+color:#993300">			make config-alpha</span><span style="font-size:12.0pt;font-family:&quot;Comic Sans MS&quot;;color:#993300">
+			make
+</span>			<span style="font-size:12.0pt;font-family:&quot;Comic Sans MS&quot;;color:#993300">
+</span><span style="font-size: 12.0pt; font-family: Comic Sans MS">[Note that you may get error while executing the make command. In that case, please talk to ECS to upgrade the gcc
+version on the ECS machine]</span></pre>
+<pre><span style="font-size: 12.0pt; font-family: Comic Sans MS; mso-fareast-font-family: SimSun; mso-bidi-font-family: Times New Roman; mso-ansi-language: EN-US; mso-fareast-language: ZH-CN; mso-bidi-language: AR-SA"> (See Figures 7,8 &amp; 9 below)</span></pre>
+<pre><img border="0" src="fig7.jpg" width="492" height="343">		<img border="0" src="fig7b.jpg" width="595" height="496"></pre>
+<blockquote>
+  <blockquote>
+    <blockquote>
+      <blockquote>
+        <pre>						<b><font size="3">(Fig 7)</font></b></pre>
+        <pre>&nbsp;</pre>
+        <pre>&nbsp;</pre>
+        <pre>&nbsp;</pre>
+        <pre>&nbsp;</pre>
+      </blockquote>
+    </blockquote>
+  </blockquote>
+</blockquote>
+        <pre><img border="0" src="fig8.jpg" width="492" height="343">		<img border="0" src="fig8b.jpg" width="593" height="493"></pre>
+<p>&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<b><font size="3">&nbsp;&nbsp; </font></b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font size="3"><b>&nbsp;&nbsp;&nbsp;</b></font>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<font size="3"><b>(Fig&nbsp;&nbsp;&nbsp;&nbsp; 8)</b></font></p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp; &nbsp;</p>
+<p><img border="0" src="fig9.jpg" width="884" height="458"></p>
+<p>&nbsp;</p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<font size="3"><b>(Fig&nbsp;&nbsp;&nbsp;&nbsp; 9)</b></font>&nbsp; </p>
+<p>&nbsp;</p>
+<p><span style="font-family:&quot;Comic Sans MS&quot;">To configure SimpleScalar
+as <span style="color:fuchsia">PISA Simulator,</span> execute the following
+three commands while you are in the <font color="#800000">simplesim-3.0</font>
+directory</span><o:p>
+</o:p>
+</p>
+<p><span style="font-family:&quot;Comic Sans MS&quot;;color:#993300">&nbsp;&nbsp;&nbsp;
+</span><span style="font-family: Comic Sans MS"><font color="#000080">make clean<br>
+&nbsp;&nbsp;&nbsp; make config-pisa<br>
+&nbsp;&nbsp;&nbsp; make</font></span><o:p>
+</o:p>
+</p>
+<p>&nbsp;<o:p>
+</o:p>
+</p>
+<p><span style="font-family:&quot;Comic Sans MS&quot;">To switch back to the <span style="color:fuchsia">ALPHA
+configuration,</span> execute the following three commands</span><o:p>
+</o:p>
+</p>
+<p><span style="font-family:&quot;Comic Sans MS&quot;;color:#993300">&nbsp;&nbsp;&nbsp;
+</span><span style="font-family: Comic Sans MS"><font color="#000080">make clean<br>
+&nbsp;&nbsp;&nbsp; make config-alpha<br>
+&nbsp;&nbsp;&nbsp; make</font></span><o:p>
+</o:p>
+</p>
+<p>&nbsp;<span style="font-size:12.0pt;font-family:&quot;Comic Sans MS&quot;;mso-fareast-font-family:
+SimSun;mso-bidi-font-family:&quot;Times New Roman&quot;;mso-ansi-language:EN-US;
+mso-fareast-language:ZH-CN;mso-bidi-language:AR-SA">Now that you have installed
+and configured the SimpleScalar simulator, you are ready to work with it.</span></p>
+<p>&nbsp;</p>
+<blockquote>
+  <blockquote>
+    <blockquote>
+      <blockquote>
+        <blockquote>
+          <blockquote>
+            <blockquote>
+              <blockquote>
+                <blockquote>
+                  <blockquote>
+                    <blockquote>
+                      <blockquote>
+                        <blockquote>
+                          <blockquote>
+                            <blockquote>
+                              <blockquote>
+                                <blockquote>
+                                  <blockquote>
+                                    <p>&nbsp;</p>
+                                  </blockquote>
+                                </blockquote>
+                              </blockquote>
+                            </blockquote>
+                          </blockquote>
+                        </blockquote>
+                      </blockquote>
+                    </blockquote>
+                  </blockquote>
+                </blockquote>
+              </blockquote>
+            </blockquote>
+          </blockquote>
+        </blockquote>
+      </blockquote>
+    </blockquote>
+  </blockquote>
+</blockquote>
+
+</body>
+
+</html>

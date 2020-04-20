@@ -1,0 +1,38 @@
+﻿<HTML><HEAD><TITLE>Low-Density Parity-Check Random Graph Code Generator</TITLE>
+<META http-equiv=Content-Type content="text/html; charset=utf-8">
+<META content="MSHTML 6.00.2900.2627" name=GENERATOR></HEAD>
+<BODY>
+<CENTER>
+<H1>Low-Density Parity-Check Random Graph Code Generator</H1></CENTER>
+<TABLE width=800 align=center>
+  <TBODY>
+  <TR>
+    <TD><A 
+      href="LdpcApplet.html">Generate a random code!</A> 
+	<BR>How to use the code generator<BR><A 
+      href="adiicc2004.pdf">An introduction to random graph construction (primary source)</a><br></TD></TR></TBODY></TABLE>
+<TABLE width=800 align=center>
+  <TBODY>
+  <TR>
+    <TD>
+      <HR>
+	This applet constructs an (N,K) code randomly based on the principles of 
+     	stopping sets using an iterative algorithm presented in the source given
+	above.  It can construct codes of different distances and degrees.  The code is
+	represented both by its bi-partite Tanner graph, which can be used in message passing
+	algorithms for decoding and its parity-check matrix.
+      <UL>
+        <LI><B>Code Parameters (N,K):</B> Code will map K information bits to an N-bit 
+	code word (N variable bits), meaning there are M=N-K parity/check bits. 
+        <LI><B>Check-bit Degree:</B> Determines the number of check bits that each
+	variable bit is used to calculate.
+        <LI><B>Min. Code Distance: </B>Determines the lower bound on code distance - 
+	the number of bits that differ between all codewords.  This also corresponds to
+	the minimum stopping set size of the graph (see source).
+        <LI><B>Generate!:</B> Constructs a new random code from the current settings.
+        <BR>
+	</UL>
+	NOTE: Requires <A href="../../../../../../java.sun.com/default.htm">Java 1.4.2 or later</A>!
+	
+	<HR>
+    </TD></TR></TBODY></TABLE></BODY></HTML>

@@ -1,0 +1,719 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<meta name="GENERATOR" content="Microsoft FrontPage 4.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<title>This exercise involves writing C</title>
+</head>
+
+<body>
+
+<p class="MsoNormal" style="text-justify: inter-ideograph; margin-left: .25in" align="center"><font color="#ff0000" size="5"><span style="FONT-FAMILY: Comic Sans MS; mso-fareast-font-family: SimSun; mso-bidi-font-family: Times New Roman; mso-ansi-language: EN-US; mso-fareast-language: ZH-CN; mso-bidi-language: AR-SA"><b>Compiling
+using SimpleScalar</b></span></font></p>
+
+<p class="MsoNormal" style="margin-left:.25in;text-align:justify;text-justify:
+inter-ideograph"><span style="font-family:&quot;Comic Sans MS&quot;">This
+exercise involves writing <span style="color:blue">C/C++</span> programs and
+using </span><st1:City><font color="#FF00FF"><span style="font-family:&quot;Comic Sans MS&quot;">PISA</span></st1:place>
+</st1:City>
+</font><span style="font-family:&quot;Comic Sans MS&quot;"><font color="#FF00FF">
+compiler</font> to compile some programs which then can be used to benchmark
+computer systems. A benchmark, broadly speaking, is any program whose purpose is
+to measure a performance characteristic of a computer system. In this part we
+will concentrate on the performance of a CPU, using measures such as the number
+of floating point operations per second (FLOPS), the number of integer
+operations per second (IOPS) and the number of instructions per second (IPS). It
+is important to keep in mind that even though these measures are primarily
+related to the CPU performance other factors such as main memory speed, can
+influence the results we obtain. This is related to the exact nature of the
+program we are using.<o:p>
+</o:p>
+</span></p>
+<p class="MsoNormal" style="margin-left:.25in">
+<span style="font-family:&quot;Comic Sans MS&quot;">
+<o:p>
+ Click here&nbsp; <a href="PISA_compiler_installation.doc">
+PISA_compiler_installation.doc</a>&nbsp;to view installation procedure on configuring
+<font color="#FF00FF">PISA Compiler</font>.</o:p>
+The files needed can be downloaded by
+clicking here <a href="simpletools-2v0.tar">simpletools-2v0.tar</a>&nbsp;&nbsp;&nbsp;
+<a href="simpleutils-2v0.tar">simpleutils-2v0.tar</a>&nbsp;&nbsp;&nbsp;
+<a href="gcc-2.7.2.3.ss.tar.gz">gcc-2.7.2.3.ss.tar.gz</a></span></p>
+<p class="MsoNormal" style="margin-left:.25in"><span style="font-family:&quot;Comic Sans MS&quot;">You
+will begin by writing a number of simple<span style="color:blue"> C</span>
+language programs. The main performance indicator we will need is the execution
+time of our programs. On modern computers you will find that most tasks take a
+very short time and therefore cannot be measured accurately enough for our
+purposes. To overcome this we will often need to repeat the task we are using
+for benchmarking many times.<o:p>
+</o:p>
+</span></p>
+<p class="MsoNormal" style="margin-left:.25in"><span style="font-family:&quot;Comic Sans MS&quot;"><o:p>
+&nbsp;</o:p>
+</span></p>
+<p class="MsoNormal" style="margin-left:.5in;text-indent:-.25in;mso-list:l0 level1 lfo1;
+tab-stops:list .5in"><span style="mso-list: Ignore; font-family: Comic Sans MS; mso-fareast-font-family: Comic Sans MS; mso-bidi-font-family: Comic Sans MS">1)<span style="font:7.0pt &quot;Times New Roman&quot;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span><span style="font-family:&quot;Comic Sans MS&quot;" dir="LTR">Write
+a hello world program in <span style="color:blue">C</span>. Make sure that you
+embed the hello world print statement after an empty ‘for’ loop which goes
+from <span style="color:olive">1</span> to <span style="color:olive">1000,0000
+(one million)</span>. Now Compile using <span style="color:#993300">home/simplescalar/bin/</span><span style="color:blue">sslittle-na-sstrix-gcc</span>.
+The command format is <o:p>
+</o:p>
+</span></p>
+<p class="MsoNormal" style="margin-left:.25in"><span style="font-family:&quot;Comic Sans MS&quot;"><o:p>
+&nbsp;&nbsp;&nbsp;&nbsp; </span><span style="font-family:&quot;Comic Sans MS&quot;;color:navy">sslittle-na-sstrix-gcc
+-o hello hello.c<o:p>
+</o:p>
+</span></p>
+<p class="MsoNormal" style="margin-left:.5in"><span style="font-family:&quot;Comic Sans MS&quot;">Then
+use <span style="color:green">sim-safe</span> to simulate the executable file
+which is <span style="color:navy">hello. </span>You should execute <span style="color:green">sim-safe</span>
+to save the simulation output as well as the program output to collect the
+statistics (simulation elapsed time and total number of instructions) and make
+sure that the program executes correctly i.e., no errors. <o:p>
+</o:p>
+</span></p>
+<p class="MsoNormal" style="margin-left:.5in"><span style="font-family:&quot;Comic Sans MS&quot;"><o:p>
+&nbsp;Report the total number of instructions executed and the total elapsed
+time to execute the hello world program. Fill the table1 below.<o:p>
+</o:p>
+</span></p>
+<p class="MsoNormal" style="margin-left:.5in"><span style="font-family:&quot;Comic Sans MS&quot;"><o:p>
+&nbsp;Now compile the above program by turning optimization on. Use <span style="color:#CC99FF">–O2</span>
+flag in the above command. Now the command format will look<o:p>
+</o:p>
+</span></p>
+<p class="MsoNormal" style="margin-left:.25in;text-indent:.25in"><span style="font-family:&quot;Comic Sans MS&quot;;color:navy">sslittle-na-sstrix-gcc
+-o –O2 hello_O2 hello.c<o:p>
+</o:p>
+</span></p>
+<p class="MsoNormal" style="margin-left:.25in;text-indent:.25in"><b><span style="font-family:&quot;Comic Sans MS&quot;;color:navy"><o:p>
+&nbsp;</span></b><span style="font-family:&quot;Comic Sans MS&quot;">(Make sure
+that you don’t overwrite the unoptimized version by given executable the new
+name which in this&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; case
+is hello_O2)<o:p>
+</o:p>
+</span></p>
+<p class="MsoNormal" style="margin-left:.5in"><b><span style="font-family:&quot;Comic Sans MS&quot;;
+color:navy"><o:p>
+&nbsp;</span></b><span style="font-family:&quot;Comic Sans MS&quot;">Now use <span style="color:green">sim-safe</span>
+to simulate the executable file which is hello_O2. You should execute <span style="color:green">sim-safe</span>
+to save the simulation output as well as the program output to collect the
+statistics (elapsed time and total number of instructions) and make sure that
+the program executes correctly i.e., no errors. <o:p>
+</o:p>
+</span></p>
+<p class="MsoNormal" style="margin-left:.5in"><span style="font-family:&quot;Comic Sans MS&quot;"><o:p>
+&nbsp;Report the total number of instructions executed and the total elapsed
+time to execute the hello world program with <span style="color:#CC99FF">–O2</span>
+optimization. Fill the table1 below. <o:p>
+</o:p>
+</span></p>
+<p class="MsoNormal" style="margin-left:.5in"><span style="font-family:&quot;Comic Sans MS&quot;"><o:p>
+&nbsp;Now repeat the above procedure using <span style="color:#CC99FF">–O3</span>
+flag. <span style="mso-spacerun:yes">&nbsp;</span>Report the total number of
+instructions executed and the total elapsed time to execute the hello world
+program with <span style="color:#CC99FF">–O3</span> optimization. Fill the
+table1 b.</span></p>
+<p class="MsoNormal" style="margin-left:.5in">&nbsp;</p>
+<table class="MsoTableGrid" border="1" cellspacing="0" cellpadding="0" style="border-collapse:collapse;border:none;mso-border-alt:solid windowtext .5pt;
+ mso-yfti-tbllook:191;mso-padding-alt:0in 5.4pt 0in 5.4pt;mso-border-insideh:
+ .5pt solid windowtext;mso-border-insidev:.5pt solid windowtext">
+  <tr style="mso-yfti-irow:0">
+    <td width="197" valign="top" style="width:2.05in;border:solid windowtext 1.0pt;
+  mso-border-alt:solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt" align="center">
+      <p class="MsoNormal" align="center" style="text-align:center"><span style="font-family:&quot;Comic Sans MS&quot;;color:#993366">Hello<o:p>
+      </o:p>
+      </span></p>
+    </td>
+    <td width="197" valign="top" style="width:2.05in;border:solid windowtext 1.0pt;
+  border-left:none;mso-border-left-alt:solid windowtext .5pt;mso-border-alt:
+  solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt" align="center">
+      <p class="MsoNormal" align="center" style="text-align:center"><span style="font-family:&quot;Comic Sans MS&quot;;color:blue">Total
+      # of instructions<o:p>
+      </o:p>
+      </span></p>
+    </td>
+    <td width="197" valign="top" style="width:2.05in;border:solid windowtext 1.0pt;
+  border-left:none;mso-border-left-alt:solid windowtext .5pt;mso-border-alt:
+  solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt" align="center">
+      <p class="MsoNormal" align="center" style="text-align:center"><span style="font-family:&quot;Comic Sans MS&quot;;color:blue">Total
+      Elapsed time<o:p>
+      </o:p>
+      </span></p>
+    </td>
+  </tr>
+  <tr style="mso-yfti-irow:1">
+    <td width="197" valign="top" style="width:2.05in;border:solid windowtext 1.0pt;
+  border-top:none;mso-border-top-alt:solid windowtext .5pt;mso-border-alt:solid windowtext .5pt;
+  padding:0in 5.4pt 0in 5.4pt" align="center">
+      <p class="MsoNormal" align="center" style="text-align:center"><span style="font-family:&quot;Comic Sans MS&quot;;color:#999999">No
+      optimization<o:p>
+      </o:p>
+      </span></p>
+    </td>
+    <td width="197" valign="top" style="width:2.05in;border-top:none;border-left:
+  none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  mso-border-top-alt:solid windowtext .5pt;mso-border-left-alt:solid windowtext .5pt;
+  mso-border-alt:solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt" align="center">
+      <p class="MsoNormal"><span style="font-family:&quot;Comic Sans MS&quot;"><o:p>
+      &nbsp;</o:p>
+      </span></p>
+    </td>
+    <td width="197" valign="top" style="width:2.05in;border-top:none;border-left:
+  none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  mso-border-top-alt:solid windowtext .5pt;mso-border-left-alt:solid windowtext .5pt;
+  mso-border-alt:solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt" align="center">
+      <p class="MsoNormal"><span style="font-family:&quot;Comic Sans MS&quot;"><o:p>
+      &nbsp;</o:p>
+      </span></p>
+    </td>
+  </tr>
+  <tr style="mso-yfti-irow:2">
+    <td width="197" valign="top" style="width:2.05in;border:solid windowtext 1.0pt;
+  border-top:none;mso-border-top-alt:solid windowtext .5pt;mso-border-alt:solid windowtext .5pt;
+  padding:0in 5.4pt 0in 5.4pt" align="center">
+      <p class="MsoNormal" align="center" style="text-align:center"><span style="font-family:&quot;Comic Sans MS&quot;;color:#999999">-O2<o:p>
+      </o:p>
+      </span></p>
+    </td>
+    <td width="197" valign="top" style="width:2.05in;border-top:none;border-left:
+  none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  mso-border-top-alt:solid windowtext .5pt;mso-border-left-alt:solid windowtext .5pt;
+  mso-border-alt:solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt" align="center">
+      <p class="MsoNormal"><span style="font-family:&quot;Comic Sans MS&quot;"><o:p>
+      &nbsp;</o:p>
+      </span></p>
+    </td>
+    <td width="197" valign="top" style="width:2.05in;border-top:none;border-left:
+  none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  mso-border-top-alt:solid windowtext .5pt;mso-border-left-alt:solid windowtext .5pt;
+  mso-border-alt:solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt" align="center">
+      <p class="MsoNormal"><span style="font-family:&quot;Comic Sans MS&quot;"><o:p>
+      &nbsp;</o:p>
+      </span></p>
+    </td>
+  </tr>
+  <tr style="mso-yfti-irow:3;mso-yfti-lastrow:yes">
+    <td width="197" valign="top" style="width:2.05in;border:solid windowtext 1.0pt;
+  border-top:none;mso-border-top-alt:solid windowtext .5pt;mso-border-alt:solid windowtext .5pt;
+  padding:0in 5.4pt 0in 5.4pt" align="center">
+      <p class="MsoNormal" align="center" style="text-align:center"><span style="font-family:&quot;Comic Sans MS&quot;;color:#999999">-O3<o:p>
+      </o:p>
+      </span></p>
+    </td>
+    <td width="197" valign="top" style="width:2.05in;border-top:none;border-left:
+  none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  mso-border-top-alt:solid windowtext .5pt;mso-border-left-alt:solid windowtext .5pt;
+  mso-border-alt:solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt" align="center">
+      <p class="MsoNormal"><span style="font-family:&quot;Comic Sans MS&quot;"><o:p>
+      &nbsp;</o:p>
+      </span></p>
+    </td>
+    <td width="197" valign="top" style="width:2.05in;border-top:none;border-left:
+  none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  mso-border-top-alt:solid windowtext .5pt;mso-border-left-alt:solid windowtext .5pt;
+  mso-border-alt:solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt" align="center">
+      <p class="MsoNormal"><span style="font-family:&quot;Comic Sans MS&quot;"><o:p>
+      &nbsp;</o:p>
+      </span></p>
+    </td>
+  </tr>
+</table>
+<p class="MsoNormal" style="margin-left:.5in"><span style="font-family:&quot;Comic Sans MS&quot;"><br>
+&nbsp;Did you observe any difference between the unoptimized version and <span style="color:#CC99FF">–O2</span>
+version of hello world?<o:p>
+</o:p>
+</span></p>
+<p class="MsoNormal" style="margin-left:.5in"><span style="font-family:&quot;Comic Sans MS&quot;"><o:p>
+&nbsp;Did you observe any difference between the unoptimized version and <span style="color:#CC99FF">–O3</span>
+version of hello world?<o:p>
+</o:p>
+</span></p>
+<p class="MsoNormal" style="margin-left:.5in"><span style="font-family:&quot;Comic Sans MS&quot;"><o:p>
+&nbsp;Did you observe any difference between <span style="color:#CC99FF">–O2 </span>and
+<span style="color:#CC99FF">–O3</span> version of hello world?</span></p>
+<p class="MsoNormal" style="margin-left:.5in"><span style="font-family:&quot;Comic Sans MS&quot;">Briefly
+describe what does <span style="color:#CC99FF">–O2</span> and <span style="color:#CC99FF">–O3</span>
+do? (Hint: search google using the keywords compiler optimization levels )</span></p>
+<p class="MsoNormal" style="margin-left:.5in"><span style="font-family: Comic Sans MS">Plot
+a histogram showing different levels of optimization.</span></p>
+<p class="MsoNormal" style="margin-left:.5in"><span style="font-family:&quot;Comic Sans MS&quot;"><o:p>
+</o:p>
+</span></p>
+<p class="MsoNormal" style="mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+margin-left:.5in;text-indent:-.25in;mso-list:l0 level1 lfo1;tab-stops:list .5in"><span style="mso-list: Ignore; font-family: Comic Sans MS; mso-fareast-font-family: Comic Sans MS; mso-bidi-font-family: Comic Sans MS">2)<span style="font:7.0pt &quot;Times New Roman&quot;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span><span style="font-family:&quot;Comic Sans MS&quot;" dir="LTR">Now
+we will create two very simple synthetic benchmarks. For the first benchmark
+(call it <span style="color:#00CCFF">test1.c</span>) write the following
+arithmetic expression in your loop <span style="mso-spacerun:yes">&nbsp;</span><span style="color:#FFCC00">a
+= b + c * d /e –f</span>.<span style="mso-spacerun:yes">&nbsp; </span>The loop
+goes from <span style="color:olive">1</span> to <span style="color:olive">1000,0000
+(one million)</span>. Initialize <span style="color:#333300">a,b,c,d,e,f</span>
+as <span style="color:teal">integers</span> with values of <span style="color:#333300">b,c,d,e
+and f</span> as <span style="color:#333300">2,3,10,5,8</span> respectively.<o:p>
+</o:p>
+</span></p>
+<p class="MsoNormal" style="mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+margin-left:.5in"><span style="font-family:&quot;Comic Sans MS&quot;">Then use <span style="color:green">sim-safe</span>
+to simulate the executable file<span style="color:navy">. </span>You should
+execute <span style="color:green">sim-safe</span> to save the simulation output
+as well as the program output to collect the statistics (elapsed time and total
+number of instructions) and make sure that the program executes correctly i.e.,
+no errors.<o:p>
+</o:p>
+</span></p>
+<p class="MsoNormal" style="mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+margin-left:.5in"><span style="font-family:&quot;Comic Sans MS&quot;">Report the
+total number of instructions executed and the total elapsed time to execute
+test1. Fill table2.<o:p>
+</o:p>
+</span></p>
+<p class="MsoNormal" style="mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+margin-left:.5in"><span style="font-family:&quot;Comic Sans MS&quot;">Now use <span style="color:green">sim-profile</span>
+to to simulate the executable file<span style="color:navy">. </span>You should
+execute <span style="color:green">sim-profile</span> to save the simulation
+output as well as the program output to collect the statistics (Integer
+operations) and make sure that the program executes correctly i.e., no errors.<br>
+<br>
+Report the total number of Integer operations IOPS for test1. Fill table2.<o:p>
+</o:p>
+</span></p>
+<p class="MsoNormal" style="mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+margin-left:.5in"><span style="font-family:&quot;Comic Sans MS&quot;">Repeat the
+above procedure using <span style="color:#CC99FF">–O2</span> optimization.
+Fill table2.<o:p>
+</o:p>
+</span></p>
+<p class="MsoNormal" style="mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+margin-left:.5in"><span style="font-family:&quot;Comic Sans MS&quot;">Repeat the
+above procedure using <span style="color:#CC99FF">–O3</span> optimization.
+Fill table2<o:p>
+</o:p>
+</span></p>
+<p class="MsoNormal" style="margin-left:.5in"><span style="font-family:&quot;Comic Sans MS&quot;"><o:p>
+</o:p>
+&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></p>
+<table class="MsoTableGrid" border="1" cellspacing="0" cellpadding="0" style="margin-left:40.5pt;border-collapse:collapse;border:none;mso-border-alt:
+ solid windowtext .5pt;mso-yfti-tbllook:191;mso-padding-alt:0in 5.4pt 0in 5.4pt;
+ mso-border-insideh:.5pt solid windowtext;mso-border-insidev:.5pt solid windowtext">
+  <tr style="mso-yfti-irow:0">
+    <td width="134" valign="top" style="width:100.35pt;border:solid windowtext 1.0pt;
+  mso-border-alt:solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt">
+      <p class="MsoNormal" align="center" style="text-align:center"><span style="font-family:&quot;Comic Sans MS&quot;;color:#993366">Test1<o:p>
+      </o:p>
+      </span></p>
+    </td>
+    <td width="132" valign="top" style="width:98.95pt;border:solid windowtext 1.0pt;
+  border-left:none;mso-border-left-alt:solid windowtext .5pt;mso-border-alt:
+  solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt">
+      <p class="MsoNormal" align="center" style="text-align:center"><span style="font-family:&quot;Comic Sans MS&quot;;color:blue">Total
+      # of instructions<o:p>
+      </o:p>
+      </span></p>
+    </td>
+    <td width="97" valign="top" style="width:72.5pt;border:solid windowtext 1.0pt;
+  border-left:none;mso-border-left-alt:solid windowtext .5pt;mso-border-alt:
+  solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt">
+      <p class="MsoNormal" align="center" style="text-align:center"><span style="font-family:&quot;Comic Sans MS&quot;;color:blue">Total
+      Elapsed time<o:p>
+      </o:p>
+      </span></p>
+    </td>
+    <td width="81" valign="top" style="width:61.0pt;border:solid windowtext 1.0pt;
+  border-left:none;mso-border-left-alt:solid windowtext .5pt;mso-border-alt:
+  solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt">
+      <p class="MsoNormal" align="center" style="text-align:center"><span style="font-family:&quot;Comic Sans MS&quot;;color:blue">Integer<span style="mso-spacerun:yes">&nbsp;
+      </span>operations<o:p>
+      </o:p>
+      </span></p>
+      <p class="MsoNormal" align="center" style="text-align:center"><span style="font-family:&quot;Comic Sans MS&quot;;color:blue">%<o:p>
+      </o:p>
+      </span></p>
+    </td>
+    <td width="93" valign="top" style="width:69.5pt;border:solid windowtext 1.0pt;
+  border-left:none;mso-border-left-alt:solid windowtext .5pt;mso-border-alt:
+  solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt">
+      <p class="MsoNormal" align="center" style="text-align:center"><span style="font-family:&quot;Comic Sans MS&quot;;color:blue">Floating<span style="mso-spacerun:yes">&nbsp;
+      </span>operations<o:p>
+      </o:p>
+      </span></p>
+      <p class="MsoNormal" align="center" style="text-align:center"><span style="font-family:&quot;Comic Sans MS&quot;;color:blue">%<o:p>
+      </o:p>
+      </span></p>
+    </td>
+  </tr>
+  <tr style="mso-yfti-irow:1">
+    <td width="134" valign="top" style="width:100.35pt;border:solid windowtext 1.0pt;
+  border-top:none;mso-border-top-alt:solid windowtext .5pt;mso-border-alt:solid windowtext .5pt;
+  padding:0in 5.4pt 0in 5.4pt">
+      <p class="MsoNormal" align="center" style="text-align:center"><span style="font-family:&quot;Comic Sans MS&quot;;color:#999999">No
+      optimization<o:p>
+      </o:p>
+      </span></p>
+    </td>
+    <td width="132" valign="top" style="width:98.95pt;border-top:none;border-left:
+  none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  mso-border-top-alt:solid windowtext .5pt;mso-border-left-alt:solid windowtext .5pt;
+  mso-border-alt:solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt">
+      <p class="MsoNormal"><span style="font-family:&quot;Comic Sans MS&quot;"><o:p>
+      &nbsp;</o:p>
+      </span></p>
+    </td>
+    <td width="97" valign="top" style="width:72.5pt;border-top:none;border-left:none;
+  border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  mso-border-top-alt:solid windowtext .5pt;mso-border-left-alt:solid windowtext .5pt;
+  mso-border-alt:solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt">
+      <p class="MsoNormal"><span style="font-family:&quot;Comic Sans MS&quot;"><o:p>
+      &nbsp;</o:p>
+      </span></p>
+    </td>
+    <td width="81" valign="top" style="width:61.0pt;border-top:none;border-left:none;
+  border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  mso-border-top-alt:solid windowtext .5pt;mso-border-left-alt:solid windowtext .5pt;
+  mso-border-alt:solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt">
+      <p class="MsoNormal"><span style="font-family:&quot;Comic Sans MS&quot;"><o:p>
+      &nbsp;</o:p>
+      </span></p>
+    </td>
+    <td width="93" valign="top" style="width:69.5pt;border-top:none;border-left:none;
+  border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  mso-border-top-alt:solid windowtext .5pt;mso-border-left-alt:solid windowtext .5pt;
+  mso-border-alt:solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt">
+      <p class="MsoNormal"><span style="font-family:&quot;Comic Sans MS&quot;"><o:p>
+      &nbsp;</o:p>
+      </span></p>
+    </td>
+  </tr>
+  <tr style="mso-yfti-irow:2">
+    <td width="134" valign="top" style="width:100.35pt;border:solid windowtext 1.0pt;
+  border-top:none;mso-border-top-alt:solid windowtext .5pt;mso-border-alt:solid windowtext .5pt;
+  padding:0in 5.4pt 0in 5.4pt">
+      <p class="MsoNormal" align="center" style="text-align:center"><span style="font-family:&quot;Comic Sans MS&quot;;color:#999999">-O2<o:p>
+      </o:p>
+      </span></p>
+    </td>
+    <td width="132" valign="top" style="width:98.95pt;border-top:none;border-left:
+  none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  mso-border-top-alt:solid windowtext .5pt;mso-border-left-alt:solid windowtext .5pt;
+  mso-border-alt:solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt">
+      <p class="MsoNormal"><span style="font-family:&quot;Comic Sans MS&quot;"><o:p>
+      &nbsp;</o:p>
+      </span></p>
+    </td>
+    <td width="97" valign="top" style="width:72.5pt;border-top:none;border-left:none;
+  border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  mso-border-top-alt:solid windowtext .5pt;mso-border-left-alt:solid windowtext .5pt;
+  mso-border-alt:solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt">
+      <p class="MsoNormal"><span style="font-family:&quot;Comic Sans MS&quot;"><o:p>
+      &nbsp;</o:p>
+      </span></p>
+    </td>
+    <td width="81" valign="top" style="width:61.0pt;border-top:none;border-left:none;
+  border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  mso-border-top-alt:solid windowtext .5pt;mso-border-left-alt:solid windowtext .5pt;
+  mso-border-alt:solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt">
+      <p class="MsoNormal"><span style="font-family:&quot;Comic Sans MS&quot;"><o:p>
+      &nbsp;</o:p>
+      </span></p>
+    </td>
+    <td width="93" valign="top" style="width:69.5pt;border-top:none;border-left:none;
+  border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  mso-border-top-alt:solid windowtext .5pt;mso-border-left-alt:solid windowtext .5pt;
+  mso-border-alt:solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt">
+      <p class="MsoNormal"><span style="font-family:&quot;Comic Sans MS&quot;"><o:p>
+      &nbsp;</o:p>
+      </span></p>
+    </td>
+  </tr>
+  <tr style="mso-yfti-irow:3;mso-yfti-lastrow:yes">
+    <td width="134" valign="top" style="width:100.35pt;border:solid windowtext 1.0pt;
+  border-top:none;mso-border-top-alt:solid windowtext .5pt;mso-border-alt:solid windowtext .5pt;
+  padding:0in 5.4pt 0in 5.4pt">
+      <p class="MsoNormal" align="center" style="text-align:center"><span style="font-family:&quot;Comic Sans MS&quot;;color:#999999">-O3<o:p>
+      </o:p>
+      </span></p>
+    </td>
+    <td width="132" valign="top" style="width:98.95pt;border-top:none;border-left:
+  none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  mso-border-top-alt:solid windowtext .5pt;mso-border-left-alt:solid windowtext .5pt;
+  mso-border-alt:solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt">
+      <p class="MsoNormal"><span style="font-family:&quot;Comic Sans MS&quot;"><o:p>
+      &nbsp;</o:p>
+      </span></p>
+    </td>
+    <td width="97" valign="top" style="width:72.5pt;border-top:none;border-left:none;
+  border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  mso-border-top-alt:solid windowtext .5pt;mso-border-left-alt:solid windowtext .5pt;
+  mso-border-alt:solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt">
+      <p class="MsoNormal"><span style="font-family:&quot;Comic Sans MS&quot;"><o:p>
+      &nbsp;</o:p>
+      </span></p>
+    </td>
+    <td width="81" valign="top" style="width:61.0pt;border-top:none;border-left:none;
+  border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  mso-border-top-alt:solid windowtext .5pt;mso-border-left-alt:solid windowtext .5pt;
+  mso-border-alt:solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt">
+      <p class="MsoNormal"><span style="font-family:&quot;Comic Sans MS&quot;"><o:p>
+      &nbsp;</o:p>
+      </span></p>
+    </td>
+    <td width="93" valign="top" style="width:69.5pt;border-top:none;border-left:none;
+  border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  mso-border-top-alt:solid windowtext .5pt;mso-border-left-alt:solid windowtext .5pt;
+  mso-border-alt:solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt">
+      <p class="MsoNormal"><span style="font-family:&quot;Comic Sans MS&quot;"><o:p>
+      &nbsp;</o:p>
+      </span></p>
+    </td>
+  </tr>
+</table>
+<p class="MsoNormal" style="margin-left:.5in">&nbsp;</p>
+<p class="MsoNormal" style="margin-left:.5in"><span style="font-family:&quot;Comic Sans MS&quot;">&nbsp;Did
+you observe any difference between the unoptimized version and <span style="color:#CC99FF">–O2</span>
+version of test1?<o:p>
+</o:p>
+</span></p>
+<p class="MsoNormal" style="margin-left:.5in"><span style="font-family:&quot;Comic Sans MS&quot;"><o:p>
+&nbsp;Did you observe any difference between the unoptimized version and <span style="color:#CC99FF">–O3</span>
+version of test1?<o:p>
+</o:p>
+</span></p>
+<p class="MsoNormal" style="mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+margin-left:.5in"><span style="font-family:&quot;Comic Sans MS&quot;">&nbsp;Did
+you observe any difference between <span style="color:#CC99FF">–O2 </span>and <span style="color:#CC99FF">–O3</span>
+version of test1?</span></p>
+<p class="MsoNormal" style="mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+margin-left:.5in"><span style="font-family: Comic Sans MS">&nbsp;Plot a
+histogram showing different levels of optimization.</span><span style="font-family:&quot;Comic Sans MS&quot;"><o:p>
+</o:p>
+</span></p>
+<p class="MsoNormal" style="mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+margin-left:.5in;text-indent:-.5in"><span style="font-family:&quot;Comic Sans MS&quot;">&nbsp;&nbsp;&nbsp;
+3)<span style="mso-tab-count:1">&nbsp; </span>For the second program (call it <span style="color:#00CCFF">test2.c</span>)
+change the integer arithmetic to <span style="color:teal">floating point</span>
+arithmetic (you will really only need to change variable declarations from int
+to float). Note that you will not be able to use the first program to obtain
+FLOPS (floating point operations).</span></p>
+<p class="MsoNormal" style="mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+margin-left:.5in"><span style="font-family:&quot;Comic Sans MS&quot;">Repeat all
+what you did for<span style="color:#00CCFF"> test1.c</span> except that now you
+should report floating point instructions per sec FLOPS instead of IOPS. Fill
+table3<o:p>
+</o:p>
+</span></p>
+<p class="MsoNormal" style="mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+margin-left:.5in"><span style="font-family:&quot;Comic Sans MS&quot;">Repeat the
+above procedure using <span style="color:#CC99FF">–O2</span> optimization.
+Fill table3.<o:p>
+</o:p>
+</span></p>
+<span style="font-size:12.0pt;font-family:&quot;Comic Sans MS&quot;;mso-fareast-font-family:
+SimSun;mso-bidi-font-family:&quot;Times New Roman&quot;;mso-ansi-language:EN-US;
+mso-fareast-language:ZH-CN;mso-bidi-language:AR-SA">&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Repeat the above procedure using <span style="color:#CC99FF">–O3</span>
+optimization. Fill table3.</span>
+<p class="MsoNormal" style="margin-left: .5in">&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </p>
+<table class="MsoTableGrid" border="1" cellspacing="0" cellpadding="0" style="margin-left:40.5pt;border-collapse:collapse;border:none;mso-border-alt:
+ solid windowtext .5pt;mso-yfti-tbllook:191;mso-padding-alt:0in 5.4pt 0in 5.4pt;
+ mso-border-insideh:.5pt solid windowtext;mso-border-insidev:.5pt solid windowtext">
+  <tr style="mso-yfti-irow:0">
+    <td width="134" valign="top" style="width:100.35pt;border:solid windowtext 1.0pt;
+  mso-border-alt:solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt">
+      <p class="MsoNormal" align="center" style="text-align:center"><span style="font-family:&quot;Comic Sans MS&quot;;color:#993366">Test2<o:p>
+      </o:p>
+      </span></p>
+    </td>
+    <td width="132" valign="top" style="width:98.95pt;border:solid windowtext 1.0pt;
+  border-left:none;mso-border-left-alt:solid windowtext .5pt;mso-border-alt:
+  solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt">
+      <p class="MsoNormal" align="center" style="text-align:center"><span style="font-family:&quot;Comic Sans MS&quot;;color:blue">Total
+      # of instructions<o:p>
+      </o:p>
+      </span></p>
+    </td>
+    <td width="97" valign="top" style="width:72.5pt;border:solid windowtext 1.0pt;
+  border-left:none;mso-border-left-alt:solid windowtext .5pt;mso-border-alt:
+  solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt">
+      <p class="MsoNormal" align="center" style="text-align:center"><span style="font-family:&quot;Comic Sans MS&quot;;color:blue">Total
+      Elapsed time<o:p>
+      </o:p>
+      </span></p>
+    </td>
+    <td width="93" valign="top" style="width:69.5pt;border:solid windowtext 1.0pt;
+  border-left:none;mso-border-left-alt:solid windowtext .5pt;mso-border-alt:
+  solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt">
+      <p class="MsoNormal" align="center" style="text-align:center"><span style="font-family:&quot;Comic Sans MS&quot;;color:blue">Floating<span style="mso-spacerun:yes">&nbsp;
+      </span>operations<o:p>
+      </o:p>
+      </span></p>
+      <p class="MsoNormal" align="center" style="text-align:center"><span style="font-family:&quot;Comic Sans MS&quot;;color:blue">%<o:p>
+      </o:p>
+      </span></p>
+    </td>
+    <td width="81" valign="top" style="width:61.0pt;border:solid windowtext 1.0pt;
+  border-left:none;mso-border-left-alt:solid windowtext .5pt;mso-border-alt:
+  solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt">
+      <p class="MsoNormal" align="center" style="text-align:center"><span style="font-family:&quot;Comic Sans MS&quot;;color:blue">Integer<span style="mso-spacerun:yes">&nbsp;
+      </span>operations<o:p>
+      </o:p>
+      </span></p>
+      <p class="MsoNormal" align="center" style="text-align:center"><span style="font-family:&quot;Comic Sans MS&quot;;color:blue">%<o:p>
+      </o:p>
+      </span></p>
+    </td>
+  </tr>
+  <tr style="mso-yfti-irow:1">
+    <td width="134" valign="top" style="width:100.35pt;border:solid windowtext 1.0pt;
+  border-top:none;mso-border-top-alt:solid windowtext .5pt;mso-border-alt:solid windowtext .5pt;
+  padding:0in 5.4pt 0in 5.4pt">
+      <p class="MsoNormal" align="center" style="text-align:center"><span style="font-family:&quot;Comic Sans MS&quot;;color:#999999">No
+      optimization<o:p>
+      </o:p>
+      </span></p>
+    </td>
+    <td width="132" valign="top" style="width:98.95pt;border-top:none;border-left:
+  none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  mso-border-top-alt:solid windowtext .5pt;mso-border-left-alt:solid windowtext .5pt;
+  mso-border-alt:solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt">
+      <p class="MsoNormal"><span style="font-family:&quot;Comic Sans MS&quot;"><o:p>
+      &nbsp;</o:p>
+      </span></p>
+    </td>
+    <td width="97" valign="top" style="width:72.5pt;border-top:none;border-left:none;
+  border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  mso-border-top-alt:solid windowtext .5pt;mso-border-left-alt:solid windowtext .5pt;
+  mso-border-alt:solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt">
+      <p class="MsoNormal"><span style="font-family:&quot;Comic Sans MS&quot;"><o:p>
+      &nbsp;</o:p>
+      </span></p>
+    </td>
+    <td width="93" valign="top" style="width:69.5pt;border-top:none;border-left:none;
+  border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  mso-border-top-alt:solid windowtext .5pt;mso-border-left-alt:solid windowtext .5pt;
+  mso-border-alt:solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt">
+      <p class="MsoNormal"><span style="font-family:&quot;Comic Sans MS&quot;"><o:p>
+      &nbsp;</o:p>
+      </span></p>
+    </td>
+    <td width="81" valign="top" style="width:61.0pt;border-top:none;border-left:none;
+  border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  mso-border-top-alt:solid windowtext .5pt;mso-border-left-alt:solid windowtext .5pt;
+  mso-border-alt:solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt">
+      <p class="MsoNormal"><span style="font-family:&quot;Comic Sans MS&quot;"><o:p>
+      &nbsp;</o:p>
+      </span></p>
+    </td>
+  </tr>
+  <tr style="mso-yfti-irow:2">
+    <td width="134" valign="top" style="width:100.35pt;border:solid windowtext 1.0pt;
+  border-top:none;mso-border-top-alt:solid windowtext .5pt;mso-border-alt:solid windowtext .5pt;
+  padding:0in 5.4pt 0in 5.4pt">
+      <p class="MsoNormal" align="center" style="text-align:center"><span style="font-family:&quot;Comic Sans MS&quot;;color:#999999">-O2<o:p>
+      </o:p>
+      </span></p>
+    </td>
+    <td width="132" valign="top" style="width:98.95pt;border-top:none;border-left:
+  none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  mso-border-top-alt:solid windowtext .5pt;mso-border-left-alt:solid windowtext .5pt;
+  mso-border-alt:solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt">
+      <p class="MsoNormal"><span style="font-family:&quot;Comic Sans MS&quot;"><o:p>
+      &nbsp;</o:p>
+      </span></p>
+    </td>
+    <td width="97" valign="top" style="width:72.5pt;border-top:none;border-left:none;
+  border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  mso-border-top-alt:solid windowtext .5pt;mso-border-left-alt:solid windowtext .5pt;
+  mso-border-alt:solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt">
+      <p class="MsoNormal"><span style="font-family:&quot;Comic Sans MS&quot;"><o:p>
+      &nbsp;</o:p>
+      </span></p>
+    </td>
+    <td width="93" valign="top" style="width:69.5pt;border-top:none;border-left:none;
+  border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  mso-border-top-alt:solid windowtext .5pt;mso-border-left-alt:solid windowtext .5pt;
+  mso-border-alt:solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt">
+      <p class="MsoNormal"><span style="font-family:&quot;Comic Sans MS&quot;"><o:p>
+      &nbsp;</o:p>
+      </span></p>
+    </td>
+    <td width="81" valign="top" style="width:61.0pt;border-top:none;border-left:none;
+  border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  mso-border-top-alt:solid windowtext .5pt;mso-border-left-alt:solid windowtext .5pt;
+  mso-border-alt:solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt">
+      <p class="MsoNormal"><span style="font-family:&quot;Comic Sans MS&quot;"><o:p>
+      &nbsp;</o:p>
+      </span></p>
+    </td>
+  </tr>
+  <tr style="mso-yfti-irow:3;mso-yfti-lastrow:yes">
+    <td width="134" valign="top" style="width:100.35pt;border:solid windowtext 1.0pt;
+  border-top:none;mso-border-top-alt:solid windowtext .5pt;mso-border-alt:solid windowtext .5pt;
+  padding:0in 5.4pt 0in 5.4pt">
+      <p class="MsoNormal" align="center" style="text-align:center"><span style="font-family:&quot;Comic Sans MS&quot;;color:#999999">-O3<o:p>
+      </o:p>
+      </span></p>
+    </td>
+    <td width="132" valign="top" style="width:98.95pt;border-top:none;border-left:
+  none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  mso-border-top-alt:solid windowtext .5pt;mso-border-left-alt:solid windowtext .5pt;
+  mso-border-alt:solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt">
+      <p class="MsoNormal"><span style="font-family:&quot;Comic Sans MS&quot;"><o:p>
+      &nbsp;</o:p>
+      </span></p>
+    </td>
+    <td width="97" valign="top" style="width:72.5pt;border-top:none;border-left:none;
+  border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  mso-border-top-alt:solid windowtext .5pt;mso-border-left-alt:solid windowtext .5pt;
+  mso-border-alt:solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt">
+      <p class="MsoNormal"><span style="font-family:&quot;Comic Sans MS&quot;"><o:p>
+      &nbsp;</o:p>
+      </span></p>
+    </td>
+    <td width="93" valign="top" style="width:69.5pt;border-top:none;border-left:none;
+  border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  mso-border-top-alt:solid windowtext .5pt;mso-border-left-alt:solid windowtext .5pt;
+  mso-border-alt:solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt">
+      <p class="MsoNormal"><span style="font-family:&quot;Comic Sans MS&quot;"><o:p>
+      &nbsp;</o:p>
+      </span></p>
+    </td>
+    <td width="81" valign="top" style="width:61.0pt;border-top:none;border-left:none;
+  border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  mso-border-top-alt:solid windowtext .5pt;mso-border-left-alt:solid windowtext .5pt;
+  mso-border-alt:solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt">
+      <p class="MsoNormal"><span style="font-family:&quot;Comic Sans MS&quot;"><o:p>
+      &nbsp;</o:p>
+      </span></p>
+    </td>
+  </tr>
+</table>
+<p class="MsoNormal">&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="font-family:&quot;Comic Sans MS&quot;"><br>
+&nbsp;&nbsp; </span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="font-family:&quot;Comic Sans MS&quot;">Did
+you observe any difference between the unoptimized version and <span style="color:#CC99FF">–O2</span>
+version of test2?<o:p>
+</o:p>
+</span></p>
+<p class="MsoNormal" style="margin-left:.5in"><span style="font-family:&quot;Comic Sans MS&quot;">Did
+you observe any difference between the unoptimized version and <span style="color:#CC99FF">–O3</span>
+version of test2?<o:p>
+</o:p>
+</span></p>
+<span style="font-size:12.0pt;font-family:&quot;Comic Sans MS&quot;;mso-fareast-font-family:
+SimSun;mso-bidi-font-family:&quot;Times New Roman&quot;;mso-ansi-language:EN-US;
+mso-fareast-language:ZH-CN;mso-bidi-language:AR-SA">&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Did you observe any difference between <span style="color:#CC99FF">–O2
+</span>and <span style="color:#CC99FF">–O3</span> version of test2?</span>
+<p>&nbsp;&nbsp; <span style="font-size: 12.0pt; font-family: Comic Sans MS; mso-fareast-font-family: SimSun; mso-bidi-font-family: Times New Roman; mso-ansi-language: EN-US; mso-fareast-language: ZH-CN; mso-bidi-language: AR-SA">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span><span style="font-family: Comic Sans MS">Plot a histogram showing
+different levels of optimization.</span></p>
+
+</body>
+
+</html>

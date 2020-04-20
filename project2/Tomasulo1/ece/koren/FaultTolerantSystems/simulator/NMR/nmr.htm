@@ -1,0 +1,596 @@
+<html>
+<head><title>N-Modular Redundancy (NMR) Reliability Calculator</title></head>
+
+
+<!-- This style behavior tag is required to show the VML and must appear in the document HEAD -->
+<style type="text/css">v\:* { behavior: url(#default#VML); }</style>
+
+<!-- Reference the javascript code -->
+<script src="XYGraph.js" type="text/javascript"></script>
+
+<body bgcolor="#E0E0E0">
+
+<script language="JavaScript">
+
+//******************************************************************************
+//		Author:		John Yi
+//		Class:		ECE 655
+//
+// This Program performs simple system reliability calculations for two main
+// types of N-modular redundancy configurations - NMR with a voter and NMR using
+// spares.  The program allows the user to input a range of single-module
+// reliabilities to compare how system reliability changes between the 2 NMR
+// configuration types.  For the NMR with spares, the user has a choice of
+// calculating the system reliability either with the spares powered-on or
+// on-standby.
+//******************************************************************************
+
+
+var R_values=new Array(10)
+var voter_results=new Array(10)
+var spare_results=new Array(10)
+
+
+//******************************************************************************
+// This function calculates the # of combinations for a given N & i values.
+//******************************************************************************
+function combination(N_value, i_value) {
+	var N_factorial = 1
+	var i_factorial = 1
+	var N_i_factorial = 1
+
+	for (x=1; x<=N_value; x++) {
+		N_factorial = N_factorial * x
+	}
+
+	for (x=1; x<=i_value; x++) {
+		i_factorial = i_factorial * x
+	}
+
+	for (x=1; x<=(N_value - i_value); x++) {
+		N_i_factorial = N_i_factorial * x
+	}
+
+	return (N_factorial / (i_factorial * N_i_factorial))
+}
+
+
+//******************************************************************************
+// This function calculates the system reliability of the NMR configuration
+// with a single voter module.  It allows the user to see 10 different system
+// reliabilities based on individual module reliability.
+//******************************************************************************
+function CalculateNMRvoter(form) {
+
+	var v = form.v_value.value * 1
+	var N = form.N_value_voter.value * 1
+	var M = 1
+	var temp = new Array(10)	
+
+
+	// Check for valid input values
+
+	if (v < 0 || v > 1) {
+		alert("You have entered an invalid Voter Reliability number (Rvoter), must be between 0 - 1")
+		form.v_value.value = ""
+		exit()
+	}
+
+	if (N < 3) {
+		alert("You have entered an invalid Number of Modules (N), must be >= 3")
+		form.N_value_voter.value = ""
+		exit()
+	}
+
+	Calculate_R_value(form.R_value_high.value, form.R_value_low.value)	
+
+
+	// Calculate M value - which is the number of majority needed for a given N
+
+	M = (N + 1) / 2
+
+	for (j=0; j<=9; j++) {
+	
+		temp[j] = 0
+
+		for (i=0; i<=(N - M); i++) {
+			temp[j] = temp[j] + (combination(N, i) * Math.pow(1 - R_values[j], i) * Math.pow(R_values[j], N - i))
+		}
+
+		temp[j] = temp[j] * v
+	}
+
+
+	for (j=0; j<=9; j++) {
+		voter_results[j] = Math.round(temp[j]*10000000)/10000000
+	}
+
+	// Display results
+
+	form.R0.value = R_values[0].toFixed(7)
+	form.R1.value = R_values[1].toFixed(7)
+	form.R2.value = R_values[2].toFixed(7)
+	form.R3.value = R_values[3].toFixed(7)
+	form.R4.value = R_values[4].toFixed(7)
+	form.R5.value = R_values[5].toFixed(7)
+	form.R6.value = R_values[6].toFixed(7)
+	form.R7.value = R_values[7].toFixed(7)
+	form.R8.value = R_values[8].toFixed(7)
+	form.R9.value = R_values[9].toFixed(7)
+
+	form.voter0.value = temp[0].toFixed(7)
+	form.voter1.value = temp[1].toFixed(7)
+	form.voter2.value = temp[2].toFixed(7)
+	form.voter3.value = temp[3].toFixed(7)
+	form.voter4.value = temp[4].toFixed(7)
+	form.voter5.value = temp[5].toFixed(7)
+	form.voter6.value = temp[6].toFixed(7)
+	form.voter7.value = temp[7].toFixed(7)
+	form.voter8.value = temp[8].toFixed(7)
+	form.voter9.value = temp[9].toFixed(7)
+
+	DrawGraph(form)
+
+}
+
+
+//******************************************************************************
+// This function calculates the system reliability of the NMR configuration
+// where there is only 1 actively running module while the other modules are 
+// used as spares. The spares can be powered-on (active) or powered-off (standby)
+// while not being used until the active module is deemed faulty.
+//******************************************************************************
+function CalculateNMRspares(form) {
+
+	var d = form.d_value.value * 1
+	var C = form.coverage_factor.value * 1
+	var N = (form.N_value_spare.value * 1)
+	var temp = new Array(10)	
+
+
+	// Check for valid input values
+
+	if (d < 0 || d > 1) {
+		alert("You have entered an invalid Detector Reliability (Rdetector), must be between 0 - 1")
+		form.d_value.value = ""
+		exit()
+	}
+
+	if (C < 0 || C > 1) {
+		alert("You have entered an invalid Coverage Factor (C), must between 0 - 1")
+		form.coverage_factor.value = ""
+		exit()
+	}
+
+	if (N < 1) {
+		alert("You have entered an invalid Number of Modules (N), must be >= 2")
+		form.N_value_spare.value = ""
+		exit()
+	}
+
+	Calculate_R_value(form.R_value_high.value, form.R_value_low.value)
+
+	
+	// Check if spares are active or on standby & calculate system reliability accordingly
+
+	if (form.active_or_standby.options.selectedIndex == 0) {
+		for (i=0; i<=9; i++) {
+			temp[i] = (1 - Math.pow(1 - R_values[i], N)) * d
+		}
+	}
+
+	if (form.active_or_standby.options.selectedIndex == 1) {
+		N = N - 1
+		for (i=0; i<=9; i++) {
+			temp2 = 0
+			for (k=0; k<=N; k++) {
+				temp2 = temp2 + Math.pow(C, k) * Math.pow(1 - R_values[i], k)
+			}
+			temp[i] = temp2 * R_values[i] * d
+		}
+	}
+
+	for (i=0; i<=9; i++) {
+		spare_results[i] = Math.round(temp[i]*10000000)/10000000
+	}
+	
+	// Display results
+
+	form.R0.value = R_values[0].toFixed(7)
+	form.R1.value = R_values[1].toFixed(7)
+	form.R2.value = R_values[2].toFixed(7)
+	form.R3.value = R_values[3].toFixed(7)
+	form.R4.value = R_values[4].toFixed(7)
+	form.R5.value = R_values[5].toFixed(7)
+	form.R6.value = R_values[6].toFixed(7)
+	form.R7.value = R_values[7].toFixed(7)
+	form.R8.value = R_values[8].toFixed(7)
+	form.R9.value = R_values[9].toFixed(7)
+
+	form.spare0.value = temp[0].toFixed(7)
+	form.spare1.value = temp[1].toFixed(7)
+	form.spare2.value = temp[2].toFixed(7)
+	form.spare3.value = temp[3].toFixed(7)
+	form.spare4.value = temp[4].toFixed(7)
+	form.spare5.value = temp[5].toFixed(7)
+	form.spare6.value = temp[6].toFixed(7)
+	form.spare7.value = temp[7].toFixed(7)
+	form.spare8.value = temp[8].toFixed(7)
+	form.spare9.value = temp[9].toFixed(7)
+
+	DrawGraph(form)
+}
+
+
+//******************************************************************************
+// This function calculates step sizes for the 10 single module reliability 
+// values to be used for the system reliability calculation.
+//******************************************************************************
+function Calculate_R_value(p_high, p_low) {
+
+	var step_size
+
+
+	// Convert string to numberic values
+
+	p_high = p_high * 1
+	p_low = p_low * 1
+
+
+	// Check for valid input values
+
+	if (p_high < 0 || p_high > 1) {
+		alert("You have entered an invalid High P value, must be between 0 - 1")
+		form.R_value_high.value = ""
+		exit()
+	}
+
+	if (p_low < 0 || p_low > 1) {
+		alert("You have entered an invalid Low P value, must be between 0 - 1")
+		form.R_value_low.value = ""
+		exit()
+	}
+
+
+	// Calculate step size of reliability values
+
+	step_size = (p_high - p_low) / 9
+
+
+	// Determine array of reliability values to use
+
+	R_values[0] = p_high
+ 	
+	for (i=1; i<=9; i++) {
+		R_values[i] = Math.round((R_values[i-1] - step_size)*10000000)/10000000
+	}
+
+}
+
+
+//******************************************************************************
+// This function sets an example default values to the input variables.
+//******************************************************************************
+function SetExampleValues(form) {
+
+	form.R_value_high.value = 1.0
+	form.R_value_low.value = 0.1
+	form.v_value.value = 1.0
+	form.d_value.value = 1.0
+	form.N_value_voter.value = 5
+	form.N_value_spare.value = 5
+	form.coverage_factor.value = 1.0
+
+}
+
+
+//******************************************************************************
+// This function clears all input values & output results from the user interface.
+//******************************************************************************
+function ResetInput(form) {
+
+	form.R_value_high.value = ""
+	form.R_value_low.value = ""
+	form.v_value.value = ""
+	form.d_value.value = ""
+	form.N_value_voter.value = ""
+	form.N_value_spare.value = ""
+
+	form.R0.value = ""
+	form.R1.value = ""
+	form.R2.value = ""
+	form.R3.value = ""
+	form.R4.value = ""
+	form.R5.value = ""
+	form.R6.value = ""
+	form.R7.value = ""
+	form.R8.value = ""
+	form.R9.value = ""
+
+	form.voter0.value = ""
+	form.voter1.value = ""
+	form.voter2.value = ""
+	form.voter3.value = ""
+	form.voter4.value = ""
+	form.voter5.value = ""
+	form.voter6.value = ""
+	form.voter7.value = ""
+	form.voter8.value = ""
+	form.voter9.value = ""
+
+	form.spare0.value = ""
+	form.spare1.value = ""
+	form.spare2.value = ""
+	form.spare3.value = ""
+	form.spare4.value = ""
+	form.spare5.value = ""
+	form.spare6.value = ""
+	form.spare7.value = ""
+	form.spare8.value = ""
+	form.spare9.value = ""
+
+	for (i=0; i<=9; i++) {
+		R_values[i] = ""
+		voter_results[i] = ""
+		spare_results[i] = ""
+	}
+	DrawGraph(form)
+}
+
+
+function Help(){
+	open("help.htm")
+
+}
+
+
+//******************************************************************************
+// This function calls a freeware javascript function to plot the calculated
+// system reliability results to a X-Y graph.
+//******************************************************************************
+function DrawGraph(form) {
+
+	var NMRGraph = new XYGraph(); 	// define new XYGraph object
+	var NMRLineVoter = new XYLine(); // define new XYLine object for NMR with voter results
+	var NMRLineSpare = new XYLine(); // define new XYLine object for NMR with spares results
+	var minx = form.R_value_low.value * 1;
+	var maxx = form.R_value_high.value * 1;
+	var miny;
+	var maxy;
+	var xstep_size;
+	var ystep_size;
+
+	// define x,y coordinate points to graph	
+	for (i=0; i<=9; i++) {
+		NMRLineVoter.x[i] = R_values[i];
+		NMRLineSpare.x[i] = R_values[i];
+		NMRLineVoter.y[i] = voter_results[i]; 
+		NMRLineSpare.y[i] = spare_results[i];
+	}
+
+	// Calculate min & max y-axis range
+
+	miny = 99;
+
+	if (voter_results[0] >= 0 && voter_results[0] <= 1) {
+		for (i=0; i<=9; i++) {
+			if (miny > voter_results[i]) {
+				miny = voter_results[i];
+			}
+		}
+	}
+
+	if (spare_results[0] >= 0 && spare_results[0] <= 1) {
+		for (i=0; i<=9; i++) {
+			if (miny > spare_results[i]) {
+				miny = spare_results[i];
+			}
+		}
+	}
+
+
+	maxy = -99;
+
+	if (voter_results[0] >= 0 && voter_results[0] <= 1) {	
+		for (i=0; i<=9; i++) {
+			if (maxy < voter_results[i]) {
+				maxy = voter_results[i];
+			}
+		}
+	}
+
+	if (spare_results[0] >= 0 && spare_results[0] <= 1) {
+		for (i=0; i<=9; i++) {
+			if (maxy < spare_results[i]) {
+				maxy = spare_results[i];
+			}	
+		}
+	}
+
+
+	if ((miny == 99) && (maxy = -99)) {
+		exit();
+	}
+
+	xstep_size = (maxx - minx) / 9;
+	ystep_size = (maxy - miny) / 9;
+
+	// Set Graph & Line Properties & draw graph
+
+	NMRGraph.xaxis = "Single Module Reliability Values [R]";
+	NMRGraph.yaxis = "NMR System Reliability";
+
+	NMRGraph.xmin = minx;
+	NMRGraph.xmax = maxx;
+	NMRGraph.xscale = xstep_size;
+	NMRGraph.ymin = miny;
+	NMRGraph.ymax = maxy;
+	NMRGraph.yscale = ystep_size;
+	
+	NMRLineVoter.VMLpointshapetype = "diamond";
+	NMRLineVoter.pointfillcolor = "blue";
+	NMRLineVoter.pointstrokecolor = "blue";
+	NMRLineVoter.VMLstroke = "weight='1pt'; color='blue'; dashstyle='solid';";
+
+	NMRLineSpare.VMLpointshapetype = "square";
+	NMRLineSpare.pointfillcolor = "red";
+	NMRLineSpare.pointstrokecolor = "red";
+	NMRLineSpare.VMLstroke = "weight='1pt'; color='red'; dashstyle='solid';";
+
+	grapharea.innerHTML = NMRGraph.Plot(NMRLineVoter, NMRLineSpare);
+	
+}
+
+//-->
+</script>
+</head>
+
+<p align="center"><b><font size="5">N-Modular Redundancy (NMR) Reliability Calculator</font></b></p>
+
+
+<FORM>
+
+<table border="4" cellspacing="1"  cellpadding="10" width="100%" align="center">
+  <tr>
+
+    <td width="20%">
+ 
+    </td>
+
+    <td width="40%">
+	<font size="4" color="#0000AA"><b>NMR System with Voter:</b></font><p>
+	<font size="3">Reliability of Voter ("Rvoter") [0 - 1]: </font><br>
+	<input type="text" name="v_value" size="20"><p> 
+	<font size="3">Number of Redundant Modules ("N") [>=3]: </font><br>
+	<input type="text" name="N_value_voter" size="20">
+	<br><br><br><br><br><br><br><br><br>
+    </td>
+	
+    <td width="40%">
+	<font size="4" color="#0000AA"><b>NMR System with Spares:</b></font><p>
+	<font size="3">Reliability of Fault detection/Reconfiguration Unit ("Rdetector"): </font><br>
+	<input type="text" name="d_value" size="20"><p> 
+	<font size="3">Number of Redundant Modules ("N" = 1 active & N-1 spares) [>=2]: </font><br>
+	<input type="text" name="N_value_spare" size="20"><p>
+	<font size="3">Coverage Factor ("C") if spares are on standy [0 - 1]: </font><br>
+	<input type="text" name="coverage_factor" size="20"><p>
+	<font size="3">Are Spares active or on standby? </font><br>	
+	<select name="active_or_standby" size="1">
+	<option>active</option>
+	<option>standby</option>
+	</select></p>
+    </td>
+
+  </tr>
+
+</table>
+
+<table border="4" cellspacing="1"  cellpadding="10" width="100%" align="center">
+  <tr>
+
+    <td width="20%">
+
+ 
+    </td>
+
+    <td width="80%">
+	<p align="center">
+    	<font size="3">Reliability of Single Module Unit ("R") [0 - 1]: </font><br><br>
+    	<font size="3">High Value: </font>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    	<font size="3">Low Value: </font><br>
+ 	<input type="text" name="R_value_high" size="20" onchange="CalculateNMRvoter(this.form); CalculateNMRspares(this.form)">
+ 	<input type="text" name="R_value_low" size="20" onchange="CalculateNMRvoter(this.form); CalculateNMRspares(this.form)"><br><br>
+    	<input type="button" value="Calculate NMR with Voter" name="btnCalculateNMRvoter" onClick="CalculateNMRvoter(this.form)">
+    	<input type="button" value="Calculate NMR with Spares" name="btnCalculateNMRspares" onClick="CalculateNMRspares(this.form)"></p>
+    </td>
+
+  </tr>
+
+</table>
+
+
+<table border="4" cellspacing="1"  cellpadding="10" width="100%" align="center">
+  <tr>
+    <td width="20%">
+    	<font size="3">Single Module Reliabilities</font><br>
+ 	<input type="text" name="R0" size="10"><br> 
+ 	<input type="text" name="R1" size="10"><br> 
+	<input type="text" name="R2" size="10"><br> 
+	<input type="text" name="R3" size="10"><br> 
+	<input type="text" name="R4" size="10"><br> 
+	<input type="text" name="R5" size="10"><br> 
+	<input type="text" name="R6" size="10"><br> 
+	<input type="text" name="R7" size="10"><br> 
+	<input type="text" name="R8" size="10"><br> 
+	<input type="text" name="R9" size="10"><br> 
+    </td>
+
+    <td width="40%">
+    	<font size="3">System Reliability of NMR with Voter</font><br>
+ 	<input type="text" name="voter0" size="10"><br> 
+ 	<input type="text" name="voter1" size="10"><br> 
+	<input type="text" name="voter2" size="10"><br> 
+	<input type="text" name="voter3" size="10"><br> 
+	<input type="text" name="voter4" size="10"><br> 
+	<input type="text" name="voter5" size="10"><br> 
+	<input type="text" name="voter6" size="10"><br> 
+	<input type="text" name="voter7" size="10"><br> 
+	<input type="text" name="voter8" size="10"><br> 
+	<input type="text" name="voter9" size="10"><br> 
+    </td>
+
+    <td width="40%">
+    	<font size="3">System Reliability of NMR with Spares </font><br>
+ 	<input type="text" name="spare0" size="10"><br> 
+ 	<input type="text" name="spare1" size="10"><br> 
+	<input type="text" name="spare2" size="10"><br> 
+	<input type="text" name="spare3" size="10"><br> 
+	<input type="text" name="spare4" size="10"><br> 
+	<input type="text" name="spare5" size="10"><br> 
+	<input type="text" name="spare6" size="10"><br> 
+	<input type="text" name="spare7" size="10"><br> 
+	<input type="text" name="spare8" size="10"><br> 
+	<input type="text" name="spare9" size="10"><br> 
+    </td>
+
+  </tr>
+
+</table>
+
+<table border="4" cellspacing="1"  cellpadding="10" width="100%" align="center">
+  <tr>
+    <td width="20%">
+
+    </td>
+
+    <td width="80%">
+    <p align="center">
+    <font size="4">Graph of System Reliability</font><br></p>
+    <div id="grapharea" align="center"></div>
+
+    <p align="center">
+    <font size="2" color="#2000C0">[Blue diamonds -> NMR with Voter] </font><br>
+    <font size="2" color="#ff0000">[Red Squares -> NMR with Spares] </font><br></p>
+
+    </td>
+
+  </tr>
+
+</table>
+
+<br><br>
+<p align="left">
+
+	<input type="button" value="Clear All Fields" name="btnReset" onClick="ResetInput(this.form)">&nbsp;&nbsp;&nbsp
+ 	<input type="button" value="Set Example Values" name="btnSetExampleValues" onClick="SetExampleValues(this.form)">&nbsp;&nbsp;&nbsp
+ 	<input type="button" value="Information & Assumptions" name="btnHelp" onClick="Help(this.form)">&nbsp;&nbsp;&nbsp
+</p>
+
+<br><br>
+
+</FORM>
+
+</body>
+
+</html>
+

@@ -1,0 +1,83 @@
+<HTML>
+<HEAD>
+   <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+   <META NAME="Author" CONTENT="Lilian">
+   <META NAME="GENERATOR" CONTENT="Mozilla/4.03 [en] (X11; I; Linux 2.0.30 i686) [Netscape]">
+   <TITLE>Intro</TITLE>
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#FFCC99" LINK="#0000EF" VLINK="#55188A" ALINK="#FF0000">
+&nbsp;
+<CENTER><B><FONT FACE="Copperplate Gothic Bold"><FONT SIZE=+4>Designing an I/O System</FONT></FONT></B></CENTER>
+
+<DIV ALIGN=right><FONT FACE="Copperplate Gothic
+Light">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</FONT><FONT FACE="Times New Roman,Times"><FONT SIZE=+1><A HREF="performancehome.html">HOME
+</A>/ <A HREF="transaction.html">NEXT</A></FONT></FONT></DIV>
+&nbsp;
+
+<P>The art of I/O system design is to find a design that meets goals for <B>cost, dependability</B> and variety of
+devices while <B> avoiding bottlenecks in I/O performance.</B> Avoiding bottlenecks means that components must be
+balanced between main memory and I/O devices, because performance - and
+hence effective cost performance - can only
+be good at the weakest link in the I/O chain. 
+<BR>&nbsp;
+<P>
+The architect must plan for expansion, both in numbers and types of
+I/O devices, so that customers can tailor
+the I/O to their applications.  Finally, storage must be dependable, adding new constraints on proposed designs.
+<P>
+<BR>&nbsp;
+Below is a <B>series of steps</B> to follow in designing an I/O system.  The answers to each step may be dictated
+by market requirements or simply by cost, performance, and availability goals.
+
+<UL>
+<LI>
+<B> List the different types of I/O devices to be connected to the machine,</B> or <B> list the standard buses
+that the machine will support </B></LI>
+
+<LI>
+<B> List the physical requirements for each I/O device. Requirements
+include</B> <B><i>size,</B></i> <B><i>
+power,</B></i><B><i> connectors,</B></i><B><i> bus slots,</B></i><B><i>
+expansion cabinets,</B></i><B> and so
+on</B></LI>
+
+<LI>
+<B> List the cost of each I/O device, including the portion of cost of any controller needed for this
+device</B>.</LI>
+
+<LI>
+<B> List the reliability of each I/O device</B>.</LI>
+
+<LI>
+<B> Record the CPU resource demands of each I/O device.  This list should include
+<UL>
+<LI>
+Clock cycles for instructions used to initiate an I/O, to support operation of an I/O device (such as handling
+interrupts), and to complete I/O
+</LI>
+<LI>
+CPU stalls due to waiting for I/O to finish using the memory, bus, or cache
+</LI>
+<LI>
+CPU clock cycles to recover from an I/O activity, such as cache flush
+</LI>
+</UL>
+
+<LI>
+<B> List the memory and I/O bus resource demands of each I/O device.  NOTE that even when the CPU is not using
+the memory, the bandwidth of main memory and the I/O bus is limited</B>.</LI>
+
+<LI>
+<B> Assess the performance and availability of the differnt ways to organize these I/O devices. Finally select
+the best organization</B>.</LI>
+</b>
+</UL>
+
+<p> The diagram below shows an example of I/O organization of a
+computer system.
+<p> 
+<CENTER><IMG SRC="io.JPG" HEIGHT=500 WIDTH=700> </CENTER>
+</BODY>
+</HTML>
+

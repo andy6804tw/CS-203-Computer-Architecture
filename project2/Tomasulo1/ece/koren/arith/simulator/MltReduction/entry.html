@@ -1,0 +1,93 @@
+<HTML>
+<HEAD>
+<META NAME="Author" CONTENT="Shabadi">
+<TITLE>Greedy Partial Product Reduction</TITLE>
+<SCRIPT language="JavaScript" src="backend_Greedy.js"> </SCRIPT>
+</HEAD>
+
+
+<BODY bgcolor="#AAEAAE" text="black">
+<CENTER>
+<H3>Greedy Partial Product Reduction </H3>
+</CENTER>
+
+<FORM>Number of Bits: <INPUT type="text" name="Nbits">
+<P>
+<HR>
+<!-- ---------------------------------------- --> <!-- end table for components -->
+<!-- ---------------------------------------- -->
+<CENTER><B> Enter Signal Delays </B></CENTER>
+
+<!-- ---------------------------------------- --> <!-- start table for half adder -->
+<!-- ---------------------------------------- -->
+
+<p></p>
+<TABLE BORDER align=center>
+
+	<CAPTION><B>Half Adder</B></CAPTION>
+
+	<TR>
+		<TD>A<SUB>i</SUB> to S<SUB>i </SUB> </TD>
+		<TD><INPUT type="text" name="HA_AToSum" value=2.0 size=4> </TD>
+	</TR>
+
+	<TR>
+		<TD>A<SUB>i</SUB> to C<SUB>i+1</SUB></TD>
+		<TD><INPUT type="text" name="HA_AToCout" value=1.5 size=4></TD>
+	</TR>
+
+</TABLE>
+
+<!-- ---------------------------------------- --> <!-- end table for half adder -->
+<!-- ---------------------------------------- -->
+
+<p></p>
+
+<!-- ---------------------------------------- --> <!-- start table for full adder -->
+<!-- ---------------------------------------- -->
+
+<TABLE BORDER align=center>
+
+	<CAPTION><B>Full Adder</B></CAPTION>
+	<TR>
+		<TD>A<SUB>i</SUB> to C<SUB>i+1</SUB></TD>
+		<TD><INPUT type="text" name="FA_AToCout" value=1.5 size=4></TD>
+		<TD>C<SUB>i</SUB> to C<SUB>i+1</SUB></TD>
+		<TD><INPUT type="text" name="FA_CinToCout" value=1.0 size=4></TD>
+
+	</TR>
+
+	<TR>
+		<TD>C<SUB>i</SUB> to S<SUB>i </SUB></TD>
+		<TD><INPUT type="text" name="FA_CinToSum" value=1.5 size=4></TD>
+		<TD>A<SUB>i</SUB> to S<SUB>i </SUB></TD>
+		<TD><INPUT type="text" name="FA_AToSum" value=2.0 size=4></TD>
+
+	</TR>
+</TABLE>
+
+<!-- ---------------------------------------- --> <!-- end table for full adder -->
+<!-- ---------------------------------------- -->
+
+<p>
+<CENTER><INPUT type="button" name="enter" value="Compute"
+	onClick="GreedyReduction(this.form)"></CENTER>
+</p>
+
+<p>
+<CENTER><INPUT TYPE="Reset" VALUE="   Reset   "
+	onClick=parent.frames[1].location.href="tablet.html"></CENTER>
+</P>
+
+<p>
+<CENTER><INPUT TYPE="button" VALUE="   Help    "
+	onClick=parent.frames[1].location.href="help.html"></CENTER>
+</P>
+
+
+</FORM>
+
+
+
+</BODY>
+</HTML>

@@ -1,0 +1,1621 @@
+<HTML>
+<HEAD>
+<TITLE>Floating Point Demonstration of FAR and CLOSE cases</TITLE>
+<BODY bgColor="#9C7BBD">
+<SCRIPT language="JavaScript">
+
+// ***************************************************************
+// ***************************************************************
+
+function BitWiseNegate(BitStr) {
+  res = "";
+  for (i=0;i<BitStr.length;i++) {
+    if (BitStr.charAt(i) == '.') {
+       res = res + '.';
+    }
+    else if (BitStr.charAt(i) == '0') {
+       res = res + '1';
+    }
+    else if (BitStr.charAt(i) == '1') {
+       res = res + '0';
+    }
+  }
+  return res;
+}
+function unsignedToBinStr(TheNum, bits) {
+	// initialize the string
+	S = "";
+
+	for (CurPlace = bits-1; CurPlace >= 0; CurPlace--) {
+		CurPower = Math.pow(2, CurPlace)
+		if (TheNum >= CurPower) {
+			S += "1"
+			TheNum = TheNum - CurPower
+		} else  {
+			S += "0"
+		}
+	}
+	return S
+}
+function signedToBinStr(TheNum, bits) {
+	mark = 0;
+	if (TheNum < 0) {
+		mark = 1;
+		TheNum = -1 * TheNum;
+	}
+	S = unsignedToBinStr(TheNum, bits);
+	if (mark == 1) {
+		// convert to 2's complements
+		for (i = bits-1; i>=0; i--) {
+			if (state == 0) { // before first 1
+				Res = S.charAt(i) + Res;
+				if (S.charAt(i) == '1')
+					state = 1;
+			}
+			else {
+				Res = (S.charAt(i)=='1'?'0':'1') + Res;
+			}
+		}
+	}
+}
+
+
+function PrintHR(NumColumns) {
+	parent.frames[1].document.writeln("<HR noshade size=1>");
+}
+
+
+// ***************************************************************
+// ***************************************************************
+
+function BinToDec (BinStr) {
+
+	Num=0;
+	len = BinStr.length
+	for (var i=0; i<len ; i++) {
+//		Num += eval(BinStr[BinStr.length-1-i])*Math.pow(2,i);
+		if (BinStr.charAt(len - 1 - i) == '1')
+			Num += Math.pow(2,i);
+	}
+	return Num;
+}
+
+// ***************************************************************
+// ***************************************************************
+
+function OrderOfMagnitude (TheNum) {
+	// returns the highest place which has a "1" in TheNum's
+	// binary representation - special non-2's complement version
+
+	LogBaseTwo = Math.log(TheNum)/Math.LN2;
+	return Math.floor(LogBaseTwo)
+	//return Math.round(LogBaseTwo)
+}
+
+// ***************************************************************
+// ***************************************************************
+
+function PrintError(Message) {
+	Error = "<CENTER><H1> ERROR </H1></CENTER> <P>\n"
+	Error += "<CENTER> <EM>" + Message + "</EM> </CENTER>\n <HR noshade=1>"
+	return Error
+}
+
+// ***************************************************************
+// ***************************************************************
+
+function ParseBinary (BinNum, NumBits) {
+	// Turns a binary number into a decimal, sets a flag to true if
+	// BinNum is not actually binary
+
+	IsNeg = false
+	if (BinNum < 0) {
+		IsNeg = true
+		BinNum *= -1
+	}
+	RealNum = 0
+	LogBaseTen = Math.log(BinNum)/Math.LN10
+	HighestPlace = Math.ceil(LogBaseTen)
+	for (CurPlace = HighestPlace; CurPlace >= -NumBits; CurPlace--) {
+		CurEntry = Math.round(BinNum / Math.pow(10, CurPlace))
+		if (CurEntry != 0 && CurEntry != 1) {
+			NotBinary = true
+			CurEntry = 1		// feed it something normal, to avoid
+								// wierd Javascript errors
+		}
+		if (CurEntry == 1) {
+			RealNum += Math.pow(2, CurPlace)
+			BinNum -= Math.pow(10, CurPlace)
+		}
+	}
+
+	if (IsNeg) {RealNum *= -1} // reverse it back at the end
+	// now check if the number was negative according to two's complement
+	// representation - if it was, set the decimal value to this negative
+	// number
+	if (HighestPlace == NumBits) {
+		RealNum -= Math.pow(2, NumBits)
+	}
+
+	return RealNum
+}
+// ***************************************************************
+// ***************************************************************
+
+function PrintBinary2(TheNum, NumDecs) {
+
+	// initialize the string
+	S = "";
+	// deal with negative numbers
+              mark = 0;
+	if (TheNum < 0) {
+		TheNum = -1* TheNum;
+		mark = 1;
+	}
+	StartPlace = OrderOfMagnitude(TheNum)
+	if (StartPlace < 0) {StartPlace = 0}
+
+	for (CurPlace = StartPlace; CurPlace >= -NumDecs; CurPlace--) {
+		if (CurPlace == -1) {S += "."}
+		CurPower = Math.pow(2, CurPlace)
+		if (TheNum >= CurPower) {
+			S += "1"
+			TheNum = TheNum - CurPower
+		} else  {
+			S += "0"
+		}
+	}
+	state = 0;
+	Res = "";
+	if (mark == 1) {
+		// convert to 2's complements
+		for (i = bits-1; i>=0; i--) {
+			if (state == 0) { // before first 1
+				Res = S.charAt(i) + Res;
+				if (S.charAt(i) == '1')
+					state = 1;
+			}
+			else {
+				if (S.charAt(i) == '.') Res = '.' + Res;
+				else                       Res = (S.charAt(i)=='1'?'0':'1') + Res;
+			}
+		}
+	}
+	else 
+		Res = S;
+
+	return Res;
+}
+
+function PrintBinary(TheNum, NumDecs) {
+
+	// initialize the string
+	S = "";
+	// deal with negative numbers
+	if (TheNum < 0) {
+		S += "-"
+		TheNum *= -1
+	}
+	StartPlace = OrderOfMagnitude(TheNum)
+	if (StartPlace < 0) {StartPlace = 0}
+
+	for (CurPlace = StartPlace; CurPlace >= -NumDecs; CurPlace--) {
+		if (CurPlace == -1) {S += "."}
+		CurPower = Math.pow(2, CurPlace)
+		if (TheNum >= CurPower) {
+			S += "1"
+			TheNum = TheNum - CurPower
+		} else  {
+			S += "0"
+		}
+	}
+	return S
+}
+
+
+// ***************************************************************
+// ***************************************************************
+
+function PrintToBin(Name, TheNum, NumDecs) {
+
+	S = PrintBinary(TheNum, NumDecs)
+	parent.frames[1].document.writeln(Name+" = "+TheNum+"<BR>"+"Bin ="+S+"<BR>")
+}
+
+// ***************************************************************
+// ***************************************************************
+
+function TruncateToBits(Number, bits){
+	if (Number >= 0) {
+		return (Math.floor(Number * Math.pow(2,bits)) / Math.pow(2,bits))
+	} else {
+		return (-Math.floor(-Number * Math.pow(2,bits)) / Math.pow(2,bits))
+	}
+}
+
+// ***************************************************************
+// ***************************************************************
+
+function Structure(IEEE, error, maxerror, Sign, f, f_str, e, e_str, ZeroF, InfF, DenF, NanF, OveF,
+			 UndF, G, R, S) {
+	this.IEEE=IEEE
+	this.error=error
+	this.maxerror=maxerror
+	this.Sign=Sign
+	this.f=f
+	this.f_str=f_str
+	this.e=e
+	this.e_str=e_str
+	this.ZeroF=ZeroF
+	this.InfF=InfF
+	this.DenF=DenF
+	this.NanF=NanF
+	this.OveF=OveF
+	this.UndF=UndF
+	this.G = G;
+	this.R = R;
+	this.S = S;
+
+}
+
+// ***************************************************************
+// ***************************************************************
+
+function PrintIEEENum(Name, Number, sign, f, eWithBias, bits){
+
+	Text = Name + (sign ? "- " : "+ ")
+	Text += PrintBinary(f,bits) + " *2<sup>" + (eWithBias - bias) + "</sup> = " + Number
+	parent.frames[1].document.writeln(Text)
+
+}
+
+// ***************************************************************
+// ***************************************************************
+
+function PrintGRS(Name, G, R, S, sign, f, eWithBias, bits){
+
+	Text = Name + (sign ? "- " : "+ ")
+	Text += PrintBinary(f,bits) + "|" + G + R + S + " *2<sup>" + (eWithBias - bias) + "</sup>"
+	parent.frames[1].document.writeln(Text)
+
+}
+
+// ***************************************************************
+// ***************************************************************
+
+function PrintStructure(Structure) {
+	parent.frames[1].document.writeln("<PRE>")
+	parent.frames[1].document.writeln("IEEE     = " + Structure.IEEE)
+	parent.frames[1].document.writeln("error    = " + Structure.error)
+	parent.frames[1].document.writeln("maxerror = " + Structure.maxerror)
+	parent.frames[1].document.writeln("Sign     = " + Structure.Sign)
+	parent.frames[1].document.writeln("f        = " + Structure.f)
+	parent.frames[1].document.writeln("f_str        = " + Structure.f_str)
+	parent.frames[1].document.writeln("e        = " + Structure.e)
+	parent.frames[1].document.writeln("e_str        = " + Structure.e_str)
+	parent.frames[1].document.writeln("ZeroF    = " + Structure.ZeroF)
+	parent.frames[1].document.writeln("InfF     = " + Structure.InfF)
+	parent.frames[1].document.writeln("DenF     = " + Structure.DenF)
+	parent.frames[1].document.writeln("NanF     = " + Structure.NanF)
+	parent.frames[1].document.writeln("OveF     = " + Structure.OveF)
+	parent.frames[1].document.writeln("UndF     = " + Structure.UndF)
+	parent.frames[1].document.writeln("G        = " + Structure.G)
+	parent.frames[1].document.writeln("R        = " + Structure.R)
+	parent.frames[1].document.writeln("S        = " + Structure.S)
+	parent.frames[1].document.writeln("</PRE>")
+}
+
+// ***************************************************************
+// ***************************************************************
+
+function IEEERepresentation(Structure, TheNum, bits, bias) {
+
+//	if (TheNum==0) {
+		Structure.IEEE=0;
+		Structure.error=0;
+		Structure.maxerror=0;
+		Structure.Sign=0;
+		Structure.realSign=0;
+		Structure.f=0;
+		Structure.e=0;
+		Structure.ZeroF=1;
+		Structure.InfF=0;
+		Structure.DenF=0;
+		Structure.NanF= 0;
+		Structure.OveF= 0;
+		Structure.UndF=0;
+		Structure.G=0;
+		Structure.R=0;
+		Structure.S=0;
+//	} else {
+	if (TheNum!=0) {
+		Structure.Sign = (TheNum < 0)
+		Structure.realSign = (TheNum < 0) ? -1 : 1
+		TheNum=Math.abs(TheNum)
+
+		Y=Math.log(TheNum)/Math.log(2);
+		N=Math.floor(Y);
+		Z=Y-N;
+
+		ffull=(TheNum*Math.pow(2,-N));
+
+		if (ffull >= 2){
+			ffull = ffull/2;
+			N = N + 1;
+		}
+		ffull = ffull - 1;
+		fdecimal=Math.floor(ffull*Math.pow(2,bits));
+
+		Structure.f=fdecimal*Math.pow(2,-bits);
+		Structure.e=bias+N
+		Structure.IEEE= Structure.realSign * (1+Structure.f)*Math.pow(2,Structure.e-bias);
+		Structure.UndF = 0;
+		Structure.DenF = 0;
+
+		
+		if (TheNum < Math.pow(2,-bias+1)){
+			N = -bias+1;
+			ffull=TheNum/Math.pow(2,N)
+			fdecimal=Math.floor(ffull*Math.pow(2,bits));
+			Structure.f=fdecimal/Math.pow(2,bits);
+			Structure.e= 1;
+			Structure.DenF = 1;
+			Structure.IEEE= Structure.realSign*Structure.f*Math.pow(2,N);
+		}
+
+		
+		if (TheNum < Math.pow(2,-bias+1-bits)){
+			Structure.DenF = 0;
+			Structure.UndF = 1;
+		}
+
+		Structure.error=TheNum-Math.abs(Structure.IEEE);
+		Structure.maxerror=Math.pow(2,Structure.e-bias-bits);
+
+
+		Structure.ZeroF=0;
+		Structure.InfF = 0;
+		Structure.NanF = 0;
+		if (Structure.e==2*bias+1){
+			if (Structure.f==0){
+				Structure.InfF = 1;
+			} else {
+				Structure.NanF = 1;
+			}
+		}
+		Structure.OveF = (Structure.e > 2*bias+1)
+	}
+	Structure.e_str = unsignedToBinStr(Structure.e, Total-bits-1 );
+	Structure.f_str = unsignedToBinStr(Structure.bits);
+	return Structure;
+}
+
+// ***************************************************************
+// ***************************************************************
+
+function PrintResult( Structure , Name){
+
+	if (Structure.ZeroF || Structure.DenF){
+		fprint = Structure.f;
+	}else{
+		fprint = Structure.f + 1;
+	}
+
+	SignPrint = " + ";
+	if (Structure.Sign){ SignPrint = " - ";}
+
+	flag = 1;
+	if (Structure.NanF){
+		flag = 0;
+
+		// Set result to infinity
+		PrintIEEENum(Name +"    ", SignPrint +"Inf", Structure.Sign, 1, Structure.e, bits)
+ 		//document.writeln("<HR>") 
+	} 
+
+	if (Structure.InfF){
+		flag = 0;
+		PrintIEEENum(Name +"    ",SignPrint +"Inf" , Structure.Sign, fprint, Structure.e, bits)
+ 		//document.writeln("<HR>")
+	}
+
+	if (Structure.UndF){
+		flag = 0;
+		PrintIEEENum(Name +"    ", "NaN (Underflow)", Structure.Sign, fprint, Structure.e, bits)
+ 		//document.writeln("<HR>")
+	}
+
+	if (flag) {
+	    if (Structure.DenF)
+		{
+		    PrintIEEENum(Name +"    " , Structure.IEEE + " (Denorm.)", Structure.Sign,fprint, Structure.e, bits);
+		} else {
+		    PrintIEEENum(Name +"    ", Structure.IEEE, Structure.Sign, fprint, Structure.e, bits);
+		}
+	}	
+}
+
+// ***************************************************************
+// ***************************************************************
+
+function IsValidHex (theString) {
+	// check to make sure every character is valid
+	legalChars = "0123456789abcdefABCDEF"
+	for (var i=0; i < theString.length; i++) {
+		illegalChar = 1;
+		for (var j=0; j < 22; j++){
+			if (theString.charAt(i) == legalChars.charAt(j))
+				illegalChar = 0;
+		}	
+		if (illegalChar)
+			return 0;
+	}
+	return 1; // if we got to here, everything's valid
+}
+
+function IsValidDecimal (theString) {
+	// check to make sure every character is valid
+	legalChars = "-0123456789."
+	for (var i=0; i < theString.length; i++) {
+		illegalChar = 1;
+		for (var j=0; j < 12; j++){
+			if (theString.charAt(i) == legalChars.charAt(j))
+				illegalChar = 0;
+		}	
+		if (illegalChar) 
+			return 0;
+	}
+	return 1; // if we got to here, everything's valid
+}
+
+
+// ***************************************************************
+// ***************************************************************
+
+
+
+function Add(Struct1, Struct2, Struct3, form) {
+
+
+
+   Struct3.IEEE=0;
+   Struct3.error=0;
+   Struct3.maxerror=0;
+   Struct3.Sign=0;
+   Struct3.realSign=0;
+   Struct3.f=0;
+   Struct3.e=0;
+   Struct3.ZeroF=0;
+   Struct3.InfF=0;
+   Struct3.DenF=0;
+   Struct3.NanF= 0;
+   Struct3.OveF= 0;
+   Struct3.UndF=0;
+   Struct3.G=0;
+   Struct3.R=0;
+   Struct3.S=0;
+
+   parent.frames[1].document.writeln("<PRE>");
+
+
+   // get the effective subtraction
+   if (Struct1.Sign == 0 && Struct2.Sign == 0) {         // A-B
+      OpS = "A-B";
+      Struct3.Sign = 0; // it will get negated later if B > A
+   }
+   else if (Struct1.Sign == 0 && Struct2.Sign == 1) {  // A+ B  (ERROR)
+      parent.frames[1].document.writeln(PrintError("With A positive and B negative, this becomes an effective <br>add and does not demonstrate FAR/CLOSE"));
+      return Struct3;
+   }
+   else if (Struct1.Sign == 1 && Struct2.Sign == 0) {  // -A-B  
+      parent.frames[1].document.writeln(PrintError("With A negative and B positive, this becomes an effective add <br>of two negative numbers and doesn't demonstrate FAR/CLOSE"));
+      return Struct3;
+   }
+   else if (Struct1.Sign == 1 && Struct2.Sign == 1) {  // B-A
+//      PrintError("Note: With A negative and B positive, the effective operation is B - A. The operands will be swapped.");
+      OpS = "A - B";
+      Struct3.Sign = 1; // it will get negated later if B > A
+   }
+
+
+
+Struct1_saved = new Structure();
+	Struct1_saved.IEEE=Struct1.IEEE
+	Struct1_saved.error=Struct1.error
+	Struct1_saved.maxerror=Struct1.maxerror
+	Struct1_saved.Sign=Struct1.Sign
+	Struct1_saved.realSign=Struct1.realSign
+	Struct1_saved.f=Struct1.f
+	Struct1_saved.f_str=Struct1.f_str
+	Struct1_saved.e=Struct1.e
+	Struct1_saved.e_str=Struct1.e_str
+	Struct1_saved.ZeroF=Struct1.ZeroF
+	Struct1_saved.InfF=Struct1.InfF
+	Struct1_saved.DenF=Struct1.DenF
+	Struct1_saved.NanF=Struct1.NanF
+	Struct1_saved.OveF=Struct1.OveF
+	Struct1_saved.UndF=Struct1.UndF
+	Struct1_saved.G = Struct1.G;
+	Struct1_saved.R = Struct1.R;
+	Struct1_saved.S = Struct1.S;
+Struct2_saved = new Structure();
+	Struct2_saved.IEEE=Struct2.IEEE
+	Struct2_saved.error=Struct2.error
+	Struct2_saved.maxerror=Struct2.maxerror
+	Struct2_saved.Sign=Struct2.Sign
+	Struct2_saved.realSign=Struct2.realSign
+	Struct2_saved.f=Struct2.f
+	Struct2_saved.f_str=Struct2.f_str
+	Struct2_saved.e=Struct2.e
+	Struct2_saved.e_str=Struct2.e_str
+	Struct2_saved.ZeroF=Struct2.ZeroF
+	Struct2_saved.InfF=Struct2.InfF
+	Struct2_saved.DenF=Struct2.DenF
+	Struct2_saved.NanF=Struct2.NanF
+	Struct2_saved.OveF=Struct2.OveF
+	Struct2_saved.UndF=Struct2.UndF
+	Struct2_saved.G = Struct2.G;
+	Struct2_saved.R = Struct2.R;
+	Struct2_saved.S = Struct2.S;
+
+ 
+
+//   PrintStructure(Struct1)
+//   PrintStructure(Struct2)
+   // Is A = 0 ?
+   if (Struct1.ZeroF || Struct1.DenF){
+      Struct1.f = Struct1.f;
+   }else{
+      Struct1.f = Struct1.f + 1;
+   }
+
+   // Is B = 0 ?
+   if (Struct2.ZeroF || Struct2.DenF){
+      Struct2.f = Struct2.f;
+   }else{
+      Struct2.f = Struct2.f + 1;
+   }
+
+   e1 = Struct1.e;
+   e2 = Struct2.e;
+
+
+   if (Struct1.DenF){
+      PrintIEEENum("A    ",Struct1.IEEE + " (Denorm.)", Struct1.Sign, Struct1.f, Struct1.e, bits);
+   } else {
+      PrintIEEENum("A    ",Struct1.IEEE, Struct1.Sign, Struct1.f, Struct1.e, bits);
+   }
+
+
+   if (Struct2.DenF){
+      PrintIEEENum("B    ",Struct2.IEEE + " (Denorm.)", Struct2.Sign, Struct2.f, Struct2.e, bits);
+   } else {
+      PrintIEEENum("B    ",Struct2.IEEE, Struct2.Sign, Struct2.f, Struct2.e, bits);
+   }
+
+   PrintHR();
+
+   far_diff = Struct1.e - Struct2.e;
+
+
+
+
+
+
+   ///////////////////////////////////////////////////////
+   // CLOSE - Step 1 - Predict Exponent
+   ///////////////////////////////////////////////////////
+
+   parent.frames[1].document.writeln("<CENTER><H4>Step 1</H4></CENTER>")
+   parent.frames[1].document.writeln("<b>CLOSE</b>: Predict Exponent")
+   ea = Struct1.e & 0x3;
+
+// parent.frames[1].document.writeln("ea = " + ea + ", e_str = " + Struct1.e_str);
+
+   EA_slice = Struct1.e_str.slice(Total-bits-3, Total-bits-1); // assumes inclusive
+   eb = e2 & 0x3;
+
+// parent.frames[1].document.writeln("eb = " + eb + ", e_str = " + Struct2.e_str);
+
+
+   EB_slice = Struct2.e_str.slice(Total-bits-3, Total-bits-1);
+   parent.frames[1].document.writeln("A_exponent<sub>1</sub> A_exponent<sub>0</sub> = " + EA_slice)
+   parent.frames[1].document.writeln("B_exponent<sub>1</sub> B_exponent<sub>0</sub> = " + EB_slice)
+   ec = ea - eb;
+   if (ec == -3) ec = 1;
+   if (ec == 3) ec = -1;
+   parent.frames[1].document.writeln("Predict Exponent difference = " + ec)
+   x = "0";
+   if (ec == -1) {  // B > A
+      parent.frames[1].document.writeln("Shift A right by 1")
+      Struct1.f = Struct1.f / 2;
+      if ((Struct1.f - TruncateToBits(Struct1.f,bits)) != 0)
+         Struct1.G = 1;
+      // charAt(0) is the most significant
+      Struct1.e = Struct2.e;
+      Struct1.e_str = Struct2.e_str;
+      Struct3.e = Struct2.e;
+      Struct3.e_str = Struct2.e_str;
+      Struct3.Sign = (Struct3.Sign + 1)%2;  //neg
+      PrintGRS("A    ", Struct1.G, 0, 0, Struct1.Sign, Struct1.f, Struct1.e, bits);
+      PrintGRS("B    ", Struct2.G, 0, 0, Struct2.Sign, Struct2.f, Struct2.e, bits);
+   }
+   else if (ec == 1) {
+      parent.frames[1].document.writeln("             Shift B right by 1")
+      Struct2.f = Struct2.f / 2;
+      if ((Struct2.f - TruncateToBits(Struct2.f,bits)) != 0)
+         Struct2.G = 1;
+      // charAt(0) is the most significant
+      Struct2.e = Struct1.e;
+      Struct2.e_str = Struct1.e_str;
+      Struct3.e = Struct1.e;
+      Struct3.e_str = Struct1.e_str;
+//      Struct3.Sign = 0;  //pos
+      PrintGRS("A    ", Struct1.G, 0, 0, Struct1.Sign, Struct1.f, Struct1.e, bits);
+      PrintGRS("B    ", Struct2.G, 0, 0, Struct2.Sign, Struct2.f, Struct2.e, bits);
+   }
+   else { // equal exponents
+      Struct3.e = Struct1.e;
+      Struct3.e_str = Struct1.e_str;
+//      Struct3.Sign = Struct1.Sign;  
+   }
+   parent.frames[1].document.writeln("")
+   parent.frames[1].document.writeln("")
+
+  
+   ///////////////////////////////////////////////////////
+   // FAR - Step 1 - Subtract Exponents
+   ///////////////////////////////////////////////////////
+   parent.frames[1].document.writeln("<b>FAR</b>: Subtract Exponents")
+   parent.frames[1].document.writeln("A_exponent - B_exponent = " + far_diff)
+      parent.frames[1].document.writeln("");
+
+      PrintHR();
+
+
+   if ((far_diff == 1) || (far_diff == -1) || (far_diff == 0)) {
+      parent.frames[1].document.writeln("");
+      parent.frames[1].document.writeln("**Continue with <b>CLOSE</b> case");
+      parent.frames[1].document.writeln("");
+      PrintHR();
+      
+      ///////////////////////////////////////////////////////
+      // CLOSE - Step 2 - Subtract Significands
+      ///////////////////////////////////////////////////////
+      parent.frames[1].document.writeln("<CENTER><H4>Step 2</H4></CENTER>")
+      parent.frames[1].document.writeln("<b>CLOSE</b>: Subtract Significands")
+
+      if (ec == -1) {
+         Struct3.f = Struct2.f - Struct1.f;
+      }
+      else {
+         Struct3.f = Struct1.f - Struct2.f;
+      }
+//      f5 = Struct1.Sign*Struct1.f - Struct2.Sign*Struct2.f;
+      
+//      TheNum=Struct3.f*Math.pow(2,Struct3.e-bias)
+//      Struct4 = new Structure();
+//      Struct3 = IEEERepresentation(Struct3, TheNum, bits, bias);
+      Struct3.G = Struct2.G + Struct1.G; // if the exponents are off by 1, only one will be 1 
+                                                 // if the exponents are off by 0, neither will be 1
+
+//      if (Struct3.f == 0) {
+//         Struct3.ZeroF = 1;
+//         Struct3.e = 0;
+//      }
+//      else if (Struct3.e == 0) {
+//         Struct3.DenF = 1;
+//      }
+
+      PrintGRS("A-B    ", Struct3.G, 0, 0, Struct3.Sign, Struct3.f, Struct3.e, bits);
+    
+      /////////////////////////////////////////////////////////////////////////////
+      // CLOSE - Step 2 - Predict number of leading zeroes
+      /////////////////////////////////////////////////////////////////////////////
+      // Predict number of leading zeroes
+      parent.frames[1].document.writeln("");
+      parent.frames[1].document.writeln("<b>CLOSE</b>: Predict Number of Leading Zeroes")
+      E = "";
+      S1 = PrintBinary(Struct1.f, bits) + Struct1.G;
+      // assume effective subtract, so S2 is positive
+      S2 = BitWiseNegate(PrintBinary(Struct2.f, bits) + Struct2.G);
+      
+      for (i=0; i<S1.length-1; i++) {
+         nextPos = i+1;
+         if (S1.charAt(nextPos) == '.')
+            nextPos = i+2;
+         if (S1.charAt(i) == '.') 
+           E = E + ".";
+         else if ( ( S1.charAt(i) == S2.charAt(i) ) && 
+                    ( (S1.charAt(nextPos) == '1')  || (S2.charAt(i+1) == '1') ) ) { 
+               E = E + "1";
+         }
+         else {
+            E = E + "0";
+         }
+      }
+      numLeadingZeroes = 0
+      done = 0;
+      for (i=0; i<E.length && done == 0; i++) {
+        if (E.charAt(i) == '.') { } // ignore
+        else if (E.charAt(i) == '0')
+           numLeadingZeroes++;
+       else
+           done = 1;
+      }
+
+      parent.frames[1].document.writeln("E<sub>i</sub> = (not (a<sub>i</sub> xor b<sub>i</sub>)) and (a<sub>i-1</sub> or b<sub>i-1</sub>)");
+      parent.frames[1].document.writeln("E = " + E + "   (Predict "+numLeadingZeroes+ " leading zeroes)");
+
+         parent.frames[1].document.writeln("")
+      PrintHR();
+
+      /////////////////////////////////////////////////////////////////////////////
+      // CLOSE - Step 3 - Postnormalization
+      /////////////////////////////////////////////////////////////////////////////
+      // normalize by number predicted (shift result left by num, subtract num from exponent
+      parent.frames[1].document.writeln("<CENTER><H4>Step 3</H4></CENTER>")
+      parent.frames[1].document.writeln("<b>CLOSE</b>: Normalize Result")
+      if (Struct3.ZeroF==1 || Struct3.DenF==1) {
+        parent.frames[1].document.writeln("No normalization required for zero or denormalized numbers")
+      }
+      else {       
+         parent.frames[1].document.writeln("Shift by " + numLeadingZeroes +" using a multi-level shifter");
+         Struct3.f = Struct3.f * Math.pow(2, numLeadingZeroes);
+         Struct3.e = Struct3.e - numLeadingZeroes;
+         if (numLeadingZeroes > 0)
+           Struct3.G = 0;
+//         PrintGRS("A - B", Struct3.G, 0, 0, Struct3.Sign, Struct3.f, Struct3.e, bits);
+
+         if (Struct3.e < (-1*bits)) {
+            // this is an underflow
+            parent.frames[1].document.writeln(PrintError("Result Underflow"));
+//            parent.frames[1].document.writeln("Result Underflow")
+            return Struct3;
+         }
+         else if (Struct3.e < 0) {
+           // This is a denorm result
+           Struct3.e = 0;
+           Struct3.DenF = 1;
+         }
+//         Struct3.e_str = unsignedToBinStr(Struct3.e, Total-bits-1);
+      
+         // print result after normalization
+//         PrintGRS("A-B    ", Struct3.G, 0, 0, Struct3.Sign, Struct3.f, Struct3.e, bits);
+
+         // if there's still a leading zero
+         if ( (Math.abs(Struct3.f) < 1) && (Struct3.DenF == 0) ) {
+            PrintGRS("A-B    ", Struct3.G, 0, 0, Struct3.Sign, Struct3.f, Struct3.e, bits);
+             parent.frames[1].document.writeln("")
+            parent.frames[1].document.writeln("Still leading 0, must shift one more using a mux")
+            // shift one more to the left
+            Struct3.f = Struct3.f * 2;
+            Struct3.e = Struct3.e - 1;
+
+            if (Struct3.e < (-1*bits)) {
+               // this is an underflow
+               parent.frames[1].document.writeln(PrintError("Result Underflow"));
+//               parent.frames[1].document.writeln("Result Underflow")
+               return Struct3;
+            }
+            else if (Struct3.e < 0) {
+              // This is a denorm result
+              Struct.e = 0;
+              Struct.DenF = 1;
+            }
+
+            Struct3.e_str = unsignedToBinStr(Struct3.e, Total-bits-1);
+         }
+      }
+     PrintGRS("A-B    ", Struct3.G, 0, 0, Struct3.Sign, Struct3.f, Struct3.e, bits);
+         parent.frames[1].document.writeln("")
+      PrintHR();
+
+      /////////////////////////////////////////////////////////////////////////////
+      // CLOSE - Step 4 - Either Round or Negate Result
+      /////////////////////////////////////////////////////////////////////////////
+      parent.frames[1].document.writeln("<CENTER><H4>Step 4</H4></CENTER>")
+       if (ec == 0) {
+         // negate if necessary
+         if (Struct3.f < 0) {
+            parent.frames[1].document.writeln("<b>CLOSE</b>: Result of significand subtraction is negative => Need to negate")
+            Struct3.Sign = (Struct3.Sign == 1) ? 0 : 1;
+            Struct3.f = - Struct3.f
+            // normalize again
+            numLeadingZeroes = 0
+            done = 0;
+            E = PrintBinary(Struct3.f, bits);
+            for (i=0; i<E.length && done == 0; i++) {
+               if (E.charAt(i) == '.') { } // ignore
+               else if (E.charAt(i) == '0')
+                  numLeadingZeroes++;
+               else
+                  done = 1;
+            }
+            if (Struct3.e < (-1*bits)) {
+               // this is an underflow
+               parent.frames[1].document.writeln(PrintError("Result Underflow"));
+
+//               parent.frames[1].document.writeln("Result Underflow")
+               return Struct3;
+            }
+            else if (Struct3.e < 0) {
+              // This is a denorm result
+              Struct.e = 0;
+              Struct.DenF = 1;
+            }
+//            Struct3.e_str = unsignedToBinStr(Struct3.e, Total-bits-1);
+
+
+            result = Math.pow(-1,Struct3.Sign)*Struct3.f*Math.pow(2,Struct3.e-bias);
+            Struct4 = new Structure();
+            Struct4 = IEEERepresentation(Struct4, result, bits, bias);
+            PrintResult(Struct4 , OpS);
+
+//            PrintGRS("A - B", Struct3.G, 0, 0, Struct3.Sign, Struct3.f, Struct3.e, bits);
+//            if (Struct3.DenF == 0)
+//               Struct3.f = Struct3.f - 1;
+//            PrintResult(Struct3, OpS);
+//            if (Struct3.DenF == 0)
+//               Struct3.f = Struct3.f + 1;
+
+         }
+         else {
+            parent.frames[1].document.writeln("<b>CLOSE</b>: Answer is a precise result")
+            result = Math.pow(-1,Struct3.Sign)*Struct3.f*Math.pow(2,Struct3.e-bias);
+            Struct4 = new Structure();
+            Struct4 = IEEERepresentation(Struct4, result, bits, bias);
+            PrintResult(Struct4 , OpS);
+         }
+      } 
+      else {
+         parent.frames[1].document.writeln("<b>CLOSE</b>: Round")
+         parent.frames[1].document.writeln("")
+         // round
+
+
+//         f3sign = (Struct3.f < 0);
+//         f3realSign = (Struct3.f < 0) ? -1 : 1;
+//         f3 = Math.abs(Struct3.f);
+         f3sign = (Struct3.Sign);
+         f3realSign = (Struct3.Sign) ? -1 : 1;
+         f3 = Math.abs(Struct3.f);
+         R1 = Struct3.G;
+         R2 = 0;
+         e3 = Struct3.e;
+
+
+         // Find Final result using rounding techniques and f3, R1, R2
+         // Truncation
+         f = f3;
+         e = e3;
+
+         result = f3realSign*f*Math.pow(2,e-bias);
+         parent.frames[1].document.writeln("<H4>Round to Zero</H4> ");
+         Struct4 = new Structure();
+         Struct4 = IEEERepresentation(Struct4, result, bits, bias);
+         PrintResult(Struct4 , OpS);
+         parent.frames[1].document.writeln("")
+  
+         // Round to nearest Even
+         f = f3 + (R1 && R2)*Math.pow(2,-bits);
+         temp = ((f3*Math.pow(2,bits-1)) - Math.floor(f3*Math.pow(2,bits-1)));
+         lastBit = 0;
+         if (temp >= 0.5  ) { lastBit = 1;} 
+         feven = f;
+
+         if ((R1 == 1) && (R2 == 0)) { feven = feven + lastBit*Math.pow(2,-bits)}
+         e = e3;
+         result = f3realSign*feven*Math.pow(2,e-bias);
+         parent.frames[1].document.writeln("<H4>Round to Nearest Even</H4>")
+         Struct4 = IEEERepresentation(Struct4, result, bits, bias)
+         PrintResult( Struct4, OpS)
+         parent.frames[1].document.writeln("")
+         //PrintIEEENum(OpS,result, Struct3.Sign, feven,e, bits)
+
+         // Round to Plus Infinity
+         f = f3;
+         e = e3;
+         if (f3sign == 0){
+            f = f3 + (R1 || R2)*Math.pow(2,-bits);
+         }
+         result = f3realSign*f*Math.pow(2,e-bias);
+         Struct4 = IEEERepresentation(Struct4, result, bits, bias)
+         parent.frames[1].document.writeln("<H4>Round to Plus Infinity</H4>")
+         PrintResult( Struct4 , OpS)
+         parent.frames[1].document.writeln("")
+
+
+         // Round to Minus Infinity
+         f = f3;
+         e = e3;
+         if (f3sign == 1){
+            f = f3 + (R1 || R2)*Math.pow(2,-bits);
+         }
+         result = f3realSign*f*Math.pow(2,e-bias);
+         Struct4 = IEEERepresentation(Struct4, result, bits, bias)
+         parent.frames[1].document.writeln("<H4>Round to Minus Infinity</H4>")
+         PrintResult( Struct4 , OpS)
+         parent.frames[1].document.writeln("")
+
+
+	PrintHR();
+	parent.frames[1].document.writeln("")
+	parent.frames[1].document.writeln("Delay is calculated as follows - ")
+	parent.frames[1].document.writeln("")
+	parent.frames[1].document.writeln("Predict Exponent + ")
+	parent.frames[1].document.writeln("Max(2:1 mux + 2:1 mux + MAX(Sub M bits, Predict Leading 0's), 2:1 mux) + ")
+	parent.frames[1].document.writeln("MAX(shifter, Sub E bits) + ")
+	parent.frames[1].document.writeln("MAX(2:1 mux + MAX(Add M bits, Negate M bits) + 2:1 mux, 2:1 mux)")
+	parent.frames[1].document.writeln("")
+	parent.frames[1].document.writeln("See help for details")
+
+        DEL1 = parseFloat(eval(form.DEL1.value));
+        DEL2 = parseFloat(eval(form.DEL2.value));
+        DEL3 = parseFloat(eval(form.DEL3.value));
+        DEL4 = parseFloat(eval(form.DEL4.value));
+        DEL5 = parseFloat(eval(form.DEL5.value));
+        DEL6 = parseFloat(eval(form.DEL6.value));
+
+        delay = DEL1 + 
+                Math.max(DEL3 + DEL3 + Math.max(DEL5*bits, DEL2), DEL3) +
+                Math.max(DEL4, DEL5*(Total-bits)) + 
+                Math.max(DEL3 + Math.max(DEL5*bits, DEL6*bits) + DEL3, DEL3 );
+	parent.frames[1].document.writeln("")
+	parent.frames[1].document.writeln("Delay = " + delay)
+
+
+      }
+   }
+   else { ////////  DO FAR CASE ///////
+      parent.frames[1].document.writeln("");
+      parent.frames[1].document.writeln("**Abort <b>CLOSE</b> case, continue with <b>FAR</b> case")
+
+Struct1 = Struct1_saved;
+Struct2 = Struct2_saved;
+   if (Struct1.ZeroF || Struct1.DenF){
+      f1 = Struct1.f;
+   }else{
+      f1 = Struct1.f + 1;
+   }
+
+   // Is B = 0 ?
+   if (Struct2.ZeroF || Struct2.DenF){
+      f2 = Struct2.f;
+   }else{
+      f2 = Struct2.f + 1;
+   }
+
+
+//	f1 = Struct1.f;
+//	f2 = Struct2.f;
+	e1 = Struct1.e;
+	e2 = Struct2.e;
+
+
+ 	PrintHR();
+
+	// Alignment Step
+	if (e1 > e2) {
+		bitsDiff = (e1 - e2);
+		f2 = f2 / Math.pow(2,bitsDiff);
+		e2 = e1;
+	} else {
+		if (e1 < e2) {
+			bitsDiff = (e2 - e1);
+			f1 = f1 / Math.pow(2,bitsDiff);
+			e1 = e2;
+		} else {
+			bitsDiff=0;
+		}
+	}
+
+	Fullf1 = f1;
+	Fullf2 = f2;
+
+  	f1 = TruncateToBits(f1,bits);
+	f2 = TruncateToBits(f2,bits);
+	Extra1 = (Fullf1 - f1)*Math.pow(2,bits);
+	Extra2 = (Fullf2 - f2)*Math.pow(2,bits);
+
+	//*************************************************
+	// Find G, R, S for A and B
+	//*************************************************
+
+	Struct1.G = 0;
+	if (Extra1 >=0.5 ){
+		Struct1.G = 1;
+		Extra1 = Extra1 - 0.5;
+	}
+
+	Struct2.G = 0;
+	if (Extra2 >=0.5 ){
+		Struct2.G = 1;
+		Extra2 = Extra2 - 0.5;
+	}
+
+	Struct1.R = 0;
+	if (Extra1 >= 0.25 ){
+		Struct1.R = 1;
+		Extra1 = Extra1 - 0.25;
+	}
+
+	Struct2.R = 0;
+	if (Extra2 >= 0.25){
+		Struct2.R = 1;
+		Extra2 = Extra2 - 0.25;
+	}
+
+	Struct1.S = 0;
+	if (Extra1 > 0 ){
+		Struct1.S = 1;
+	}
+
+	Struct2.S = 0;
+	if (Extra2 > 0 ){
+		Struct2.S = 1;
+	}
+	//*************************************************
+	//*************************************************
+
+
+///////////////////////////////////////
+//  Calculate f3 including sign of f3 here
+
+//      if (far_diff < 0) { // B bigger
+//         Struct3.f = Struct2.f - Struct1.f;
+//         parent.frames[1].document.writeln("B Bigger Struct3.f = " +Struct3.f)
+//      }
+//      else {
+//         Struct3.f = Struct1.f - Struct2.f;
+//         parent.frames[1].document.writeln("A Bigger Struct3.f = " +Struct3.f)
+//      }
+
+
+///////
+
+
+	f3 = Struct1.realSign*f1 + 
+		 Math.pow(-1,Struct2.Sign^Subtract)*f2;
+
+
+//	fx3 = Struct1.realSign*Fullf1 + 
+//		 Math.pow(-1,Struct2.Sign^Subtract)*Fullf2;
+//f3 = fx3;
+
+
+	TheNum=f3*Math.pow(2,e1-bias)
+	Struct3 = IEEERepresentation(Struct3, TheNum, bits, bias);
+	
+ 	if (Subtract){OpS="A-B  ";}else{OpS="A+B  ";}
+
+	
+	//	Add with G R and S
+	parent.frames[1].document.writeln("<CENTER><H4>Step 2</H4></CENTER>")
+	parent.frames[1].document.writeln("<b>FAR</b>: Align Significands")
+	PrintGRS("A    ", Alpha.G, Alpha.R, Alpha.S, Alpha.Sign, f1, e1, bits)
+	PrintGRS("B    ", Beta.G, Beta.R, Beta.S, Beta.Sign, f2, e2, bits)
+
+	PrintHR();
+
+	f3sign = (f3 < 0);
+	f3realSign = (f3 < 0) ? -1 : 1;
+	//S = PrintBinary(f3orig,bits+3)
+	//document.writeln("f3 = " +S +" = " +f3orig)
+	f3 = Math.abs(f3);
+
+
+	// Find G, R ans S for f3
+	Fullf3 = f3;
+	f3 = TruncateToBits(f3,bits);
+//	S = PrintBinary(f3,bits+3)
+//	S = PrintBinary(Fullf3,bits+3)
+	Extra3 = (Fullf3 - f3)*Math.pow(2,bits);
+
+	//f3orig = Struct1.realSign*f1 + Math.pow(-1,Struct2.Sign^Subtract)*f2;
+
+	// post calculation modification
+	GRSf3=Struct1.realSign*(Struct1.G*4+Struct1.R*2+Struct1.S)+Struct2.realSign*Math.pow(-1,Subtract)*(Struct2.G*4+Struct2.R*2+Struct2.S);
+	if (GRSf3<0) 
+	    {
+		f3-=Math.pow(2,-bits);
+		GRSf3+=8;
+	    }
+	Gf3=0;	
+	Rf3=0;	
+	Sf3=0;	
+	if (GRSf3 >= 4)
+	    {	
+		Gf3=1;
+		GRSf3-=4;
+	    }
+	if (GRSf3 >=2)
+	    {
+		Rf3=1;
+		GRSf3-=2;
+	    }
+	if (GRSf3 == 1)
+	    {
+		Sf3=1;
+	    }
+	
+//  	Gf3 = 0;
+//  	if (Extra3 >=0.5 ){
+//  		Gf3 = 1;
+//  		Extra3 = Extra3 - 0.5;
+//  	}
+
+//  	Rf3 = 0;
+//  	if (Extra3 >= 0.25 ){
+//  		Rf3 = 1;
+//  		Extra3 = Extra3 - 0.25;
+//  	}
+
+//  	Sf3 = 0;
+//  	if (Extra3 > 0 ){
+//  		Sf3 = 1;
+//  	}
+
+	parent.frames[1].document.writeln("<CENTER><H4>Step 3</H4></CENTER>")
+	parent.frames[1].document.writeln("<b>FAR</b>: Subtract Significands")
+
+	PrintGRS(OpS, Gf3, Rf3, Sf3, f3sign, f3, e2, bits);
+//	PrintHR();
+
+	f3 = f3 + Gf3*Math.pow(2,-bits-1) +  Rf3*Math.pow(2,-bits-2) 
+			+ Sf3*Math.pow(2,-bits-3);
+            parent.frames[1].document.writeln("")
+            if (f3 < 1) 
+                 parent.frames[1].document.writeln("<b>FAR</b>: Leading zero - requires shift by 1 bit")
+              else
+                 parent.frames[1].document.writeln("<b>FAR</b>: Does not require shift by 1 bit")
+
+	result = f3realSign*f3*Math.pow(2,(e2 - bias));
+	Struct3 = IEEERepresentation(Struct3, result, bits+3, bias);
+
+	Fullf3 = Struct3.f;
+	e3 = Struct3.e;
+
+	if(Math.abs(f3)<1 && e1!=e2)
+	    {
+		f3+=Gf3*Math.pow(2,-bias);
+		R1=Rf3;
+		R2=Sf3;
+	    }else{
+		R1=Gf3;
+		R2=(Rf3||Sf3)? 1:0;
+	    }
+	Struct3 = IEEERepresentation(Struct3, result, bits, bias);
+	f3 = Struct3.f;
+
+	if (Struct3.DenF || Struct3.ZeroF){
+		f3 = f3;
+	} else {
+		f3 = f3 + 1;
+	}
+	
+//	parent.frames[1].document.writeln("<CENTER><H4>Postnormalization Step</H4></CENTER>");
+	PrintGRS(OpS, R1, R2, "", f3sign, f3, e3, bits);
+            parent.frames[1].document.writeln("")
+	PrintHR();
+
+	parent.frames[1].document.writeln("<CENTER><H4>Step 4</H4></CENTER>")
+	parent.frames[1].document.writeln("<b>FAR</b>: Round")
+	parent.frames[1].document.writeln("")
+
+
+	// Find Final result using rounding techniques and f3, R1, R2
+	// Truncation
+	f = f3;
+	e = e3;
+
+	result = f3realSign*f*Math.pow(2,e-bias);
+	parent.frames[1].document.writeln("<H4>Round to Zero</H4> ");
+	Struct3 = IEEERepresentation(Struct3, result, bits, bias);
+	PrintResult(Struct3 , OpS);
+	parent.frames[1].document.writeln("")
+	
+
+	// Round to nearest Even
+	f = f3 + (R1 && R2)*Math.pow(2,-bits);
+	temp = ((f3*Math.pow(2,bits-1)) - Math.floor(f3*Math.pow(2,bits-1)));
+	lastBit = 0;
+	if (temp >= 0.5  ) { lastBit = 1;} 
+
+	feven = f;
+//	fodd = f;
+	if ((R1 == 1) && (R2 == 0)) { feven = feven + lastBit*Math.pow(2,-bits)}
+//	if ((R1 == 1) && (R2 == 0)) { fodd = fodd + (lastBit^1)*pow(2,-bits)}
+	e = e3;
+	result = f3realSign*feven*Math.pow(2,e-bias);
+	parent.frames[1].document.writeln("<H4>Round to Nearest Even</H4>")
+	Struct3 = IEEERepresentation(Struct3, result, bits, bias)
+	PrintResult( Struct3 , OpS)
+	parent.frames[1].document.writeln("")
+	//PrintIEEENum(OpS,result, f3sign, feven,e, bits)
+	
+//	result = pow(-1,f3sign)*fodd*pow(2,e-bias);
+//	parent.frames[1].document.writeln("<H4>Round to Nearest Odd</H4>")
+//   Struct3 = IEEERepresentation(Struct3, result, bits, bias)
+//    PrintResult( Struct3 , OpS)
+	//PrintIEEENum(OpS,result, f3sign, fodd,e, bits)
+
+	// Round to Plus Infinity
+	f = f3;
+	e = e3;
+    if (f3sign == 0){
+		f = f3 + (R1 || R2)*Math.pow(2,-bits);
+	}
+	result = f3realSign*f*Math.pow(2,e-bias);
+	Struct3 = IEEERepresentation(Struct3, result, bits, bias)
+	parent.frames[1].document.writeln("<H4>Round to Plus Infinity</H4>")
+	PrintResult( Struct3 , OpS)
+	parent.frames[1].document.writeln("")
+	
+
+
+	// Round to Minus Infinity
+	f = f3;
+	e = e3;
+    if (f3sign == 1){
+		f = f3 + (R1 || R2)*Math.pow(2,-bits);
+	}
+	result = f3realSign*f*Math.pow(2,e-bias);
+	Struct3 = IEEERepresentation(Struct3, result, bits, bias)
+	parent.frames[1].document.writeln("<H4>Round to Minus Infinity</H4>")
+	PrintResult( Struct3 , OpS)
+	parent.frames[1].document.writeln("")
+	
+
+
+	PrintHR();
+	parent.frames[1].document.writeln("")
+	parent.frames[1].document.writeln("Delay is calculated as follows - ")
+	parent.frames[1].document.writeln("")
+	parent.frames[1].document.writeln("Sub E bits + ")
+	parent.frames[1].document.writeln("Max(2:1 mux + shifter + sub M bits, 2:1 mux) + ")
+	parent.frames[1].document.writeln("MAX(2:1 mux + Add M bits, Add E bits)")
+	parent.frames[1].document.writeln("")
+	parent.frames[1].document.writeln("See help for details")
+
+        DEL1 = parseFloat(eval(form.DEL1.value));
+        DEL2 = parseFloat(eval(form.DEL2.value));
+        DEL3 = parseFloat(eval(form.DEL3.value));
+        DEL4 = parseFloat(eval(form.DEL4.value));
+        DEL5 = parseFloat(eval(form.DEL5.value));
+        DEL6 = parseFloat(eval(form.DEL6.value));
+
+        delay = DEL5*(Total-bits) + Math.max(DEL3 + DEL4 + DEL5*bits, DEL3) + 
+                Math.max(DEL3 + DEL5*bits, DEL5*(Total-bits));
+	parent.frames[1].document.writeln("")
+	parent.frames[1].document.writeln("Delay = " + delay)
+
+
+   }
+
+	parent.frames[1].document.writeln("</PRE>")
+	return Struct3;
+
+}
+
+
+
+
+// *********************************************************
+// *********************************************************
+// *********************************************************
+//
+//       Main program
+//
+// *********************************************************
+// *********************************************************
+
+function FarClose(form){
+
+   parent.frames[1].document.open()
+
+
+   // *********************************************************
+   //  Begin form parsing
+   // *********************************************************
+
+   ChoseSing = form.IEEEForm[0].checked;
+   ChoseDoub = form.IEEEForm[1].checked;
+
+   ChoseHex = form.TypeNumber[0].checked;
+   ChoseDec = form.TypeNumber[1].checked;
+
+   Continue = 1;
+
+   if (ChoseDec) {
+      if (! IsValidDecimal(form.A.value)) {
+         Continue = 0
+         Message = "A contains non-decimal characters "
+         parent.frames[1].document.writeln(PrintError(Message))
+      }
+      if (! IsValidDecimal(form.B.value)) {
+         Continue = 0
+         Message = "B contains non-decimal characters "
+         parent.frames[1].document.writeln(PrintError(Message))
+      }
+      if (Continue) {
+         if (navigator.appVersion[0] > 3 ){
+            with (Math) {
+               A = parseFloat(eval(form.A.value));
+               B = parseFloat(eval(form.B.value));
+            }
+         } else {
+            A = parseFloat(eval(form.A.value));
+            B = parseFloat(eval(form.B.value));
+         }
+
+         if (isNaN(A)) {
+            Continue = 0;
+            Message = " A is an invalid Number " 
+            parent.frames[1].document.writeln(PrintError(Message))
+         }
+
+         if (isNaN(B)) {
+            Continue = 0;
+            Message = " B is an invalid Number " 
+            parent.frames[1].document.writeln(PrintError(Message))
+         }
+      }
+   }
+
+   if (ChoseSing) {
+      bits  = 23;
+      bias  = 127;
+      Total = 32;
+   } else {
+      bits  = 52;
+      bias  = 1023;
+      Total = 64;
+   }
+
+   Subtract = 1;
+
+   if (ChoseHex) {
+
+      A = form.A.value;
+      B = form.B.value;
+      l = A.length;
+      if (l != (Total/4)) {
+         Continue = 0;
+         Message = " Total number of Characters in A Should be Equal to " + (Total/4)
+         parent.frames[1].document.writeln(PrintError(Message))
+      }
+
+      l = B.length;
+      if (l != (Total/4)) {
+         Continue = 0;
+         Message = " Total number of Characters in B Should be Equal to " + (Total/4)
+         parent.frames[1].document.writeln(PrintError(Message))
+      }
+
+      // check for valid hexadecimal numbers
+      if (! IsValidHex(A)) {
+         Continue = 0
+         Message = "A contains non-hexadecimal characters "
+         parent.frames[1].document.writeln(PrintError(Message))
+      }
+      if (! IsValidHex(B)) {
+         Continue = 0
+         Message = "B contains non-hexadecimal characters "
+         parent.frames[1].document.writeln(PrintError(Message))
+      }
+
+      if (Continue) {
+         StrA = "";
+         for (var i=0; i <(Total/4); i++) {
+//            temp = PrintBinary(eval("0x" +A.charAt(i))/Math.pow(2,4), 4);
+            temp = unsignedToBinStr(eval("0x" +A.charAt(i)), 4);
+//            StrA = StrA + temp.slice(2,7);
+            StrA = StrA + temp;
+         }
+
+         StrB = "";
+         for (var i=0; i <(Total/4); i++) {
+//            temp = PrintBinary(eval("0x" +B.charAt(i))/Math.pow(2,4), 4);
+            temp = unsignedToBinStr(eval("0x" +B.charAt(i)), 4);
+//            StrB = StrB + temp.slice(2,7);
+            StrB = StrB + temp;
+         }
+
+	
+         sa = StrA.charAt(0);
+         sb = StrB.charAt(0);
+         ea = BinToDec (StrA.slice(1,Total-bits))
+         eb = BinToDec (StrB.slice(1,Total-bits))
+         siga = BinToDec (StrA.slice(Total-bits, Total))
+         sigb = BinToDec (StrB.slice(Total-bits, Total))
+
+
+         if (ea == 0){
+            A = Math.pow(-1,sa) * siga/Math.pow(2,bits) * Math.pow(2,1-bias) //*RAG s/ea/1/ *//
+         } else{
+            A = Math.pow(-1,sa) * (1+siga/Math.pow(2,bits)) * Math.pow(2,ea-bias)
+         }
+         if (eb == 0){
+            B = Math.pow(-1,sb) * sigb/Math.pow(2,bits) * Math.pow(2,1-bias) //*RAG s/eb/1/ *//
+         } else{
+            B = Math.pow(-1,sb) * (1+sigb/Math.pow(2,bits)) * Math.pow(2,eb-bias)
+         }
+      }
+   } /* end if (ChoseHex) */
+
+/////////////////////////////////////////////////////////////////////////
+if (Continue) {
+   Alpha = new Structure();
+   Beta  = new Structure();
+   Gamma = new Structure();
+
+   Alpha = IEEERepresentation(Alpha, A, bits, bias)
+   Beta  = IEEERepresentation(Beta, B, bits, bias)
+
+   //PrintStructure(Alpha)
+   //PrintStructure(Beta)
+   // Before Add/Sub Check for overflow, underflow, zero, Inf, NaN
+   if (Alpha.OveF){ 
+      Message = " An Overflow Occured in A"
+      Continue = 0;
+      parent.frames[1].document.writeln(PrintError(Message))
+   }
+   if (Alpha.UndF) {
+      Message =  " An Underflow Occured in A"
+      Continue = 0;
+      parent.frames[1].document.writeln(PrintError(Message))
+   }
+   if (Beta.OveF){ 
+      Message =  " An Overflow Occured in B"
+      Continue = 0;
+      parent.frames[1].document.writeln(PrintError(Message))
+   }
+   if (Beta.UndF) {
+      Message = " An Underflow Occured in B"
+      Continue = 0;
+      parent.frames[1].document.writeln(PrintError(Message))
+   }
+
+
+   OpS = (Subtract) ? "A-B  " : "A+B  ";
+
+   if (Alpha.NanF && Beta.NanF){
+      Continue = 0;
+      parent.frames[1].document.writeln("<PRE>")
+      PrintIEEENum("A    ","NaN" , Alpha.Sign, Alpha.f+1, Alpha.e, bits)
+      PrintIEEENum("B    ","NaN", Beta.Sign, Beta.f+1, Beta.e, bits)
+      PrintHR();
+      parent.frames[1].document.writeln(OpS + " Result = NaN ")
+   }
+
+   if (Alpha.NanF && Continue){
+      Continue = 0;
+      parent.frames[1].document.writeln("<PRE>")
+      PrintIEEENum("A    "," NaN" , Alpha.Sign, Alpha.f+1, Alpha.e, bits)
+      PrintResult(Beta, "B    ");
+      PrintHR();
+      parent.frames[1].document.writeln(OpS + " Result = NaN ")
+   }
+
+   if (Beta.NanF && Continue) {
+      Continue = 0;
+      parent.frames[1].document.writeln("<PRE>")
+      PrintResult(Alpha, "A    ");
+      PrintIEEENum("B    "," NaN", Beta.Sign, Beta.f, Beta.e, bits)
+      PrintHR();
+      parent.frames[1].document.writeln(OpS + " Result = NaN ")
+   }
+
+
+
+   if (Alpha.InfF && Beta.InfF){
+      Continue = 0;
+      parent.frames[1].document.writeln("<PRE>")
+      Sig = "+";
+      if (Alpha.Sign) { Sig = "-";}
+      PrintIEEENum("A    ",Sig +"Inf" , Alpha.Sign, Alpha.f +1, Alpha.e, bits)	
+      Sig = "+";
+      if (Beta.Sign) { Sig = "-";}	
+      PrintIEEENum("B    ",Sig +"Inf", Beta.Sign, Beta.f + 1, Beta.e, bits)
+      PrintHR();
+      
+      if (Alpha.Sign^Beta.Sign^Subtract){
+         //Invalid Operation
+         parent.frames[1].document.writeln(OpS + "  Invalid Operation   Result = NaN")
+      }else{
+         //Valid Operation
+         if (Subtract){
+            if ((A-B)>=0){
+               Sig = "+";
+               temp = 0;
+            }else{
+               Sig = "-";
+               temp = 1;
+            }
+         }else{
+            if ((A+B)>=0){
+               Sig = "+";
+               temp = 0;
+            }else{
+               Sig = "-";
+               temp = 1;
+            }
+         }
+         PrintIEEENum(OpS,Sig +"Inf", temp, Beta.f+1, Beta.e, bits)
+      }
+   }
+}	
+   if (Continue && (Alpha.InfF^Beta.InfF)){
+      if (Alpha.InfF){
+         Gamma = Alpha;
+         Continue = 0;
+         parent.frames[1].document.writeln("<PRE>")
+         Sig = "+";
+         if (Alpha.Sign) { Sig = "-";}
+            PrintIEEENum("A    ",Sig +"Inf" , Alpha.Sign, Alpha.f+1, Alpha.e, bits)
+            PrintResult( Beta,"B    ");
+            PrintHR();
+            PrintIEEENum(OpS,Sig +"Inf" , Alpha.Sign, Alpha.f+1, Alpha.e, bits)
+      } else {
+         Gamma = Beta;
+         Continue = 0;
+         parent.frames[1].document.writeln("<PRE>")
+         Sig = "+";
+         if (Beta.Sign) { Sig = "-";}
+         PrintResult( Alpha,"A    ");
+         PrintIEEENum("B    ",Sig +"Inf", Beta.Sign, Beta.f+1, Beta.e, bits)
+         PrintHR();
+         Sig = "+";
+         if (Beta.Sign^Subtract) { Sig = "-";}
+         PrintIEEENum(OpS,Sig +"Inf" , Beta.Sign, Beta.f+1, Beta.e, bits)
+      }
+   }
+
+   if (Continue) {
+      Gamma = Add(Alpha, Beta, Gamma, form)
+   }
+   parent.frames[1].document.close()
+} /* end FarClose */
+
+
+
+
+</SCRIPT>
+</HEAD>
+
+<CENTER>
+<H3>Floating Point Demonstration of FAR and CLOSE cases</H3>
+</CENTER>
+
+<FORM>
+
+<I>A:</I> <INPUT name=A size=16> <P>
+<I>B:</I> <INPUT name=B size=16> <P>
+<I>hex</I> <INPUT name=TypeNumber type=radio value=Hex> 
+<I>dec</I> <INPUT CHECKED name=TypeNumber type=radio value=Dec> <P><P>
+<I>single</I> <INPUT name=IEEEForm type=radio value=ChoseSing> 
+<I>double</I> <INPUT  CHECKED name=IEEEForm type=radio value=ChoseDoub> <P>
+
+<H4>Signal Delays</H4>
+<I>Pred. Exponent:</I> <INPUT name=DEL1 size=4         VALUE=2.0> <P>
+<I>Pred. Leading Zeroes:</I> <INPUT name=DEL2 size=4 VALUE=2.0> <P>
+<I>Simple 2 to 1 Mux:</I> <INPUT name=DEL3 size=4     VALUE=2.0> <P>
+<I>Multi-stage Mux:</I> <INPUT name=DEL4 size=4        VALUE=5.0> <P>
+<I>Add/Sub (per bit):</I> <INPUT name=DEL5 size=4       VALUE=2.5> <P>
+<I>Negate:</I> <INPUT name=DEL6 size=4                     VALUE=1.0> <P>
+
+
+<CENTER>
+
+<INPUT onclick=FarClose(this.form) type=button value="  Compute  "> <P>
+
+<INPUT type=button  VALUE="   Reset   " onClick=parent.frames[1].location.href="../tablet.html"> <P>
+
+<CENTER>
+<INPUT type=button VALUE="   Help   " onClick=parent.frames[1].location.href="help.html"><P>
+</CENTER>
+
+
+</CENTER>
+</FORM></P></BODY></HTML>

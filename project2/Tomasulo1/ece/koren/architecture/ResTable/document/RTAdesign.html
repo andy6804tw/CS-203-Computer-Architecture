@@ -1,0 +1,179 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Author" content="Thomas Chou">
+   <meta name="GENERATOR" content="Mozilla/4.7 [en] (Win98; U) [Netscape]">
+   <title>Reservation Table Analyzer - Design Document</title>
+</head>
+<body>
+
+<center><font size=+3>Reservation Table Analyzer</font>
+<br><b><font size=+2>Design Document</font></b>
+<br><b><font size=+1>By Thomas Chou</font></b></center>
+
+<p><b>Introduction:</b>
+<br>The Reservation Table Analyzer was written for the Java 1.1.x platform
+without the use of Java Swing Sets. It was designed to run under any machine
+that supports Java 1.1. This document is intended for future developers
+of this application who want to know how the application was designed and
+implemented. In the first part, I will explain the GUI design, and in the
+last part of this document I will explain the different algorithms that
+were used in the application.
+<br>
+<hr WIDTH="100%">
+<br><b>GUI design:</b>
+<p><b>1. Component Layout:</b>
+<center>
+<p><img SRC="imageVJV.JPG" height=525 width=700></center>
+
+<p>The figure above is a screenshot of the application when it first loads
+up. The entire window you see is actually a Java Frame object. Within the
+Frame there are three components, North Panel, South Panel, and Main Panel.
+North panel contains components related to the Task Pattern. The South
+Panel contains the 5 buttons in a row that you see the figure above. And
+finally, the Main Panel is the large area at the center of the application.
+This is where the reservation table, state diagram, help screen, and pipeline
+statistics are displayed. The Java BorderLayout manager is used when adding
+the three components to the Frame. For both the North Panel and South Panel
+the default layout manager, FlowLayout, is used. Main Panel uses the Java
+CardLayout manager. Using the CardLayout system will allow the Main Panel
+to switch from one panel display to another easily. For example, if the
+Main Panel is currently showing the reservation tables and the user presses
+the State Diagram button, the layout manager will immediately hide the
+reservation tables panel and bring up the state diagram panel to the top
+of the deck of panels.
+<p><b>2. Reservation Tables:</b>
+<center>
+<p><img SRC="imageN16.JPG" height=525 width=700></center>
+
+<p>When the user clicks on the Reservation Table Input button the above
+windowl will show up. Initially, there won't be any reservation tables
+displayed. Only when the user enters the number of resources and time slots
+available and then presses the Build button will then the reservation table
+be created and displayed. The user will then be able to fill in the reservation
+table(s) by clicking on the individual boxes. How this functionality is
+implemented is described below:
+<br>When the user clicks the Build button with the number of resources
+and time slots filled in the application will calculate how large of a
+drawing space it will need for the reservation table(s). This calculation
+is possible because the size of each box is constant. Multiplying the height
+of the box with the number of resources will give an approxmiate height
+for the panel, and multiplying the width of the box with the number of
+time slots will give an approxmiate width for the panel. Once the reservation
+table(s) are created the reservation table panels will then listen for
+any mouse events. If a mouse click occurs within one of the reservation
+tables then the application will attempt to calculate which box did the
+mouse click occur in. Once it has determined the box it will mark it with
+an X if the box is empty. If the box has an X already then the X will be
+removed.
+<p><b>3. TextPanel Class:</b>
+<p>The TextPanel Class was designed to mimick the functionality of the
+TextArea Class provided by the standard Java Class Libraries. The TextPanel
+Class however has a very important feature that makes it more versatile
+then the TextArea Class. It allows words in the panel to have different
+colors where in a TextArea component all words and symbols within the component
+must be of the same color. A TextPanel object is actually a Canvas class
+and how it was implemented is described in the following. When you open
+a word processing application usually a blank page is displayed and the
+typing cursor is placed at the top left corner of the page. And as you
+type the characters will appear on the page and the cursor is updated.
+This is exactly what happens in a TextPanel object. A TextPanel object
+contains a global cursor and a Vector object which stores the words that
+are to be displayed. When the TextPanel object is first created the cursor
+is placed at the top left corner of the panel, and the Vector is initially
+empty. Every time you add a character to the Vector the cursor will be
+updated. The Vector will not only store the words that are to be displayed
+but their color and location as well. This way we will be able to control
+the color of each individual character when the text is being printed to
+the screen. The state diagram, pipeline statistics, and help panels all
+use TextPanel objects to display their results.
+<br>
+<hr WIDTH="100%">
+<br><b>Algorithms:</b>
+<p><b>1. Calculating the PCV and the initial state (Single Task Mode):</b>
+<p>In single task mode determining the PCV for a given reservation table
+and task is fairly easy. Suppose you have two copies of the reservation
+table and its contents on two transparencies. You place one transparency
+directly on top of the other transparency and check if any of Xs on the
+top transparency overlaps one of the Xs on the bottom transparency. If
+there is an overlap then you have a collision and a 1 is placed in the
+beginning of PCV. Obvisouly, a 1 will always appear at the beginning of
+the PCV unless the reservation table is empty. Next, the top the transparency
+is shifted to the left by one time slot and a check for collisions is done.
+If there is a collision then another 1 is placed in the PCV. If there is
+no collision then a 0 is placed in the PCV. The top transparency will shift
+to the left again and this process will continue until the number shifts
+equals to the number of time slots available. Once this process is done,
+the entire PCV will have been determined. This is how the application calculates
+the PCV; it keeps two copies of the reservation table and performs this
+shifting and collision detection process until the PCV is found. It turns
+out that the PCV is also the starting state in which all other states are
+derived.
+<p><b>2. Calculating the starting Matrices (Two Task Mode):</b>
+<p>When the reservation table analyzer is analyzing two tasks running on
+the same pipeline then the PCV is no longer a state in the state diagram.
+In fact, the each state will be matrix will at least two rows. The two
+starting matrices can be determined in a way similar to determining the
+PCV. Suppose you have two distinct tasks A and B running on the same pipeline.
+The starting matrices are defined as:
+<p>Matrix A = [ PCV of A&nbsp; ]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Matrix B = [ "A after B" ]
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+[ "B after A" ]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+[ PCV of B&nbsp; ]
+<p>The notation "X after Y" means perform the same process of calculating
+the PCV for task Y except let task X be the top transparency.
+<br>These two matrices are the initial states of the state diagram.
+<p><b>3. Determining the state diagram:</b>
+<p>The key thing to recognize is that once you know one state in the state
+diagram you can determine all the other states because there are no partitions
+within the state diagram. In single task mode your initial state is the
+PCV and all the rest of the states and edges in the state diagram can be
+determined by the following algorithm:
+<p>1.&nbsp;&nbsp;&nbsp; For each state in the state list do
+<br>2.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; For each column in the
+PCV do
+<br>3.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+If the number&nbsp; at column i is a 0 then an edge has just been found.
+<br>4.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Determine where this edge leads to by:
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+shifting the PCV to the left by i and perform an OR operation with the
+original PCV.
+<br>5.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+If the result of the OR operation is a state that is not in the the current
+state list then
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+add it to the current state list.
+<p>When application is analyzing two tasks running on the same pipeline
+a similar algorithm is used to calcuate the state diagram. To calculate
+the state diagarm, simply replace the variable PCV in the algorithm with
+either Matrix A or Matrix B (the two starting states) and then run the
+algorithm for the first and second row of both matrices. If the algorithm
+is ran on the top row then PCV should be replaced by Matrix A otherwise
+PCV should be replaced by Matrix B.
+<p><b>4. Determining the greedy cycle:</b>
+<p>To determine the greedy cycle, you must calculate the state diagarm
+first. Once the application has determined all the states then the following
+algorithm is used to find the greedy cycle.
+<p>Note: In single task mode the current pattern is assumed to be "A"
+<p>1.&nbsp;&nbsp;&nbsp; Start at State #1
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Add it to the list of starting
+states and the greedy cycle list which are initially just empty
+<br>2.&nbsp;&nbsp;&nbsp; While no cycle in the graph has been found that
+meets the current pattern restriction do
+<br>3.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; For each task in
+the pattern do
+<br>4.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Take the first availabe edge meets the task requirement to the next state.
+<br>5.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Add the destination state to the greedy cycle list.
+<br>6.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; If the last element
+in the greedy cycle list is one of the starting states then
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+the greedy cycle has been found. Exit the while loop
+<br>7.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Else the last element
+in the greedy cycle list is added to the list of starting states.
+</body>
+</html>

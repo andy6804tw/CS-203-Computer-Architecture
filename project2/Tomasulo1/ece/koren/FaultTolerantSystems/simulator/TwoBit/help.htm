@@ -1,0 +1,77 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="en-us">
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<meta name="GENERATOR" content="Microsoft FrontPage 4.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<title>Help</title>
+<base target="contents">
+</head>
+
+<body>
+
+<p><b>Help for Two Bit Error Correction and Three Bit Error Detection Hamming
+Code Program</b></p>
+<table border="1" width="1202" height="353">
+  <tr>
+    <td width="997" height="22">Instructions for each step:</td>
+    <td width="611" height="22">Applicable Frame:</td>
+  </tr>
+  <tr>
+    <td width="997" height="147"><font color="#FF0000">Step 1</font>
+      <p>Enter a 32-bit data value, in hexadecimal format, in the entry
+      box.&nbsp; This data represents the word that was originally sent to the
+      memory, before any errors occurred.&nbsp; Any non-hex characters will be
+      treated as &quot;0&quot; (0X0).&nbsp; Leading &quot;0&quot;s will be
+      pre-pended if the value is less than 32-bits.&nbsp; Leading characters are
+      truncated if the value entered is longer than 8 characters.&nbsp; Data
+      input validation changes, if needed, will be displayed after the button in step 2 is
+      pressed. </p>
+    </td>
+    <td width="611" height="352" rowspan="4">&nbsp;
+      <p><img border="0" src="help3.gif" width="470" height="611"></p>
+    </td>
+  </tr>
+  <tr>
+    <td width="997" height="1"><font color="#FF0000">Step 2</font>
+      <p>Click on the &quot;Calculate Check Bits&quot; button to have the
+      program calculate the check bits for the data that was entered in step
+      1.&nbsp; The data and check bits are also put in the entry boxes for step
+      3 for convenience.&nbsp; Data input validation changes for the data entered in step 1 are done in this step.</p>
+    </td>
+  </tr>
+  <tr>
+    <td width="997" height="72"><font color="#FF0000">Step 3</font>
+      <p>Edit the values in these entry boxes to inject errors into the data or
+      check bits that will be returned from memory.&nbsp;&nbsp; Data input
+      validation changes similar to those in step 1 are performed as needed after the button in step 4 is pressed.&nbsp; Steps 3 and 4 can
+      repeated as often as desired.</p>
+    </td>
+  </tr>
+  <tr>
+    <td width="997" height="132"><font color="#FF0000">Step 4</font>
+      <p>Click on the &quot;Decode&quot; button to have the program calculate
+      the data value returned after it has been processed by the error
+      correction circuit.&nbsp; Single and double bit errors injected during
+      step 3 will be corrected and triple bit errors will be detected.&nbsp;
+      "X"s are displayed for invalid data.&nbsp; Note that the data and status 
+      returned depends only on the data and check bits from step 3.&nbsp;  
+      Steps 3 and 4 can repeated as often as desired.</td>
+  </tr>
+  <tr>
+    <td width="997" height="132" valign="top"><font color="#FF0000">Description</font>
+      <p>Click on the description icon to display a window which describes the
+      decoding circuit.</p>
+      <p><font color="#FF0000">Step 5</font></p>
+      <p>Click on the &quot;Update Values&quot; button to have the program
+      display the values in the decode circuit for the data entered in step 3
+      and calculated in step 4.&nbsp; The values shown in the boxes correspond
+      to the values of the same name in the diagram.&nbsp; "X"s are displayed for invalid data.</p>
+      <p>&nbsp;</td>
+    <td width="611" height="132" valign="top"><img border="0" src="help2.gif" width="505" height="213"></td>
+  </tr>
+</table>
+</body>
+
+</html>

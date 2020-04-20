@@ -1,0 +1,187 @@
+<HTML>
+<HEAD>
+<TITLE>Cyclic Code</TITLE>
+<SCRIPT language="JavaScript">
+
+function Encode(dataWord, cyclicEncoder) {
+	encoderLength = Math.floor(Math.log(cyclicEncoder)/2.302585092994046+1)
+	dataLength = Math.floor(Math.log(dataWord)/2.302585092994046+1)
+	//encodedWord = "hej" + encoderLength + " " + dataLength+ " ";
+	encodedWord = "" 
+	for (i=0; i<dataLength+encoderLength-1; i++) {
+		//encodedWord + " i=" + i + " j="
+		encodedBit = "0"
+		for (j=Math.max(i-dataLength+1,0); j<Math.min(i+1,encoderLength); j++) {
+			if (IndexIsAOne(cyclicEncoder, j) &&
+				IndexIsAOne(dataWord, i-j)) {
+				if (encodedBit == "0") {
+					encodedBit = "1"
+				}
+				else {
+					encodedBit = "0"
+				}
+			}
+		}
+		encodedWord = encodedBit + encodedWord
+	}
+        return encodedWord
+}
+
+function IndexIsAOne(dataWord, index) {
+	return(Math.floor(dataWord/Math.pow(10,index+1)) != Math.floor(dataWord/Math.pow(10,index))/10)
+}
+
+function FlipBit(dataWord,index) {
+	if (IndexIsAOne(dataWord, index)) {
+		dataWord = dataWord - Math.pow(10,index)
+	}
+	else {
+		dataWord = dataWord + Math.pow(10,index)
+	}
+	return(dataWord)
+}
+
+function Cyclic(form) {
+	if (!BinNumber(form.dataWord.value)) {
+		form.encodedWord.value = "Data Word must be in binary form"
+		return
+	}
+	if (!BinNumber(form.cyclicEncoder.value)) {
+		form.encodedWord.value = "Encoder must be in binary form"
+		return
+	}
+	if (Math.floor(Math.log(form.cyclicEncoder.value)/2.302585092994046+1) + Math.floor(Math.log(form.dataWord.value)/2.302585092994046+1)
+		>16) {
+		form.encodedWord.value = "Too big numbers"
+		return
+	}
+	dataWord = parseFloat(form.dataWord.value)
+	cyclicEncoder = parseFloat(form.cyclicEncoder.value)
+        form.encodedWord.value = Encode(dataWord, cyclicEncoder)
+	for (i=form.dataWord.value.length+form.cyclicEncoder.value.length-form.encodedWord.value.length-1;i>0;i--){
+		form.encodedWord.value = "0" + form.encodedWord.value
+	}
+	form.codeWord.value = form.encodedWord.value
+	form.decodedWord.value = ""
+	form.remainder.value = ""
+	form.faultDetected.value = ""
+}
+
+function Decode(form) {
+	if (!BinNumber(form.codeWord.value)) {
+		form.decodedWord.value = "Encoded Word must be in binary form"
+		return
+	}
+	if (!BinNumber(form.cyclicEncoder.value)) {
+		form.decodedWord.value = "Encoder must be in binary form"
+		return
+	}
+	if ((form.codeWord.value.length>15) || (form.cyclicEncoder.value.length>15)) {
+		form.decodedWord.value = "Too big numbers"
+		return
+	}
+	codeWord = parseFloat(form.codeWord.value)
+	cyclicEncoder = parseFloat(form.cyclicEncoder.value)
+	form.decodedWord.value = CyclicDecoder(codeWord, cyclicEncoder,form)
+	for (i=form.codeWord.value.length-form.cyclicEncoder.value.length-form.decodedWord.value.length+1;i>0;i--){
+		form.decodedWord.value = "0" + form.decodedWord.value
+	}
+}
+
+function CyclicDecoder(encodedWord, cyclicEncoder,form) {
+	encoderLength = Math.floor(Math.log(cyclicEncoder)/2.302585092994046+1)
+	dataLength = Math.floor(Math.log(encodedWord)/2.302585092994046+1)
+	decodedWord = "" 
+	for (i=dataLength-1; i>encoderLength-2; i--) {
+		decodedBit = "0"
+		if (IndexIsAOne(encodedWord, i)) {
+			decodedBit = "1"
+			for(j=0; j<encoderLength; j++) {
+				if (IndexIsAOne(cyclicEncoder, j)) {
+					encodedWord = FlipBit(encodedWord,i-encoderLength+j+1)
+				}
+			}
+		}
+		decodedWord =  decodedWord + decodedBit
+	}
+	form.remainder.value = ""
+	for (i=0; i<encoderLength; i++) {
+		if (IndexIsAOne(encodedWord, i)) {
+			form.remainder.value = "1" + form.remainder.value
+		}
+		else {
+			form.remainder.value = "0" + form.remainder.value
+		}
+	}
+	if (parseFloat(form.remainder.value)>0) {
+		form.faultDetected.value = "yes"
+	}
+	else {
+		form.faultDetected.value = "no"
+	}
+        return decodedWord
+}
+
+function BinNumber(dataWord) {
+	for (i=0;i<dataWord.length;i++) {
+		if ((parseFloat(dataWord.substring(i,i+1)) != 1)
+			&& (parseFloat(dataWord.substring(i,i+1)) != 0)) {
+			return false
+		}
+	}
+	return true
+}
+
+</SCRIPT>
+</HEAD>
+
+<BODY bgcolor="dddddd">
+
+<font size="+3"><B>Cyclic Encoder/Decoder </B></font>
+<BR><A HREF="help0.htm" target="_blank">Instructions/Help</A>
+<BR>
+<FORM>
+<table cellpadding=10>
+<font size="+2">Cyclic Encoder</font>
+<td>
+<B>Data word: </B><BR><INPUT type="text" name="dataWord">
+<BR>
+<B>Cyclic encoder: </B><BR><INPUT type="text" name="cyclicEncoder">
+</td>
+<td>
+</td>
+<td>
+<INPUT type="button" name="enter1" value="Encode ->"
+onClick="Cyclic(this.form)">
+</td>
+<td>
+</td>
+<td>
+<B>Encoded word:</B><BR><INPUT type="text" name="encodedWord">
+</td>
+</table>
+<P>
+<BR>
+<table cellpadding=10>
+<font size="+2">Cyclic Decoder</font>
+<td>
+<B>Word to decode:</B><BR><INPUT type="text" name="codeWord">
+</td>
+<td>
+</td>
+<td>
+<INPUT type="button" name="enter2" value="Decode ->" onClick="Decode(this.form)"> 
+</td>
+<td>
+</td>
+<td>
+<B>Decoded word: </B><BR><INPUT type="text" name="decodedWord"><BR>
+<B>Remainder: </B><BR><INPUT type="text" name="remainder"><BR>
+<B>Fault detected: </B><BR><INPUT type="text" name="faultDetected">
+</td>
+</table>
+
+</FORM>
+
+</BODY>
+</HTML>

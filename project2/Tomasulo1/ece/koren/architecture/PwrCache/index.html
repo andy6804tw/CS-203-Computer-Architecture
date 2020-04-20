@@ -1,0 +1,40 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE> Analytical Energy dissipation estimation in caches </TITLE>
+</HEAD>
+
+<BODYs>
+<h2><center>ANALYTICAL ESTIMATION OF ENERGY DISSIPATION IN CACHES</center></h2>
+
+<p><h3>Introduction</h3>
+
+<p>State of the art microprocessors have one or more levels of on-chip caches. The trend is to increase the cache memory with the increasing transistor budget, because off-chip accesses are atleast an order of magnitude slower. By confining memory accesses on-chip, single cycle memory access latency can be achieved using Static RAMs. There is the added advantage of reducing power because driving signals through high capacitance I/O pads is less frequent.  An examination of the die photos of high-end microprocessors show that anywhere from 15% to 40% of the die area is dedicated to on-chip caches.[1]
+
+<p>This tool for Energy dissipation in Caches is based on the paper," Analytical Energy Dissipation Models for Low Power Caches", by Milind B. Kamble and Kanad Ghose[1].<a href = "extra.htm">Summary</a>
+
+<br><br><b><a href = "goals.htm">Goals</a>:</b><br>This link summarizes the goals of this project
+
+<br><h3>Tools:</h3>
+<p>The following tools have been provided for obtaining the Energy dissipated in the cache. The tools are designed for a set-associative cache and hence can also be utilized for the direct mapped cache and the fully associative cache as they are special cases of the set associative cache.<p>
+
+<a href = "energy.htm">1)	Tool for determining Energy dissipation:</a> This tool allows the user to enter various values inputs and computes the individual energy dissipation elements as well as the total energy dissipated. A graphical representation is also provided to show the ratio of the various energy dissipations.<br>
+
+<br>Tools for comparing Energy dissipation for varying values of<br>
+
+<a href = "sup_volt.html" >2)Supply Voltage</a><br>
+<a href = "assoc.html">3)Cache Associativity</a><br>
+<a href = "cache_size.html">4)Cache size</a><br>
+<a href = "line_size.html">5)Line size.</a>
+
+<p><h3>Reference:</h3>
+
+1)	Kamble,M.B and Ghose,K., "Analytical Energy Dissipation Models of Low Power Caches", in Proc. 1997, Int'l Symposium on low power electronics and design, Aug 1997,pp 143-148.<br>
+2)	Energy efficiency of VLSI Caches: A comparative Study:- Kamble, Ghose-1997.<br>
+3)	Modeling Energy Dissipation in Low Power Caches(1998) Milind B.Kamble, Kanad Ghose.<br>
+4) The tool used for displaying the results in graphical format is <a href = "../../../../../www-adele.imag.fr/~donsez/cours/exemplescourstechnoweb/js_graphimg/default.htm">
+Javascript Graph Builder</a>
+
+
+</BODY>
+</HTML>

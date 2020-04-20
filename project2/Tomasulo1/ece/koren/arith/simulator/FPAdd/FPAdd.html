@@ -1,0 +1,400 @@
+<HTML>
+<HEAD>
+<SCRIPT  language="JavaScript" src="arith_utils.js"></SCRIPT>
+<SCRIPT  language="JavaScript" src="FPAdd.js"></SCRIPT>
+
+<TITLE>FP Addition</TITLE>
+
+<BODY bgColor="#9C7BBD">
+
+<SCRIPT  language="JavaScript">
+
+returnVal=new Object();
+returnVal.ieeeForm=0;
+returnVal.isError = 1;
+// *********************************************************
+// *********************************************************
+// *********************************************************
+//
+//       Main program
+//
+// *********************************************************
+// *********************************************************
+
+// ***************************************************************
+// ***************************************************************
+
+function PrintStructure(Structure) {
+    parent.frames[1].document.writeln("<PRE>");
+    parent.frames[1].document.writeln("IEEE     = " + Structure.IEEE);
+    parent.frames[1].document.writeln("error    = " + Structure.error);
+    parent.frames[1].document.writeln("maxerror = " + Structure.maxerror);
+    parent.frames[1].document.writeln("Sign     = " + Structure.Sign);
+    parent.frames[1].document.writeln("f        = " + Structure.f);
+    parent.frames[1].document.writeln("e        = " + Structure.e);
+    parent.frames[1].document.writeln("ZeroF    = " + Structure.ZeroF);
+    parent.frames[1].document.writeln("InfF     = " + Structure.InfF);
+    parent.frames[1].document.writeln("DenF     = " + Structure.DenF);
+    parent.frames[1].document.writeln("NanF     = " + Structure.NanF);
+    parent.frames[1].document.writeln("OveF     = " + Structure.OveF);
+    parent.frames[1].document.writeln("UndF     = " + Structure.UndF);
+    parent.frames[1].document.writeln("G        = " + Structure.G);
+    parent.frames[1].document.writeln("R        = " + Structure.R);
+    parent.frames[1].document.writeln("S        = " + Structure.S);
+    parent.frames[1].document.writeln("</PRE>");
+}
+
+function ComputeClicked(form)
+{
+    parent.frames[1].document.open();
+
+    FPAdder(form.A.value,form.B.value,form.IEEEForm[0].checked,form.IEEEForm[1].checked,form.TypeNumber[0].checked,form.TypeNumber[1].checked,
+            0,0,form.Operation[0].checked,form.Operation[1].checked,0,1,1);
+
+    parent.frames[1].document.close();
+}
+
+function OpenWindow()
+{
+    parent.frames[1].document.open();
+}
+
+function CloseWindow()
+{
+    parent.frames[1].document.close();
+}
+
+function FPAdder(AVal,BVal,ChoseSing,ChoseDoub,ChoseHex,ChoseDec, offset, offset2, ChoseAdd, ChoseSub, expected, verboseOut, SomeOut){
+    returnVal.isError = 1;
+
+    Continue = 1;
+    if (ChoseDec) {
+        if (navigator.appVersion[0] > 3 ){
+            with (Math) {
+                A = parseFloat(eval(AVal));
+                B = parseFloat(eval(BVal));
+            }
+        } else {
+            A = parseFloat(eval(AVal));
+            B = parseFloat(eval(BVal));
+        }
+
+        if (isNaN(A)) {
+            Continue = 0;
+            Message = " A is an invalid Number "
+            parent.frames[1].document.writeln(PrintError(Message))
+        }
+
+        if (isNaN(B)) {
+            Continue = 0;
+            Message = " B is an invalid Number "
+            parent.frames[1].document.writeln(PrintError(Message))
+        }
+    }
+
+    if (ChoseAdd){
+        Subtract = 0;
+    } else {
+        Subtract = 1;
+    }
+
+    if (ChoseSing) {
+        bits  = 23;
+        bias  = 127;
+        Total = 32;
+    } else {
+        bits  = 52;
+        bias  = 1023;
+        Total = 64;
+    }
+
+    if (ChoseHex) {
+
+        A = AVal;
+        B = BVal;
+        l = A.length;
+        if (l != (Total/4)) {
+            Continue = 0;
+            Message = " Total number of Characters in A Should be Equal to "
+                    +Total/4
+            parent.frames[1].document.writeln(PrintError(Message))
+        }
+
+        l = B.length;
+        if (l != (Total/4)) {
+            Continue = 0;
+            Message = " Total number of Characters in B Should be Equal to "
+                    +Total/4
+            parent.frames[1].document.writeln(PrintError(Message))
+        }
+
+        // check for valid hexadecimal numbers
+        if (! IsValidHex(A)) {
+            Continue = 0
+            Message = "A contains non-hexadecimal characters "
+            parent.frames[1].document.writeln(PrintError(Message))
+        }
+        if (! IsValidHex(B)) {
+            Continue = 0
+            Message = "B contains non-hexadecimal characters "
+            parent.frames[1].document.writeln(PrintError(Message))
+        }
+
+        if (Continue) {
+            StrA = "";
+            for (var i=0; i <(Total/4); i++) {
+                temp = unsignedToBinStr(eval("0x" +A.charAt(i)), 4);
+                StrA = StrA + temp;
+            }
+
+            StrB = "";
+            for (var i=0; i <(Total/4); i++) {
+                temp = unsignedToBinStr(eval("0x" +B.charAt(i)), 4);
+                StrB = StrB + temp;
+            }
+
+            sa = StrA.charAt(0);
+            sb = StrB.charAt(0);
+            ea =   	BinToDec (StrA.slice(1,Total-bits));
+            eb =   	BinToDec (StrB.slice(1,Total-bits));
+            siga = 	BinToDec (StrA.slice(Total-bits, Total));
+            sigb =  BinToDec (StrB.slice(Total-bits, Total));
+            if (ea == 0){
+                A = Math.pow(-1,sa) * siga/Math.pow(2,bits)
+                        * Math.pow(2,1-bias) //*RAG s/ea/1/ *//
+            } else{
+                A = Math.pow(-1,sa) * (1+siga/Math.pow(2,bits))
+                        * Math.pow(2,ea-bias)
+            }
+            if (eb == 0){
+                B = Math.pow(-1,sb) * sigb/Math.pow(2,bits)
+                        * Math.pow(2,1-bias) //*RAG s/eb/1/ *//
+            } else{
+                B = Math.pow(-1,sb) * (1+sigb/Math.pow(2,bits))
+                        * Math.pow(2,eb-bias)
+            }
+        }
+    }
+
+/////////////////////////////////////////////////////////////////////////
+
+    Alpha = new Structure();
+    Beta  = new Structure();
+    Gamma = new Structure();
+
+    returnStruct = new Structure();
+    expectedStruct = new Structure();
+    Alpha = IEEERepresentation(Alpha, A, bits, bias);
+    Beta  = IEEERepresentation(Beta, B, bits, bias);
+
+    // Before Add/Sub Check for overflow, underflow, zero, Inf, NaN
+    if (Alpha.OveF){
+        Message = " An Overflow Occured in A";
+        Continue = 0;
+        parent.frames[1].document.writeln(PrintError(Message));
+    }
+    if (Alpha.UndF) {
+        Message =  " An Underflow Occured in A";
+        Continue = 0;
+        parent.frames[1].document.writeln(PrintError(Message));
+    }
+    if (Beta.OveF){
+        Message =  " An Overflow Occured in B";
+        Continue = 0;
+        parent.frames[1].document.writeln(PrintError(Message));
+    }
+    if (Beta.UndF) {
+        Message = " An Underflow Occured in B";
+        Continue = 0;
+        parent.frames[1].document.writeln(PrintError(Message));
+    }
+
+    OpS = (Subtract) ? "A-B  " : "A+B  ";
+
+    if (Alpha.ZeroF && Beta.ZeroF){
+        Gamma  = IEEERepresentation(Gamma, 0, bits, bias);
+        Continue = 0;
+        parent.frames[1].document.writeln("<PRE>");
+        PrintIEEENum("A    ",Alpha.IEEE, Alpha.Sign, Alpha.f, Alpha.e, bits);
+        PrintIEEENum("B    ",Beta.IEEE, Beta.Sign, Beta.f, Beta.e, bits);
+        PrintHR();
+        PrintIEEENum(OpS    ,Gamma.IEEE, Gamma.Sign, Gamma.f, Gamma.e, bits);
+
+    }
+
+    if (Alpha.ZeroF || Beta.ZeroF){
+        Gamma  = IEEERepresentation(Gamma,(A + Math.pow(-1,Subtract)*B), bits, bias);
+        Continue = 0;
+        parent.frames[1].document.writeln("<PRE>");
+        PrintResult(Alpha,"A   ");
+        PrintResult(Beta,"B   ");
+        PrintHR();
+        PrintResult(Gamma,OpS);
+
+    }
+
+
+    if (Alpha.NanF && Beta.NanF){
+        Continue = 0;
+        parent.frames[1].document.writeln("<PRE>");
+        PrintIEEENum("A    ","NaN" , Alpha.Sign, Alpha.f+1, Alpha.e, bits);
+        PrintIEEENum("B    ","NaN", Beta.Sign, Beta.f+1, Beta.e, bits);
+        PrintHR();
+        parent.frames[1].document.writeln(OpS + " Result = NaN ");
+    }
+
+    if (Alpha.NanF && Continue){
+        Continue = 0;
+        parent.frames[1].document.writeln("<PRE>");
+        PrintIEEENum("A    "," NaN" , Alpha.Sign, Alpha.f+1, Alpha.e, bits);
+        PrintResult(Beta, "B    ");
+        PrintHR();
+        parent.frames[1].document.writeln(OpS + " Result = NaN ");
+    }
+
+    if (Beta.NanF && Continue){
+        Continue = 0;
+        parent.frames[1].document.writeln("<PRE>");
+        PrintResult(Alpha, "A    ");
+        PrintIEEENum("B    "," NaN", Beta.Sign, Beta.f, Beta.e, bits);
+        PrintHR();
+        parent.frames[1].document.writeln(OpS + " Result = NaN ");
+    }
+
+    if (Alpha.InfF && Beta.InfF){
+        Continue = 0;
+        parent.frames[1].document.writeln("<PRE>");
+        Sig = "+";
+        if (Alpha.Sign) { Sig = "-";}
+        PrintIEEENum("A    ",Sig +"Inf" , Alpha.Sign, Alpha.f +1, Alpha.e, bits);
+        Sig = "+";
+        if (Beta.Sign) { Sig = "-";}
+        PrintIEEENum("B    ",Sig +"Inf", Beta.Sign, Beta.f + 1, Beta.e, bits);
+        PrintHR();
+
+        if (Alpha.Sign^Beta.Sign^Subtract){
+            //Invalid Operation
+            parent.frames[1].document.writeln(OpS +
+                    "      Invalid Operation   Result = NaN");
+        }else{
+            //Valid Operation
+            if (Subtract){
+                if ((A-B)>=0){
+                    Sig = "+";
+                    temp = 0;
+                }else{
+                    Sig = "-";
+                    temp = 1;
+                }
+            }else{
+                if ((A+B)>=0){
+                    Sig = "+";
+                    temp = 0;
+                }else{
+                    Sig = "-";
+                    temp = 1;
+                }
+            }
+            PrintIEEENum(OpS,Sig +"Inf", temp, Beta.f+1, Beta.e, bits);
+        }
+    }
+
+    if (Continue && (Alpha.InfF^Beta.InfF)){
+        if (Alpha.InfF){
+            Gamma = Alpha;
+            Continue = 0;
+            parent.frames[1].document.writeln("<PRE>");
+            Sig = "+";
+            if (Alpha.Sign) { Sig = "-";}
+            PrintIEEENum("A    ",Sig +"Inf" , Alpha.Sign, Alpha.f+1, Alpha.e, bits);
+            PrintResult( Beta,"B    ");
+            PrintHR();
+            PrintIEEENum(OpS,Sig +"Inf" , Alpha.Sign, Alpha.f+1, Alpha.e, bits);
+        } else {
+            Gamma = Beta;
+            Continue = 0;
+            parent.frames[1].document.writeln("<PRE>");
+            Sig = "+";
+            if (Beta.Sign) { Sig = "-";}
+            PrintResult( Alpha,"A    ");
+            PrintIEEENum("B    ",Sig +"Inf", Beta.Sign, Beta.f+1, Beta.e, bits);
+            PrintHR();
+            Sig = "+";
+            if (Beta.Sign^Subtract) { Sig = "-";}
+            PrintIEEENum(OpS,Sig +"Inf" , Beta.Sign, Beta.f+1, Beta.e, bits);
+        }
+
+    }
+
+/////////////////////////////////////////////////////////////////////////
+
+
+    if (Continue)
+    {
+        returnStruct = Add(Alpha, Beta, Gamma,returnStruct,verboseOut, SomeOut);
+
+        if(expected!= 0)
+        {
+            expectedStruct  = IEEERepresentation(expectedStruct, expected, bits, bias);
+
+            if((expectedStruct.f == returnStruct.f) && (expectedStruct.e == returnStruct.e))
+            {
+                returnVal.isError = 0;
+            }
+            else
+            {
+                kmna = Math.abs(expectedStruct.f) - Math.abs(returnStruct.f);
+                kmna = Math.abs(kmna);
+
+                if ( kmna <= Math.pow(2,-23))
+                {
+                    returnVal.isError = 0;
+                }
+                else
+                {
+                    returnVal.isError = 1;
+
+                }
+            }
+        }
+        returnVal.ieeeForm = returnStruct.IEEE;
+    }
+    return returnVal;
+}
+
+</SCRIPT>
+</HEAD>
+
+<CENTER>
+    <H3>Floating Point Add/Subtract</H3></CENTER>
+</CENTER>
+
+<FORM>
+
+    <I>A:</I> <INPUT name=A size=16> <P>
+    <I>B:</I> <INPUT name=B size=16> <P>
+    <I>hex</I> <INPUT CHECKED name=TypeNumber type=radio value=Hex>
+    <I>dec</I> <INPUT name=TypeNumber type=radio value=Dec> <P><P>
+    <I>add</I> <INPUT CHECKED name=Operation type=radio value=Add>
+    <I>sub</I><INPUT name=Operation type=radio value=Sub><P>
+    <I>single</I> <INPUT CHECKED name=IEEEForm type=radio value=ChoseSing>
+    <I>double</I> <INPUT  name=IEEEForm type=radio value=ChoseDoub> <P>
+
+
+    <CENTER>
+
+        <INPUT onclick=ComputeClicked(this.form) type=button value="  Compute  "> <P>
+
+        <INPUT type=button  VALUE="   Reset   " onClick=parent.frames[1].location.href="../tablet.html"> <P>
+
+        <CENTER>
+            <INPUT type=button VALUE="   Help   " onClick=parent.frames[1].location.href="FPAddHelp.html"><P>
+        </CENTER>
+
+
+    </CENTER>
+</FORM>
+
+
+
+</P></BODY></HTML>

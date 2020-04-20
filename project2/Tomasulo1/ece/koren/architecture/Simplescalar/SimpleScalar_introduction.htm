@@ -1,0 +1,193 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="en-us">
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<title>What is SimpleScalar</title>
+<style>
+<!--
+ p.MsoNormal
+	{mso-style-parent:"";
+	margin-bottom:.0001pt;
+	font-size:12.0pt;
+	font-family:"Times New Roman";
+	margin-left:0in; margin-right:0in; margin-top:0in}
+-->
+</style>
+<!--[if !mso]>
+<style>
+span.a
+	{}
+</style>
+<![endif]-->
+</head>
+
+<body>
+
+<p class="MsoNormal" align="center"><b>
+<span style="font-size: 16.0pt; font-family: Comic Sans MS; color: red">Introduction
+to SimpleScalar</span></b></p>
+<p class="MsoNormal"><b>
+<span style="font-size: 16.0pt; font-family: Comic Sans MS; color: red">&nbsp;</span></b></p>
+<p class="MsoNormal"><b><span style="font-family: Comic Sans MS">SimpleScalar</span></b><span style="font-family: Comic Sans MS">
+<span style="color: blue">(<a style="color: blue; text-decoration: underline; text-underline: single" href="../../../../../www.simplescalar.com/default.htm">http://www.simplescalar.com</a>)</span> 
+is an open source computer architecture simulator developed by Todd Austin
+<span style="color: blue">(<a href="../../../../../www.eecs.umich.edu/~taustin/default.htm">http://www.eecs.umich.edu/~taustin/</a>)</span> 
+while he was a PhD student at the University of Wisconsin Madison.</span></p>
+<p class="MsoNormal" style="text-align: justify">
+<span style="font-family: Comic Sans MS">&nbsp;</span></p>
+<p class="MsoNormal" style="text-align: justify">
+<span style="font-family: Comic Sans MS">It is a simulator, which in simple 
+words means that it can be used to show that Machine A is better than Machine B
+<b>without</b> building either Machine A or Machine B. It is written using ‘<font color="#0000FF">C</font>’ 
+programming language.</span></p>
+<p class="MsoNormal" style="text-align: justify">
+<span style="font-family: Comic Sans MS">&nbsp;</span></p>
+<p class="MsoNormal" style="text-align: justify">
+<span style="font-family: Comic Sans MS">SimpleScalar is a set of tools that 
+model a virtual computer system with CPU, Cache and Memory Hierarchy. Using the 
+SimpleScalar tools, users can build modeling applications that simulate real 
+programs running on a range of modern processors and systems.&nbsp; The tool set 
+includes sample simulators ranging from a fast functional simulator to a 
+detailed, dynamically scheduled processor model that supports non-blocking 
+caches, speculative execution, and state-of-the-art branch prediction. In 
+addition to simulators, the SimpleScalar tool set includes performance 
+visualization tools, statistical analysis resources, and debug and verification 
+infrastructure.</span></p>
+<p class="MsoNormal" style="text-align: justify">
+<span style="font-family: Comic Sans MS">&nbsp;</span></p>
+<p class="MsoNormal" style="text-align: justify">
+<span style="font-family: Comic Sans MS">The SimpleScalar tools are used widely 
+for research and instruction, for example, in 2000 more than one third of all 
+papers published in top computer architecture conferences used the SimpleScalar 
+tools to evaluate their designs.&nbsp; </span></p>
+<p class="MsoNormal"><b><span style="font-family: Comic Sans MS; color: red">&nbsp;</span></b></p>
+<p class="MsoNormal"><b>
+<span style="font-size: 16.0pt; font-family: Comic Sans MS; color: red">Which 
+Instruction Set Architectures (ISA) it can simulate?</span></b></p>
+<p class="MsoNormal"><b>
+<span style="font-size: 16.0pt; font-family: Comic Sans MS; color: red">&nbsp;</span></b></p>
+<p class="MsoNormal" style="text-autospace: none">
+<span style="font-family: Comic Sans MS">SimpleScalar can simulate Alpha and 
+PISA (Portable ISA). Others are being added to the SimpleScalar.</span>
+<span style="font-family: Comic Sans MS">The PISA instruction set is a simple 
+MIPS-like instruction set maintained primarily for instructional use. The tool 
+set takes binaries compiled for the SimpleScalar architecture and simulates 
+their execution on one of several provided processor simulators. The machine 
+running SimpleScalar is called the Host machine or Host while the ISA that one 
+is targeting such as Alpha or PISA is called Target. Gcc cross-compiler for PISA 
+is available on the internet. Cross-compiler creates a sort of illusion that the 
+underlying machine where PISA instructions are executed is a PISA machine while 
+it is not. The following figure illustrates this notion.</span></p>
+<p align="center">
+<img border="0" src="simplescalar_architecture.jpg" width="640" height="428"></p>
+&nbsp;<p class="MsoNormal" style="text-indent: .5in; margin-left: 1.0in"><b>
+<span style="font-size: 10.0pt; font-family: Rockwell">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+(Block diagram of SimpleScalar architecture)</span></b></p>
+<p class="MsoNormal" style="text-indent: .5in; margin-left: 1.0in">&nbsp;</p>
+<p class="MsoNormal" style="text-indent: .5in; margin-left: 1.0in">&nbsp;</p>
+<p class="MsoNormal" style="text-indent: .5in; margin-left: 1.0in">&nbsp;</p>
+<p class="MsoNormal" style="text-indent: .5in; margin-left: 1.0in">&nbsp;</p>
+<p class="MsoNormal"><b>
+<span style="font-size: 16.0pt; font-family: Comic Sans MS; color: red">Which 
+Simulators are available in the SimpleScalar toolset?</span></b></p>
+<p class="MsoNormal"><b>
+<span style="font-size: 16.0pt; font-family: Comic Sans MS; color: red">&nbsp;</span></b></p>
+<p class="MsoNormal" style="text-autospace: none">
+<span style="font-family: Comic Sans MS">The tool set itself consists of a 
+collection of microarchitecture simulators that emulate the microprocessor at 
+different levels of detail .The simulators that we will use are: </span></p>
+<p class="MsoNormal" style="text-autospace: none">
+<span style="font-family: Comic Sans MS">&nbsp;</span></p>
+<p class="MsoNormal"><span style="font-family: Comic Sans MS; color: green">sim-fast</span><span style="font-family: Comic Sans MS">:
+</span><span style="font-family: Comic Sans MS">&nbsp;fast instruction interpreter, 
+optimized for speed. This simulator does not account for the behavior of 
+pipelines, caches, or any other part of the microarchitecture. It
+<span style="color: black">performs only functional simulation using in-order 
+execution of the instructions (i.e. they are executed in the order they appear 
+in the program).</span></span><span style="color: black"> </span></p>
+<p class="MsoNormal"><span style="color: black">&nbsp;</span></p>
+<p class="MsoNormal" style="text-autospace: none">
+<span style="font-size: 1.0pt; font-family: Arial">&nbsp;</span></p>
+<p class="MsoNormal" style="text-autospace: none">
+<span style="font-size: 1.0pt; font-family: Arial">&nbsp;</span></p>
+<p class="MsoNormal" style="text-autospace: none">
+<span style="font-size: 1.0pt; font-family: Arial">&nbsp;</span></p>
+<p class="MsoNormal" style="text-autospace: none">
+<span style="font-size: 1.0pt; font-family: Arial">&nbsp;</span></p>
+<p class="MsoNormal" style="text-autospace: none">
+<span style="font-size: 1.0pt; font-family: Arial">&nbsp;</span></p>
+<p class="MsoNormal" style="text-autospace: none">
+<span style="font-family: Comic Sans MS; color: green">sim-safe</span><span style="font-family: Comic Sans MS">:</span><span style="font-family: Comic Sans MS"> 
+slightly slower instruction interpreter, as it checks for memory alignment and 
+memory access permission on all memory operations. This simulator can be used if 
+the simulated program causes </span><span style="font-family: Comic Sans MS">sim-fast
+</span><span style="font-family: Comic Sans MS">to crash without explanation.</span></p>
+<p class="MsoNormal" style="text-autospace: none">
+<span style="font-size: 10.0pt">&nbsp;</span></p>
+<p class="MsoNormal" style="text-autospace: none">
+<span style="font-family: Comic Sans MS; color: green">sim-profile:</span><span style="font-family: Comic Sans MS"> 
+instruction interpreter and profiler. This simulator keeps track of and reports 
+dynamic instruction counts, instruction class counts, usage of address modes, 
+and profiles of the text and data segments.</span></p>
+<p class="MsoNormal" style="text-autospace: none">
+<span style="font-family: Comic Sans MS">&nbsp;</span></p>
+<p class="MsoNormal" style="text-autospace: none">
+<span style="font-family: Comic Sans MS; color: green">sim-cache:</span><span style="font-family: Comic Sans MS">
+</span><span style="font-family: Comic Sans MS">&nbsp;memory system simulator. This 
+simulator can emulate a system with multiple levels of instruction and data 
+caches, each of which can be configured for different sizes and organizations. 
+This simulator is ideal for fast cache simulation if the effect of cache 
+performance on execution time is not needed. </span></p>
+<p class="MsoNormal" style="text-autospace: none"><b>
+<span style="font-family: Courier">&nbsp;</span></b></p>
+<p class="MsoNormal" style="text-autospace: none">
+<span style="font-family: Comic Sans MS; color: green">sim-bpred:</span><span style="font-family: Comic Sans MS">
+</span><span style="font-family: Comic Sans MS">&nbsp;branch predictor simulator. 
+This tool can simulate difference branch prediction schemes and reports results 
+such as prediction hit and miss rates. Like</span><span style="font-family: Comic Sans MS"> 
+sim-cache</span><span style="font-family: Comic Sans MS">, this does not 
+simulate accurately the</span><span style="font-family: Comic Sans MS"> </span>
+<span style="font-family: Comic Sans MS">effect of branch prediction on 
+execution time. </span></p>
+<p class="MsoNormal" style="text-autospace: none">
+<span style="font-size: 10.0pt">&nbsp;</span></p>
+<p class="MsoNormal" style="text-autospace: none">
+<span style="font-family: Comic Sans MS; color: green">sim-outorder:</span><span style="font-family: Comic Sans MS">&nbsp;
+</span><span style="font-family: Comic Sans MS">detailed microarchitectural 
+simulator. This tool models in detail and out-of-order microprocessor with all 
+of the bells and whistles, including branch prediction, caches, and external 
+memory. This simulator is highly parameterized and can emulate machines of 
+varying numbers of execution units</span><span style="font-size: 10.0pt">.</span></p>
+<p class="MsoNormal" style="text-autospace: none">
+<span style="font-size: 10.0pt">&nbsp;</span></p>
+<p class="MsoNormal" style="text-autospace: none">
+<span style="font-family: Comic Sans MS">You may find useful to view these 
+slides <font color="#FF00FF">
+<a title="click to view this file" href="Simulators.pdf">Simulators and such</a></font>
+in describing the simulators in brief and general.</span></p>
+<p class="MsoNormal" style="text-autospace: none">
+<span style="font-size: 10.0pt">&nbsp;</span></p>
+<p class="MsoNormal" style="text-autospace: none">
+<span style="font-size: 16.0pt; font-family: Comic Sans MS; color: red">
+References:</span></p>
+<p class="MsoNormal" style="text-indent: -.25in; text-autospace: none; margin-left: .5in">
+<span style="font-family: Comic Sans MS">1)<span style="font-style: normal; font-variant: normal; font-weight: normal; font-size: 7.0pt; font-family: Times New Roman">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span><span style="font-family: Comic Sans MS">
+<a style="color: blue; text-decoration: underline; text-underline: single" href="../../../../../www.simplescalar.com/default.htm">
+www.simplescalar.com</a></span></p>
+<p class="MsoNormal" style="text-indent: -.25in; text-autospace: none; margin-left: .5in">
+<span style="font-family: Comic Sans MS">2)<span style="font-style: normal; font-variant: normal; font-weight: normal; font-size: 7.0pt; font-family: Times New Roman">&nbsp;&nbsp;&nbsp;
+</span></span><span style="font-family: Comic Sans MS">
+<a style="color: blue; text-decoration: underline; text-underline: single" href="../../../../../www.eecs.umich.edu/~taustin/papers/UWTR97-simple.pdf">
+http://www.eecs.umich.edu/~taustin/papers/UWTR97-simple.pdf</a></span></p>
+<p class="MsoNormal" style="text-indent: -.25in; text-autospace: none; margin-left: .5in">
+<span style="font-family: Comic Sans MS">3)<span style="font-style: normal; font-variant: normal; font-weight: normal; font-size: 7.0pt; font-family: Times New Roman">&nbsp;&nbsp;&nbsp;
+</span></span><span style="font-family: Comic Sans MS">
+<a style="color: blue; text-decoration: underline; text-underline: single" href="../../../../../www.cems.uwe.ac.uk/~rwilliam/ACA_ufeEHK-20-3/simplescalar_article_in_ieee_computer.pdf">
+http://www.cems.uwe.ac.uk/~rwilliam/ACA_ufeEHK-20-3/simplescalar_article_in_ieee_computer.pdf</a></span></p>
+<span class="a">
+<span style="font-size: 12.0pt; font-family: Comic Sans MS; color: black">&nbsp;&nbsp;&nbsp;&nbsp; 
+4)
+<a style="color: blue; text-decoration: underline; text-underline: single" href="../../../../ece668/SimpleScalar/www.cs.wisc.edu/~markhill/cs752/Fall2004/includes/ss_tutorial_fall2004.ppt">
+www.cs.wisc.edu/~markhill/cs752/Fall2004/includes/ss_<b>tutorial</b>_fall2004.ppt</a></span></span></body></html>

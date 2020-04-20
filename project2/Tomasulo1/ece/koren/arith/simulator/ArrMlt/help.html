@@ -1,0 +1,77 @@
+<HTML>
+<HEAD>
+   <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+   <META NAME="Author" CONTENT="zhan">
+   <META NAME="GENERATOR" CONTENT="Mozilla/4.04 [en] (Win95; I) [Netscape]">
+   <TITLE>help for Array Multiplier</TITLE>
+</HEAD>
+<BODY bgcolor="white">
+
+<DL>
+<CENTER>
+<H1>
+Array Multiplier Online help</H1></CENTER>
+
+<CENTER><B><U><FONT SIZE=+2>How to Run</FONT></U></B></CENTER>
+</DL>
+
+<UL>
+<LI>
+This program multiplies the two numbers specified in the boxes <I>A</I> and <I>X</I> in 2's complement representation.</LI>
+
+<LI>
+Two numbers can be given in either the binary <I>(bin)</I> or decimal <I>(dec)</I> 
+number system and are 2's complement numbers. Thus, any binary number specified with a 1 in the MSB represents a negative number. Any decimal number specified can be negative.</LI>
+
+<LI>
+The number of bits required to represent <I>A</I> or <I>X</I>should be specified in the <I>Number of Bits</I> field.</LI>
+<UL>
+<LI> 
+If a decimal number is specified, its binary representation will be sign extended to represent negative or positive numbers correctly. For example, if a -3 is entered for A or X with <I>Number of Bits</I>=4, the array multiplier will use 1101 to do the multiplication.</LI>
+<LI> If a binary number is specified, it will not be sign extended when doing the multiplication. For example, if 111 is entered with <I>Number of Bits</I>=4, the array multiplier will use 0111 to do the multiplication.</LI>
+</UL>
+
+
+<LI>
+A Delay calculation is made based upon the values entered in the <I>Signal Delays</I> section. These values represent the corresponding delays from each individual adder and are the same for all three types of adders. Since it is assumed that the A to S delay is greater than the Cin to Cout delay, the total delay will be (N-2) x AtoS + AtoCout + (N-2) x CinToCout + CinToS</LI>
+ 
+<UL>
+<LI>
+Delay from A or X input to its Sum output (AtoS)</LI>
+
+<LI>
+Delay from A or X input to its Carry output (AtoCout)</LI>
+
+<LI>
+Delay from Carry input to its Carry output (CinToCout)</LI>
+<LI> Delay from Carry input to its Sum output(CinToS)</LI>
+
+<BR>
+<BR>
+</UL>
+
+<BR><BR>
+<CENTER><B><U><FONT SIZE=+2>Format of Output</FONT></U></B></CENTER>
+
+<LI>After entering the required values in the form, click the
+<I>Compute</I> button. This will display a diagram of the Array Multiplier (see Figure 6.19 in the textbook) representing an N x N multiplier if N is the <I>Number of Bits</I>.</LI>
+<BR>
+
+<LI>Each row of the diagram consists of different types of full adders such as the one shown below:</LI><BR>
+
+<BR><CENTER><IMG SRC="gifs/typeI.gif"></CENTER><BR>
+
+<LI>There are 3 different types of full adders used, where the bubbles represent negative weights:</LI>
+<UL>
+<LI> A standard full adder (typeI), has 3 inputs and 2 outputs- all positve in weight. </LI>
+
+<LI> A type II adder will have a bubble on one of its inputs. It will have also have a bubble on its outgoing sum. </LI>
+
+<LI> A type II' adder will have a bubble on two out of three of its inputs. It will have a bubble on its outgoing carry.
+</UL>
+<LI>Timing data will also be displayed showing the total time for all of the product bits to be valid. The MSB of the product will always be the slowest and is the critical path.</LI>
+
+<BR>
+
+</BODY>
+</HTML>

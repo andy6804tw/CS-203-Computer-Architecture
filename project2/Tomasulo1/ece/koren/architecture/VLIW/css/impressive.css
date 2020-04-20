@@ -1,0 +1,81 @@
+body {
+	background: #ffffbb;
+	font-family: Arial, Tahoma, sans-serif;
+	font-size: 14px;	
+}
+
+a {
+	color: #336699;
+}
+
+a.hover {
+	text-decoration: none;
+}
+
+img {
+	padding: 3px;
+}
+
+.title h1 {
+	font-family: "Book Antique", "Times New Roman", Times, serif;
+	font-size: 28px;
+	margin: 0px 0px 0px 0px;
+}
+
+.title h2 {
+	font-family: "Book Antique", "Times New Roman", Times, serif;
+	font-size: 20px;
+	margin: 0px 0px 10px 10px;	
+}
+
+.title {
+	
+}
+
+.content {
+	padding: 3px;
+	margin: 3px;
+	border: 3px solid #553300;
+	background: #ffffff;	
+}
+.globalnav {
+	padding: 3px;
+	margin: 7px;
+	border: 3px solid #553300;
+	background: #ffffff;	
+
+}
+.globalnav h2 {
+	text-align: center;
+	font-size: 15px;
+}
+.globalnav ul {
+	margin-left: -1em;
+	padding-left: 1em;
+	list-style: none;
+	font-weight: bold;
+}
+
+.globalnav ul ul {
+	margin-left: 1em;
+	font-weight: normal;
+}
+
+.globalnav ul li {
+	margin-top: 5px;
+	margin-bottom: 5px;
+}
+
+.caption {
+	text-align: center;
+	font-size: 80%;
+	font-style: italic;
+}
+
+.footer {
+	margin-top: 20px;
+	padding: 10px;
+	font-size: 90%;
+	border: 1px solid #553300;
+	background: #cccccc;
+}

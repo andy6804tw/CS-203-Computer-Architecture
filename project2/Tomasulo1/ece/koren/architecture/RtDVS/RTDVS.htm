@@ -1,0 +1,2254 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<title> Real Time Dynamic Voltage Scaling for Low Power Embedded OS</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"><style type="text/css">
+<!--
+body,td,th {
+	font-family: Times New Roman, Times, serif;
+	font-size: 14px;
+	color: #000000;
+}
+body {
+	background-color: #CCCCCC;
+}
+-->
+</style><h1> <center> Comparison of Real Time DVS Algorithms </center> </h1>
+
+
+<SCRIPT LANGUAGE="JavaScript1.3" type="text/javascript"></SCRIPT>
+<script>
+//Task Colours : 
+//Task 1 : Black - task1.gif
+//Task 2 : Blue - task2.gif
+//Task 3 : Green - task3.gif
+//Task 4 : Red - task4.gif
+//Task 5 : Orange - task5.gif
+//Task 6 : Yellow - task6.gif
+
+
+
+/**********************************SCHEDULABILITY FUNCTION *****************************************/
+function schedulability(){         
+
+
+
+
+
+var pa1 = (document.forms[1].period1.value); // Variables for task periods
+var pa2 = (document.forms[1].period2.value);
+var pa3 = (document.forms[1].period3.value);
+var pa4 = (document.forms[1].period4.value);
+var pa5 = (document.forms[1].period5.value);
+var pa6 = (document.forms[1].period6.value);
+
+
+var ea1 = (document.forms[1].exec_time1.value); // Variables for Task Execution times
+var ea2 = (document.forms[1].exec_time2.value);
+var ea3 = (document.forms[1].exec_time3.value);
+var ea4 = (document.forms[1].exec_time4.value);
+var ea5 = (document.forms[1].exec_time5.value);
+var ea6 = (document.forms[1].exec_time6.value);
+
+
+var cc1 = (document.forms[1].act1.value);      // Variables for Actual Execution Times
+var cc2 = (document.forms[1].act2.value);
+var cc3 = (document.forms[1].act3.value);
+var cc4 = (document.forms[1].act4.value);
+var cc5 = (document.forms[1].act5.value);
+var cc6 = (document.forms[1].act6.value);
+
+if((cc1>ea1)||(cc2>ea2)||(cc3>ea3)||(cc4>ea4)||(cc5>ea5)||(cc6>ea6))
+{
+    window.alert("Actual Execution Time cannot be greater than Worst Case Execution Time. Also check whether the WCET field is empty.");
+    return false;
+}
+
+
+var pa_array = new Array(pa1,pa2,pa3,pa4,pa5,pa6);     
+
+var ea_array = new Array(ea1,ea2,ea3,ea4,ea5,ea6);
+
+var cc_array = new Array(cc1,cc2,cc3,cc4,cc5,cc6);
+
+    var f1 = parseFloat(document.forms[0].freq1.value);		//Variables for Processor Frequencies
+    var f2 = parseFloat(document.forms[0].freq3.value);
+    var f3 = parseFloat(document.forms[0].freq5.value);
+    var f4 = parseFloat(document.forms[0].freq7.value);
+    var f5 = parseFloat(document.forms[0].freq9.value);
+      
+    
+    var V1 = parseFloat(document.forms[0].volt1.value);		//Variables for Processor Voltages
+    var V2 = parseFloat(document.forms[0].volt2.value);
+    var V3 = parseFloat(document.forms[0].volt3.value);
+    var V4 = parseFloat(document.forms[0].volt4.value);
+    var V5 = parseFloat(document.forms[0].volt5.value);
+        
+    var voltage_array = new Array(V1,V2,V3,V4,V5);
+    var freq_array = new Array(f1,f2,f3,f4,f5);
+
+    //******************Finding the Maximum Voltage level **********************
+    
+    var max_V = voltage_array[0];
+    for( var i=1; i<voltage_array.length; i++)
+    {
+        if( voltage_array[i] > max_V)
+        {
+            max_V =voltage_array[i]; 
+        }
+    }
+
+	var min_V = voltage_array[0];
+	for(var i=1;i<voltage_array.length;i++)
+	{
+		if(voltage_array[i] < min_V)
+		{
+			min_V = voltage_array[i];
+		}
+	}	
+	
+	var max_F = freq_array[0];
+	for(var i=1;i<freq_array.length;i++)
+	{
+	   if(freq_array[i] > max_F)
+	   {
+	       max_F = freq_array[i];
+        }
+    }
+    
+    var min_F = freq_array[0];
+	for(var i=1;i<freq_array.length;i++)
+	{
+		if(freq_array[i] < min_F)
+		{
+			min_F = freq_array[i];
+		}
+	}
+    
+    
+    try {
+    if((max_V > 5.0) || (min_V < 1.0))
+	{
+		throw RangeError;
+    }
+        }
+	
+	catch (e) {
+
+    window.alert("Please make sure the processor voltage is within the range 1.0V and 5.0V");
+    window.alert("Please check and enter the values again");
+    return false;
+    }
+    
+    try {
+    if((max_F > 1.0) || (min_F < 0.1))
+	{
+		throw RangeError;
+    }
+        }
+	
+	catch (e) {
+
+    window.alert("Please make sure the processor frequency is within the range 0.1 and 1.0");
+    window.alert("Please check and enter the values again");
+    return false;
+    }
+		
+    var p_stack = new Array();
+    var e_stack = new Array();
+
+    var period = new Array();
+    var exec_time = new Array();
+    var act_exec = new Array();
+
+    var period_EDF = new Array();
+    var exec_time_EDF = new Array();
+
+    var period_Static_RM = new Array();
+    var exec_Static_RM = new Array();
+    var vtg_Static_RM = new Array();
+    var freq_Static_RM = new Array();
+
+    var period_Static_EDF = new Array();
+    var exec_Static_EDF = new Array();
+    var vtg_Static_EDF = new Array();
+    var freq_Static_EDF = new Array();
+
+    var period_CC_EDF = new Array();
+    var exec_CC_EDF = new Array();
+    var vtg_CC_EDF = new Array();
+    var freq_CC_EDF = new Array();
+    var cc_CC_EDF = new Array();
+
+
+    var period_CC_RM = new Array();
+    var exec_CC_RM = new Array();
+    var vtg_CC_RM = new Array();
+    var freq_CC_RM = new Array();
+    var cc_CC_RM = new Array();
+
+for(i=0; i<6;i++)
+{
+    if (ea_array[i] !="" && pa_array[i] != "")
+    {
+        
+        e_stack.push(ea_array[i]);
+        p_stack.push(pa_array[i]);
+                        
+        exec_time.push(ea_array[i]);
+        period.push(pa_array[i]);
+        act_exec.push(cc_array[i]);
+    } 
+    else if (pa_array[i] == ""){
+        if(ea_array[i] == ""){
+        continue;}
+//        else { alert(" Row " + (i+1) + "  is incomplete so only the first " + i + "  tasks will be considered");
+else { alert(" Row " + (i+1) + "  is incomplete. Please enter the corresponding values ");
+
+        return false;
+        break;
+        }
+        }
+    else if (ea_array[i] == ""){
+        if(pa_array[i] == ""){
+        continue;}
+        //else { alert(" Row " + (i+1) + "   is incomplete so only the first " + i + " tasks will be considered");
+        else { alert(" Row " + (i+1) + "  is incomplete. Please enter the corresponding values");
+        return false;
+        break;
+        }
+        }
+}        
+ 	//window.alert("tasks" + p_stack.length);
+    for(i=0;i<p_stack.length;i++)
+    {
+        period_EDF[i] = period[i];
+        period_Static_RM[i] = period[i];
+        period_Static_EDF[i] = period[i];
+        period_CC_EDF[i] = period[i];
+                
+        exec_time_EDF[i] = exec_time[i];
+        exec_Static_RM[i] = exec_time[i];
+        exec_Static_EDF[i] = exec_time[i];
+        exec_CC_EDF[i] = exec_time[i];
+                
+        cc_CC_EDF[i] = act_exec[i];
+    }
+
+    for(var i=0; i< voltage_array.length;i++)
+    {
+        vtg_Static_RM[i] = voltage_array[i];
+        freq_Static_RM[i] = freq_array[i];
+        
+        
+        vtg_Static_EDF[i] = voltage_array[i];
+        freq_Static_EDF[i] = freq_array[i];
+        
+        vtg_CC_EDF[i] = voltage_array[i];
+        freq_CC_EDF[i] = freq_array[i];
+    
+        vtg_CC_RM[i] = voltage_array[i];
+        freq_CC_RM[i] = freq_array[i];
+    }
+    
+
+var no_tasks = p_stack.length;
+
+var no_tasks_e = e_stack.length;
+
+var color_code = new Array();
+
+//color_code[0] = "Black"
+//color_code[1] = "Blue"
+//color_code[2] = "Red"
+//color_code[3] = "Orange"
+//color_code[4] = "Yellow"
+//color_code[5] = "Green"
+
+color_code[0] = "task1.gif"
+color_code[1] = "task2.gif"
+color_code[2] = "task3.gif"
+color_code[3] = "task4.gif"
+color_code[4] = "task5.gif"
+color_code[5] = "task6.gif"
+
+
+var u=0;
+for( var i=0; i<no_tasks;i++){
+    var temp = (e_stack[i]/p_stack[i]);
+    u += temp;
+    }
+    
+var n = (1/no_tasks);
+var U = no_tasks*((Math.pow(2,n))-1);
+
+if (u<=U && u <=1) {
+     
+	document.write(' <p> <b>Task set is both RM and EDF Schedulable</b></p>');
+	document.write('<p><b> Non-DVS Rate Monotonic Algorithm</b> </p>');
+	rate_mono(exec_time, period, max_V,no_tasks, color_code);
+	     
+	document.write('<br>')
+    document.write('<p><b> Non-DVS Earliest Deadline First Algorithm</b> </p>');
+	earliest_DF(exec_time_EDF, period_EDF, max_V,no_tasks, color_code);
+	
+	document.write('<br>')
+    document.write('<p><b> Static Rate Monotonic DVS Algorithm</b> </p>');
+    static_DVS_RM(exec_Static_RM, period_Static_RM,freq_array, voltage_array, max_V,no_tasks, color_code);
+	
+	document.write('<br>')
+	document.write('<p><b> Static Earliest Deadline First DVS Algortihm</b> </p>');
+    static_DVS_EDF(exec_Static_EDF, period_Static_EDF,freq_Static_EDF, vtg_Static_EDF, max_V,no_tasks, color_code);
+	
+	document.write('<br>')
+    document.write('<p><b> Cycle Conserving EDF Algorithm</b> </p>');
+    cycle_DVS_EDF(exec_CC_EDF,period_CC_EDF,freq_CC_EDF,vtg_CC_EDF,cc_CC_EDF,max_V,no_tasks, color_code)
+
+}
+
+else 
+if (u <=U ){
+    
+	document.write('<p> <b>Task set is only RM Schedulable</b></p>');
+	document.write('<p><b> Non-DVS Rate Monotonic Algorithm</b> </p>');
+	rate_mono(exec_time, period, max_V, no_tasks, color_code);
+	
+    document.write('<br>')
+    document.write('<p><b> Static Rate Monotonic DVS Algorithm</b> </p>');
+	static_DVS_RM(exec_Static_RM, period_Static_RM, freq_array, voltage_array, max_V,no_tasks, color_code);
+}
+
+else 
+if (u<=1){
+    document.write('<p> <b>Task set is only EDF Schedulable</b></p>');
+    document.write('<p><b> Non-DVS Earliest Deadline First Algorithm</b> </p>');
+	earliest_DF(exec_time_EDF, period_EDF, max_V,no_tasks, color_code);
+    document.write('<br>')
+	document.write('<p><b> Static Earliest Deadline First DVS Algortihm</b> </p>');
+	static_DVS_EDF(exec_Static_EDF, period_Static_EDF,freq_Static_EDF, vtg_Static_EDF, max_V,no_tasks, color_code);
+    document.write('<br>')
+    document.write('<p><b> Cycle Conserving EDF Algorithm</b> </p>');
+    cycle_DVS_EDF(exec_CC_EDF,period_CC_EDF,freq_CC_EDF,vtg_CC_EDF,cc_CC_EDF,max_V,no_tasks, color_code)
+}
+else
+    {
+	document.write('<p> <b>Task set is NOT schedulable. Please try a different task set</b></p>');
+	
+    }
+
+
+}
+    
+alert("Please make sure no data is omitted");
+
+
+</script>
+
+
+<script>
+
+/* ++++++++++++++++++++++ RATE MONOTONIC FUNCTION+++++++++++++++++++++++++++++++++++++++++++++++++ 
+
+
+The priority of the task is inversely related to its period; if task Ti has a smaller period than task Tj, Ti has a higher priority than Tj. Higher priority tasks can preempt lower priority tasks
+
+-->Response time is the time from the release time of the job to the instance when it completes. Difference between initiation and completion.
+-->Maximum allowable response time is the Relative Deadline. 
+-->Absolute Deadline = Relative Deadline + release time
+-->The relative deadline is equal to the period. 
+-->The relative deadline of a task is the absolute deadline minus the release time. 
+-->If the task Ti has a relative deadline di and is released at time x, it must be executed by time (x+di)
+-->The absolute deadline is the time by which the task has to be completed. Thus the absolute deadline of Ti is (x+di) */
+
+function rate_mono(exec_time, period, max_V,no_tasks, color_code)
+{
+    var exec_stack_RM = new Array();
+    var period_stack_RM = new Array();
+    
+    var period_temp = new Array();
+    var exec_time_temp = new Array();
+    
+    for(var i=0; i< period.length;i++)
+    {
+        period_temp[i] = period[i];
+        exec_time_temp[i] = exec_time[i];
+    }
+        
+do{
+ // **************************************************BLOCK TO FIND THE INDEX OF THE MINIMUM PERIOD
+ 
+ var indx_RM = 0, mini = period[0];
+  for (var i = 1; i < period.length; i++)
+  {
+     period[i] = parseFloat(period[i]);
+     period[indx_RM] = parseFloat(period[indx_RM]);
+     
+     exec_time[i] = parseFloat(exec_time[i]);
+     
+     if ((period[i]) < (period[indx_RM]))
+	 {
+         indx_RM = i;
+     }
+  }
+       exec_stack_RM.push(exec_time.splice(indx_RM,1));
+       period_stack_RM.push(period.splice(indx_RM,1));
+                     
+}
+while( period.length !=0)
+
+RM_Graph(period_stack_RM, exec_stack_RM, max_V,no_tasks, period_temp, exec_time_temp, color_code); 
+   
+return;
+   }
+/***Absolute Deadline = Period ((Relative Deadline)) + Release Time   *****/
+
+ function RM_Graph(period_stack_RM, exec_stack_RM, max_V,no_tasks, period_temp,exec_time_temp, color_code)
+{
+
+    var rm_start_array = new Array();
+    var rm_task_width = new Array();
+	var	rm_blank_array = new Array();
+         
+    var period_current = new Array();
+    var exec_current = new Array();
+    
+    var task_width = new Array();
+        var taskNo_ToChart = new Array();
+        var blank = new Array();
+        
+        var total_exec=0.0;
+        var total_exec_30=0.0;
+        
+        for(var m=0;m<exec_stack_RM.length;m++)
+        {
+            total_exec= total_exec+ parseFloat(exec_stack_RM[m]);
+        }
+        
+        //window.alert("total_exec" + total_exec);
+        total_exec_30=total_exec*30;
+        //window.alert("total_exec_30" + total_exec_30);
+        
+        var task_exec_array = new Array();
+        for(var m=0;m<exec_stack_RM.length;m++)
+        {
+            task_exec_array[m]=exec_stack_RM[m]*30;
+        }
+                
+       
+        
+       
+    var max_time = period_stack_RM[0];
+    for( var i=1; i<period_stack_RM.length; i++)
+    {
+        if( parseFloat(period_stack_RM[i]) > parseFloat(max_time))
+        {
+            max_time = period_stack_RM[i]; 
+        }
+    }
+     
+    var start_array = new Array();
+    var end_array = new Array();
+    
+    var task_rel=0.0;
+    var delta_temp;
+      
+       for (var i=0; i<period_stack_RM.length; i++)
+        {
+            var delta = 0.0;
+            var j=0;
+            var temp;
+            
+           /* if(i==0) {delta_temp=13;}
+            if(i==1) {delta_temp=9;}
+            if(i==2) {delta_temp=7;}
+            if(i==3) {delta_temp=5;}
+            if(i==4) {delta_temp=3;}
+            if(i==5) {delta_temp=1;}*/
+            
+         //delta_temp = (300*(task_exec_array[i]/total_exec_30));
+            //delta_temp = (200/task_exec_array[i]);
+            
+//            delta_temp = 3;
+            
+            
+            while( delta <= 40)
+
+            {  
+                                
+                start_array[j] = task_rel; //task_rel has been replaced by prev_task_exec
+                              
+                end_array[j] = parseFloat(task_rel) + parseFloat(exec_stack_RM[i]);
+                               
+        
+                j++;          
+                
+                temp = parseFloat(j*(parseFloat(period_stack_RM[i]))); 
+                
+                task_rel = temp + parseFloat(exec_stack_RM[i]);
+                delta = delta + 1.0;
+                                
+            }
+    
+           
+           task_rel = end_array[0];
+           var time_line=0.0;
+                 
+        for(var k =0; k<start_array.length;k++)
+        {
+            
+            parseFloat(taskNo_ToChart[k] = i+1);
+            task_width[k] = (parseFloat(end_array[k]) - parseFloat(start_array[k]));
+            blank[k] = (parseFloat(start_array[k+1]) - parseFloat(end_array[k]));
+            //time_line = time_line + task_width[k]+blank[k];
+            //if(time_line*30 >=400) break;
+                   
+        }
+        
+    rm_start_array[i] = new Array();
+    rm_task_width[i] = new Array();
+    rm_blank_array[i] = new Array();
+    
+    var col=0;
+	for(var d=0; d <start_array.length;d++)
+        {
+           rm_start_array[i][col] = start_array[d];
+           rm_task_width[i][col] = task_width[d];
+           rm_blank_array[i][col] = blank[d];
+           col++;
+        } 
+        
+        //task_rel = end_array[0];
+                   
+   //CALL GRAPHIT FUNCTION
+
+     
+   }  //END OF FOR
+   
+     
+   
+   graphit(start_array, task_width, blank, no_tasks, rm_start_array, rm_task_width,rm_blank_array, period_temp, exec_time_temp, color_code);
+   
+	var funct = "Non DVS Rate Monotonic Algorithm";
+	
+	energy_display(5.0,funct);
+}
+</script>
+ 
+ <SCRIPT LANGUAGE="JavaScript1.3" type="text/javascript"></SCRIPT> 
+<script>
+function graphit(s,t_width,blnk, no_tasks, rm_start_array, rm_task_width,rm_blank_array, period_temp, exec_time_temp, color_code){   
+
+var rm_start_array_temp = new Array();
+for(var i=0;i<rm_start_array.length;i++){
+    rm_start_array_temp[i]=new Array();}
+    
+    var time_line =0.0;
+
+
+
+for(var i=0;i<rm_start_array.length;i++)
+{   
+    for(var j=0;j<rm_start_array[0].length;j++)
+    {
+    rm_start_array_temp[i][j] = rm_start_array[i][j];
+    }
+}
+
+
+
+var blankimage ="blank.gif"
+var rel_time = new Array();
+var task_no = new Array();
+  
+output='<table border="0" cellspacing="0" cellpadding="0" width=5000%>'
+
+var outerloop = rm_start_array.length;
+var innerloop = rm_start_array[0].length;
+
+
+for(var row_count =0; row_count < outerloop ; row_count++)
+{
+
+    for(var col_count =0; col_count< innerloop; col_count++)
+    {
+
+        var indx_row_strt = 0, indx_col_strt =0, mini_strt = rm_start_array[0][0];
+
+        for(i=0; i< outerloop; i++)
+        {
+                    
+            for(j=0; j<innerloop; j++)
+            {
+			
+			     if(parseFloat(rm_start_array[i][j])<parseFloat(rm_start_array[indx_row_strt][indx_col_strt]))
+			         {
+				     	indx_row_strt = i;
+				        indx_col_strt = j;
+		             }
+            }
+	    }
+		
+    if (indx_row_strt ==0 ){
+        rel_time[indx_row_strt] = 0.0;//rm_start_array[indx_row_strt][0];
+        task_no[indx_row_strt] = indx_row_strt+1;
+        var graphimage="task1.gif"}
+
+    if(indx_row_strt ==1){
+        rel_time[indx_row_strt] = Math.round(rm_start_array_temp[indx_row_strt][0]*1000)/1000;
+        task_no[indx_row_strt] = indx_row_strt+1;
+        var graphimage="task2.gif"}
+
+    if(indx_row_strt ==2){
+        rel_time[indx_row_strt] = Math.round(rm_start_array_temp[indx_row_strt][0]*1000)/1000;
+        task_no[indx_row_strt] = indx_row_strt+1;
+        var graphimage="task3.gif"}
+
+    if(indx_row_strt ==3){
+        rel_time[indx_row_strt] = Math.round(rm_start_array_temp[indx_row_strt][0]*1000)/1000;
+        task_no[indx_row_strt] = indx_row_strt+1;
+        var graphimage="task4.gif"}
+
+    if(indx_row_strt ==4){
+        rel_time[indx_row_strt] = Math.round(rm_start_array_temp[indx_row_strt][0]*1000)/1000;
+        task_no[indx_row_strt] = indx_row_strt+1;
+        var graphimage="task5.gif"}
+
+    if(indx_row_strt ==5){
+        rel_time[indx_row_strt] = Math.round(rm_start_array_temp[indx_row_strt][0]*1000)/1000;
+        task_no[indx_row_strt] = indx_row_strt+1;
+        var graphimage="task6.gif"}
+        
+
+var grph_width = rm_task_width[indx_row_strt][indx_col_strt] ;
+var blank = rm_blank_array[indx_row_strt][indx_col_strt];
+var strt = rm_start_array[indx_row_strt][indx_col_strt];
+
+            time_line = time_line + rm_task_width[indx_row_strt][indx_col_strt]+rm_blank_array[indx_row_strt][indx_col_strt];
+            if(time_line*30 >=4000) break;
+
+
+rm_start_array[indx_row_strt][indx_col_strt] = 999.0;
+rm_blank_array[indx_row_strt][indx_col_strt] = 999.0;
+rm_task_width[indx_row_strt][indx_col_strt] = 999.0;
+	
+	if(strt==0.0)
+        {
+            grph_width = grph_width*30;
+            output+='<img src="'+graphimage+'" width= "'+grph_width+'" height="35">';
+            
+            
+        }    
+
+    if(strt !=0)
+    {
+        //blank = blank *30;
+        
+        grph_width = grph_width*30;
+        
+        output+= '<img src="'+blankimage+'" width= "'+blank+'" height="35"><img src="'+graphimage+'" width= "'+grph_width+'" height="35">';        
+    } 
+                   
+        }
+}
+   
+    output+='</td>'
+    output+='</tr>'
+    output+='</table>'
+    //output+='<br>'
+    //output+='<br><br>'
+    //document.write(output);
+    for(var i=0;i<task_no.length;i++)
+    {
+        output+='<p><img src="'+color_code[i]+'" width= "10" height="25">  Task '+task_no[i]+' Release Time '+rel_time[i]+' Period '+period_temp[i]+' Exec time '+exec_time_temp[i]+'  </p>';
+    }
+            document.write(output);
+
+}
+
+/****END OF NON DVS RATE MONOTONIC ****************************************/
+</script>
+
+
+ 
+ <script>
+//  STATIC RATE MONOTONIC DYNAMIC VOLTAGE SCALING ALGORITHM*********************************
+//******************************************************************************************
+function static_DVS_RM(exec_Static_RM, period_Static_RM,freq_array, voltage_array, max_V,no_tasks, color_code)
+{    
+    var static_values_RM;
+    
+    var exec_Static_RM_temp = new Array();
+    var period_Static_RM_temp = new Array();
+    
+    for(var i=0; i<period_Static_RM.length; i++)
+    {
+        exec_Static_RM_temp[i] = exec_Static_RM[i];
+        period_Static_RM_temp[i] = period_Static_RM[i];
+    }
+    
+    static_values_RM = select_frequency_RM(exec_Static_RM, period_Static_RM, freq_array, voltage_array);
+    
+    var static_freq = static_values_RM[0];
+    var static_vtg = static_values_RM[1];
+    var alpha = static_values_RM[2];
+    
+    //CODE TO DECIDE THE SCALING PARAMETER FOR TIME AXIS BASED ON THE SCALED DOWN VOLTAGE
+    
+    var new_exec = new Array();
+
+    var inv_alpha;
+    
+    for(var i=0;i<exec_Static_RM.length;i++)
+    {
+        
+        inv_alpha = parseFloat(1/alpha)
+        new_exec[i] = parseFloat(inv_alpha * exec_Static_RM[i]);
+    }
+    
+        
+        //HERE exec_Static_RM, period_Static_RM
+        
+    var exec_stack_RM_Static = new Array();
+    var period_stack_RM_Static = new Array();
+        
+do{
+ // **************************************************BLOCK TO FIND THE INDEX OF THE MINIMUM PERIOD
+ 
+    var indx_RM_Static = 0, mini_Static_RM = period_Static_RM[0];
+  for (var i = 1; i < period_Static_RM.length; i++)
+  {
+     period_Static_RM[i] = parseFloat(period_Static_RM[i]);
+     //period_Static_RM[indx_RM_Static] = parseFloat(period_Static_RM[indx_RM_Static]);
+     
+     if ((period_Static_RM[i]) < (period_Static_RM[indx_RM_Static]))
+	 {
+         indx_RM_Static = i;
+     }
+  }
+       
+       exec_stack_RM_Static.push(new_exec.splice(indx_RM_Static,1));
+       period_stack_RM_Static.push(period_Static_RM.splice(indx_RM_Static,1));
+       
+              
+}
+while( period_Static_RM.length !=0)
+
+RM_Static_Graph(period_stack_RM_Static, exec_stack_RM_Static, static_vtg, static_freq, max_V,no_tasks, period_Static_RM_temp, exec_Static_RM_temp, color_code); 
+   
+}
+</script>
+
+
+<script>
+/***Absolute Deadline = Period ((Relative Deadline)) + Release Time   *****/
+
+ function RM_Static_Graph(period_stack_RM_Static, exec_stack_RM_Static, static_vtg, static_freq, max_V,no_tasks, period_Static_RM_temp, exec_Static_RM_temp, color_code)
+{
+
+    var stat_rm_start_array = new Array();
+    var stat_rm_task_width = new Array();
+	var	stat_rm_blank_array = new Array();
+	
+    var vtg_level =0.0; 
+    var start_array = new Array();
+    var end_array = new Array();
+    
+    var period_current = new Array();
+    var exec_current = new Array();
+    
+    var total_exec=0.0;
+        var total_exec_30;
+        
+        for(var m=0;m<exec_stack_RM_Static.length;m++)
+        {
+            total_exec= total_exec+ parseFloat(exec_stack_RM_Static[m]);
+        }
+        
+        //window.alert("total_exec" + total_exec);
+        total_exec_30=total_exec*30;
+        //window.alert("total_exec_30" + total_exec_30);
+        
+        var task_exec_array = new Array();
+        for(var m=0;m<exec_stack_RM_Static.length;m++)
+        {
+            task_exec_array[m]=exec_stack_RM_Static[m]*30;
+        }
+                
+    
+    //For every task there has to be 2 arrays - start_array & end_array
+      
+      var task_rel=0.0;
+
+      //window.alert("tasks" + period_stack_RM_Static.length);
+	     var delta_temp;
+      for (var i=0; i<period_stack_RM_Static.length; i++)
+        {
+            var delta = 0.0;
+            var j=0;
+            var temp;
+                       
+            //delta_temp = Math.round(300*(task_exec_array[i]/total_exec_30));
+            //delta_temp = Math.round(200/task_exec_array[i]);             
+            while( delta <= 40){  /// max_time changed to 5
+                                
+                start_array[j] = task_rel;
+                
+                end_array[j] = parseFloat(task_rel) + parseFloat(exec_stack_RM_Static[i]);
+
+                //if(end_array[j]*30>300) break;
+                j++;          
+                temp = parseFloat(j*(parseFloat(period_stack_RM_Static[i]))); 
+                
+                task_rel = temp + parseFloat(exec_stack_RM_Static[i]);
+                
+               delta = delta + 1.0;
+            }
+    
+        var task_width = new Array();
+        var taskNo_ToChart = new Array();
+        var blank = new Array();
+                
+        for(var k =0; k<start_array.length;k++)
+        {
+            parseFloat(taskNo_ToChart[k] = i+1);
+            task_width[k] = (parseFloat(end_array[k]) - parseFloat(start_array[k]));
+            blank[k] = (parseFloat(start_array[k+1]) - parseFloat(end_array[k]));
+        }
+        
+    stat_rm_start_array[i] = new Array();
+    stat_rm_task_width[i] = new Array();
+    stat_rm_blank_array[i] = new Array();
+    
+    var col=0;
+   for(var d=0; d<start_array.length;d++)
+        {
+        stat_rm_start_array[i][col] = start_array[d];
+        stat_rm_task_width[i][col] = task_width[d];
+        stat_rm_blank_array[i][col] = blank[d];
+        col++;
+        } 
+   
+    task_rel = end_array[0];   
+    period_current[i] = period_stack_RM_Static;
+    exec_current[i] = exec_stack_RM_Static;
+   
+ 
+   }  //END OF FOR
+            
+   graphit_static_rm(start_array, task_width, blank, i, period_current, exec_current, static_vtg, static_freq, max_V, no_tasks, stat_rm_start_array,stat_rm_task_width,stat_rm_blank_array, period_Static_RM_temp, exec_Static_RM_temp, color_code);
+   
+	var funct = "Static DVS RM Energy Savings"
+	energy_display(static_vtg, funct);
+}
+
+// FUNCTION SELECT_FREQUENCY_RM
+// FUNCTION TO FIND THE APPROPRIATE SCALED DOWN VOLTAGE AND FREQUENCY
+
+function select_frequency_RM(exec_Static_RM, period_Static_RM, freq_array, voltage_array){
+
+    var alpha;
+    var bool_min_freq;
+    
+  MAIN:
+   while(freq_array.length >0)
+    {
+    
+    var max_freq_RM = freq_array[0];            // CALCULATE THE MAX FREQUENCY
+    for( var i=1; i<freq_array.length; i++)
+    {
+        if( parseFloat(freq_array[i]) > parseFloat(max_freq_RM))
+        {
+            max_freq_RM = freq_array[i]; 
+        }
+    }
+
+    var index_min = 0, min_freq_RM = freq_array[0];        //CALCULATE MINIMUM FREQUENCY
+    for( var i=1; i<freq_array.length; i++)
+    {
+        if( parseFloat(freq_array[i]) < parseFloat(min_freq_RM))
+        {
+            min_freq_RM = freq_array[i]; 
+        }
+        
+        if( parseFloat(freq_array[i]) < parseFloat(freq_array[index_min]))
+        {
+            index_min = i;
+        }
+    }
+
+    alpha = parseFloat(min_freq_RM)/ parseFloat(max_freq_RM);
+    
+    bool_min_freq = RM_test(alpha, exec_Static_RM, period_Static_RM);
+    
+        if (bool_min_freq == 0)
+        {
+            freq_array.splice(index_min,1)
+            voltage_array.splice(index_min,1);
+             
+            continue MAIN;          
+        }
+    
+        else 
+        {
+          
+        var freq = freq_array[index_min];
+        var vtg = voltage_array[index_min];
+        
+        return [freq,vtg, alpha];
+        
+        }
+    }
+}
+
+
+
+function RM_test(alpha, exec_Static_RM, period_Static_RM){
+
+    var lhs =0, rhs;
+
+ OUTER:   
+ for(var i=0; i<exec_Static_RM.length;i++)
+    {
+        for(var j=0; j<=i; j++)
+        {   
+            lhs = lhs + parseFloat(exec_Static_RM[j])*(Math.ceil(period_Static_RM[i]/period_Static_RM[j]));
+        
+        }
+           rhs = parseFloat(alpha) * parseFloat(period_Static_RM[i]);
+                   
+            if(parseFloat(lhs) <= parseFloat(rhs))
+            {
+                break OUTER;
+            }
+          
+            else return 0;
+       }
+           return 1;
+    }
+</script>
+
+
+<p>    <script language="JavaScript1.3"type="text/javascript">
+
+//JavaScript Graph-it! (Absolute)- by javascriptkit.com
+//Visit JavaScript Kit (http://javascriptkit.com) for script
+//Credit must stay intact for use
+
+var vtg_level_rm;
+function graphit_static_rm(s,t_width,blnk, t_no, period_current, exec_current, static_vtg, static_freq, max_V,no_tasks, stat_rm_start_array,stat_rm_task_width,stat_rm_blank_array, period_Static_RM_temp, exec_Static_RM_temp, color_code){   
+
+vtg_level_rm = static_vtg*(35/max_V);
+
+var time_line =0.0;
+
+rel_time_current = s[0];
+var rel_time = new Array();
+var task_no = new Array();
+var stat_rm_start_array_temp = new Array();
+
+var blankimage ="blank.gif"
+
+output='<table border="0" cellspacing="0" cellpadding="0" width=5000%>'
+
+var outerloop = stat_rm_start_array.length;
+var innerloop = stat_rm_start_array[0].length;
+
+for(var i=0;i<outerloop;i++)
+{
+    stat_rm_start_array_temp[i] = stat_rm_start_array[i][0];
+}
+
+for( var row_count =0; row_count < outerloop ; row_count++)
+{
+    for (var col_count =0; col_count< innerloop; col_count++)
+    {
+	
+    var indx_row_strt = 0, indx_col_strt=0, mini_strt = stat_rm_start_array[0][0];
+    for(i=0; i< outerloop; i++)
+    {
+
+                    
+        for(j=0; j<innerloop; j++)
+        {
+			
+			if(parseFloat(stat_rm_start_array[i][j]) < parseFloat(stat_rm_start_array[indx_row_strt][indx_col_strt]))
+			{
+				
+				indx_row_strt = i;
+				indx_col_strt = j;
+			}
+		}	
+	}
+
+		if (indx_row_strt ==0 ){
+		rel_time[indx_row_strt] = 0.0;//rm_start_array[indx_row_strt][0];
+        task_no[indx_row_strt] = indx_row_strt+1;
+        var graphimage="task1.gif"}
+
+        if(indx_row_strt ==1){
+        rel_time[indx_row_strt] = Math.round(stat_rm_start_array_temp[indx_row_strt]*1000)/1000;
+        task_no[indx_row_strt] = indx_row_strt+1;
+        var graphimage="task2.gif"}
+
+        if(indx_row_strt ==2){
+        rel_time[indx_row_strt] = Math.round(stat_rm_start_array_temp[indx_row_strt]*1000)/1000;
+        task_no[indx_row_strt] = indx_row_strt+1;
+        var graphimage="task3.gif"}
+
+        if(indx_row_strt ==3){
+        rel_time[indx_row_strt] = Math.round(stat_rm_start_array_temp[indx_row_strt]*1000)/1000;
+        task_no[indx_row_strt] = indx_row_strt+1;
+        var graphimage="task4.gif"}
+
+        if(indx_row_strt ==4){
+        rel_time[indx_row_strt] = Math.round(stat_rm_start_array_temp[indx_row_strt]*1000)/1000;
+        task_no[indx_row_strt] = indx_row_strt+1;
+        var graphimage="task5.gif"}
+
+        if(indx_row_strt ==5){
+        rel_time[indx_row_strt] = Math.round(stat_rm_start_array_temp[indx_row_strt]*1000)/1000;
+        task_no[indx_row_strt] = indx_row_strt+1;
+        var graphimage="task6.gif"}
+
+		var grph_width =stat_rm_task_width[indx_row_strt][indx_col_strt];
+		var blank = stat_rm_blank_array[indx_row_strt][indx_col_strt];
+		var strt = stat_rm_start_array[indx_row_strt][indx_col_strt];
+
+		time_line = time_line + stat_rm_task_width[indx_row_strt][indx_col_strt]+stat_rm_blank_array[indx_row_strt][indx_col_strt];
+		
+            if(time_line*30 >=3000) break;
+        
+        
+        stat_rm_start_array[indx_row_strt][indx_col_strt] = 999;
+		stat_rm_blank_array[indx_row_strt][indx_col_strt] = 999;
+		stat_rm_task_width[indx_row_strt][indx_col_strt] = 999;
+		
+		if(strt==0.0)
+        {
+            grph_width = grph_width*30;
+                        
+            output+='<img src="'+graphimage+'" width= "'+grph_width+'" height="'+vtg_level_rm+'">';
+            
+        } 
+		
+		if(strt !=0.0)
+        {
+        grph_width = grph_width*30;
+        output+= '<img src="'+blankimage+'" width= "'+blank+'" height="'+vtg_level_rm+'"><img src="'+graphimage+'" width= "'+grph_width+'" height="'+vtg_level_rm+'">';        
+        } 
+		
+    }
+    if(time_line*30 >=3000) break;
+}
+		
+	output+='</td>'
+    output+='</tr>'
+    output+='</table>'
+    //document.write(output);
+    for(var i=0;i<task_no.length;i++)
+    {
+        output+='<p><img src="'+color_code[i]+'" width= "10" height="25"> Task '+task_no[i]+' Release Time '+rel_time[i]+' Voltage '+static_vtg+' Frequency '+static_freq +'</p>';
+    }
+            document.write(output);
+	
+}
+
+//***************END OF STATIC RATE MONOTONIC ALGORITHM
+
+</script>  
+
+ 
+ <SCRIPT LANGUAGE="JavaScript1.3" type="text/javascript"></SCRIPT> 
+<script>
+
+/* +++++++++++++++++++++++++++Non - DVS EARLIEST DEADLINE FIRST FUNCTION ++++++++++++++++++++++++++++++++++++++++*/
+
+/// ***** Absolute Deadline = Relative Deadline((which is the Period)) + Release Time
+/*The processor following the EDF algo always executes the task whose absolute deadline is the earliest. EDF is a dynamic priority scheduling algorithm, the task priorities are not fixed but changing depending on the closeness of their absolute deadline.*/
+
+
+function earliest_DF(exec_time_EDF, period_EDF, max_V,no_tasks, color_code)
+{
+
+    var edf_start_array = new Array();
+    var edf_task_width = new Array();
+	var	edf_blank_array = new Array();
+
+    var min_abs_exec = new Array();
+    var min_abs_period = new Array();
+    
+    var task_width_EDF = new Array();
+    var taskNo_ToChart_EDF = new Array();
+    var blank_EDF = new Array();
+    
+    var exec_time_EDF_temp = new Array();
+    var period_EDF_temp = new Array();
+    
+    var total_exec=0.0;
+        var total_exec_30;
+        
+        for(var m=0;m<exec_time_EDF.length;m++)
+        {
+            total_exec= total_exec+ parseFloat(exec_time_EDF[m]);
+        }
+        
+        //window.alert("total_exec" + total_exec);
+        total_exec_30=total_exec*30;
+        //window.alert("total_exec_30" + total_exec_30);
+        
+        var task_exec_array = new Array();
+        for(var m=0;m<exec_time_EDF.length;m++)
+        {
+            task_exec_array[m]=exec_time_EDF[m]*30;
+        }
+                
+    
+    for(var i=0; i<period_EDF.length;i++)
+    {
+        exec_time_EDF_temp[i] = exec_time_EDF[i];
+        period_EDF_temp[i] = period_EDF[i];
+    }
+        
+    
+   // *** BLOCK TO CALCULATE THE TASK ABSOLUTE DEADLINES *******/
+
+    var task_rel_EDF = 0.0;
+    var deadline_EDF = new Array();
+    
+	 var task_rel = 0.0;
+     var start_array_EDF = new Array();
+     var end_array_EDF = new Array();
+    
+    var iter_EDF_counter = period_EDF.length;
+    
+    for(var m=0; m<iter_EDF_counter; m++)
+    {
+      for(var i=0; i<iter_EDF_counter;i++)
+        {
+        deadline_EDF[i] = parseFloat(period_EDF[i]) + parseFloat(task_rel_EDF); 
+        }
+                
+ // *BLOCK TO FIND THE INDEX OF THE MINIMUM //ABSOLUTE DEADLINE
+ 
+    var indx_abs_EDF = 0.0, mini = deadline_EDF[0];
+    for (var i = 1; i < deadline_EDF.length; i++)
+    {
+     
+     deadline_EDF[indx_abs_EDF] = parseFloat(deadline_EDF[indx_abs_EDF]);
+     
+     exec_time_EDF[i] = parseFloat(exec_time_EDF[i]);
+     period_EDF[i] = parseFloat(period_EDF[i]);
+
+        if((deadline_EDF[i]) < (deadline_EDF[indx_abs_EDF]))
+	    {
+         indx_abs_EDF = i;
+        }
+    }
+       min_abs_exec.push(exec_time_EDF.splice(indx_abs_EDF,1));
+       min_abs_period.push(period_EDF.splice(indx_abs_EDF,1));
+       
+       var j=0;
+       var delta_temp;
+       
+      //delta_temp = Math.round(300*(task_exec_array[i]/total_exec_30));
+            //delta_temp = Math.round(200/task_exec_array[i]);
+
+       var temp;
+       var delta = 0.0
+       var temp_exec = 0.0;
+       
+       while (delta <=40.0)
+       {
+            start_array_EDF[j] = parseFloat(task_rel);
+            end_array_EDF[j] = parseFloat(task_rel) + parseFloat(min_abs_exec.slice(0,1));
+
+        //if(end_array_EDF[j]*30>300) break;              
+        j++;  
+        
+        
+        temp = parseFloat(j*(parseFloat(min_abs_period.slice(0,1)))); 
+        task_rel = temp + parseFloat(min_abs_exec.slice(0,1));
+        
+        
+        delta = delta + 1.0;
+     }   
+     
+        min_abs_period.splice(0,1);
+        min_abs_exec.splice(0,1);
+        task_rel = end_array_EDF[0];
+
+    
+        for(var k =0; k<start_array_EDF.length;k++)
+        {
+        
+        task_width_EDF[k] = (parseFloat(end_array_EDF[k]) - parseFloat(start_array_EDF[k]));
+        blank_EDF[k] = (parseFloat(start_array_EDF[k+1]) - parseFloat(end_array_EDF[k]));
+                      
+        }
+  
+    edf_start_array[m] = new Array();
+    edf_task_width[m] = new Array();
+    edf_blank_array[m] = new Array();
+    
+    var col=0;
+    for(var d=0; d <start_array_EDF.length-1;d++)
+    {
+        
+        edf_start_array[m][col] = start_array_EDF[d];
+        edf_task_width[m][col] = task_width_EDF[d];
+        edf_blank_array[m][col] = blank_EDF[d];
+        
+        col++;
+    } 
+  }
+  graphit_edf(no_tasks,edf_start_array,edf_task_width,edf_blank_array, period_EDF_temp, exec_time_EDF_temp, color_code);
+ 
+	var funct = "Non DVS Earliest Deadline First";
+	energy_display(5.0,funct);
+}  // END OF EARIEST DF FUNCTION        
+</script>
+
+
+
+ <script language="JavaScript1.3"type="text/javascript">
+//JavaScript Graph-it! (Absolute)- by javascriptkit.com
+//Visit JavaScript Kit (http://javascriptkit.com) for script
+//Credit must stay intact for use
+
+function graphit_edf(no_tasks, edf_start_array, edf_task_width, edf_blank_array, period_EDF_temp, exec_time_EDF_temp, color_code)
+{   
+
+var grph_width=0.0, blank=0.0, strt=0.0;
+var blankimage ="blank.gif"
+
+var time_line=0.0;
+
+var rel_time = new Array();
+var task_no = new Array();
+var edf_start_array_temp = new Array();
+   
+output='<table border="0" cellspacing="0" cellpadding="0" width=5000%>'
+
+var outerloop = edf_start_array.length;
+var innerloop = edf_start_array[0].length;
+
+for(var i=0;i<outerloop;i++)
+{
+    edf_start_array_temp[i] = edf_start_array[i][0];
+}
+
+
+for( var row_count =0; row_count < outerloop ; row_count++)
+{
+
+    for (var col_count =0; col_count< innerloop; col_count++)
+    {
+
+    var indx_row_strt = 0, indx_col_strt=0, mini_strt = edf_start_array[0][0];
+
+    for(i=0; i< outerloop; i++)
+    {
+                    
+        for(j=0; j<innerloop; j++)
+        {
+			
+			if(parseFloat(edf_start_array[i][j]) < parseFloat(edf_start_array[indx_row_strt][indx_col_strt]))
+			{
+				
+				indx_row_strt = i;
+				indx_col_strt = j;
+			}
+                        
+		}	
+
+    }
+        
+        grph_width =edf_task_width[indx_row_strt][indx_col_strt];
+		blank = edf_blank_array[indx_row_strt][indx_col_strt];
+		strt = edf_start_array[indx_row_strt][indx_col_strt];
+		
+        time_line = time_line + edf_task_width[indx_row_strt][indx_col_strt]+edf_blank_array[indx_row_strt][indx_col_strt];
+            if(time_line*30 >=4000) break;
+        
+        
+        edf_start_array[indx_row_strt][indx_col_strt] = 999;
+		edf_blank_array[indx_row_strt][indx_col_strt] = 999;
+		edf_task_width[indx_row_strt][indx_col_strt] = 999;
+
+	if (indx_row_strt ==0 ){
+	rel_time[indx_row_strt] = Math.round(edf_start_array_temp[indx_row_strt]*1000)/1000;
+        task_no[indx_row_strt] = indx_row_strt+1;
+        var graphimage="task1.gif"}
+
+        if(indx_row_strt ==1){
+        rel_time[indx_row_strt] = Math.round(edf_start_array_temp[indx_row_strt]*1000)/1000;
+        task_no[indx_row_strt] = indx_row_strt+1;
+        var graphimage="task2.gif"}
+
+        if(indx_row_strt ==2){
+        rel_time[indx_row_strt] = Math.round(edf_start_array_temp[indx_row_strt]*1000)/1000;
+        task_no[indx_row_strt] = indx_row_strt+1;
+        var graphimage="task3.gif"}
+
+        if(indx_row_strt ==3){
+        rel_time[indx_row_strt] = Math.round(edf_start_array_temp[indx_row_strt]*1000)/1000;
+        task_no[indx_row_strt] = indx_row_strt+1;
+        var graphimage="task4.gif"}
+
+        if(indx_row_strt ==4){
+        rel_time[indx_row_strt] = Math.round(edf_start_array_temp[indx_row_strt]*1000)/1000;
+        task_no[indx_row_strt] = indx_row_strt+1;
+        var graphimage="task5.gif"}
+
+        if(indx_row_strt ==5){
+        rel_time[indx_row_strt] = Math.round(edf_start_array_temp[indx_row_strt]*1000)/1000;
+        task_no[indx_row_strt] = indx_row_strt+1;
+        var graphimage="task6.gif"}
+		
+        
+
+	if(strt==0.0)
+        {
+            grph_width = grph_width*30;
+                        
+            output+='<img src="'+graphimage+'" width= "'+grph_width+'" height="35">';
+            
+        }    
+		
+		
+	if(strt !=0)
+    {
+        grph_width = grph_width*30;
+        
+        output+= '<img src="'+blankimage+'" width= "'+blank+'" height="35"><img src="'+graphimage+'" width= "'+grph_width+'" height="35">';        
+    } 
+				
+      }
+    }
+	
+	output+='</td>'
+    output+='</tr>'
+    output+='</table>'
+    //output+='<br>'
+    //output+='<br><br>'
+   // document.write(output);
+    
+    for(var i=0;i<task_no.length;i++)
+    {
+        output+='<p><img src="'+color_code[i]+'" width= "10" height="25"> Task '+task_no[i]+' Release Time '+rel_time[i]+' Period '+period_EDF_temp[i]+' Exec Time '+exec_time_EDF_temp[i]+'</p>';
+    }
+            document.write(output);
+}
+
+//**** END OF EARLIEST DEADlINE FIRST ALGORITHM
+
+</script>  
+ 
+ <script>
+
+//  STATIC EARLIEST DEADLINE FIRST DYNAMIC VOLTAGE SCALING ALGORITHM*********************************
+//******************************************************************************************
+
+
+ function static_DVS_EDF(exec_Static_EDF, period_Static_EDF, freq_array, voltage_array,max_V,no_tasks, color_code)
+{
+    
+    var rm_start_array = new Array();
+    var rm_task_width = new Array();
+	var	rm_blank_array = new Array();
+	
+    var	stat_edf_start_array = new Array();
+    var stat_edf_task_width = new Array();
+    var stat_edf_blank_array = new Array();
+    
+    var exec_Static_EDF_temp = new Array();
+    var period_Static_EDF_temp = new Array();
+    
+    for(var i=0; i< period_Static_EDF.length;i++)
+    {
+        exec_Static_EDF_temp[i]=exec_Static_EDF[i];
+        period_Static_EDF_temp[i] = period_Static_EDF[i];
+    }
+    
+var total_exec=0.0;
+        var total_exec_30;
+        var task_exec_array = new Array();
+        
+        for(var m=0;m<exec_Static_EDF.length;m++)
+        {
+            total_exec= total_exec+ parseFloat(exec_Static_EDF[m]);
+        }
+        
+        //window.alert("total_exec" + total_exec);
+        total_exec_30=total_exec*30;
+        //window.alert("total_exec_30" + total_exec_30);
+        
+        
+        for(var m=0;m<exec_Static_EDF.length;m++)
+        {
+            task_exec_array[m]=exec_Static_EDF[m]*30;
+        }
+            
+    //window.alert("task_exec_array" + task_exec_array);
+
+    var vtg_level =0.0;
+    var static_values_EDF;
+    
+    static_values_EDF = select_frequency_EDF(exec_Static_EDF, period_Static_EDF, freq_array, voltage_array);
+    
+    var alpha_EDF = static_values_EDF[2];
+    var static_vtg_edf = static_values_EDF[1];
+    var static_freq_edf = static_values_EDF[0];
+    
+    //BLOCK TO CALCULATE NEW EXECUTION TIMES
+    
+    var new_exec = new Array();
+
+    var inv_alpha_EDF;
+    
+    for(var i=0;i<exec_Static_EDF.length;i++)
+    {
+        
+        inv_alpha_EDF = parseFloat(1/alpha_EDF);
+        new_exec[i] = parseFloat(inv_alpha_EDF * exec_Static_EDF[i]);
+           
+    }
+        
+    var exec_stack_EDF_Static = new Array();
+    var period_stack_EDF_Static = new Array();
+    
+    var min_abs_Static_exec = new Array();
+    var min_abs_Static_period = new Array();
+    
+    var start_array_Static_EDF = new Array();
+       var end_array_Static_EDF = new Array();
+    
+    var deadline_Static_EDF = new Array();
+    
+    var task_width_Static_EDF = new Array();
+        var taskNo_ToChart_EDF = new Array();
+        var blank_Static_EDF = new Array();
+    
+    var iter_count = period_Static_EDF.length;
+    
+    var task_rel = 0.0;
+    var task_rel_Static_EDF= 0.0;
+    
+    for (var m=0; m<iter_count; m++)
+    {    
+        for(var i=0; i<iter_count;i++)
+        {
+        deadline_Static_EDF[i] = parseFloat(period_Static_EDF[i]) + parseFloat(task_rel_Static_EDF); 
+        }
+    
+               
+ // ******BLOCK TO FIND THE INDEX OF THE MINIMUM //ABSOLUTE DEADLINE
+ 
+    var indx_abs_Static_EDF = 0.0, mini = deadline_Static_EDF[0];
+    for (var i = 1; i < deadline_Static_EDF.length; i++)
+    {
+        
+        deadline_Static_EDF[indx_abs_Static_EDF] = parseFloat(deadline_Static_EDF[indx_abs_Static_EDF]);
+        period_Static_EDF[i] = parseFloat(period_Static_EDF[i]);
+        
+        
+        if ((deadline_Static_EDF[i]) < (deadline_Static_EDF[indx_abs_Static_EDF]))
+	    {
+         indx_abs_Static_EDF = i;
+        }
+    }
+       min_abs_Static_exec.push(new_exec.splice(indx_abs_Static_EDF,1));
+       min_abs_Static_period.push(period_Static_EDF.splice(indx_abs_Static_EDF,1));
+       
+       
+    
+       var j=0;
+       
+       var temp;
+       var delta = 0.0
+       var delta_temp;
+       //delta_temp = Math.round(300*(task_exec_array[m]/total_exec_30));
+            //delta_temp = Math.round(200/task_exec_array[i]);
+        
+    while (delta <=40)
+    {
+        start_array_Static_EDF[j] = parseFloat(task_rel);
+        end_array_Static_EDF[j] = parseFloat(task_rel) + parseFloat(min_abs_Static_exec.slice(0,1));
+        j++;          
+    
+       //if(end_array_Static_EDF[j]*30>300) break;
+        temp = parseFloat(j*(parseFloat(min_abs_Static_period.slice(0,1)))); 
+        task_rel = temp + parseFloat(min_abs_Static_exec.slice(0,1));
+        delta = delta + 1.0;
+     }   
+     
+        min_abs_Static_period.splice(0,1);
+        min_abs_Static_exec.splice(0,1);
+        
+        task_rel = end_array_Static_EDF[0];
+
+        for(var k =0; k<start_array_Static_EDF.length;k++)
+        {
+        
+        task_width_Static_EDF[k] = (parseFloat(end_array_Static_EDF[k]) - parseFloat(start_array_Static_EDF[k]));
+        blank_Static_EDF[k] = (parseFloat(start_array_Static_EDF[k+1]) - parseFloat(end_array_Static_EDF[k]));
+                      
+        }
+    
+    stat_edf_start_array[m] = new Array();
+    stat_edf_task_width[m] = new Array();
+    stat_edf_blank_array[m] = new Array();
+    
+    var col=0;
+   for(var d=0; d<start_array_Static_EDF.length;d++)
+        {
+        stat_edf_start_array[m][col] = start_array_Static_EDF[d];
+        stat_edf_task_width[m][col] = task_width_Static_EDF[d];
+        stat_edf_blank_array[m][col] = blank_Static_EDF[d];
+        
+        col++;
+        } 
+        
+   }
+    graphit_static_edf(start_array_Static_EDF, task_width_Static_EDF, blank_Static_EDF, m, static_vtg_edf, static_freq_edf, max_V, no_tasks, stat_edf_start_array, stat_edf_task_width, stat_edf_blank_array, exec_Static_EDF_temp, period_Static_EDF_temp, color_code);
+    
+	var static_avg_edf = parseFloat(vtg_level)/no_tasks;
+	var funct = "Static DVS EDF Energy Savings"
+	energy_display(static_vtg_edf, funct);
+}
+
+// FUNCTION SELECT_FREQUENCY_EDF
+
+function select_frequency_EDF(exec_Static_EDF, period_Static_EDF, freq_array, voltage_array){
+
+    var alpha_EDF;
+    var bool_min_freq_EDF;
+    
+  MAIN_EDF:
+   while(freq_array.length >0)
+    {
+    
+    var max_freq_EDF = freq_array[0];            // CALCULATE THE MAX FREQUENCY
+    for( var i=1; i<freq_array.length; i++)
+    {
+        if( parseFloat(freq_array[i]) > parseFloat(max_freq_EDF))
+        {
+            max_freq_EDF = freq_array[i]; 
+        }
+    }
+
+    var index_min_EDF = 0, min_freq_EDF = freq_array[0];        //CALCULATE MINIMUM FREQUENCY
+    for( var i=1; i<freq_array.length; i++)
+    {
+        if( parseFloat(freq_array[i]) < parseFloat(min_freq_EDF))
+        {
+            min_freq_EDF = freq_array[i]; 
+        }
+        
+        if( parseFloat(freq_array[i]) < parseFloat(freq_array[index_min_EDF]))
+        {
+            index_min_EDF = i;
+        }
+    }
+
+    alpha_EDF = parseFloat(min_freq_EDF)/ parseFloat(max_freq_EDF);
+    
+    bool_min_freq_EDF = EDF_test(alpha_EDF, exec_Static_EDF, period_Static_EDF);
+    
+        if (bool_min_freq_EDF == 0)
+        {
+
+            
+            freq_array.splice(index_min_EDF,1)
+            voltage_array.splice(index_min_EDF,1);
+             
+            continue MAIN_EDF;          
+        }
+    
+        else 
+        {
+        
+        var freq_EDF = freq_array[index_min_EDF];
+        var vtg_EDF = voltage_array[index_min_EDF];
+        
+        return [freq_EDF, vtg_EDF, alpha_EDF];
+        
+        }
+    }
+}
+
+
+function EDF_test(alpha_EDF, exec_Static_EDF, period_Static_EDF){
+
+    var lhs_EDF =0;
+
+ for(var i=0; i<exec_Static_EDF.length;i++)
+    {
+      lhs_EDF = lhs_EDF + (parseFloat(exec_Static_EDF[i])/parseFloat(period_Static_EDF[i]));
+    }    
+        
+ if(parseFloat(lhs_EDF) <= parseFloat(alpha_EDF))
+ {
+    return 1;
+ }
+          
+ else return 0;
+                  
+}
+</script>
+
+<script language="JavaScript1.3"type="text/javascript">
+
+//JavaScript Graph-it! (Absolute)- by javascriptkit.com
+//Visit JavaScript Kit (http://javascriptkit.com) for script
+//Credit must stay intact for use
+
+
+function graphit_static_edf(s,t_width,blnk, t_no, static_vtg_edf, static_freq_edf, max_V, no_tasks, stat_edf_start_array, stat_edf_task_width, stat_edf_blank_array, exec_Static_EDF_temp, period_Static_EDF_temp, color_code){   //g changed to s
+
+var vtg_level_stat_edf;
+
+var rel_time = new Array();
+var task_no = new Array();
+var stat_edf_start_array_temp = new Array();
+
+vtg_level_stat_edf = (static_vtg_edf*35) /max_V;
+
+var time_line =0.0;
+
+var blankimage ="blank.gif"
+
+output='<table border="0" cellspacing="0" cellpadding="0" width = 5000%>'
+
+var outerloop = stat_edf_start_array.length;
+
+var innerloop = stat_edf_start_array[0].length;
+
+for(var i=0;i<outerloop;i++)
+{
+    stat_edf_start_array_temp[i] = stat_edf_start_array[i][0];
+}
+
+for( var row_count =0; row_count < outerloop ; row_count++)
+{
+
+    for (var col_count =0; col_count< innerloop; col_count++)
+    {
+	
+	var indx_row_strt = 0, indx_col_strt, mini_strt = stat_edf_start_array[0][0];
+
+	for(i=0; i< outerloop; i++)
+    {
+                    
+        for(j=0; j<innerloop; j++)
+        {
+			
+			if(parseFloat(stat_edf_start_array[i][j]) < parseFloat(stat_edf_start_array[indx_row_strt][indx_col_strt]))
+			{
+				
+				indx_row_strt = i;
+				indx_col_strt = j;
+			}
+		}	
+	}
+
+        var grph_width =stat_edf_task_width[indx_row_strt][indx_col_strt];
+		var blank = stat_edf_blank_array[indx_row_strt][indx_col_strt];
+		var strt = stat_edf_start_array[indx_row_strt][indx_col_strt];
+
+//		window.alert("task_width" + stat_edf_task_width[indx_row_strt][indx_col_strt] + "stat_edf_blank_array" + stat_edf_blank_array[indx_row_strt][indx_col_strt]);
+        
+        if(!isNaN(stat_edf_task_width[indx_row_strt][indx_col_strt]))
+       { 
+        time_line = time_line + parseFloat(stat_edf_task_width[indx_row_strt][indx_col_strt])+ parseFloat(stat_edf_blank_array[indx_row_strt][indx_col_strt]);
+            if(parseFloat(time_line)*30 >=3000) break;
+        }
+        
+        
+        
+        stat_edf_start_array[indx_row_strt][indx_col_strt] = 999.0;
+		stat_edf_blank_array[indx_row_strt][indx_col_strt] = 999.0;
+		stat_edf_task_width[indx_row_strt][indx_col_strt] = 999.0;
+
+		if (indx_row_strt ==0 ){
+		rel_time[indx_row_strt] = Math.round(stat_edf_start_array_temp[indx_row_strt]*1000)/1000;
+        task_no[indx_row_strt] = indx_row_strt+1;
+        var graphimage="task1.gif"}
+
+        if(indx_row_strt ==1){
+        rel_time[indx_row_strt] = Math.round(stat_edf_start_array_temp[indx_row_strt]*1000)/1000;
+        task_no[indx_row_strt] = indx_row_strt+1;
+        var graphimage="task2.gif"}
+
+        if(indx_row_strt ==2){
+        rel_time[indx_row_strt] = Math.round(stat_edf_start_array_temp[indx_row_strt]*1000)/1000;
+        task_no[indx_row_strt] = indx_row_strt+1;
+        var graphimage="task3.gif"}
+
+        if(indx_row_strt ==3){
+        rel_time[indx_row_strt] = Math.round(stat_edf_start_array_temp[indx_row_strt]*1000)/1000;
+        task_no[indx_row_strt] = indx_row_strt+1;
+        var graphimage="task4.gif"}
+
+        if(indx_row_strt ==4){
+        rel_time[indx_row_strt] = Math.round(stat_edf_start_array_temp[indx_row_strt]*1000)/1000;
+        task_no[indx_row_strt] = indx_row_strt+1;
+        var graphimage="task5.gif"}
+
+        if(indx_row_strt ==5){
+        rel_time[indx_row_strt] = Math.round(stat_edf_start_array_temp[indx_row_strt]*1000)/1000;
+        task_no[indx_row_strt] = indx_row_strt+1;
+        var graphimage="task6.gif"}
+
+		if(strt==0.0)
+        {
+            grph_width = grph_width*30;
+            output+='<img src="'+graphimage+'" width= "'+grph_width+'" height="'+vtg_level_stat_edf+'">';
+        } 
+		
+		if(strt !=0)
+		{
+    grph_width = grph_width*30;
+                   
+    output+= '<img src="'+blankimage+'" width= "'+blank+'" height="'+vtg_level_stat_edf+'"><img src="'+graphimage+'" width= "'+grph_width+'" height="'+vtg_level_stat_edf+'">';
+	}
+	
+	}
+	if(time_line *30 >=3000) break;
+}
+		
+	output+='</td>'
+    output+='</tr>'
+    output+='</table>'
+    //output+='<br>'
+    //output+='<br><br>'
+    //document.write(output);
+    
+    for(var i=0;i<task_no.length;i++)
+    {
+        output+='<p><img src="'+color_code[i]+'" width= "10" height="25"> Task '+task_no[i]+' Release Time '+rel_time[i]+' Voltage '+static_vtg_edf+' Frequency '+static_freq_edf+' </p>';
+    }
+            document.write(output);
+	
+}
+</script>  
+
+<script>
+
+// **********************CYCLE CONSERVING  EDF DYNAMIC VOLTAGE SCALING********************/
+//Cycle_DVS_EDF(exec_CC_EDF, period_CC_EDF,rel_CC_EDF,freq_CC_EDF,vtg_CC_EDF,cc_CC_EDF);
+
+function cycle_DVS_EDF(exec_CC_EDF,period_CC_EDF,freq_CC_EDF,vtg_CC_EDF,cc_CC_EDF,max_V,no_tasks, color_code)
+{
+        var cc_start_array = new Array();
+        var cc_task_width = new Array();
+    	var	cc_blank_array = new Array();
+    	
+    	var exec_CC_EDF_temp = new Array();
+    	var period_CC_EDF_temp = new Array();
+    	var cc_CC_EDF_temp = new Array();
+    	
+    	var min_freq_CC_EDF =0.0;
+    	for(i=0; i<exec_CC_EDF.length; i++)
+    	{
+    	   exec_CC_EDF_temp[i] = exec_CC_EDF[i];
+    	   period_CC_EDF_temp[i] = period_CC_EDF[i];
+    	   cc_CC_EDF_temp[i] = cc_CC_EDF[i];
+ 	   }
+
+    var total_exec=0.0;
+        var total_exec_30;
+        
+        for(var m=0;m<cc_CC_EDF.length;m++)
+        {
+            total_exec= total_exec+ parseFloat(cc_CC_EDF[m]);
+        }
+        
+        //window.alert("total_exec" + total_exec);
+        total_exec_30=total_exec*30;
+        //window.alert("total_exec_30" + total_exec_30);
+        
+        var task_exec_array = new Array();
+        for(var m=0;m<cc_CC_EDF.length;m++)
+        {
+            task_exec_array[m]=parseFloat(cc_CC_EDF[m])*30;
+        }
+        
+
+
+        var vtg_level = 0.0;
+        var task_utils = new Array();
+        var no_tasks_const = period_CC_EDF.length;
+
+        var exec_CC_EDF_temp1 = new Array();
+        var period_CC_EDF_temp1 = new Array();
+        var cc_CC_EDF_temp1 = new Array();
+
+        var start_array_CC_EDF = new Array();
+        var end_array_CC_EDF = new Array();
+
+        var task_width_CC_EDF = new Array();
+        var taskNo_ToChart_CC_EDF = new Array();
+        var blank_CC_EDF = new Array();
+        
+        var min_abs_period = new Array();
+        var min_abs_exec = new Array();
+
+    for(i=0; i<no_tasks_const; i++)
+    {
+        task_utils[i] = exec_CC_EDF[i] / period_CC_EDF[i];
+    
+    }
+
+    var task_rel_CC_EDF = 0.0;
+    var deadline_CC_EDF = new Array();
+   
+    var iter_CC_EDF_counter = period_CC_EDF.length;
+    
+    var cc_edf_vtg = new Array();
+    var cc_edf_freq = new Array();
+    
+    for (var m=0; m<iter_CC_EDF_counter; m++)
+    {    
+        for(var i=0; i<iter_CC_EDF_counter;i++)
+        {
+        deadline_CC_EDF[i] = parseFloat(period_CC_EDF[i]) + parseFloat(task_rel_CC_EDF); 
+        }
+                   
+ //*******BLOCK TO FIND THE INDEX OF THE MINIMUM //ABSOLUTE DEADLINE
+ 
+    var indx_abs_CC_EDF = 0.0, mini = deadline_CC_EDF[0];
+    for (var i = 1; i < deadline_CC_EDF.length; i++)
+    {
+     
+     deadline_CC_EDF[indx_abs_CC_EDF] = parseFloat(deadline_CC_EDF[indx_abs_CC_EDF]);
+     
+     exec_CC_EDF[i] = parseFloat(exec_CC_EDF[i]);
+     period_CC_EDF[i] = parseFloat(period_CC_EDF[i]);
+
+     
+        if ((deadline_CC_EDF[i]) < (deadline_CC_EDF[indx_abs_CC_EDF]))
+	    {
+         indx_abs_CC_EDF = i;
+        }
+    }
+       
+// For every new task Ti released, we have to find the cc/Pi of that and pass it onto the find frequency function. In this function, find the sum of the utilizations (Sum_Ui) with cc/Pi in place of Ci/Pi and eventually find the lowest frequency fi_min such that Sum_Ui < fi_min/fi_max and the corresponding voltage level is returned.. 
+
+
+for(var d=0; d<period_CC_EDF.length;d++)
+{
+    exec_CC_EDF_temp1[d] = exec_CC_EDF[d];
+    period_CC_EDF_temp1[d] = period_CC_EDF[d];
+    cc_CC_EDF_temp1[d] = cc_CC_EDF[d];    
+
+}
+
+//var task_exec = exec_CC_EDF.splice(indx_abs_CC_EDF,1);  // redundant
+var task_period = period_CC_EDF.splice(indx_abs_CC_EDF,1);
+var task_cc = cc_CC_EDF.splice(indx_abs_CC_EDF,1);
+
+
+task_utils[indx_abs_CC_EDF] = task_cc/task_period;
+
+min_freq_CC_EDF = select_freq_CC_EDF(no_tasks_const, task_utils,freq_CC_EDF,vtg_CC_EDF);
+
+cc_edf_vtg[m] = min_freq_CC_EDF[1];
+cc_edf_freq[m] = min_freq_CC_EDF[0];
+
+var cc_vtg = min_freq_CC_EDF[1];
+
+min_abs_exec.push(cc_CC_EDF_temp1.splice(indx_abs_CC_EDF,1));
+min_abs_period.push(period_CC_EDF_temp1.splice(indx_abs_CC_EDF,1));
+       
+var j=0;
+      
+       var temp;
+       var delta = 0.0
+       var delta_temp;
+       
+       
+
+      while (delta <=40)
+        {
+            start_array_CC_EDF[j] = parseFloat(task_rel_CC_EDF);
+            end_array_CC_EDF[j] = parseFloat(task_rel_CC_EDF) + parseFloat(min_abs_exec.slice(0,1));
+         
+        j++;          
+        temp = parseFloat(j*(parseFloat(min_abs_period.slice(0,1)))); 
+        task_rel_CC_EDF = temp + parseFloat(min_abs_exec.slice(0,1));
+        delta = delta + 1.0;
+     }   
+     
+        min_abs_period.splice(0,1);
+        min_abs_exec.splice(0,1);
+        
+        task_rel_CC_EDF = end_array_CC_EDF[0];
+
+        for(var k =0; k<start_array_CC_EDF.length;k++)
+        {
+        
+        task_width_CC_EDF[k] = (parseFloat(end_array_CC_EDF[k]) - parseFloat(start_array_CC_EDF[k]));
+        blank_CC_EDF[k] = (parseFloat(start_array_CC_EDF[k+1]) - parseFloat(end_array_CC_EDF[k]));
+                      
+        }
+        
+
+        
+        cc_start_array[m] = new Array();
+        cc_task_width[m] = new Array();
+        cc_blank_array[m]= new Array();
+    
+        var col=0;
+   for(var d=0; d<start_array_CC_EDF.length;d++)
+        {
+        
+        cc_start_array[m][col] = start_array_CC_EDF[d];
+        cc_task_width[m][col] = task_width_CC_EDF[d];
+        cc_blank_array[m][col] = blank_CC_EDF[d];
+        
+        col++;
+        }  
+  }
+  
+    var vtg_Avg=0.0;
+	for(var i=0; i<cc_edf_vtg.length;i++)
+	{
+	 vtg_Avg=vtg_Avg+cc_edf_vtg[i];
+     }
+     
+     vtg_Avg=vtg_Avg/cc_edf_vtg.length;
+       
+	
+  graphit_cc_edf(cc_vtg, cc_edf_vtg,cc_edf_freq,max_V,no_tasks, cc_blank_array, cc_task_width, cc_start_array, cc_CC_EDF_temp, period_CC_EDF_temp, color_code);
+  
+
+    
+    var funct = "Cycle Conserving EDF Energy Savings"
+	energy_display(vtg_Avg, funct);
+  
+}
+
+function select_freq_CC_EDF(no_tasks_const, task_utils,freq_CC_EDF,vtg_CC_EDF ){
+
+    var alpha_CC_EDF;
+    while(freq_CC_EDF.length >0)
+    //for(var n=0;n<freq_CC_EDF.length;n++)
+    {    
+    var max_freq_CC_EDF = freq_CC_EDF[0];            // CALCULATE THE MAX FREQUENCY
+    for( var i=1; i<freq_CC_EDF.length; i++)
+    {
+        if( parseFloat(freq_CC_EDF[i]) > parseFloat(max_freq_CC_EDF))
+        {
+            max_freq_CC_EDF = freq_CC_EDF[i]; 
+        }
+    }
+
+    var index_min_CC_EDF = 0, min_freq_CC_EDF = freq_CC_EDF[0];        //CALCULATE MINIMUM FREQUENCY
+    
+   // MAIN_CC_EDF:
+    for( var i=1; i<freq_CC_EDF.length; i++)
+    {
+        if( parseFloat(freq_CC_EDF[i]) < parseFloat(min_freq_CC_EDF))
+        {
+            min_freq_CC_EDF = freq_CC_EDF[i]; 
+        }
+        
+        if( parseFloat(freq_CC_EDF[i]) < parseFloat(freq_CC_EDF[index_min_CC_EDF]))
+        {
+            index_min_CC_EDF = i;
+        }
+    }
+
+    alpha_CC_EDF = parseFloat(min_freq_CC_EDF)/ parseFloat(max_freq_CC_EDF);
+    
+    bool_freq_CC_EDF = CC_EDF_test(alpha_CC_EDF, task_utils);
+    
+        if (bool_freq_CC_EDF == 0)
+        {
+            
+            freq_CC_EDF.splice(index_min_CC_EDF,1)
+            vtg_CC_EDF.splice(index_min_CC_EDF,1);
+             
+            continue;         
+        }
+    
+        else 
+        {
+        
+        var freq_CC_EDF = freq_CC_EDF[index_min_CC_EDF];
+        var vtg_CC_EDF = vtg_CC_EDF[index_min_CC_EDF];
+        
+        return [freq_CC_EDF,vtg_CC_EDF];
+        
+        }
+   }
+}
+function CC_EDF_test(alpha_CC_EDF, task_utils)
+{
+    var sum_util =0;
+    for(var i=0; i<task_utils.length; i++)
+    {
+        sum_util = sum_util + task_utils[i];
+    }
+     
+    if(parseFloat(sum_util) <= parseFloat(alpha_CC_EDF))
+    {
+        return 1;
+    }     
+     else return 0;
+     
+ }
+</script>
+
+
+  <script language="JavaScript1.3"type="text/javascript">
+
+var vtg_temp=0.0;
+var avg_vtg =0.0;
+//var vtg_level_cc=0.0;
+
+
+
+function graphit_cc_edf(cc_vtg, cc_edf_vtg,cc_edf_freq,max_V,no_tasks, cc_blank_array, cc_task_width, cc_start_array, cc_CC_EDF_temp, period_CC_EDF_temp, color_code)
+{ 
+var blankimage ="blank.gif"
+
+var cc_start_array_temp1 = new Array();
+for(var i=0;i<cc_start_array.length;i++){
+    cc_start_array_temp1[i]=new Array();}
+
+var rel_time = new Array();
+var task_no = new Array();
+var cc_start_array_temp = new Array();
+
+
+//vtg_level_cc = cc_vtg*(35/max_V);
+var vtg_level_cc = new Array();
+
+for(var i=0;i<cc_edf_vtg.length;i++)
+{
+    vtg_level_cc[i] = (cc_edf_vtg[i])*(35/max_V);
+}
+
+
+output='<table border="0" cellspacing="0" cellpadding="0" width=5000%>'
+
+var outerloop = cc_start_array.length;
+var innerloop = cc_start_array[0].length;
+
+for(var i=0;i<outerloop;i++)
+{
+    cc_start_array_temp[i] = cc_start_array[i][0];
+    
+}
+
+var grph_width;
+var blank;
+var strt;
+var vtg;
+var time_line =0.0;
+
+for( var row_count =0; row_count < outerloop ; row_count++)
+{
+
+    for (var col_count =0; col_count< innerloop; col_count++)
+    {
+
+    var indx_row_strt = 0, indx_col_strt =0, mini_strt = cc_start_array[0][0];
+
+        for(i=0; i< outerloop; i++)
+        {
+                    
+            for(j=0; j<innerloop; j++)
+            {
+			
+			 if(parseFloat(cc_start_array[i][j]) < parseFloat(cc_start_array[indx_row_strt][indx_col_strt]))
+			 {
+				
+				indx_row_strt = i;
+				indx_col_strt = j;
+			 }
+			
+		      }
+	   }
+	
+		if (indx_row_strt ==0 ){
+		rel_time[indx_row_strt] = Math.round(cc_start_array_temp[indx_row_strt] * 1000) /1000;
+        task_no[indx_row_strt] = indx_row_strt+1;
+        var graphimage="task1.gif"}
+
+        if(indx_row_strt ==1){
+        rel_time[indx_row_strt] = Math.round(cc_start_array_temp[indx_row_strt]*1000)/1000;
+        task_no[indx_row_strt] = indx_row_strt+1;
+        var graphimage="task2.gif"}
+
+        if(indx_row_strt ==2){
+        rel_time[indx_row_strt] = Math.round(cc_start_array_temp[indx_row_strt]*1000)/1000;
+        task_no[indx_row_strt] = indx_row_strt+1;
+        var graphimage="task3.gif"}
+
+        if(indx_row_strt ==3){
+        rel_time[indx_row_strt] = Math.round(cc_start_array_temp[indx_row_strt]*1000)/1000;
+        task_no[indx_row_strt] = indx_row_strt+1;
+        var graphimage="task4.gif"}
+
+        if(indx_row_strt ==4){
+        rel_time[indx_row_strt] = Math.round(cc_start_array_temp[indx_row_strt]*1000)/1000;
+        task_no[indx_row_strt] = indx_row_strt+1;
+        var graphimage="task5.gif"}
+
+        if(indx_row_strt ==5){
+        rel_time[indx_row_strt] = Math.round(cc_start_array_temp[indx_row_strt]*1000)/1000;
+        task_no[indx_row_strt] = indx_row_strt+1;
+        var graphimage="task6.gif"}
+        
+     
+        grph_width =cc_task_width[indx_row_strt][indx_col_strt];
+        blank = cc_blank_array[indx_row_strt][indx_col_strt];
+        strt = cc_start_array[indx_row_strt][indx_col_strt];
+        vtg = vtg_level_cc[indx_row_strt];
+
+        
+        if(!isNaN(cc_task_width[indx_row_strt][indx_col_strt]))
+       { 
+        time_line = time_line + parseFloat(cc_task_width[indx_row_strt][indx_col_strt])+ parseFloat(cc_blank_array[indx_row_strt][indx_col_strt]);
+            if(parseFloat(time_line)*30 >=6500) break;
+        }
+
+        
+        
+        cc_start_array[indx_row_strt][indx_col_strt] = 999.0;
+        cc_blank_array[indx_row_strt][indx_col_strt] = 999.0;
+        cc_task_width[indx_row_strt][indx_col_strt] = 999.0;
+	
+	
+	if(strt==0.0)
+    {
+        grph_width = grph_width*30;
+        output+= '<img src="'+graphimage+'" width= "'+grph_width+'" height="'+vtg+'">';
+    }    
+
+    if(strt!=0.0)
+    {
+       
+        grph_width = grph_width*30;
+        output+= '<img src="'+blankimage+'" width= "'+blank+'" height="'+vtg+'" ><img src="'+graphimage+'" width= "'+grph_width+'" height="'+vtg+'">';  
+    } 
+
+  }
+     if(parseFloat(time_line)*30 >=6500) break;
+}       
+          
+    
+    output+='</td>'
+    output+='</tr>'
+    output+='</table>'
+    //output+='<br>'
+    //output+='<br><br>'
+    //document.write(output);
+
+    
+        
+        
+    for(var i=0;i<task_no.length;i++)
+    {
+        output+='<p><img src="'+color_code[i]+'" width= "10" height="25"> Task '+task_no[i]+' Release Time '+rel_time[i]+'  Voltage '+cc_edf_vtg[i]+' Frequency '+cc_edf_freq[i]+'</p>' ;
+    }
+            document.write(output);
+			
+}
+
+  </script>
+
+
+</head>
+<body>
+<h2><b><a href="intro.htm">Dynamic Voltage Scaling Algorithms</a> </b></h2>
+<p> Non-DVS Rate Monotonic Algorithm</p>
+<p> Non-DVS Earliest Deadline First Algorithm </p>
+<p> Static RM</p>
+<p> Static EDF</p>
+<p> Cycle Conserving EDF</p>
+<p><a href="help.htm">HELP</a> (With example testcases)</p>
+<h2>Processor Parameters</h2>
+<p>Please enter the Frequencies and the corresponding Voltage levels. Please enter both values</p>
+
+<form method="post">
+<table border="1">
+
+<tr><td><b>No</b></td><td> <b>Frequency(Relative)</b></td><td><b>Voltage (volts) </b></td></tr>
+
+<tbody>
+
+<tr><td>1</td><td><input size="10" name="freq1" type="text" value = "0.36"></td><td><input size="10" name="volt1" type="text" value = "1.0"></td></tr>
+
+<tr><td>2</td><td><input size="10" name="freq3" type="text" value = "0.56"></td><td><input size="10" name="volt2" type="text" value = "2.0"></td></tr>
+
+
+<tr><td>3</td><td><input size="10" name="freq5" type="text" value = "0.72"></td><td><input size="10" name="volt3" type="text" value = "3.0"></td></tr>
+
+
+<tr><td>4</td><td><input size="10" name="freq7" type="text" value = "0.89"></td><td><input size="10" name="volt4" type="text" value = "4.0"></td></tr>
+
+<tr><td>5</td><td><input size = "10" name = "freq9" type = "text" value = "0.97"></td><td><input size="10" name="volt5" type="text" value = "5.0"></td></tr>
+
+</tbody></table>
+
+<input type="reset">
+
+</form>
+
+<h2>Task Parameters</h2>
+
+<p>Please enter the Period, Worst Case Execution Time, Actual Execution Time for the various tasks. For any particular task, please fill in every value for that task.</p>
+
+<form method="post">
+<table border="1">
+
+<tr><td width="16"><b>No</b></td><td width="68"> <b>Period(sec)</b></td><td width="203"><b>Worst Case Execution time(sec)</b></td><td width="200"><b>Actual Execution Time(sec)</b></td></tr>
+
+<tbody>
+
+<tr><td>1</td><td><input size="10" name="period1" type="text" value = "2"></td>
+  <td><input size="10" name="exec_time1" type="text" value = "0.15"></td>
+  <td><input size="10" name="act1" type="text" value = "0.11"></td></tr>
+
+<tr><td>2</td><td><input size="10" name="period2" type="text" value = "3"></td><td><input size="10" name="exec_time2" type="text" value = "0.15"></td><td><input size="10" name="act2" type="text" value = "0.125"></td></tr>
+
+<tr><td>3</td><td><input size="10" name="period3" type="text" value = "4"></td><td><input size="10" name="exec_time3" type="text" value = "0.2"></td><td><input size="10" name="act3" type="text" value = "0.175"></td></tr>
+
+<tr><td>4</td><td><input size="10" name="period4" type="text" value = "5"></td><td><input size="10" name="exec_time4" type="text" value = "1.6"></td><td><input size="10" name="act4" type="text" value = "0.225"></td></tr>
+
+<tr><td>5</td><td><input size="10" name="period5" type="text" value = "10"></td><td><input size="10" name="exec_time5" type="text" value = "1.4"></td><td><input size="10" name="act5" type="text" value = "1.375"></td></tr>
+
+<tr><td>6</td><td><input size="10" name="period6" type="text" value = "9"></td><td><input size="10" name="exec_time6" type="text" value = "0.45"></td><td><input size="10" name="act6" type="text" value = "0.425"></td></tr>
+
+</tbody></table>
+
+<input type="button" value="Display Graph" onclick= "schedulability()"> 
+
+<input type="Reset">
+</form>
+
+<p>&nbsp;</p>
+<h3>&nbsp;</h3>
+
+<script>
+
+function energy_display(vtg, funct)
+{
+	var maxV = 5.0;
+	var temp=0.0, energy=0.0, consumed =0.0;
+	temp = maxV - vtg;
+
+	energy = parseFloat(temp/maxV);
+	consumed = (Math.round((vtg/maxV)*1000)/1000);
+
+	document.write('<p><i>' +funct+ '</i></p><p> Energy Consumed = ' +consumed+ '<br></p>');
+	
+}  
+  </script>
+</p>
+</body>
+</html>

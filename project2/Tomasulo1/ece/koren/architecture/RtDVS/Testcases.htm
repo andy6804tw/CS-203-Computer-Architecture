@@ -1,0 +1,135 @@
+<html>
+<p><b>Both Non-DVS Rate Monotonic and Non-DVS Earliest Deadline First Algorithms have Energy Consumed as 1. This is because the task sets run at the maximum allowable voltage and thus, the energy consumed. </b><br><br>
+
+Period		WCET		Actual ET<br><br>
+<u>(Both RM and EDF Schedulable)</u><br>
+9			0.2			0.2<br>
+6			0.4			0.23<br>
+4			0.2			0.175<br>
+5			0.25			0.15<br>
+2			0.1			0.055<br>
+3			0.15			0.125<br>
+<br>
+
+<i>Static RM</i>: Energy Consumed - 0.2<br>
+<i>Static EDF</i>: Energy Consumed - 0.2<br>
+<i>CC EDF</i>: Energy Consumed - 0.2<br>
+<b> All DVS algorithms fare similarly for this task set.</b><br>
+<br>
+<u>(Both RM and EDF Schedulable)</u><br>
+2			0.1			0.075<br>
+3			0.15			0.125<br>
+4			0.2			0.175<br>
+5			0.25			0.225<br>
+10			1.4			1.375<br>
+9			0.45			0.425<br>
+<br>
+<i>Static RM</i>: Energy Consumed - 0.2<br>
+<i>Static EDF</i>: Energy Consumed - 0.4<br>
+<i>CC EDF</i>: Energy Consumed - 0.4<br>
+<b> Static RM algorithm fares better when compared to the Static EDF and CC EDF algorithms with energy consumed equalling 0.2</b><br>
+<br>
+<u>(Both RM and EDF Schedulable)</u><br>
+4			0.2			0.175<br>
+3			0.15			0.125<br>
+5			0.25			0.225<br>
+2			0.1			0.075<br>
+1.75			0.3			0.2<br>
+6			0.45			0.435<br>
+<br>
+<i>Static RM</i>: Energy Consumed - 0.2<br>
+<i>Static EDF</i>: Energy Consumed - 0.4<br>
+<i>CC EDF</i>: Energy Consumed - 0.4<br>
+<b> Static RM algorithm fares better when compared to the Static EDF and CC EDF algorithms with energy consumed equalling 0.2</b><br>
+<br>
+<u>(Only EDF Schedulable)</u><br>
+1			0.2			0.2<br>
+1			0.4			0.23<br>
+2			0.2			0.175<br>
+3			0.25			0.15<br>
+3.5			0.2			0.18<br>
+4			0.15			0.125<br>
+<br>
+<i>Static EDF</i>: Energy Consumed - 0.8<br>
+<i>CC EDF</i>: Energy Consumed - 0.8<br>
+<b> Both Static EDF and CC EDF algorithms fare similarly with energy consumed equalling 0.8</b> <br>
+<br>
+<u>(Not Schedulable)</u><br>
+20			4.0			2.35<br>
+6.43			2.3			1.76<br>
+4.0			0.34			0.22<br>
+5.12			0.55			0.54<br>
+0.23			0.24	    		0.24<br>
+1			0.45			0.25<br>
+<br>
+<u>(Both RM and EDF Schedulable)</u><br>
+9			1.2			0.2<br>
+6			0.74			0.4<br>
+4			0.66			0.2<br>
+5			0.286			0.25<br>
+2			0.1			0.1<br>
+3			0.23			0.20<br>
+<br>
+<i>Static RM</i>: Energy Consumed - 0.2<br>
+<i>Static EDF</i>: Energy Consumed - 0.6<br>
+<i>CC EDF</i>: Energy Consumed - 0.6<br>
+
+<b> Static RM algorithm has greater energy savings than both Static EDF and CC EDF for this particular task set</b>
+<br>
+
+<u>(Both RM and EDF Schedulable)</u><br>
+5			0.286			0.25<br>
+2			0.1			0.1<br>
+3			0.23			0.20<br>
+3			0.25			0.15<br>
+3.5			0.2			0.18<br>
+4			0.15			0.125<br>
+<br>
+<i>Static RM</i>: Energy Consumed - 0.2<br>
+<i>Static EDF</i>: Energy Consumed - 0.2<br>
+<i>CC EDF</i>: Energy Consumed - 0.367<br>
+<b> Static RM and Static EDF have similar energy savings but greater than CC EDF algorithm</b>
+<br>
+
+<u>(Only EDF schedulable)</u><br>
+9			0.2			0.2<br>
+0.6			0.4			0.23<br>
+4			0.2			0.175<br>
+5			0.25			0.15<br>
+2			0.1			0.055<br>
+3			0.15			0.125<br>
+<br>
+<i>Static EDF</i>: Energy Consumed - 0.8<br>
+<i>CC EDF</i>: Energy Consumed - 0.6<br>
+<b> CC EDF has greater energy savings than Static EDF</b>
+<br>
+
+<u>(Both RM and EDF Schedulable)</u><br>
+3.0		0.23		0.20<br>
+3.1		0.15		0.125<br>
+3.2		0.23		0.20<br>
+3.3		0.25		0.15<br>
+3.4		0.15		0.125<br>
+3.5		0.2		0.18<br>
+<br>
+<i>Static RM</i>: Energy Consumed - 0.2<br>
+<i>Static EDF</i>: Energy Consumed - 0.4<br>
+<i>CC EDF</i>: Energy Consumed - 0.2<br>
+<b> Static RM and CC EDF algorithms have similar energy savings but greater than CC EDF</b><br>
+
+<u>(Only EDF Schedulable)</u><br>
+2.5			0.543			0.2<br>
+3.6			0.35			0.23<br>
+2			0.28			0.18<br>
+1.75	    		0.259	    		0.2<br>
+3.5			0.4			0.19<br>
+4.25			0.5			0.10<br>
+<br>
+<i>Static EDF</i>: Energy Consumed - 0.8<br>
+<i>CC EDF</i>: Energy Consumed - 0.8<br>
+<b> Both Static EDF and CC EDF algorithms fare similarly with energy consumed equalling 0.8</b> <br>
+<br>
+</p>
+</html>
+
+

@@ -1,0 +1,64 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.5 [en] (X11; U; SunOS 5.7 sun4u) [Netscape]">
+</head>
+<body text="#000000" bgcolor="#FFFFFF" link="#0000EE" vlink="#551A8B" alink="#FF0000">
+&nbsp;
+<br><font >
+<br><b>Input Format:</b>
+The input are Integers either in binary format or decimal. The
+inputs need not be contiguous. The simulator counts the inputs and
+correspondingly builds the OS Tree.
+<br>
+<b>Overturned-Stairs Trees(OS Trees):</b>
+<br>Multioperand adders are widely needed for designing multipliers, digital filters, and  
+inner-product computers.Overturned-Stairs Trees (OS Trees) acheive an squareroot(N) summing
+time.Where N is number of operands. An important feature of OS Trees is their recursive
+structure, which leads to a regular and compact design.
+<br>
+<br>
+<img SRC="os.gif" height=350 width=550> 
+<br>
+<br>
+A OS tree of height J consists of I) a body of height J-1 II) a branch of height J-2 III) Connector
+A branch of height J-2 consists of J-2 CSA's cascaded vertically. A connector is composed of 
+two CSA's which receive five inputs and give three outputs. 
+<br>
+<br> 
+<b>Comparison With Wallace Trees:</b>
+<br>
+Wallace trees are theoretically fastest Multioperand adders.  When adding multiple operands to
+two numbers  using carry save adders(CSA), They achieve the lower bound on the summing time
+required  by an N-to-2 reduction, O(log<sub>3/2</sub>N).However, Wallace Trees are very difficult to 
+implement because of their complex wiring.       
+<br>
+<br> 
+ N= 24, 18, 17, 13, 12, 11, 9, 8, 6, 4, 3, 2
+<br>However for the above values of N OS trees matches with wallace tree.    
+<br>
+<br>
+<br><b>Delay Calculation:</b>
+<br><font >In this simulation, the minimum delay of the final output
+is calculated. Looking at the schematic diagram below:</font>
+<p><img SRC="help.gif" height=280 width=359>
+<p><font >in 3-2 adder Carry delay is smaller than Sum delay. In
+this design we assumed that Sum delay is smaller than twice of carry delay
+as well.</font>
+<p><font>Assuming:</font>
+<blockquote><font size=+1>Ta: arrival time of input "a"</font>
+<br><font >Tb: arrival time of input "b"</font>
+<br><font >Tcin: arrival time of input "Cin"</font>
+<br><font >Ts: time that Sum will be ready, considering arrival
+time of inputs</font>
+<br><font >Tcout: time that Carry out will be ready, considering
+arrival time of inputs</font></blockquote>
+<font ></font>
+<p><br><font >&nbsp;final output delays will be calculated as follow:</font><font size=+1></font>
+<p><font >Ts =&nbsp; Max{&nbsp; ( Max(Ta,Tb) + Sum Delay )&nbsp;
+,&nbsp; (&nbsp; Tcin +&nbsp; Sum Delay/2 )&nbsp; }</font>
+<br><font >Tcout = [ Max (Ta, Tb,Tcin) ] + Carry Delay</font>
+</body>
+</html>
+

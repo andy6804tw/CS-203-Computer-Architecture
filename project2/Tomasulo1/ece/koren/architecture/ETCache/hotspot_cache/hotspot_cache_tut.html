@@ -1,0 +1,220 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Cache Simulation</title>
+<style type="text/css">
+<!--
+body {
+	font: 100% Verdana, Arial, Helvetica, sans-serif;
+	background: #666666;
+	margin: 0; /* it's good practice to zero the margin and padding of the body element to account for differing browser defaults */
+	padding: 0;
+	text-align: center; /* this centers the container in IE 5* browsers. The text is then set to the left aligned default in the #container selector */
+	color: #000000;
+	background-color: #999999;
+}
+
+/* Tips for Elastic layouts
+1. Since the elastic layouts overall sizing is based on the user's default fonts size, they are more unpredictable. Used correctly, they are also more accessible for those that need larger fonts size since the line length remains proportionate.
+2. Sizing of divs in this layout are based on the 100% font size in the body element. If you decrease the text size overall by using a font-size: 80% on the body element or the #container, remember that the entire layout will downsize proportionately. You may want to increase the widths of the various divs to compensate for this.
+3. If font sizing is changed in differing amounts on each div instead of on the overall design (ie: #sidebar1 is given a 70% font size and #mainContent is given an 85% font size), this will proportionately change each of the divs overall size. You may want to adjust based on your final font sizing.
+*/
+.oneColElsCtrHdr #container {
+	width: 46em;  /* this width will create a container that will fit in an 800px browser window if text is left at browser default font sizes */
+	background: #FFFFFF;
+	margin: 0 auto; /* the auto margins (in conjunction with a width) center the page */
+	border: 1px solid #000000;
+	text-align: left; /* this overrides the text-align: center on the body element. */
+}
+.oneColElsCtrHdr #header {
+	background: #000033;
+	padding: 0 10px 0 20px;  /* this padding matches the left alignment of the elements in the divs that appear beneath it. If an image is used in the #header instead of text, you may want to remove the padding. */
+	color:#FFFFFF;
+}
+.oneColElsCtrHdr #header h1 {
+	margin: 0; /* zeroing the margin of the last element in the #header div will avoid margin collapse - an unexplainable space between divs. If the div has a border around it, this is not necessary as that also avoids the margin collapse */
+	padding: 10px 0; /* using padding instead of margin will allow you to keep the element away from the edges of the div */
+}
+.oneColElsCtrHdr #mainContent {
+	padding: 0 20px; /* remember that padding is the space inside the div box and margin is the space outside the div box */
+	background: #FFFFFF;
+}
+.oneColElsCtrHdr #footer {
+	padding: 0 10px; /* this padding matches the left alignment of the elements in the divs that appear above it. */
+	background:#000033;
+	color:#FFFFFF;
+}
+.oneColElsCtrHdr #footer p {
+	margin: 0; /* zeroing the margins of the first element in the footer will avoid the possibility of margin collapse - a space between divs */
+	padding: 10px 0; /* padding on this element will create space, just as the the margin would have, without the margin collapse issue */
+}
+.style1 {font-family: "Comic Sans MS"}
+-->
+</style></head>
+
+<body class="oneColElsCtrHdr">
+
+<div id="container">
+  <div id="header">
+    <h1 align="center" class="style1">HotSpot Cache Tutorial</h1>
+    <!-- end #header --></div>
+  <div class="style1" id="mainContent">
+    <blockquote>
+      <h3><strong>Energy  efficiency of Hotspot Cache</strong></h3>
+      <p align="justify">The energy advantage of the Filter Cache comes  from the references that hit in the L0 cache. The L0 cache hits are results of  temporal locality of frequently accessed basic blocks (i.e. ‘hot’ blocks) and  spatial locality within a cache line. In the HotSpot  cache scheme, hot basic blocks are identified dynamically and stored in the L0  cache, while others are placed in the L1 cache. </p>
+      <p align="justify">Thus, the L0 cache utilization largely  determines the energy efficiency of the HotSpot  cache. It has been observed that program execution is often composed of  distinct phases which contain different sets of ‘hot’ basic blocks  (particularly in multimedia applications). To fully utilize the L0 cache, one  should identify hot basic blocks in each program phase instead of the entire  program lifetime. HotSpot has a runtime mechanism  that dynamically detects phase change and selects active ‘hot’ blocks early in  each program phase. To make this hardware-based approach energy efficient, the  detection mechanism is built around the Branch Target Buffer.</p>
+      <p> <strong>HotSpot Cache  Architecture</strong></p>
+      <p><!--[if gte vml 1]><v:shapetype   id="_x0000_t75" coordsize="21600,21600" o:spt="75" o:preferrelative="t"   path="m@4@5l@4@11@9@11@9@5xe" filled="f" stroked="f">   <v:stroke joinstyle="miter"/>   <v:formulas>    <v:f eqn="if lineDrawn pixelLineWidth 0"/>    <v:f eqn="sum @0 1 0"/>    <v:f eqn="sum 0 0 @1"/>    <v:f eqn="prod @2 1 2"/>    <v:f eqn="prod @3 21600 pixelWidth"/>    <v:f eqn="prod @3 21600 pixelHeight"/>    <v:f eqn="sum @0 0 1"/>    <v:f eqn="prod @6 1 2"/>    <v:f eqn="prod @7 21600 pixelWidth"/>    <v:f eqn="sum @8 21600 0"/>    <v:f eqn="prod @7 21600 pixelHeight"/>    <v:f eqn="sum @10 21600 0"/>   </v:formulas>   <v:path o:extrusionok="f" gradientshapeok="t" o:connecttype="rect"/>   <o:lock v:ext="edit" aspectratio="t"/>  </v:shapetype><v:shape id="_x0000_s1026" type="#_x0000_t75" style='position:absolute;   left:0;text-align:left;margin-left:0;margin-top:0;width:308.25pt;height:467.25pt;   z-index:1;mso-position-horizontal:left;mso-position-vertical:top;   mso-position-vertical-relative:line' o:allowoverlap="f">   <v:imagedata src="hotspot_cache_tutorial_files/image001.jpg" o:title="hotspot_cache"/>   <w:wrap type="square" side="left"/>  </v:shape><![endif]-->
+        
+        <center>
+          <img src="hotspot_filter.jpg" v:shapes="_x0000_s1026" align="left" height="623" hspace="12" width="411" />
+        </center>
+        
+      </p>
+      <p><strong> </strong></p>
+      <p><strong> </strong></p>
+      <p><strong> </strong></p>
+      <p><strong> </strong></p>
+      <p><strong> </strong></p>
+      <p><strong> </strong></p>
+      <p><strong> </strong></p>
+      <p><strong> </strong></p>
+      <p><strong> </strong></p>
+      <p><strong> </strong></p>
+      <p><strong> </strong></p>
+      <p><strong> </strong></p>
+      <p><strong> </strong></p>
+      <p><strong> </strong></p>
+      <p><strong> </strong></p>
+      <p><strong> </strong><strong>Fig.1  Filter Cache vs. HotSpot Cache Architecture</strong></p>
+      <p>The scheme is composed of two stages: </p>
+      <p align="justify"><strong>Profiling  Stage: </strong>The  system gathers access frequencies of executed branches and determines which  basic block should be promoted to the L0 cache. A basic block is promoted to  the L0 cache once the corresponding branch reaches a predefined threshold  (candidate threshold). Size of promoted basic blocks is limited to prevent  performance degradation from excessive L0 cache misses. Once the L0 cache is  filled up, we enter the monitoring stage.</p>
+      <p>
+        <!--[if gte vml 1]><v:shape id="_x0000_i1025"   type="#_x0000_t75" style='width:311.25pt;height:123pt'>   <v:imagedata src="hotspot_cache_tutorial_files/image003.jpg" o:title="profiling"/>  </v:shape><![endif]-->
+        
+        <img src="hotspot_mech.jpg" v:shapes="_x0000_i1025" height="164" width="415" />
+        
+      </p>
+      <p><strong>Fig.2  Hot-block selection</strong></p>
+      <p align="justify"><strong>Monitoring  Stage: </strong>System  tracks branch execution to ensure that hot branches account for a high  percentage of the total branches executed. If the percentage is not high enough  then it indicates either of two things:</p>
+      <p>
+        
+        -       
+       
+        Program  has entered a new phase</p>
+      <p>
+        
+        -       
+       
+        True  ‘Hot’ basic blocks have not yet been correctly identified.</p>
+      <p>The system then goes back to the profiling  stage to detect new set of hot blocks.</p>
+      <p><strong>‘Hot’  block Promotion Policy</strong></p>
+      <p align="justify"> A basic  block is promoted to the L0 cache as soon as its access frequency reaches the  candidate threshold. The advantage of eager promotion policy is that it allows  maximum L0 cache utilization. Promoting spurious hot basic blocks to the L0  cache does not incur much overhead as long as true hot basic blocks can be  identified eventually.</p>
+      <p><strong>Pitfall  – False Phase Change</strong></p>
+      <p align="justify">Since the size of the hot basic blocks being  promoted to the L0 cache is limited, if the hot basic blocks have large static  footprints, then the hot branch execution percentage could be lower than 50%  even though the hot basic blocks have been correctly identified. If this  situation occurs, the system would switch between the profiling and monitoring  stages constantly. This could potentially degrade the effectiveness of the  scheme if the L0 cache cannot be utilized during the profiling stage.</p>
+      <p><strong>Implementation</strong></p>
+      <p align="justify">To achieve energy savings, the mechanism  should not incur significant hardware overhead. The phase detection mechanism  is built around the Branch Target Buffer (BTB), which is commonly used in a  modern microprocessor to resolve branch target addresses in the instruction  fetch stage.</p>
+      <p>Each BTB entry has the following additional  bits:</p>
+      <p align="justify">
+        
+        1.   
+        
+      <strong>Valid Bit:</strong> Indicates whether the  corresponding branch is predicted taken or predicted non-taken branch. In a  conventional BTB design, a branch is removed from the BTB once it is predicted  non-taken. In this case however, the branch is still kept in the BTB even if it  is predicted non-taken in order to retain the access frequency of the target  basic block. The valid bit is set to zero (one) for predicted non-taken branch (predicted  taken branch).</p>
+      <p align="justify">
+        
+        2.   
+        
+        <strong>Execution Counter: </strong>It is updated when a  branch is resolved. The access frequency of the taken branches is monitored.  When the execution counter reaches its maximum value (i.e. candidate  threshold), a potential hotblock is detected.</p>
+      <p align="justify">
+        
+        3.   
+        
+        <strong>Hotblock Flag:</strong> Once a potential hotblock is  identified, this flag is set and the corresponding basic block of this branch  is promoted to the L0 cache.</p>
+      <p align="justify">
+        
+        4.   
+       
+        <strong>Prev-Hot Flag: </strong>If a program exhibits the false change  behavior, the system would stay in the profiling stage most of the time.  Therefore it is important to allow the L0 cache to be accessed during the  profiling stage. The hot branch information of the last phase is kept in the prev-hot flag until the system stabilizes (i.e. enters the  monitoring stage). </p>
+      <p align="justify"><strong>Monitor  Counter: </strong>It  is an 8-bit up/down counter used to track the hot-branch execution percentage.  The monitor counter is initially set to 128. It is decremented by one when a  hot-branch is executed and is incremented by one when a non-hot branch is  executed. When the counter overflows, hot-block flags are cleared and execution  counters are reset. On each memory access, if either one of the hot-block and  pre-hot flags is set, the access is directed to the L0 cache. Once the system  enters the monitoring stage, all prev-hot flags are  cleared.</p>
+      <p><strong>Fetch  mode transition events</strong></p>
+      <table border="1" cellpadding="0" cellspacing="0">
+        <tbody>
+          <tr>
+            <td valign="top" width="228"><p><strong>Fetch    mode</strong></p></td>
+            <td valign="top" width="813"><p><strong>Events</strong></p></td>
+          </tr>
+          <tr>
+            <td valign="top" width="228"><p>L0 Mode</p></td>
+            <td valign="top" width="813"><p>(BTB Hit) &amp;&amp; (valid bit=1)    &amp;&amp; (hot-block flag=1 or prev-hot flag=1)</p></td>
+          </tr>
+          <tr>
+            <td valign="top" width="228"><p>L1 Mode</p></td>
+            <td valign="top" width="813"><p>
+              
+              (1)      
+              
+              (BTB Hit) &amp;&amp; (valid bit=1) &amp;&amp; (hot-block    flag=0 &amp;&amp; prev-hot flag=0) &amp;&amp;    (execution counter &lt; candidate threshold)</p>
+                <p>
+                 
+                  (2)      
+                  
+                  L0 cache miss</p></td>
+          </tr>
+          <tr>
+            <td valign="top" width="228"><p>Promoting mode</p></td>
+            <td valign="top" width="813"><p>
+             
+              (3)      
+              
+              (BTB Hit) &amp;&amp; (valid bit=1) &amp;&amp; (hot-block    flag=0 &amp;&amp; prev-hot flag=0) &amp;&amp;    (execution counter = candidate threshold)</p>
+                <p> </p></td>
+          </tr>
+        </tbody>
+      </table>
+      <p align="justify">The mode-controller decides whether the L0 or  L1 cache should be accessed during the instruction-fetch stage. There are 3  fetch modes as listed above:</p>
+      <p>
+       
+        -       
+        
+        L0  mode: Fetch an instruction from the L0 cache</p>
+      <p>
+        
+        -       
+        
+        L1  mode: Fetch an instruction from the L1 cache</p>
+      <p>
+        
+        -       
+        
+        Promoting  mode: Fetch an instruction from the L1 cache and copy it to the L0 cache</p>
+      <p align="justify">For a BTB miss or a BTB hit with the  associated valid bit equal to zero, the fetch mode is not changed. This is  because:</p>
+      <p>An instruction could be </p>
+      <p>
+        
+        (1)           
+        
+        A  non-branch instruction</p>
+      <p>
+        
+        (2)           
+        
+        Predicted  non-taken branch</p>
+      <p>
+        
+        (3)           
+        
+        Mispredicted  taken branch</p>
+      <p align="justify">The first case should not incur mode  transition. For the 2nd case, it is usually found that the access  frequency of a non-taken branch is quite close to that of the last taken  branch. Thus, the access frequency of the non-taken branches is not tracked and  the fetch mode of the last-taken branch is inherited by the current non-taken  branch. In the 3rd case, it is hard to predict the status of a mispredicted branch (hit or non-hot) and thus, the fetch  mode is not changed.</p>
+      <p align="justify">An L0 cache miss also causes a mode transition  and the L1 mode is activated. This is based on the observation that if an  instruction misses in the L0 cache, it is very likely that the remaining  instructions in the same basic block also miss in the L0 cache. Therefore,  instructions should be fetched from the L1 cache directly to avoid increasing  the L1 cache latency. The fetch mode is switched to L1 mode instead of the promotion  mode because an L0 cache miss indicates that the corresponding hot basic block  is very likely conflicting with the other hot basic blocks.</p>
+      <p><strong>Hardware  overhead</strong></p>
+      <p align="justify">The main overhead imposed by this scheme is  from accessing the execution counter (4-bits) associated with each BTB entry  and the monitor counter (8-bits). Implementing these counters as registers in  WATTCH (using 180nm technology files) indicates that the energy per access is  around 0.18pJ and 0.34pJ per access for the 4-bit and 8-bit registers  respectively. It is roughly 5 orders of magnitude lower than the energy  consumed per I-cache access (1.9nJ) and thus, the counter overhead is  negligible.</p>
+      <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;	<a href="hotspot_main.html">Back</a></p>
+    </blockquote>
+  <!-- end #mainContent --></div>
+  <div id="footer">
+    <p class="style1">ECE 668 Computer Architecture - Fall 2006</p>
+    <!-- end #footer --></div>
+<!-- end #container --></div>
+</body>
+</html>

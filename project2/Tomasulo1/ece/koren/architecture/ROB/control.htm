@@ -1,0 +1,1587 @@
+<html>
+
+<head>
+<title>Control_Window</title>
+
+<SCRIPT language="JavaScript">
+
+	
+function start_simulation() {
+
+// checks the configuration and initializes all variables
+
+	// if ... alert ... else
+	
+	calculation_done = 0;
+
+	number_of_instructions = parent.frames[1].frames[1].document.forms[0].elements[15].value;
+
+	//for (v=0; v < 20; v++) {
+	//	if (parent.frames[1].frames[2].document.forms[0].R1[v].checked == true) { 
+	//		number_of_instructions = v+1;
+	//	}
+  	//}
+
+	// The Instructions
+
+	i = new Array();
+	for (v=0; v < number_of_instructions; v++)
+	{
+		i_opcode = " ";
+		
+		si = parent.frames[1].frames[2].document.forms[0].elements[v*5+0].selectedIndex;
+		
+		if (si == 0) {i_opcode = "ADD.D";} else
+		if (si == 1) {i_opcode = "SUB.D";} else
+		if (si == 2) {i_opcode = "MUL.D";} else
+		if (si == 3) {i_opcode = "DIV.D";} else
+		if (si == 4) {i_opcode = "L.D";} else
+		if (si == 5) {i_opcode = "S.D";}
+		
+		i_destination = " ";
+		si = parent.frames[1].frames[2].document.forms[0].elements[v*5+1].selectedIndex;
+ 		if (si == 0) {i_destination = "F0";} else
+		if (si == 1) {i_destination = "F1";} else
+		if (si == 2) {i_destination = "F2";} else
+		if (si == 3) {i_destination = "F3";} else
+		if (si == 4) {i_destination = "F4";} else
+		if (si == 5) {i_destination = "F5";} else
+		if (si == 6) {i_destination = "F6";} else
+		if (si == 7) {i_destination = "F7";} else
+		if (si == 8) {i_destination = "F8";} else
+		if (si == 9) {i_destination = "F9";} else
+		if (si == 10) {i_destination = "F10";} else
+		if (si == 11) {i_destination = "F11";} else
+		if (si == 12) {i_destination = "F12";} else
+		if (si == 13) {i_destination = "F13";} else
+		if (si == 14) {i_destination = "F14";} else
+		if (si == 15) {i_destination = "F15";}
+		var i_destination_no = si;
+		
+		i_op1 = " ";
+		si = parent.frames[1].frames[2].document.forms[0].elements[v*5+2].selectedIndex;
+ 		if (si == 0) {i_op1 = "F0";} else
+		if (si == 1) {i_op1 = "F1";} else
+		if (si == 2) {i_op1 = "F2";} else
+		if (si == 3) {i_op1 = "F3";} else
+		if (si == 4) {i_op1 = "F4";} else
+		if (si == 5) {i_op1 = "F5";} else
+		if (si == 6) {i_op1 = "F6";} else
+		if (si == 7) {i_op1 = "F7";} else
+		if (si == 8) {i_op1 = "F8";} else
+		if (si == 9) {i_op1 = "F9";} else
+		if (si == 10) {i_op1 = "F10";} else
+		if (si == 11) {i_op1 = "F11";} else
+		if (si == 12) {i_op1 = "F12";} else
+		if (si == 13) {i_op1 = "F13";} else
+		if (si == 14) {i_op1 = "F14";} else
+		if (si == 15) {i_op1 = "F15";}
+		var i_op1_no = si;
+
+		i_op2 = " ";
+		si = parent.frames[1].frames[2].document.forms[0].elements[v*5+3].selectedIndex;
+ 		if (si == 0) {i_op2 = "F0";} else
+		if (si == 1) {i_op2 = "F1";} else
+		if (si == 2) {i_op2 = "F2";} else
+		if (si == 3) {i_op2 = "F3";} else
+		if (si == 4) {i_op2 = "F4";} else
+		if (si == 5) {i_op2 = "F5";} else
+		if (si == 6) {i_op2 = "F6";} else
+		if (si == 7) {i_op2 = "F7";} else
+		if (si == 8) {i_op2 = "F8";} else
+		if (si == 9) {i_op2 = "F9";} else
+		if (si == 10) {i_op2 = "F10";} else
+		if (si == 11) {i_op2 = "F11";} else
+		if (si == 12) {i_op2 = "F12";} else
+		if (si == 13) {i_op2 = "F13";} else
+		if (si == 14) {i_op2 = "F14";} else
+		if (si == 15) {i_op2 = "F15";}
+		var i_op2_no = si;
+		
+		i_exception = 0;	
+		if (parent.frames[1].frames[2].document.forms[0].elements[v*5+4].checked == true) { 
+			i_exception = 1;
+		}
+		
+		rdf = " " // rob destination field
+		if (i_opcode == "S.D") {
+			rdf = "Mem[...]";
+		}
+		else {
+			rdf = i_destination;
+		}
+		
+		rif = " "; // rob instruction field
+		if (i_opcode == "L.D" || i_opcode == "S.D") {
+			rif = i_opcode+" "+i_destination+" x Ry";
+		}
+		else {
+			rif = i_opcode+" "+i_destination+" "+i_op1+" "+i_op2;
+		}
+		
+		
+		i[v] = new Array();
+		
+		// the instruction on the v-th place in the instruction-array
+		
+		i[v]["opcode"] = i_opcode;
+		i[v]["destination"] = i_destination;
+		i[v]["op1"] = i_op1;
+		i[v]["op2"] = i_op2;
+		i[v]["exception"] = i_exception;
+		
+		i[v]["destination_number"] = i_destination_no;
+		i[v]["op1_number"] = i_op1_no;
+		i[v]["op2_number"] = i_op2_no; 
+		
+		i[v]["color_of_rob_entry"] = "white";
+		i[v]["color_of_rob_entry_will_become_red"] = 0;
+		
+		i[v]["rob_instruction_field"] = rif;
+		i[v]["rob_destination_field"] = rdf;
+		i[v]["rob_value_field"] = "&nbsp;"; 
+		i[v]["rob_valid_field"] = 0;
+		i[v]["display_exception_in_rob"] = 0;
+		
+		i[v]["rob_entry_number"] = -1;
+		i[v]["rs_qj_number"] = -1;
+		i[v]["rs_qk_number"] = -1;
+		
+		i[v]["rs_vj_field_origin"] = "0"; // number of rob entry the values come from (for describing the result shorter)
+		i[v]["rs_vk_field_origin"] = "0";
+
+		i[v]["rs_vj_field"] = "&nbsp;";
+		i[v]["rs_vk_field"] = "&nbsp;";
+		i[v]["rs_qj_field"] = "&nbsp;";
+		i[v]["rs_qk_field"] = "&nbsp;";
+		i[v]["rs_destination_field"] = "&nbsp;";
+		
+		i[v]["started_execution"] = 0;
+		
+		//i[v]["fp_reorder_field"] = 0;
+		
+		i[v]["load_buffer_a_field"] = "&nbsp;";
+		i[v]["load_buffer_destination_field"] = "&nbsp;";
+		i[v]["load_buffer_value_field"] = "&nbsp;";
+		
+		i[v]["load_buffer_invisible_counter"] = -1;
+			// -1: address is not sent to memory yet
+			// >0: value needs so many clock cycles to arrive (initially the load buffer latency)
+			// 0: value has arrived, but has not been written to the CDB yet (because the CDB was not available)
+		
+		i[v]["store_qj"] = -1; // holds # of RS if the value is not yet available
+		
+	}
+	
+	// The Reorder Buffer
+	
+	robsize = 0;
+	si = parent.frames[1].frames[1].document.forms[0].elements[0].selectedIndex;
+	if (si == 0) {robsize = 1;} else
+	if (si == 1) {robsize = 2;} else
+	if (si == 2) {robsize = 3;} else
+	if (si == 3) {robsize = 4;} else
+	if (si == 4) {robsize = 5;} else
+	if (si == 5) {robsize = 6;} else
+	if (si == 6) {robsize = 7;} else
+	if (si == 7) {robsize = 8;} else
+	if (si == 8) {robsize = 9;} else
+	if (si == 9) {robsize = 10;} else
+	if (si == 10) {robsize = 11;} else
+	if (si == 11) {robsize = 12;} else
+	if (si == 12) {robsize = 13;} else
+	if (si == 13) {robsize = 14;} else
+	if (si == 14) {robsize = 15;} else
+	if (si == 15) {robsize = 16;} else
+	if (si == 16) {robsize = 17;} else
+	if (si == 17) {robsize = 18;} else
+	if (si == 18) {robsize = 19;} else
+	if (si == 19) {robsize = 20;}
+
+	rob = new Array(robsize);
+	
+	for (v=0; v<robsize; v++) {
+		rob[v] = -1;
+	}
+	
+	rob_head = 0;
+	rob_tail = 0;
+	
+	rob_red = 0;
+	rob_will_become_red = 0;
+	
+	// The Instruction Queue
+	
+	iqueue = new Array();
+	for (v=0; v < number_of_instructions; v++) {
+		iqueue[v] = v;
+	}
+	
+	// The Reservation Stations
+	
+	addsrsno = parent.frames[1].frames[1].document.forms[0].elements[3].value;
+	addsno = parent.frames[1].frames[1].document.forms[0].elements[1].value;
+	rss_adds = new Array(addsno);
+	for (v=0; v < addsno; v++) {
+		rss_adds[v] = new Array(addsrsno);
+		for (v1=0; v1 < addsrsno; v1++) {
+			rss_adds[v][v1] = -1;
+		}
+	}
+	
+	mulsrsno = parent.frames[1].frames[1].document.forms[0].elements[6].value;
+	mulsno = parent.frames[1].frames[1].document.forms[0].elements[4].value;
+	rss_muls = new Array(mulsno);
+	for (v=0; v < mulsno; v++) {
+		rss_muls[v] = new Array(mulsrsno);
+		for (v1=0; v1 < mulsrsno; v1++) {
+			rss_muls[v][v1] = -1;
+		}
+	}
+	
+	divsrsno = parent.frames[1].frames[1].document.forms[0].elements[9].value;
+	divsno = parent.frames[1].frames[1].document.forms[0].elements[7].value;
+	rss_divs = new Array(divsno);
+	for (v=0; v < divsno; v++) {
+		rss_divs[v] = new Array(divsrsno);
+		for (v1=0; v1 < divsrsno; v1++) {
+			rss_divs[v][v1] = -1;
+		}
+	}
+		
+	
+	// FU Latencies
+	
+	add_latency = parent.frames[1].frames[1].document.forms[0].elements[2].value;	
+	mul_latency = parent.frames[1].frames[1].document.forms[0].elements[5].value;
+	div_latency = parent.frames[1].frames[1].document.forms[0].elements[8].value;
+	
+	
+	// The Common Data Bus
+	
+	cdbno = 0;
+	si = parent.frames[1].frames[1].document.forms[0].elements[10].selectedIndex;
+ 	if (si == 0) {cdbno = 1;} else
+	if (si == 1) {cdbno = 2;}
+	
+	cdb = new Array(cdbno);
+	
+	for (v=0; v<cdbno; v++){
+		cdb[v] = -1;
+	}
+
+	
+	// The Result Shift Register
+	
+	max_FU_latency = add_latency;
+	if ( max_FU_latency < mul_latency) {
+		max_FU_latency = mul_latency;
+	}
+	if (max_FU_latency < div_latency) {
+		max_FU_latency = div_latency;
+	}
+	
+	rsr = new Array(cdbno);
+	for (v=0; v<cdbno; v++) {
+		rsr[v] = new Array(max_FU_latency);
+		for(v1=0; v1<max_FU_latency; v1++) {
+			rsr[v][v1] = -1;
+		}
+	}
+	
+	// The Load Buffers
+	
+	load_buffer_head = 0;
+	load_buffer_tail = 0;
+	
+	load_buffer_number = parent.frames[1].frames[1].document.forms[0].elements[11].value;
+
+	load_buffer = new Array(load_buffer_number); 
+	for (v=0; v<load_buffer_number; v++) {
+		load_buffer[v] = -1;
+	}
+	// load buffer is initially size zero. new load instruction increase the array length. if array length is equal to load_buffer_number the load buffer is full	
+	// maybe I should use this technique also with the RSs. i.e. instead of checking each RS for -1 I just have to check the array length
+	
+	
+	// Load Latency
+	
+	load_latency = parent.frames[1].frames[1].document.forms[0].elements[12].value;
+
+	
+	// The FP Register File
+	
+	fp_registers = new Array(16);
+	for (v=0; v<16; v++) {
+		fp_registers[v] = -1;
+	}
+		// i can either write the rob entry number(more realistic) or the instruction number in here.
+	
+	red = "#FF0000";
+	
+	commit_value = " ";
+	commit_rob_entry = 0;
+	
+	simulation_done = 0;
+	
+	handle_exception = 0;
+	
+	current_clock = 0;
+			
+	draw_new_simulation_display();
+	
+	
+	
+	// Display the Simulation Settings
+	
+	simset = "FU latencies:\n"
+	simset += " FP-Adder:      "+add_latency+"\n"
+	simset += " FP-Multiplier: "+mul_latency+"\n"
+	simset += " FP-Divider:    "+div_latency+"\n\n"
+	
+	simset += "Load latency: "+load_latency+"\n"
+	simset += "Number of CDBs: "+cdbno
+	
+	document.forms[0].elements[3].value = simset;
+	
+	calculation_done = 1;
+
+}	
+
+
+function plus_one_clock() {
+
+if (simulation_done == 0) {
+
+	current_clock++;
+
+	// Commit (before ISSUE, because ROB entry could become available)
+	//			(before EXECUTE because a value that finishes execution is not allowed to commit in the same clock cycle)
+	
+if (rob[rob_head] != -1) {
+	
+	if (i[rob[rob_head]]["display_exception_in_rob"] == 1) { // if the instruction caused an exception
+	
+		for (v=0; v<rob.length; v++) {
+			rob[v] = -1;
+		}
+		trash2 = 0;
+		v = iqueue.length;
+		for(v1=0; v1<v; v1++) {    // delete all instructions in the instruction queue
+			trash2 = iqueue.shift();
+		}
+		clear_all_FFs();
+		rob_tail = rob_head;
+		handle_exception = 1; // aboard this function
+		simulation_done = 1; // stop the simulation
+	}
+	else if (i[rob[rob_head]]["rob_valid_field"] == 1) { // value is valid, i.e. instruction can commit
+	
+		for (v=0; v<16; v++) {
+			if (fp_registers[v] == rob_head) {
+				fp_registers[v] = -2;
+				commit_value = i[rob[rob_head]]["rob_value_field"];
+				commit_rob_entry = rob_head+1;
+			}
+		}
+		rob[rob_head] = -1;
+		
+		v=rob.length-1;
+		if(rob_head == v) {
+			rob_head = 0;
+		}
+		else {
+			rob_head++;
+		}
+	}
+} // from if (rob[rob_head] != -1)
+
+if (handle_exception == 0) {
+
+
+	// Execution (before ISSUE, because a reservation station could become available)
+	//            and because operands could be available on the CDB (or in the ROB here in software)
+	//            i.e. just write operands in ROB and check in issue if they are there
+	
+	// Finish Execution ( before start execution, because the RSR has to be shifted first)
+	
+	for(v=0; v<cdbno; v++) {
+		cdb[v] = rsr[v].shift(); // Note: load buffer get the cdb only if here a -1 is written
+	}
+	for(v=0; v<cdbno; v++) {
+		rsr[v].push(-1);
+	}
+	
+	
+	// Start Execution (before CDB)
+	
+	addfubusy = new Array(); // to ensure that for each adder only one instr. can start execution
+	for (v=0; v<addsno; v++) {
+		addfubusy[v] = 0;
+	}
+	
+	x = 0;
+	
+	for (v=0; v<addsrsno; v++) {
+		for (v1=0; v1<addsno; v1++) {
+			
+			if (addfubusy[v1] == 0) {
+			
+				if (rss_adds[v1][v] != -1) {
+				
+					if((i[rss_adds[v1][v]]["rs_qj_number"] == -1) && (i[rss_adds[v1][v]]["rs_qk_number"] == -1)) {
+					
+						if (i[rss_adds[v1][v]]["started_execution"] == 0) {
+						
+							x = add_latency-1;
+							for(v2=0; v2<cdbno; v2++) {
+								if ((rsr[v2][x] == -1) && (addfubusy[v1] == 0)){
+								
+									addfubusy[v1] = 1;
+									rsr[v2][x] = rss_adds[v1][v]; // Attention: the number has to be copied here (maybe its just a link)
+									i[rss_adds[v1][v]]["started_execution"] = 1;
+									
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	
+	mulfubusy = new Array(); // to ensure that for each multiplier only one instr. can start execution
+	for (v=0; v<mulsno; v++) {
+		mulfubusy[v] = 0;
+	}
+	
+	x = 0;
+	
+	for (v=0; v<mulsrsno; v++) {
+		for (v1=0; v1<mulsno; v1++) {
+			
+			if (mulfubusy[v1] == 0) {
+			
+				if (rss_muls[v1][v] != -1) {
+				
+					if((i[rss_muls[v1][v]]["rs_qj_number"] == -1) && (i[rss_muls[v1][v]]["rs_qk_number"] == -1)) {
+					
+						if (i[rss_muls[v1][v]]["started_execution"] == 0) {
+						
+							x = mul_latency-1;
+							for(v2=0; v2<cdbno; v2++) {
+								if ((rsr[v2][x] == -1) && (mulfubusy[v1] == 0)){
+								
+									mulfubusy[v1] = 1;
+									rsr[v2][x] = rss_muls[v1][v]; // Attention: the number has to be copied here (maybe its just a link)
+									i[rss_muls[v1][v]]["started_execution"] = 1;
+									
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	
+	divfubusy = new Array(); // to ensure that for each adder only one instr. can start execution
+	for (v=0; v<divsno; v++) {
+		divfubusy[v] = 0;
+	}
+	
+	x = 0;
+	
+	for (v=0; v<divsrsno; v++) {
+		for (v1=0; v1<divsno; v1++) {
+			
+			if (divfubusy[v1] == 0) {
+			
+				if (rss_divs[v1][v] != -1) {
+				
+					if((i[rss_divs[v1][v]]["rs_qj_number"] == -1) && (i[rss_divs[v1][v]]["rs_qk_number"] == -1)) {
+					
+						if (i[rss_divs[v1][v]]["started_execution"] == 0) {
+						
+							x = div_latency-1;
+							for(v2=0; v2<cdbno; v2++) {
+								if ((rsr[v2][x] == -1) && (divfubusy[v1] == 0)){
+								
+									divfubusy[v1] = 1;
+									rsr[v2][x] = rss_divs[v1][v]; // Attention: the number has to be copied here (maybe its just a link)
+									i[rss_divs[v1][v]]["started_execution"] = 1;
+									
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	
+	
+//  Load Buffer
+
+	// decrement all latency counters
+	
+	x1 = 0;
+	
+	for(x2=0; x2<load_buffer.length; x2++) {
+	
+		if (load_buffer[x2] != -1) {
+			if ((i[load_buffer[x2]]["load_buffer_invisible_counter"] != 0) && (i[load_buffer[x2]]["load_buffer_invisible_counter"] != -1)) {
+				x1 = i[load_buffer[x2]]["load_buffer_invisible_counter"];
+				x1 = x1-1;
+				i[load_buffer[x2]]["load_buffer_invisible_counter"] = x1;
+				if (i[load_buffer[x2]]["load_buffer_invisible_counter"] == 0) {
+					i[load_buffer[x2]]["load_buffer_value_field"] = "[Mem[...]]";
+				}
+
+			}
+		}
+	}
+	
+	loadbufferempty = 1;
+	if ((load_buffer_head != load_buffer_tail) || (load_buffer[0] != -1)) {
+		loadbufferempty = 0;
+	}
+	
+	x1 = 0;
+	
+	if (loadbufferempty == 0) {	
+		if (load_buffer_tail == 0) {
+			x1 = load_buffer_number - 1;
+		}
+		else {
+			x1 = load_buffer_tail - 1;
+		}
+		
+		if (i[load_buffer[x1]]["load_buffer_invisible_counter"] == -1) {
+			i[load_buffer[x1]]["load_buffer_invisible_counter"] = load_latency;
+		}
+		
+		
+		// if value comes from memory it can be written directly on the CDB
+		// if the CDB is not available, the value is stored in the load buffer value field
+		
+		xcopy1 = 0;
+		
+		for (x1=0; x1<cdbno; x1++) {
+		
+			if (cdb[x1] == -1) { // if the cdb is available
+			
+				if (load_buffer[load_buffer_head] != -1) {
+			
+					if (i[load_buffer[load_buffer_head]]["load_buffer_invisible_counter"] == 0) {
+					
+						xcopy1 = load_buffer[load_buffer_head];
+						cdb[x1] = xcopy1;
+						load_buffer[load_buffer_head] = -1;
+						x3 = load_buffer_number-1;
+						if (load_buffer_head == x3) {
+							load_buffer_head = 0;
+						}
+						else {
+							load_buffer_head++;
+						}
+					}
+				}
+			}
+		}
+	}
+			
+			
+										
+	
+	
+	
+	// CDB - write result in ROB and RSs
+	
+	for (v=0; v<cdbno; v++) {   // for each CDB
+	
+	if (cdb[v] != -1) {
+	
+		if (i[cdb[v]]["exception"] == 1) {               // if exception, show it in rob and change the colors
+			i[cdb[v]]["display_exception_in_rob"] = 1;
+			i[cdb[v]]["color_of_rob_entry"] = "red";
+			rob_red = 1;
+			
+			for (v1=0; v1<rob.length; v1++) {
+				if (rob[v1] != -1) {
+					if (i[rob[v1]]["color_of_rob_entry_will_become_red"] == 1) {
+						i[rob[v1]]["color_of_rob_entry"] = "red";
+					}
+				}
+			}
+		}
+		
+		i[cdb[v]]["rob_valid_field"] = 1;
+		
+		a1 = " ";
+		if (i[cdb[v]]["rs_vj_field_origin"] == "0"){ // operand is not too long
+			a1 = i[cdb[v]]["rs_vj_field"];
+		}
+		else {
+			a1 = "#"+i[cdb[v]]["rs_vj_field_origin"];
+		}
+		
+		b1 = " ";
+		if (i[cdb[v]]["rs_vk_field_origin"] == "0"){ // operand is not too long
+			b1 = i[cdb[v]]["rs_vk_field"];
+		}
+		else {
+			b1 = "#"+i[cdb[v]]["rs_vk_field_origin"];
+		}
+		
+		o1 = " ";
+		if (i[cdb[v]]["opcode"] == "ADD.D") {
+			o1 = "+";
+		}
+		if (i[cdb[v]]["opcode"] == "SUB.D") {
+			o1 = "-";
+		}
+		if (i[cdb[v]]["opcode"] == "MUL.D") {
+			o1 = "*";
+		}
+		if (i[cdb[v]]["opcode"] == "DIV.D") {
+			op1 = "../../../../default.htm";
+		}
+				
+		i[cdb[v]]["rob_value_field"] = a1+o1+b1; 
+		
+		if (i[cdb[v]]["opcode"] == "L.D") {
+			i[cdb[v]]["rob_value_field"] = "[Mem[...]]";
+		}
+		
+		for (v1=0; v1<robsize; v1++) {   // write value to waiting store instructions
+			if (rob[v1] != -1) {
+				if (i[rob[v1]]["store_qj"] == cdb[v]) {
+					i[rob[v1]]["store_qj"] = -1;
+					i[rob[v1]]["rob_value_field"] = a1+o1+b1;
+					i[rob[v1]]["rob_valid_field"] = 1;
+				}
+			}
+		}
+		
+		// write values in waiting reservation stations
+		
+		x = 0;
+		
+		for (v2=0; v2<rss_adds.length; v2++) {
+			for(v1=0; v1<rss_adds[v2].length; v1++) {
+				if (rss_adds[v2][v1] != -1) {
+					if (i[rss_adds[v2][v1]]["rs_qj_number"] == i[cdb[v]]["rob_entry_number"]) {
+						i[rss_adds[v2][v1]]["rs_qj_number"] = -1;
+						i[rss_adds[v2][v1]]["rs_qj_field"] = "&nbsp;";
+						i[rss_adds[v2][v1]]["rs_vj_field"] = i[cdb[v]]["rob_value_field"]; // Attention: needs to be copied!!
+						x = i[cdb[v]]["rob_entry_number"] + 1; 
+						i[rss_adds[v2][v1]]["rs_vj_field_origin"] = x; // note: this number is read as string
+					} 
+					if (i[rss_adds[v2][v1]]["rs_qk_number"] == i[cdb[v]]["rob_entry_number"]) {
+						i[rss_adds[v2][v1]]["rs_qk_number"] = -1;
+						i[rss_adds[v2][v1]]["rs_qk_field"] = "&nbsp;";
+						i[rss_adds[v2][v1]]["rs_vk_field"] = i[cdb[v]]["rob_value_field"]; // Attention: needs to be copied!!
+						x = i[cdb[v]]["rob_entry_number"] + 1; 
+						i[rss_adds[v2][v1]]["rs_vk_field_origin"] = x; // note: this number is read as string
+					}
+					if (rss_adds[v2][v1] == cdb[v]) { // clear the RS entry of the instruction on the CDB
+						rss_adds[v2][v1] = -1;
+					} 
+				}
+			}
+		}
+	
+	
+		for (v2=0; v2<rss_muls.length; v2++) {
+			for(v1=0; v1<rss_muls[v2].length; v1++) {
+				if (rss_muls[v2][v1] != -1) {
+					if (i[rss_muls[v2][v1]]["rs_qj_number"] == i[cdb[v]]["rob_entry_number"]) {
+						i[rss_muls[v2][v1]]["rs_qj_number"] = -1;
+						i[rss_muls[v2][v1]]["rs_qj_field"] = "&nbsp;";
+						i[rss_muls[v2][v1]]["rs_vj_field"] = i[cdb[v]]["rob_value_field"]; // Attention: needs to be copied!!
+						x = i[cdb[v]]["rob_entry_number"] + 1; 
+						i[rss_muls[v2][v1]]["rs_vj_field_origin"] = x; // note: this number is read as string
+					} 
+					if (i[rss_muls[v2][v1]]["rs_qk_number"] == i[cdb[v]]["rob_entry_number"]) {
+						i[rss_muls[v2][v1]]["rs_qk_number"] = -1;
+						i[rss_muls[v2][v1]]["rs_qk_field"] = "&nbsp;";
+						i[rss_muls[v2][v1]]["rs_vk_field"] = i[cdb[v]]["rob_value_field"]; // Attention: needs to be copied!!
+						x = i[cdb[v]]["rob_entry_number"] + 1; 
+						i[rss_muls[v2][v1]]["rs_vk_field_origin"] = x; // note: this number is read as string
+					} 	
+					if (rss_muls[v2][v1] == cdb[v]) { // clear the RS entry of the instruction on the CDB
+						rss_muls[v2][v1] = -1;
+					} 			
+				}
+			}
+		}
+	
+	
+		for (v2=0; v2<rss_divs.length; v2++) {
+			for(v1=0; v1<rss_divs[v2].length; v1++) {
+				if (rss_divs[v2][v1] != -1) {
+					if (i[rss_divs[v2][v1]]["rs_qj_number"] == i[cdb[v]]["rob_entry_number"]) {
+						i[rss_divs[v2][v1]]["rs_qj_number"] = -1;
+						i[rss_divs[v2][v1]]["rs_qj_field"] = "&nbsp;";
+						i[rss_divs[v2][v1]]["rs_vj_field"] = i[cdb[v]]["rob_value_field"]; // Attention: needs to be copied!!
+						x = i[cdb[v]]["rob_entry_number"] + 1; 
+						i[rss_divs[v2][v1]]["rs_vj_field_origin"] = x; // note: this number is read as string
+					} 
+					if (i[rss_divs[v2][v1]]["rs_qk_number"] == i[cdb[v]]["rob_entry_number"]) {
+						i[rss_divs[v2][v1]]["rs_qk_number"] = -1;
+						i[rss_divs[v2][v1]]["rs_qk_field"] = "&nbsp;";
+						i[rss_divs[v2][v1]]["rs_vk_field"] = i[cdb[v]]["rob_value_field"]; // Attention: needs to be copied!!
+						x = i[cdb[v]]["rob_entry_number"] + 1; 
+						i[rss_divs[v2][v1]]["rs_vk_field_origin"] = x; // note: this number is read as string
+					} 	
+					if (rss_divs[v2][v1] == cdb[v]) { // clear the RS entry of the instruction on the CDB
+						rss_divs[v2][v1] = -1;
+					} 							
+				}
+			}
+		}
+		
+		
+		
+		
+		
+		
+		
+	} // from if (cdb[v] != -1)
+	} // end of: for each CDB
+		
+	
+
+
+	// Issue (checking if operand values are already available in the ROB must be added!: DONE)
+
+	addresfree = 0;
+	for (v=0; v<rss_adds.length; v++) {
+		for(v1=0; v1<rss_adds[v].length; v1++) {
+			if (rss_adds[v][v1] == -1) {
+				addresfree = 1;
+			}
+		}
+	}
+	
+	mulresfree = 0;
+	for (v=0; v<rss_muls.length; v++) {
+		for(v1=0; v1<rss_muls[v].length; v1++) {
+			if (rss_muls[v][v1] == -1) {
+				mulresfree = 1;
+			}
+		}
+	}
+	
+	divresfree = 0;
+	for (v=0; v<rss_divs.length; v++) {
+		for(v1=0; v1<rss_divs[v].length; v1++) {
+			if (rss_divs[v][v1] == -1) {
+				divresfree = 1;
+			}
+		}
+	}
+	
+	loadbufferfree = 0;
+	if ((load_buffer_head != load_buffer_tail) || (load_buffer[0] == -1)) {
+		loadbufferfree = 1;
+	}
+	
+	robfree = 0;
+	if ((rob_head != rob_tail) || (rob[1] == -1)) {
+		robfree = 1;
+	}
+	
+	newi = 0; // the new instruction, that gets issued
+	var z = 0; // flag
+	robnoi = 0;
+	
+	if (iqueue.length > 0) { // if there are unissued instructions
+	
+		if (robfree == 1) {
+		
+			if (i[iqueue[0]]["opcode"] == "S.D") {
+								
+				newi = iqueue.shift();
+				rob[rob_tail] = newi;
+										
+				v = newi;
+				robnoi = rob_tail+1;
+
+				if (i[newi]["exception"] == 1) {
+					rob_will_become_red = 1;
+				}
+				if (rob_red == 1) {
+					i[newi]["color_of_rob_entry"] = "red";
+				}
+				if (rob_will_become_red == 1) {
+					i[newi]["color_of_rob_entry_will_become_red"] = 1;
+				}
+
+				if (fp_registers[i[v]["destination_number"]] == -1) {
+		   			i[v]["rob_value_field"] = "Regs["+i[v]["destination"]+"]"; 
+		   		}
+		   		else {  // value is not yet available OR available in the ROB
+		   		
+		   			if (fp_registers[i[v]["destination_number"]] == -2) { // value commits in this cycle
+		   			
+		   				i[v]["rob_valid_field"] = 1;
+		   				i[v]["rob_value_field"] = commit_value; 		   			
+		   			
+		   			}
+		   			else if (rob[fp_registers[i[v]["destination_number"]]]["rob_valid_field"] == 1) { // value is already in ROB
+		   				i[v]["rob_valid_field"] = 1;
+		   				i[v]["rob_value_field"] = rob[fp_registers[i[v]["destination_number"]]]["rob_value_field"]; // Attention: has to be copied
+		   			}	
+		   			else {
+		   				v1 = fp_registers[i[v]["destination_number"]] + 1;
+						i[v]["rob_value_field"] = "(from #"+v1+")";
+						i[v]["store_qj"] = fp_registers[i[v]["destination_number"]];      
+					}
+				}
+				i[v]["rob_entry_number"] = rob_tail;
+	
+				z = robsize-1;
+				if (rob_tail == z) {
+					rob_tail = 0;
+				} 
+				else {
+					rob_tail++;
+				}
+			
+			}
+			else if (i[iqueue[0]]["opcode"] == "L.D") {
+			
+				if (loadbufferfree == 1) {
+								
+					newi = iqueue.shift();
+					rob[rob_tail] = newi;
+					
+					load_buffer[load_buffer_tail] = newi;
+					z = load_buffer.length-1;
+					if (load_buffer_tail == z) {
+						load_buffer_tail = 0;
+					}
+					else {
+						load_buffer_tail++;
+					}
+										
+					v = newi;
+					robnoi = rob_tail+1;
+
+					if (i[newi]["exception"] == 1) {
+						rob_will_become_red = 1;
+					}
+					if (rob_red == 1) {
+						i[newi]["color_of_rob_entry"] = "red";
+					}
+					if (rob_will_become_red == 1) {
+						i[newi]["color_of_rob_entry_will_become_red"] = 1;
+					}
+
+					i[v]["load_buffer_destination_field"] = "#"+robnoi;
+					i[v]["rob_entry_number"] = rob_tail;
+	
+					// Register Renaming
+		
+					fp_registers[i[v]["destination_number"]] = rob_tail;
+	
+					i[v]["load_buffer_a_field"] = "Mem[...]";
+					
+					z = robsize-1;
+					if (rob_tail == z) {
+						rob_tail = 0;
+					} 
+					else {
+						rob_tail++;
+					}
+				}													
+			}
+			else if ((i[iqueue[0]]["opcode"] == "ADD.D") || (i[iqueue[0]]["opcode"] == "SUB.D")) {
+			
+				if (addresfree == 1) {
+					
+					newi = iqueue.shift();
+					rob[rob_tail] = newi;
+					
+					update_i_newi_fields();
+					
+					for(v1=0; v1<addsrsno; v1++) {
+						for (v=0; v<addsno; v++) {
+						
+							if ((rss_adds[v][v1] == -1) && (z == 0)) {
+								rss_adds[v][v1] = newi;
+								z = 1;
+							}
+						}
+					}
+					
+					z = robsize-1;
+					if (rob_tail == z) {
+						rob_tail = 0;
+					} 
+					else {
+						rob_tail++;
+					}
+				}
+			
+			}
+			else if (i[iqueue[0]]["opcode"] == "MUL.D") {
+			
+				if (mulresfree == 1) {
+					
+					newi = iqueue.shift();
+					rob[rob_tail] = newi;
+					
+					update_i_newi_fields();
+					
+					for(v1=0; v1<mulsrsno; v1++) {  // so that instructions get distributed equally over the FUs
+						for (v=0; v<mulsno; v++) {
+						
+							if ((rss_muls[v][v1] == -1) && (z == 0)) {
+								rss_muls[v][v1] = newi;
+								z = 1;
+							}
+						}
+					}
+					
+					z = robsize-1;
+					if (rob_tail == z) {
+						rob_tail = 0;
+					} 
+					else {
+						rob_tail++;
+					}
+				}
+			
+			
+			}
+			else if (i[iqueue[0]]["opcode"] == "DIV.D") {
+			
+				if (divresfree == 1) {
+					
+					newi = iqueue.shift();
+					rob[rob_tail] = newi;
+					
+					update_i_newi_fields();
+					
+					for(v1=0; v1<divsrsno; v1++) {  // so that instructions get distributed equally over the FUs
+						for (v=0; v<divsno; v++) {
+						
+							if ((rss_divs[v][v1] == -1) && (z == 0)) {
+								rss_divs[v][v1] = newi;
+								z = 1;
+							}
+						}
+					}
+					
+					z = robsize-1;
+					if (rob_tail == z) {
+						rob_tail = 0;
+					} 
+					else {
+						rob_tail++;
+					}
+				}
+			
+			
+			}
+		}
+	}
+	
+	for (v=0; v<16; v++) {            // value of the committed instruction is available in the rf now
+		if (fp_registers[v] == -2) {
+			fp_registers[v] = -1;
+		}
+	}
+		
+ 
+}// from handle exception
+}// from simulation done
+}
+
+
+function clear_all_FFs() {
+
+	for(v=0; v<16; v++) {
+		fp_registers[v] = -1;
+	}
+	for(v1=0; v1<addsrsno; v1++) { 
+		for (v=0; v<addsno; v++) {
+			rss_adds[v][v1] = -1;
+		}
+	}				
+	for(v1=0; v1<mulsrsno; v1++) { 
+		for (v=0; v<mulsno; v++) {
+			rss_muls[v][v1] = -1;
+		}
+	}				
+	
+	for(v1=0; v1<divsrsno; v1++) { 
+		for (v=0; v<divsno; v++) {
+			rss_divs[v][v1] = -1;
+		}
+	}				
+	for(v=0; v<cdb.length; v++) {
+		cdb[v] = -1;
+	}
+	for (v=0; v<load_buffer_number; v++) {
+		load_buffer[v] = -1;
+	}
+	
+	load_buffer_tail = load_buffer_head;
+	
+	for (v=0; v<cdbno; v++) {
+		rsr[v] = new Array(max_FU_latency);
+		for(v1=0; v1<max_FU_latency; v1++) {
+			rsr[v][v1] = -1;
+		}
+	}
+	
+	
+
+}
+
+
+function update_i_newi_fields() { // not for load and store
+
+	v = newi;
+	robnoi = rob_tail+1;
+
+	if (i[newi]["exception"] == 1) {
+		rob_will_become_red = 1;
+	}
+	if (rob_red == 1) {
+		i[newi]["color_of_rob_entry"] = "red";
+	}
+	if (rob_will_become_red == 1) {
+		i[newi]["color_of_rob_entry_will_become_red"] = 1;
+	}
+
+	i[v]["rs_destination_field"] = "#"+robnoi;   // robnoi is ++ because array starts at 0
+	
+	i[v]["rob_entry_number"] = rob_tail;
+	
+	// not for L.D, S.D
+	
+	// Register Renaming
+	
+	var noh = 0;
+	
+	x = 0;
+	
+	
+	if (fp_registers[i[v]["op1_number"]] == -1) {
+		i[v]["rs_vj_field"] = "Regs["+i[v]["op1"]+"]";
+	}
+	else {
+	
+		if (fp_registers[i[v]["op1_number"]] == -2) {
+		
+			i[v]["rs_vj_field"] = commit_value;
+			i[v]["rs_vj_field_origin"] = commit_rob_entry;
+		
+		}
+		else if (i[rob[fp_registers[i[v]["op1_number"]]]]["rob_valid_field"] == 1) {// if value is already available in the ROB
+		
+			i[v]["rs_vj_field"] = i[rob[fp_registers[i[v]["op1_number"]]]]["rob_value_field"]; // Attention: needs to be copied!!
+			x = fp_registers[i[v]["op1_number"]]+1;
+			 
+			i[v]["rs_vj_field_origin"] = x; // note: this number is read as string
+			
+		}
+		else { // if value is not yet available in the ROB
+		
+			noh = fp_registers[i[v]["op1_number"]]+1;
+			i[v]["rs_qj_field"] = "#"+noh;
+			i[v]["rs_qj_number"] = fp_registers[i[v]["op1_number"]];
+		}
+	}
+	
+	if (fp_registers[i[v]["op2_number"]] == -1) {
+		i[v]["rs_vk_field"] = "Regs["+i[v]["op2"]+"]";
+	}
+	else {
+	
+		if (fp_registers[i[v]["op2_number"]] == -2) {
+		
+			i[v]["rs_vk_field"] = commit_value;
+			i[v]["rs_vk_field_origin"] = commit_rob_entry;
+		
+		}
+
+		else if (i[rob[fp_registers[i[v]["op2_number"]]]]["rob_valid_field"] == 1) {// if value is already available in the ROB
+		
+			i[v]["rs_vk_field"] = i[rob[fp_registers[i[v]["op2_number"]]]]["rob_value_field"]; // Attention: needs to be copied!!
+			x = fp_registers[i[v]["op2_number"]] + 1; 
+			i[v]["rs_vk_field_origin"] = x; // note: this number is read as string
+			
+		}
+		else { // if value is not yet available in the ROB
+		
+			noh = fp_registers[i[v]["op2_number"]]+1;
+			i[v]["rs_qk_field"] = "#"+noh;
+			i[v]["rs_qk_number"] = fp_registers[i[v]["op2_number"]];
+		}
+	}
+	
+	fp_registers[i[v]["destination_number"]] = rob_tail;
+	
+}
+
+
+function plus_one_clock_cycle() {
+
+if (calculation_done == 1) {
+
+	calculation_done = 0;	
+	plus_one_clock();
+	draw_new_simulation_display();
+	calculation_done = 1;
+	
+}
+}
+
+
+function plus_five_clock_cycles() {
+
+if (calculation_done == 1) {
+
+	calculation_done = 0;
+	plus_one_clock();
+	plus_one_clock();
+	plus_one_clock();
+	plus_one_clock();
+	plus_one_clock();
+	draw_new_simulation_display();
+	calculation_done = 1;
+
+}
+}
+
+
+function go_to_clock_cycle_x() {
+
+	// read number, y = number - current clock, y times plus_one_clock
+
+}
+
+
+function draw_new_simulation_display() {
+
+	document.forms[0].elements[2].value = current_clock;
+	
+	parent.frames[1].document.open();
+	
+	ds = "<HTML><HEAD><TITLE>Simulation_Output</TITLE></HEAD><BODY bgcolor = white>\n"
+	
+	if (iqueue.length>0) {
+	
+		ds += "<p><b>Instruction Queue</b></p>\n"
+		ds += "<table border="+1+" width="+143+">\n"
+	
+	ih = 0;
+	for (v=0; v<iqueue.length; v++) {
+	
+		ih = number_of_instructions - v;
+		if (i[ih-1]["opcode"] == "ADD.D") {
+			ds += "<tr>\n"
+    		ds += "<td width="+133+">ADD.D "+i[ih-1]["destination"]+" "+i[ih-1]["op1"]+" "+i[ih-1]["op2"]+" </td>\n"
+  			ds +="</tr>\n"
+  		} else
+		if (i[ih-1]["opcode"] == "SUB.D") {
+			ds += "<tr>\n"
+    		ds += "<td width="+133+">SUB.D&nbsp; "+i[ih-1]["destination"]+" "+i[ih-1]["op1"]+" "+i[ih-1]["op2"]+" </td>\n"
+  			ds +="</tr>\n"
+  		} else
+		if (i[ih-1]["opcode"] == "MUL.D") {
+			ds += "<tr>\n"
+    		ds += "<td width="+133+">MUL.D&nbsp; "+i[ih-1]["destination"]+" "+i[ih-1]["op1"]+" "+i[ih-1]["op2"]+" </td>\n"
+  			ds +="</tr>\n"
+  		} else
+		if (i[ih-1]["opcode"] == "DIV.D") {
+			ds += "<tr>\n"
+    		ds += "<td width="+133+">DIV.D&nbsp;&nbsp; "+i[ih-1]["destination"]+" "+i[ih-1]["op1"]+" "+i[ih-1]["op2"]+" </td>\n"
+  			ds +="</tr>\n"
+  		} else
+		if (i[ih-1]["opcode"] == "L.D") {
+			ds += "<tr>\n"
+    		ds += "<td width="+133+">L.D&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; "+i[ih-1]["destination"]+"&nbsp; x&nbsp; Ry</td>\n"
+  			ds +="</tr>\n"
+  		} else
+		if (i[ih-1]["opcode"] == "S.D") {
+			ds += "<tr>\n"
+    		ds += "<td width="+133+">S.D&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; "+i[ih-1]["destination"]+"&nbsp; x&nbsp; Ry</td>\n"
+  			ds +="</tr>\n"
+  		}
+  	}
+  	ds += "</table>\n"
+  	}
+  	
+  	// Reorder Buffer
+  	
+  	
+  	ds += "<p>&nbsp;</p>\n"
+  	ds += "<p><b>Reorder Buffer</b></p>\n"
+
+  	ds += "<table border="+1+" width="+719+">\n"
+    ds += "<tr>\n"
+      ds += "<td width="+90+">&nbsp;</td>\n"
+      ds += "<td width="+96+"><center>Entry Number</center></td>\n"
+      ds += "<td width="+137+"><center>Instruction</center></td>\n"
+      ds += "<td width="+87+"><center>Destination</center></td>\n"
+      ds += "<td width="+144+"><center>Value</center></td>\n"
+      ds += "<td width="+43+"><center>Valid</center></td>\n"
+      ds += "<td width="+76+"><center>Exception</center></td>\n"
+    ds += "</tr>\n"
+    
+    for (v=0; v<rob.length; v++) {
+    en = v+1; // entry number
+    	if (rob[v] == -1){
+    		ds += "<tr>\n"
+    		if (rob_head == v) {  // ROB is empty
+    			ds += "<td width="+90+"><center>HEAD,TAIL</center></td>\n"
+    		} else
+    		if (rob_tail == v) {
+    			ds += "<td width="+90+"><center>TAIL</center></td>\n"
+			} else
+			{
+				ds += "<td width="+90+">&nbsp;</td>\n"
+			}
+			ds += "<td width="+96+"><center>"+ en +"</center></td>\n"
+      		ds += "<td width="+137+">&nbsp;</td>\n"
+      		ds += "<td width="+87+">&nbsp;</td>\n"
+      		ds += "<td width="+144+">&nbsp;</td>\n"
+      		ds += "<td width="+43+">&nbsp;</td>\n"
+      		ds += "<td width="+76+">&nbsp;</td>\n"
+    		ds += "</tr>\n"
+    	}
+		else {  // if entry is busy
+		
+			if (i[rob[v]]["color_of_rob_entry"] == "white") {
+				ds += "<tr>\n"
+			} 
+			else {
+				ds += "<tr bgcolor="+ red +">\n"
+			}
+			if (rob_tail == v) { // rob is full
+				ds += "<td width="+90+"><center>HEAD,TAIL</center></td>\n"
+			} else
+			if (rob_head == v) {
+				ds += "<td width="+90+"><center>HEAD</center></td>\n"
+			}
+			else {
+				ds += "<td width="+90+">&nbsp;</td>\n"
+			}
+			ds += "<td width="+96+"><center>"+ en +"</center></td>\n"
+      		ds += "<td width="+137+"><center>"+ i[rob[v]]["rob_instruction_field"] +"</center></td>\n"
+      		ds += "<td width="+87+"><center>"+ i[rob[v]]["rob_destination_field"] +"</center></td>\n"
+    		ds += "<td width="+144+"><center>"+ i[rob[v]]["rob_value_field"] +"</center></td>\n"
+      		ds += "<td width="+43+"><center>"+ i[rob[v]]["rob_valid_field"] +"</center></td>\n"
+      		ds += "<td width="+76+"><center>"+ i[rob[v]]["display_exception_in_rob"] +"</center></td>\n"
+    		ds += "</tr>\n"
+    		
+    	}
+    }
+
+	ds += "</table>\n"
+	
+  	
+  	// Reservation Stations
+  		
+  	ds += "<p>&nbsp;</p>\n"
+	ds += "<p><b>Reservation Stations</b></p>\n"
+	ds += "<table border="+1+" width="+671+">\n"
+  	ds += "<tr>\n"
+    ds += "<td width="+72+"><center>Name</center></td>\n"
+    ds += "<td width="+40+"><center>Busy</center></td>\n"
+    ds += "<td width="+65+"><center>Opcode</center></td>\n"
+    ds += "<td width="+143+"><center>Vj</center></td>\n"
+    ds += "<td width="+144+"><center>Vk</center></td>\n"
+    ds += "<td width="+51+"><center>Qj</center></td>\n"
+    ds += "<td width="+51+"><center>Qk</center></td>\n"
+    ds += "<td width="+78+"><center>Destination</center></td>\n"
+    ds += "</tr>\n"
+  
+  	// The Adder-ReservationStations
+  	
+  	i_busy = "no";
+  	inh = 0;
+  	irh = 0;
+  	
+  	for (v=0; v<rss_adds.length; v++) {
+  		
+  		for(v1=0; v1<rss_adds[v].length; v1++) {
+  		
+  			if (rss_adds[v][v1] == -1) {
+  				i_busy = "no";
+  			}
+  			else {
+  				i_busy = "yes"
+  			}
+  			
+  			inh = v+1;
+  			irh = v1+1;
+  			
+  			ds += "<tr>\n"
+    		ds += "<td width="+72+"><center>Add"+inh+"-"+irh+"</center></td>\n"
+    		ds += "<td width="+40+"><center>"+i_busy+"</center></td>\n"
+    		
+    		if (i_busy == "no") {
+    			ds += write_empty_rs_row();
+    		}
+    		else {
+    		
+    			ds += "<td width="+65+"><center>"+i[rss_adds[v][v1]]["opcode"]+"</center></td>\n"
+    			ds += "<td width="+143+"><center>"+i[rss_adds[v][v1]]["rs_vj_field"]+"</center></td>\n"
+    			ds += "<td width="+144+"><center>"+i[rss_adds[v][v1]]["rs_vk_field"]+"</center></td>\n"
+    			ds += "<td width="+51+"><center>"+i[rss_adds[v][v1]]["rs_qj_field"]+"</center></td>\n"
+    			ds += "<td width="+51+"><center>"+i[rss_adds[v][v1]]["rs_qk_field"]+"</center></td>\n"
+    			ds += "<td width="+78+"><center>"+i[rss_adds[v][v1]]["rs_destination_field"]+"</center></td>\n"
+  				ds += "</tr>\n"
+			}
+		}
+	}
+  
+  	for (v=0; v<rss_muls.length; v++) {
+  		
+  		for(v1=0; v1<rss_muls[v].length; v1++) {
+  		
+  			if (rss_muls[v][v1] == -1) {
+  				i_busy = "no";
+  			}
+  			else {
+  				i_busy = "yes"
+  			}
+  			
+  			inh = v+1;
+  			irh = v1+1;
+  		
+  			ds += "<tr>\n"
+    		ds += "<td width="+72+"><center>Mul"+inh+"-"+irh+"</center></td>\n"
+    		ds += "<td width="+40+"><center>"+i_busy+"</center></td>\n"
+    		
+    		if (i_busy == "no") {
+    			ds += write_empty_rs_row();
+    		}
+    		else {
+    		
+    			ds += "<td width="+65+"><center>"+i[rss_muls[v][v1]]["opcode"]+"</center></td>\n"
+    			ds += "<td width="+143+"><center>"+i[rss_muls[v][v1]]["rs_vj_field"]+"</center></td>\n"
+    			ds += "<td width="+144+"><center>"+i[rss_muls[v][v1]]["rs_vk_field"]+"</center></td>\n"
+    			ds += "<td width="+51+"><center>"+i[rss_muls[v][v1]]["rs_qj_field"]+"</center></td>\n"
+    			ds += "<td width="+51+"><center>"+i[rss_muls[v][v1]]["rs_qk_field"]+"</center></td>\n"
+    			ds += "<td width="+78+"><center>"+i[rss_muls[v][v1]]["rs_destination_field"]+"</center></td>\n"
+  				ds += "</tr>\n"
+			}
+		}
+	}
+  
+  	for (v=0; v<rss_divs.length; v++) {
+  		
+  		for(v1=0; v1<rss_divs[v].length; v1++) {
+  		
+  			if (rss_divs[v][v1] == -1) {
+  				i_busy = "no";
+  			}
+  			else {
+  				i_busy = "yes"
+  			}
+  			
+  			inh = v+1;
+  			irh = v1+1;
+  		
+  			ds += "<tr>\n"
+    		ds += "<td width="+72+"><center>Div"+inh+"-"+irh+"</center></td>\n"
+    		ds += "<td width="+40+"><center>"+i_busy+"</center></td>\n"
+        		
+        	if (i_busy == "no") {
+    			ds += write_empty_rs_row();
+    		}
+    		else {
+    		
+    			ds += "<td width="+65+"><center>"+i[rss_divs[v][v1]]["opcode"]+"</center></td>\n"
+    			ds += "<td width="+143+"><center>"+i[rss_divs[v][v1]]["rs_vj_field"]+"</center></td>\n"
+    			ds += "<td width="+144+"><center>"+i[rss_divs[v][v1]]["rs_vk_field"]+"</center></td>\n"
+    			ds += "<td width="+51+"><center>"+i[rss_divs[v][v1]]["rs_qj_field"]+"</center></td>\n"
+    			ds += "<td width="+51+"><center>"+i[rss_divs[v][v1]]["rs_qk_field"]+"</center></td>\n"
+    			ds += "<td width="+78+"><center>"+i[rss_divs[v][v1]]["rs_destination_field"]+"</center></td>\n"
+  				ds += "</tr>\n"
+			}
+		}
+	}
+  
+  	ds += "</table>\n"
+	
+	
+	// FP Register Status
+	
+	ds += "<p>&nbsp;</p>\n"
+	ds += "<p><b>FP Register Status</b></p>\n"
+	ds += "<table border="+1+" width="+701+">\n"
+  	ds += "<tr>\n"
+    ds += "<td width="+73+">Field</td>\n"
+    ds += "<td width="+39+"><center>F0</center></td>\n"
+    ds += "<td width="+39+"><center>F1</center></td>\n"
+    ds += "<td width="+39+"><center>F2</center></td>\n"
+    ds += "<td width="+39+"><center>F3</center></td>\n"
+    ds += "<td width="+39+"><center>F4</center></td>\n"
+    ds += "<td width="+39+"><center>F5</center></td>\n"
+    ds += "<td width="+39+"><center>F6</center></td>\n"
+    ds += "<td width="+39+"><center>F7</center></td>\n"
+    ds += "<td width="+39+"><center>F8</center></td>\n"
+    ds += "<td width="+39+"><center>F9</center></td>\n"
+    ds += "<td width="+39+"><center>F10</center></td>\n"
+    ds += "<td width="+39+"><center>F11</center></td>\n"
+    ds += "<td width="+39+"><center>F12</center></td>\n"
+    ds += "<td width="+39+"><center>F13</center></td>\n"
+    ds += "<td width="+39+"><center>F14</center></td>\n"
+    ds += "<td width="+39+"><center>F15</center></td>\n"
+  	ds += "</tr>\n"
+  	ds += "<tr>\n"
+    ds += "<td width="+73+">Reorder #</td>\n"
+    
+    var fprobno = 0;
+    for (v=0; v<16; v++) {
+    
+    	if (fp_registers[v] == -1) {
+    		ds += "<td width="+39+">&nbsp;</td>\n"
+    	}
+    	else {
+    		fprobno = fp_registers[v]+1;
+    		ds += "<td width="+39+"><center>"+fprobno+"</center></td>\n"
+		}
+	}
+  	ds += "</tr>\n"
+  	ds += "<tr>\n"
+   	ds += "<td width="+73+">Busy</td>\n"
+   	
+   	for (v=0; v<16; v++) {
+   	
+   		if (fp_registers[v] == -1) {
+   			ds += "<td width="+39+"><center>no</center></td>\n"
+   		}
+   		else {
+   			ds += "<td width="+39+"><center>yes</center></td>\n"
+   		}
+	}
+
+    ds += "</tr>\n"
+	ds += "</table>\n"
+
+	
+	// Load Buffers
+	
+	ds += "<p>&nbsp;</p>\n"
+	ds += "<p><b>Load Buffers</b></p>\n"
+	ds += "<table border="+1+" width="+340+">\n"
+  	ds += "<tr>\n"
+    ds += "<td width="+23+"><center>#</center></td>\n"
+    ds += "<td width="+41+"><center>Busy</center></td>\n"
+    ds += "<td width="+76+"><center>A</center></td>\n"
+    ds += "<td width="+85+"><center>Destination</center></td>\n"
+    ds += "<td width="+81+"><center>Value</center></td>\n"
+  	ds += "</tr>\n"
+  	
+  	
+  	nhi=0;
+  	for (v=0; v<load_buffer.length; v++) {
+  	
+  		nhi = v+1;
+  		ds += "<tr>\n"
+    	ds += "<td width="+23+"><center>"+nhi+"</center></td>\n"
+    	
+    	if (load_buffer[v] == -1) {
+    		ds += "<td width="+41+"><center>no</center></td>\n"
+    		ds += "<td width="+76+">&nbsp;</td>\n"
+    		ds += "<td width="+85+">&nbsp;</td>\n"
+    		ds += "<td width="+81+">&nbsp;</td>\n"
+    	}
+    	else {
+    		ds += "<td width="+41+"><center>yes</center></td>\n"
+    		ds += "<td width="+76+"><center>"+i[load_buffer[v]]["load_buffer_a_field"]+"</center></td>\n"
+    		ds += "<td width="+85+"><center>"+i[load_buffer[v]]["load_buffer_destination_field"]+"</center></td>\n"
+    		ds += "<td width="+81+"><center>"+i[load_buffer[v]]["load_buffer_value_field"]+"</center></td>\n"
+    	}
+  		ds += "</tr>\n"
+  	}
+  	ds += "</table>\n"
+
+  	
+	ds += "</BODY></HTML>"
+  
+	
+	parent.frames[1].document.write(ds);
+	parent.frames[1].document.close();
+
+}
+
+
+function write_empty_rs_row() {
+
+	 ds1 = "<td width="+65+">&nbsp;</td>\n"
+    ds1 += "<td width="+143+">&nbsp;</td>\n"
+    ds1 += "<td width="+144+">&nbsp;</td>\n"
+    ds1 += "<td width="+51+">&nbsp;</td>\n"
+    ds1 += "<td width="+51+">&nbsp;</td>\n"
+    ds1 += "<td width="+78+">&nbsp;</td>\n"
+    ds1 += "</tr>\n"
+    
+    return ds1;
+}
+
+
+function open_help_window() {
+
+	helpwindow = open("help.htm","window2","width=1000,height=700,left=0,top=0,scrollbars=yes,resizable=1");
+	
+
+}
+
+</SCRIPT>
+
+
+<base target="_self">
+
+
+</head>
+
+<body bgcolor="#CCCCCC">
+
+<p align="center"><b><u><font size="5">Simulation</font></u></b></p>
+
+<p align="center"><b><u><font size="5">Control</font></u></b></p>
+
+<form name="control_form">
+
+  <p align="center"><input type="button" value="+1 Clock Cycle" name="p1" onClick="plus_one_clock_cycle()"></p>
+  
+  <p align="center"><input type="button" value="+5 Clock Cycles" name="p5" onClick="plus_five_clock_cycles()"></p>
+  
+  <p align="center">current clock: <input type="text" name="T1" size="3" readonly></p>
+  
+  <hr>
+  
+  <p align="center"><u>Simulation Settings</u></p>
+  
+  <p align="center"><textarea rows="5" name="S1" cols="20" readonly></textarea></p>
+  
+  <hr>
+  
+  <p align="center"><input type="button" value="START SIMULATION" name="B1" onClick="start_simulation()"></p>
+  <p align="center"><input type="button" value="CONFIGURATION" name="B2" onClick='parent.frames[1].location.href="configuration.htm"'></p>
+  <p align="center"><input type="button" value="HELP" name="B3" onClick="open_help_window()"></p>
+</form>
+
+
+</body>
+
+</html>
+
+
+
+
+
+
+

@@ -1,0 +1,29 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.5 [en] (X11; U; SunOS 5.7 sun4u) [Netscape]">
+</head>
+<body text="#000000" bgcolor="#FFFFFF" link="#0000EE" vlink="#551A8B" alink="#FF0000">
+&nbsp;
+<br><font size=+1>In this simulation, the minimum delay of the final output
+is calculated. Looking at the schematic diagram below:</font>
+<p><img SRC="help.gif" height=280 width=359>
+<p><font size=+1>in 3-2 adder Carry delay is smaller than Sum delay. In
+this design we assumed that Sum delay is smaller than twice of carry delay
+as well.</font>
+<p><font size=+1>Assuming:</font>
+<blockquote><font size=+1>Ta: arrival time of input "a"</font>
+<br><font size=+1>Tb: arrival time of input "b"</font>
+<br><font size=+1>Tcin: arrival time of input "Cin"</font>
+<br><font size=+1>Ts: time that Sum will be ready, considering arrival
+time of inputs</font>
+<br><font size=+1>Tcout: time that Carry out will be ready, considering
+arrival time of inputs</font></blockquote>
+<font size=+1></font>
+<p><br><font size=+1>&nbsp;final output delays will be calculated as follow:</font><font size=+1></font>
+<p><font size=+1>Ts =&nbsp; Max{&nbsp; ( Max(Ta,Tb) + Sum Delay )&nbsp;
+,&nbsp; (&nbsp; Tcin +&nbsp; Sum Delay/2 )&nbsp; }</font>
+<br><font size=+1>Tcout = [ Max (Ta, Tb,Tcin) ] + Carry Delay</font>
+</body>
+</html>

@@ -1,0 +1,564 @@
+<html xmlns:v="urn:schemas-microsoft-com:vml"
+xmlns:o="urn:schemas-microsoft-com:office:office"
+xmlns:w="urn:schemas-microsoft-com:office:word"
+xmlns="http://www.w3.org/TR/REC-html40">
+
+<head>
+<meta http-equiv=Content-Type content="text/html; charset=gb2312">
+<meta name=ProgId content=Word.Document>
+<meta name=Generator content="Microsoft Word 10">
+<meta name=Originator content="Microsoft Word 10">
+<link rel=File-List href="convolution_files/filelist.xml">
+<link rel=Edit-Time-Data href="convolution_files/editdata.mso">
+<link rel=OLE-Object-Data href="convolution_files/oledata.mso">
+<!--[if !mso]>
+<style>
+v\:* {behavior:url(#default#VML);}
+o\:* {behavior:url(#default#VML);}
+w\:* {behavior:url(#default#VML);}
+.shape {behavior:url(#default#VML);}
+</style>
+<![endif]-->
+<title>Introduction</title>
+<!--[if gte mso 9]><xml>
+ <o:DocumentProperties>
+  <o:Author>Yuechun Chu</o:Author>
+  <o:Template>Normal</o:Template>
+  <o:LastAuthor>Yuechun Chu</o:LastAuthor>
+  <o:Revision>28</o:Revision>
+  <o:TotalTime>222</o:TotalTime>
+  <o:Created>2003-05-23T09:39:00Z</o:Created>
+  <o:LastSaved>2003-07-03T18:48:00Z</o:LastSaved>
+  <o:Pages>1</o:Pages>
+  <o:Words>1084</o:Words>
+  <o:Characters>6108</o:Characters>
+  <o:Company>Umass</o:Company>
+  <o:Lines>122</o:Lines>
+  <o:Paragraphs>22</o:Paragraphs>
+  <o:CharactersWithSpaces>7170</o:CharactersWithSpaces>
+  <o:Version>10.2625</o:Version>
+ </o:DocumentProperties>
+</xml><![endif]--><!--[if gte mso 9]><xml>
+ <w:WordDocument>
+  <w:SpellingState>Clean</w:SpellingState>
+  <w:GrammarState>Clean</w:GrammarState>
+  <w:DrawingGridHorizontalSpacing>6 pt</w:DrawingGridHorizontalSpacing>
+  <w:DisplayHorizontalDrawingGridEvery>2</w:DisplayHorizontalDrawingGridEvery>
+  <w:DisplayVerticalDrawingGridEvery>2</w:DisplayVerticalDrawingGridEvery>
+  <w:Compatibility>
+   <w:BreakWrappedTables/>
+   <w:SnapToGridInCell/>
+   <w:WrapTextWithPunct/>
+   <w:UseAsianBreakRules/>
+   <w:UseFELayout/>
+  </w:Compatibility>
+  <w:BrowserLevel>MicrosoftInternetExplorer4</w:BrowserLevel>
+ </w:WordDocument>
+</xml><![endif]-->
+<style>
+<!--
+ /* Font Definitions */
+ @font-face
+	{font-family:宋体;
+	panose-1:2 1 6 0 3 1 1 1 1 1;
+	mso-font-alt:SimSun;
+	mso-font-charset:134;
+	mso-generic-font-family:auto;
+	mso-font-pitch:variable;
+	mso-font-signature:3 135135232 16 0 262145 0;}
+@font-face
+	{font-family:PMingLiU;
+	panose-1:2 2 3 0 0 0 0 0 0 0;
+	mso-font-alt:新細明體;
+	mso-font-charset:136;
+	mso-generic-font-family:roman;
+	mso-font-pitch:variable;
+	mso-font-signature:3 137232384 22 0 1048577 0;}
+@font-face
+	{font-family:"\@宋体";
+	panose-1:2 1 6 0 3 1 1 1 1 1;
+	mso-font-charset:134;
+	mso-generic-font-family:auto;
+	mso-font-pitch:variable;
+	mso-font-signature:3 135135232 16 0 262145 0;}
+@font-face
+	{font-family:"\@PMingLiU";
+	panose-1:2 2 3 0 0 0 0 0 0 0;
+	mso-font-charset:136;
+	mso-generic-font-family:roman;
+	mso-font-pitch:variable;
+	mso-font-signature:3 137232384 22 0 1048577 0;}
+ /* Style Definitions */
+ p.MsoNormal, li.MsoNormal, div.MsoNormal
+	{mso-style-parent:"";
+	margin:0in;
+	margin-bottom:.0001pt;
+	mso-pagination:widow-orphan;
+	font-size:12.0pt;
+	font-family:"Times New Roman";
+	mso-fareast-font-family:PMingLiU;
+	mso-fareast-language:ZH-TW;}
+a:link, span.MsoHyperlink
+	{color:blue;
+	text-decoration:underline;
+	text-underline:single;}
+a:visited, span.MsoHyperlinkFollowed
+	{color:purple;
+	text-decoration:underline;
+	text-underline:single;}
+span.SpellE
+	{mso-style-name:"";
+	mso-spl-e:yes;}
+span.GramE
+	{mso-style-name:"";
+	mso-gram-e:yes;}
+@page Section1
+	{size:8.5in 11.0in;
+	margin:1.0in 1.0in 1.0in 1.0in;
+	mso-header-margin:.5in;
+	mso-footer-margin:.5in;
+	mso-paper-source:0;}
+div.Section1
+	{page:Section1;}
+ /* List Definitions */
+ @list l0
+	{mso-list-id:1589729636;
+	mso-list-type:hybrid;
+	mso-list-template-ids:-1326960874 67698689 67698691 67698693 67698689 67698691 67698693 67698689 67698691 67698693;}
+@list l0:level1
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:.5in;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Symbol;}
+@list l0:level2
+	{mso-level-tab-stop:1.0in;
+	mso-level-number-position:left;
+	text-indent:-.25in;}
+@list l0:level3
+	{mso-level-tab-stop:1.5in;
+	mso-level-number-position:left;
+	text-indent:-.25in;}
+@list l0:level4
+	{mso-level-tab-stop:2.0in;
+	mso-level-number-position:left;
+	text-indent:-.25in;}
+@list l0:level5
+	{mso-level-tab-stop:2.5in;
+	mso-level-number-position:left;
+	text-indent:-.25in;}
+@list l0:level6
+	{mso-level-tab-stop:3.0in;
+	mso-level-number-position:left;
+	text-indent:-.25in;}
+@list l0:level7
+	{mso-level-tab-stop:3.5in;
+	mso-level-number-position:left;
+	text-indent:-.25in;}
+@list l0:level8
+	{mso-level-tab-stop:4.0in;
+	mso-level-number-position:left;
+	text-indent:-.25in;}
+@list l0:level9
+	{mso-level-tab-stop:4.5in;
+	mso-level-number-position:left;
+	text-indent:-.25in;}
+ol
+	{margin-bottom:0in;}
+ul
+	{margin-bottom:0in;}
+-->
+</style>
+<!--[if gte mso 10]>
+<style>
+ /* Style Definitions */
+ table.MsoNormalTable
+	{mso-style-name:"Table Normal";
+	mso-tstyle-rowband-size:0;
+	mso-tstyle-colband-size:0;
+	mso-style-noshow:yes;
+	mso-style-parent:"";
+	mso-padding-alt:0in 5.4pt 0in 5.4pt;
+	mso-para-margin:0in;
+	mso-para-margin-bottom:.0001pt;
+	mso-pagination:widow-orphan;
+	font-size:10.0pt;
+	font-family:"Times New Roman";}
+</style>
+<![endif]--><!--[if gte mso 9]><xml>
+ <o:shapedefaults v:ext="edit" spidmax="7170"/>
+</xml><![endif]--><!--[if gte mso 9]><xml>
+ <o:shapelayout v:ext="edit">
+  <o:idmap v:ext="edit" data="1"/>
+ </o:shapelayout></xml><![endif]-->
+</head>
+
+<body lang=EN-US link=blue vlink=purple style='tab-interval:.5in'>
+
+<div class=Section1>
+
+<p class=MsoNormal><b style='mso-bidi-font-weight:normal'><span
+style='font-size:20.0pt;color:red'>Introduction<o:p></o:p></span></b></p>
+
+<p class=MsoNormal><o:p>&nbsp;</o:p></p>
+
+<p class=MsoNormal><o:p>&nbsp;</o:p></p>
+
+<p class=MsoNormal style='text-indent:.5in'><span style='font-size:14.0pt'>Opposed
+to block codes, convolutional codes don’t divide data bits into blocks. In
+convolutional codes, data bits are still in continuous sequence. In some
+occasions, convolution codes maybe more convenient than a block code, because
+it generates redundant bits and corrects errors continuously. <o:p></o:p></span></p>
+
+<p class=MsoNormal style='text-indent:.5in'><span style='font-size:14.0pt'>Convolutional
+code can be marked by (n, k, K), which means for every k bits, there are an
+output of n bits and K is called constraint length. Basically, convolutional
+code is generated by passing the information sequentially through a series of
+shift registers. K stands for the number of the shift registers. Because of the
+shift registers, convolutional code has memory, the current n-bit output
+depends not only on the value of the current block of k input bits but also on
+the previous K-1 blocks of k input bits. So, the current output of n bits is a
+function of the last K</span><span lang=ZH-TW style='font-size:14.0pt;
+font-family:宋体'>×</span><span style='font-size:14.0pt'>k bits. As shown in
+Figure, 3 most recent bits have used and two possible outputs are generated.
+Typically, n and k are very small number. Here, the figure shows (2<span
+class=GramE>,1,3</span>) codes.<o:p></o:p></span></p>
+
+<p class=MsoNormal style='text-indent:.5in'><span style='font-size:14.0pt'><!--[if gte vml 1]><v:shapetype
+ id="_x0000_t75" coordsize="21600,21600" o:spt="75" o:preferrelative="t"
+ path="m@4@5l@4@11@9@11@9@5xe" filled="f" stroked="f">
+ <v:stroke joinstyle="miter"/>
+ <v:formulas>
+  <v:f eqn="if lineDrawn pixelLineWidth 0"/>
+  <v:f eqn="sum @0 1 0"/>
+  <v:f eqn="sum 0 0 @1"/>
+  <v:f eqn="prod @2 1 2"/>
+  <v:f eqn="prod @3 21600 pixelWidth"/>
+  <v:f eqn="prod @3 21600 pixelHeight"/>
+  <v:f eqn="sum @0 0 1"/>
+  <v:f eqn="prod @6 1 2"/>
+  <v:f eqn="prod @7 21600 pixelWidth"/>
+  <v:f eqn="sum @8 21600 0"/>
+  <v:f eqn="prod @7 21600 pixelHeight"/>
+  <v:f eqn="sum @10 21600 0"/>
+ </v:formulas>
+ <v:path o:extrusionok="f" gradientshapeok="t" o:connecttype="rect"/>
+ <o:lock v:ext="edit" aspectratio="t"/>
+</v:shapetype><v:shape id="_x0000_i1031" type="#_x0000_t75" style='width:447.6pt;
+ height:279.6pt'>
+ <v:imagedata src="convolution_files/image015.jpg" o:title="Drawing1"/>
+</v:shape><![endif]--><![if !vml]><img width=597 height=373
+src="convolution_files/image016.jpg" v:shapes="_x0000_i1031"><![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal style='text-indent:.5in'><span style='font-size:14.0pt'><o:p>&nbsp;</o:p></span></p>
+
+<p class=MsoNormal style='text-indent:.5in'><span style='font-size:14.0pt'>For
+any (<span class=SpellE>n,k,K</span>) code, the shift register keeps most
+recent K</span><span lang=ZH-TW style='font-size:14.0pt;font-family:宋体'>×</span><span
+style='font-size:14.0pt;mso-fareast-font-family:宋体'>k input bits. Starting from
+initial states, the encoder produces n output bits, after that, the oldest k
+bits from the register are discarded and k new bits are shifted in. For any
+given input of k bits, there are <sub><!--[if gte vml 1]><v:shape id="_x0000_i1025"
+ type="#_x0000_t75" style='width:22.8pt;height:15pt' o:ole="">
+ <v:imagedata src="convolution_files/image017.wmz" o:title=""/>
+</v:shape><![endif]--><![if !vml]><img width=30 height=20
+src="convolution_files/image004.gif" v:shapes="_x0000_i1025"><![endif]></sub><!--[if gte mso 9]><xml>
+ <o:OLEObject Type="Embed" ProgID="Equation.3" ShapeID="_x0000_i1025"
+  DrawAspect="Content" ObjectID="_1118748905">
+ </o:OLEObject>
+</xml><![endif]-->different functions that map k bits into n output bits. What
+kind of functions is used depends on the history of the last (K-1) input
+blocks. </span><span style='font-size:14.0pt'>Since the convolutional encoder
+can be identified as a K-memory, n output machine, it can be expressed as a 0-1
+sequence, which is called generator sequence <span class=GramE>g(</span>.).
+With 2 output in Figure 1, there are 2 sequences<span class=GramE>:<sub><!--[if gte vml 1]><v:shape
+ id="_x0000_i1026" type="#_x0000_t75" style='width:42pt;height:18pt' o:ole="">
+ <v:imagedata src="convolution_files/image018.wmz" o:title=""/>
+</v:shape><![endif]--><![if !vml]><img width=56 height=24
+src="convolution_files/image006.gif" v:shapes="_x0000_i1026"><![endif]></sub><!--[if gte mso 9]><xml>
+ <o:OLEObject Type="Embed" ProgID="Equation.3" ShapeID="_x0000_i1026"
+  DrawAspect="Content" ObjectID="_1118748906">
+ </o:OLEObject>
+</xml><![endif]-->.</span><span style='mso-spacerun:yes'>&nbsp; </span>Then the
+generator matrix is defined as:<o:p></o:p></span></p>
+
+<p class=MsoNormal style='text-indent:.5in'><span style='font-size:14.0pt'><sub><!--[if gte vml 1]><v:shape
+ id="_x0000_i1027" type="#_x0000_t75" style='width:298.8pt;height:73.8pt'
+ o:ole="">
+ <v:imagedata src="convolution_files/image019.wmz" o:title=""/>
+</v:shape><![endif]--><![if !vml]><img width=398 height=98
+src="convolution_files/image008.gif" v:shapes="_x0000_i1027"><![endif]></sub><!--[if gte mso 9]><xml>
+ <o:OLEObject Type="Embed" ProgID="Equation.3" ShapeID="_x0000_i1027"
+  DrawAspect="Content" ObjectID="_1118748907">
+ </o:OLEObject>
+</xml><![endif]-->,<o:p></o:p></span></p>
+
+<p class=MsoNormal style='text-indent:.5in'><span style='font-size:14.0pt'><o:p>&nbsp;</o:p></span></p>
+
+<p class=MsoNormal style='text-indent:.5in'><span style='font-size:14.0pt'>So,
+the output of the encoder is<o:p></o:p></span></p>
+
+<p class=MsoNormal style='text-indent:.5in'><span style='font-size:14.0pt'><span
+style='mso-tab-count:1'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span><sub><!--[if gte vml 1]><v:shape
+ id="_x0000_i1028" type="#_x0000_t75" style='width:37.2pt;height:13.8pt' o:ole="">
+ <v:imagedata src="convolution_files/image020.wmz" o:title=""/>
+</v:shape><![endif]--><![if !vml]><img width=50 height=18
+src="convolution_files/image010.gif" v:shapes="_x0000_i1028"><![endif]></sub><!--[if gte mso 9]><xml>
+ <o:OLEObject Type="Embed" ProgID="Equation.3" ShapeID="_x0000_i1028"
+  DrawAspect="Content" ObjectID="_1118748908">
+ </o:OLEObject>
+</xml><![endif]-->,<o:p></o:p></span></p>
+
+<p class=MsoNormal style='text-indent:.5in'><span style='font-size:14.0pt'>Where,
+u is the input.<o:p></o:p></span></p>
+
+<p class=MsoNormal style='text-indent:.5in'><span style='font-size:14.0pt'><o:p>&nbsp;</o:p></span></p>
+
+<p class=MsoNormal style='text-indent:.5in'><span class=SpellE><span
+style='font-size:14.0pt'>Viterbi</span></span><span style='font-size:14.0pt'>
+decoder algorithm is a kind of maximum likelihood decoder and the most popular decoder
+for convolutional codes. The easily way to introduce <span class=SpellE>Viterbi</span>
+algorithm is using state diagram of the encoder, namely <i style='mso-bidi-font-style:
+normal'>trellis diagram</i>. <o:p></o:p></span></p>
+
+<p class=MsoNormal style='text-indent:.5in'><span style='font-size:14.0pt'><o:p>&nbsp;</o:p></span></p>
+
+<p class=MsoNormal style='text-indent:.5in'><span style='font-size:14.0pt'><!--[if gte vml 1]><v:shape
+ id="_x0000_i1029" type="#_x0000_t75" style='width:655.8pt;height:152.4pt'>
+ <v:imagedata src="convolution_files/image011.gif" o:title="trellis" gain="93623f"/>
+</v:shape><![endif]--><![if !vml]><img width=874 height=203
+src="convolution_files/image013.gif" v:shapes="_x0000_i1029"><![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal align=center style='text-align:center;text-indent:.5in'><span
+style='font-size:14.0pt'><o:p>&nbsp;</o:p></span></p>
+
+<p class=MsoNormal align=center style='text-align:center;text-indent:.5in'><span
+style='font-size:14.0pt'>Figure 2 trellis diagram of sample rate 0.5,
+constraint length K = 3 convolutional <span class=GramE>encoder<sup>[</sup></span><sup>1]<o:p></o:p></sup></span></p>
+
+<p class=MsoNormal align=center style='text-align:center;text-indent:.5in'><sup><span
+style='font-size:14.0pt'><o:p>&nbsp;</o:p></span></sup></p>
+
+<p class=MsoNormal><span style='font-size:14.0pt'>Figure 2 is a simple example
+of a sample rate 0.5 and constraint length <span class=GramE>3 convolutional
+encoder</span>. At start time, the system is at state 00. With different input,
+the state will transient to different state. At each time step, there is only
+one bit input, either be 0 or 1. So the state transient paths will separate to
+two at each time step. The solid line means with input signal 1 and the dashed
+line is with input signal 0. At last it will return to the state 00 (because
+the registers are all zeros), and there will multiple paths from the start
+state to the end state. <o:p></o:p></span></p>
+
+<p class=MsoNormal><span style='font-size:14.0pt'><span style='mso-tab-count:
+1'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span>The key idea
+of <span class=SpellE>Viterbi</span> algorithm is to find the most likelihood
+sample path with the received codes. The formal description of <span
+class=SpellE>Viterbi</span> algorithm can be found at [2]. An error metric is
+setup for each path. When decoder receives a data bit, it will compute the
+partial metric for the single path entering each state, and store the path with
+its metric. At next time step, re-compute the partial metric for all paths
+entering a state by adding the accumulated error metric.<o:p></o:p></span></p>
+
+<p class=MsoNormal><span style='font-size:14.0pt'>For each state, decoder only
+stores the path with the largest metric and eliminates all other paths.<span
+style='mso-spacerun:yes'>&nbsp; </span>Figure 3 is a simple example, where the
+at time unit 5, the state 11 has the smallest error, which means the path to
+state 11 is most likely correct path. <o:p></o:p></span></p>
+
+<p class=MsoNormal align=center style='text-align:center'><span
+style='font-size:14.0pt'><!--[if gte vml 1]><v:shape id="_x0000_i1030" type="#_x0000_t75"
+ style='width:390pt;height:197.4pt'>
+ <v:imagedata src="convolution_files/image012.gif" o:title="trlst5" gain="112993f"/>
+</v:shape><![endif]--><![if !vml]><img width=520 height=263
+src="convolution_files/image014.gif" v:shapes="_x0000_i1030"><![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal align=center style='text-align:center'><span
+style='font-size:14.0pt'><o:p>&nbsp;</o:p></span></p>
+
+<p class=MsoNormal align=center style='text-align:center'><span
+style='font-size:14.0pt'>Figure 3 Trellis diagram with accumulated error <span
+class=GramE>metric<sup>[</sup></span><sup>1]<o:p></o:p></sup></span></p>
+
+<p class=MsoNormal><span style='font-size:14.0pt'><span style='mso-tab-count:
+1'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span><o:p></o:p></span></p>
+
+<p class=MsoNormal><span style='font-size:14.0pt'><span
+style='mso-spacerun:yes'>&nbsp;&nbsp;&nbsp; </span>At last the decoder will get
+a most likelihood path from initial state to ended state. Tracing back the
+sample path, decoder can decide the data from each state transient step.<o:p></o:p></span></p>
+
+<p class=MsoNormal style='text-indent:12.0pt'><span style='font-size:14.0pt'>Detailed
+algorithm and performance analysis are discussed at [2]. Also [1] is a very
+nice and detailed tutorial for convolutional encoder and <span class=SpellE>Viterbi</span>
+decoder.<o:p></o:p></span></p>
+
+<p class=MsoNormal style='text-indent:12.0pt'><b style='mso-bidi-font-weight:
+normal'><span style='font-size:20.0pt;color:red'><o:p>&nbsp;</o:p></span></b></p>
+
+<p class=MsoNormal><b style='mso-bidi-font-weight:normal'><span
+style='font-size:20.0pt;color:red'>Usage<o:p></o:p></span></b></p>
+
+<p class=MsoNormal><o:p>&nbsp;</o:p></p>
+
+<p class=MsoNormal><span style='font-size:14.0pt'>The program is developed with
+Java applet. Basically, the implementation involves three steps: Encoder, Error
+adding, Decoder. <o:p></o:p></span></p>
+
+<p class=MsoNormal><span style='font-size:14.0pt'><o:p>&nbsp;</o:p></span></p>
+
+<p class=MsoNormal style='margin-left:.5in;text-indent:-.5in;mso-list:l0 level1 lfo2;
+tab-stops:list .25in .5in'><![if !supportLists]><span style='font-size:16.0pt;
+font-family:Symbol;mso-fareast-font-family:Symbol;mso-bidi-font-family:Symbol;
+color:blue'><span style='mso-list:Ignore'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]><b style='mso-bidi-font-weight:normal'><span
+style='font-size:16.0pt;color:blue'>Encoder<o:p></o:p></span></b></p>
+
+<p class=MsoNormal><span style='font-size:14.0pt'><o:p>&nbsp;</o:p></span></p>
+
+<p class=MsoNormal style='margin-left:6.0pt;text-indent:30.0pt'><span
+style='font-size:14.0pt'>Constraint length (K) and message length is available
+for adjusting. Considering the limitation of displaying, K is set to range from
+3 to 7. The codeword in convolution coding is usually pretty long. User will be
+able to choose either to manually type data stream in Hex (user generate) or
+allow program to randomly generate data stream (randomly generate). If
+“randomly generator” is selected, upon K and data length being settled, the
+program will randomly generate a data stream and encoder it into codeword. <br>
+<span style='mso-tab-count:1'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span>With
+the “random <span class=SpellE>gen</span>” or “user <span class=SpellE>gen</span>”
+button being clicked, the original signal, convolutional and its generator
+sequence (details have been discussed above) will be displayed. Meanwhile, the
+data stream and codeword will be show the plot graph underneath.<o:p></o:p></span></p>
+
+<p class=MsoNormal><span style='font-size:14.0pt'><o:p>&nbsp;</o:p></span></p>
+
+<p class=MsoNormal style='margin-left:.5in;text-indent:-.5in;mso-list:l0 level1 lfo2;
+tab-stops:list .25in .5in'><![if !supportLists]><span style='font-size:16.0pt;
+font-family:Symbol;mso-fareast-font-family:Symbol;mso-bidi-font-family:Symbol;
+color:blue'><span style='mso-list:Ignore'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]><b style='mso-bidi-font-weight:normal'><span
+style='font-size:16.0pt;color:blue'>Error Adding<o:p></o:p></span></b></p>
+
+<p class=MsoNormal><span style='font-size:14.0pt'><o:p>&nbsp;</o:p></span></p>
+
+<p class=MsoNormal style='text-indent:.5in'><span style='font-size:14.0pt'>Error
+Adding will be implemented in term of two styles: error inferred by probability
+and fixed-length error. <o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-left:.5in;text-indent:-.25in;mso-list:l0 level1 lfo2;
+tab-stops:list .5in'><![if !supportLists]><span style='font-size:14.0pt;
+font-family:Symbol;mso-fareast-font-family:Symbol;mso-bidi-font-family:Symbol'><span
+style='mso-list:Ignore'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]><b style='mso-bidi-font-weight:normal'><span
+style='font-size:14.0pt'>Error inferred by probability<o:p></o:p></span></b></p>
+
+<p class=MsoNormal style='margin-left:.5in'><span style='font-size:14.0pt'>In this
+category, user will be allowed to set “failure probability for each bit”, and
+the error bits will be applied according to the probability.<o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-left:.5in;text-indent:-.25in;mso-list:l0 level1 lfo2;
+tab-stops:list .5in'><![if !supportLists]><span style='font-size:14.0pt;
+font-family:Symbol;mso-fareast-font-family:Symbol;mso-bidi-font-family:Symbol'><span
+style='mso-list:Ignore'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]><b style='mso-bidi-font-weight:normal'><span
+style='font-size:14.0pt'>Fixed-length error<o:p></o:p></span></b></p>
+
+<p class=MsoNormal style='text-indent:.5in'><span style='font-size:14.0pt'>In
+this category, user is allowed to decide number of errors that will happen to
+codeword. Besides, two error-assignment forms will be available to be selected:<o:p></o:p></span></p>
+
+<p class=MsoNormal style='text-indent:.5in'><u><span style='font-size:14.0pt'>Random</span></u><span
+style='font-size:14.0pt'>: The faulty bits will be randomly selected from the
+codeword;<o:p></o:p></span></p>
+
+<p class=MsoNormal style='text-indent:.5in'><u><span style='font-size:14.0pt'>Burst</span></u><span
+style='font-size:14.0pt'>:<span style='mso-spacerun:yes'>&nbsp; </span>The
+faulty bits will be consecutive, and user is allowed to set start position for
+burst error. In random styles, the start position will be set to “-1”, meaning
+not available for adjustment.<span style='mso-spacerun:yes'>&nbsp; </span>If
+the start position that user set exceeds the length of the codeword, the
+program will coerce the start position back to signal range. It is well know
+that burst errors are hard for normal other error correction codes to deal
+with. But user will find burst or separate errors make no difference for
+convolutional code, which is an advantage of such code. When “adding error” is
+clicked, the receiving code with error bits will be displayed. Meanwhile,
+corresponding receiving code will be shown in the plot graph. On the receiving
+curve, a red “E” will appear on the error bit. <o:p></o:p></span></p>
+
+<p class=MsoNormal><span style='font-size:14.0pt'><o:p>&nbsp;</o:p></span></p>
+
+<p class=MsoNormal style='margin-left:.5in;text-indent:-.5in;mso-list:l0 level1 lfo2;
+tab-stops:list .25in .5in'><![if !supportLists]><span style='font-size:16.0pt;
+font-family:Symbol;mso-fareast-font-family:Symbol;mso-bidi-font-family:Symbol;
+color:blue'><span style='mso-list:Ignore'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]><b style='mso-bidi-font-weight:normal'><span
+style='font-size:16.0pt;color:blue'>Decoder<o:p></o:p></span></b></p>
+
+<p class=MsoNormal><span style='font-size:14.0pt'><o:p>&nbsp;</o:p></span></p>
+
+<p class=MsoNormal style='margin-left:.25in;text-indent:.25in'><span
+style='font-size:14.0pt'>The decoder will be triggered by user clicking the
+“decode”. The decoder will give the results of error corrections, including: <o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-left:.5in;text-indent:-.25in;mso-list:l0 level1 lfo2;
+tab-stops:list .5in'><![if !supportLists]><span style='font-size:14.0pt;
+font-family:Symbol;mso-fareast-font-family:Symbol;mso-bidi-font-family:Symbol'><span
+style='mso-list:Ignore'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]><span style='font-size:14.0pt'>decoded signal;<o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-left:.5in;text-indent:-.25in;mso-list:l0 level1 lfo2;
+tab-stops:list .5in'><![if !supportLists]><span style='font-size:14.0pt;
+font-family:Symbol;mso-fareast-font-family:Symbol;mso-bidi-font-family:Symbol'><span
+style='mso-list:Ignore'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]><span style='font-size:14.0pt'>The number of
+corrected errors;<o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-left:.5in;text-indent:-.25in;mso-list:l0 level1 lfo2;
+tab-stops:list .5in'><![if !supportLists]><span style='font-size:14.0pt;
+font-family:Symbol;mso-fareast-font-family:Symbol;mso-bidi-font-family:Symbol'><span
+style='mso-list:Ignore'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]><span style='font-size:14.0pt'>The text message,
+which indicates whether all the error bits have been corrected. <o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-left:.5in;text-indent:-.25in;mso-list:l0 level1 lfo2;
+tab-stops:list .5in'><![if !supportLists]><span style='font-size:14.0pt;
+font-family:Symbol;mso-fareast-font-family:Symbol;mso-bidi-font-family:Symbol'><span
+style='mso-list:Ignore'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]><span style='font-size:14.0pt'>The trellis
+diagram: it shows the maximum likely-hood path from <span class=SpellE>Viterbi</span>
+algorithm, which is identical to the one in Figure 3 and will be shown under
+the plot graph.<o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-left:.25in'><span style='font-size:14.0pt'><o:p>&nbsp;</o:p></span></p>
+
+<p class=MsoNormal style='margin-left:.5in'><span style='font-size:14.0pt'>The
+decoded signal will also be shown in the plot graph. When the number of errors
+exceeds the error-correction capability decoder will fail to correct all the
+errors. In that case, some of “<span class=SpellE>E”s</span> will be left to
+indicate that some errors are still there.<o:p></o:p></span></p>
+
+<p class=MsoNormal style='text-indent:12.0pt'><b style='mso-bidi-font-weight:
+normal'><span style='font-size:20.0pt;color:red'><o:p>&nbsp;</o:p></span></b></p>
+
+<p class=MsoNormal><span style='font-size:14.0pt'>Reference:<o:p></o:p></span></p>
+
+<p class=MsoNormal><span style='font-size:14.0pt'><o:p>&nbsp;</o:p></span></p>
+
+<p class=MsoNormal><span style='font-size:14.0pt'>[1] Lin, <span class=SpellE>Shu</span>,
+and Costello, <span class=SpellE>Deniel</span>, “Error Control Coding:
+Fundamentals and Applications”, Prentice-Hall Inc., 1983.<o:p></o:p></span></p>
+
+<p class=MsoNormal><span style='font-size:14.0pt'>[2] Tutorial of Convolutional
+Codes: <a href="../../../../../../home.netcom.com/~chip.f/viterbi/algrthms.html#algorithms">http://home.netcom.com/~chip.f/viterbi/algrthms.html#algorithms</a><o:p></o:p></span></p>
+
+<p class=MsoNormal><span style='font-size:14.0pt'><o:p>&nbsp;</o:p></span></p>
+
+<p class=MsoNormal style='text-indent:12.0pt'><o:p>&nbsp;</o:p></p>
+
+<p class=MsoNormal style='text-indent:12.0pt'><o:p>&nbsp;</o:p></p>
+
+</div>
+
+</body>
+
+</html>

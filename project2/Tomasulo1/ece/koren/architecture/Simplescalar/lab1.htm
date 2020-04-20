@@ -1,0 +1,1392 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<meta name="GENERATOR" content="Microsoft FrontPage 4.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<title>In this exercise</title>
+</head>
+
+<body>
+
+<blockquote>
+  <blockquote>
+    <blockquote>
+      <blockquote>
+        <blockquote>
+          <p class="MsoNormal" align="left"><b><font face="Comic Sans MS" color="#FF0000" size="4">Introduction to
+          ISA using SimpleScalar</font></b></p>
+        </blockquote>
+      </blockquote>
+    </blockquote>
+  </blockquote>
+</blockquote>
+
+<p class="MsoNormal"><span style="font-family:&quot;Comic Sans MS&quot;">In this
+exercise, you will run some Benchmarks to find out the distribution of
+instructions they execute. You will use <span style="color:green">sim-profile </span>simulator
+(discussed in the &quot;Introdution to SimpleScalar&quot; webpage) available in the
+SimpleScalar toolset for this purpose. In the first part of this lab, you will
+use SimpleScalar configured for <font color="#FF00FF">ALPHA ISA</font> while in
+the second part, you will use both <font color="#FF00FF">ALPHA and </font></span><font color="#FF00FF"><st1:City>
+<st1:place>
+<span style="font-family:&quot;Comic Sans MS&quot;">PISA</span></st1:place>
+</st1:City>
+</font><span style="font-family:&quot;Comic Sans MS&quot;"><font color="#FF00FF">
+configuration</font>.<o:p>
+&nbsp;If you want to run other benchmarks, they are available at
+</span><span style="font-family: Comic Sans MS"> <a href="../../../../../www.simplescalar.com/default.htm">www.simplescalar.com</a>
+ in the Benchmarks section.</span></p>
+<p class="MsoNormal"><span style="font-family: Comic Sans MS">[Note: Results of
+simulation may vary over multiple runs and among students in all the labs. This
+fact is stated at <a href="../../../../../www.simplescalar.com/default.htm">www.simplescalar.com</a>
+. You should see FAQ section at this website. But the results will be consistent
+which means<br>
+they
+will make sense.]</span><span style="font-family:&quot;Comic Sans MS&quot;"></o:p>
+</span></p>
+<p class="MsoNormal" align="center" style="text-align:center"><b><span style="font-size:14.0pt;font-family:&quot;Comic Sans MS&quot;;color:#FFCC00">Part
+1<o:p>
+</o:p>
+</span></b></p>
+<p class="MsoNormal"><span style="font-family:&quot;Comic Sans MS&quot;"><o:p>
+ &nbsp;</span><span style="font-family:&quot;Comic Sans MS&quot;;color:red">Quick
+fact about</span><span style="font-family:&quot;Comic Sans MS&quot;"> <span style="color:green">sim-profile</span>
+<span style="color:red">simulator<o:p>
+</o:p>
+</span></span></p>
+<p class="MsoNormal"><span style="font-family:&quot;Comic Sans MS&quot;">It is a
+dynamic instruction profiler which means it collects information about
+instructions as they are executed by the simulator. Note that it is a functional
+simulator and not a detailed timing simulator as <span style="color:green">sim-outorder.</span><o:p>
+</o:p>
+</span></p>
+<p class="MsoNormal"><span style="font-family:&quot;Comic Sans MS&quot;"><o:p>
+ &nbsp;<br>
+All the
+simulators including <span style="color:green">sim-profile</span> are available
+in the <span style="color:#993300">home/simplesim-3.0</span> directory.<o:p>
+</o:p>
+</span></p>
+<p class="MsoNormal"><span style="font-family:&quot;Comic Sans MS&quot;"><o:p>Go to <span style="color:#993300">home/simplesim-3.0</span>
+directory and type the following to seek help about <span style="color:green">sim-profile</span>.
+<o:p>
+</o:p>
+</span></p>
+<p class="MsoNormal"><span style="font-family:&quot;Comic Sans MS&quot;;color:#993300">&nbsp;&nbsp;&nbsp;
+home/simplesim-3.0</span><span style="font-family:&quot;Comic Sans MS&quot;">$<span style="color:#003366">./sim-profile
+–h<o:p>
+</o:p>
+</span></span></p>
+<p class="MsoNormal"><span style="font-family:&quot;Comic Sans MS&quot;;color:#003366"><o:p>
+ &nbsp;</span><span style="font-family:&quot;Comic Sans MS&quot;">Help
+can also be invoked just by typing simulator name without any arguments.<o:p>
+</o:p>
+</span></p>
+<p class="MsoNormal"><span style="font-family:&quot;Comic Sans MS&quot;"><o:p>
+ &nbsp;Go
+through help. Now use this help information to execute the following four
+benchmarks available in this tar file.<br>
+Click&nbsp;<a href="benchmarks.tar.gz">benchmarks.tar.gz</a>&nbsp;
+to download this file. Unzip and Untar this file in a directory e.g. 
+<font color="#993300">/home/benchmark</font>
+directory.</span></p>
+<p class="MsoNormal"><span style="font-family:&quot;Comic Sans MS&quot;">The
+information on how to execute these benchmarks using <span style="mso-spacerun:yes">&nbsp;</span><span style="color:green">sim-safe</span>
+is available in the <span style="color:#333399">README</span> file which is also
+in the <span style="color:#993300">home/benchmark</span> directory. Replace <span style="color:green">sim-safe</span>
+with <span style="color:green">sim-profile</span> and add information using <span style="color:green">sim-profile</span>
+help to fill out the following table<o:p>
+</o:p>
+</span></p>
+<p class="MsoNormal"><span style="font-family:&quot;Comic Sans MS&quot;"><o:p>
+&nbsp;</span><span style="mso-list: Ignore; font-family: Comic Sans MS; mso-fareast-font-family: Comic Sans MS; mso-bidi-font-family: Comic Sans MS">&nbsp;&nbsp;
+</span><span style="font-family: Comic Sans MS"> </span><span style="mso-list: Ignore; font-family: Comic Sans MS; mso-fareast-font-family: Comic Sans MS; mso-bidi-font-family: Comic Sans MS">1)<span style="font:7.0pt &quot;Times New Roman&quot;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span><span style="font-family:&quot;Comic Sans MS&quot;;
+color:fuchsia" dir="LTR">anagram:</span><span style="font-family:&quot;Comic Sans MS&quot;">
+a program for finding anagrams for a phrase, based on a dictionary.<o:p>
+</o:p>
+</span></p>
+<p class="MsoNormal" style="margin-left:.5in;text-indent:-.25in;mso-list:l0 level1 lfo1;
+tab-stops:list .5in"><span style="mso-list: Ignore; font-family: Comic Sans MS; mso-fareast-font-family: Comic Sans MS; mso-bidi-font-family: Comic Sans MS">2)<span style="font:7.0pt &quot;Times New Roman&quot;">&nbsp;&nbsp;&nbsp;
+</span></span><span style="font-family:&quot;Comic Sans MS&quot;;
+color:fuchsia" dir="LTR">compress:</span><span style="font-family:&quot;Comic Sans MS&quot;">
+(SPEC) compresses and decompresses a file in memory.<o:p>
+</o:p>
+</span></p>
+<p class="MsoNormal" style="margin-left:.5in;text-indent:-.25in;mso-list:l0 level1 lfo1;
+tab-stops:list .5in"><span style="mso-list: Ignore; font-family: Comic Sans MS; mso-fareast-font-family: Comic Sans MS; mso-bidi-font-family: Comic Sans MS">3)<span style="font:7.0pt &quot;Times New Roman&quot;">&nbsp;&nbsp;&nbsp;
+</span></span><span style="font-family:&quot;Comic Sans MS&quot;;
+color:fuchsia" dir="LTR">go:</span><span style="font-family:&quot;Comic Sans MS&quot;">
+Artificial intelligence; plays the game of go against itself.<o:p>
+</o:p>
+</span></p>
+<p class="MsoNormal" style="margin-left:.5in;text-indent:-.25in;mso-list:l0 level1 lfo1;
+tab-stops:list .5in"><span style="mso-list: Ignore; font-family: Comic Sans MS; mso-fareast-font-family: Comic Sans MS; mso-bidi-font-family: Comic Sans MS">4)<span style="font:7.0pt &quot;Times New Roman&quot;">&nbsp;&nbsp;&nbsp;
+</span></span><span style="font-family:&quot;Comic Sans MS&quot;;
+color:fuchsia" dir="LTR">gcc:</span><span style="font-family:&quot;Comic Sans MS&quot;">
+(SPEC) limited version of gcc.<o:p>
+</o:p>
+</span></p>
+<p class="MsoNormal"><span style="font-family:&quot;Comic Sans MS&quot;"><o:p>
+&nbsp;<o:p>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></p>
+<table class="MsoTableGrid" border="1" cellspacing="0" cellpadding="0" align="left" width="697" style="width:522.9pt;border-collapse:collapse;border:none;
+ mso-border-alt:solid windowtext .5pt;mso-yfti-tbllook:480;mso-table-lspace:
+ 9.0pt;margin-left:6.75pt;mso-table-rspace:9.0pt;margin-right:6.75pt;
+ mso-table-anchor-vertical:paragraph;mso-table-anchor-horizontal:margin;
+ mso-table-left:center;mso-table-top:10.35pt;mso-padding-alt:0in 5.4pt 0in 5.4pt;
+ mso-border-insideh:.5pt solid windowtext;mso-border-insidev:.5pt solid windowtext">
+  <tr style="mso-yfti-irow:0;height:53.55pt">
+    <td width="127" valign="top" style="width:95.05pt;border:solid windowtext 1.0pt;
+  mso-border-alt:solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt;height:53.55pt">
+      <p class="MsoNormal" align="center" style="text-align:center;mso-element:frame;
+  mso-element-frame-hspace:9.0pt;mso-element-wrap:around;mso-element-anchor-vertical:
+  paragraph;mso-element-anchor-horizontal:margin;mso-element-left:center;
+  mso-element-top:10.35pt;mso-height-rule:exactly"><span style="font-family:
+  &quot;Comic Sans MS&quot;;color:blue"><o:p>
+      &nbsp;</o:p>
+      </span></p>
+      <p class="MsoNormal" align="center" style="text-align:center;mso-element:frame;
+  mso-element-frame-hspace:9.0pt;mso-element-wrap:around;mso-element-anchor-vertical:
+  paragraph;mso-element-anchor-horizontal:margin;mso-element-left:center;
+  mso-element-top:10.35pt;mso-height-rule:exactly"><span style="font-family:
+  &quot;Comic Sans MS&quot;;color:blue">Benchmark<o:p>
+      </o:p>
+      </span></p>
+    </td>
+    <td width="108" valign="top" style="width:80.85pt;border:solid windowtext 1.0pt;
+  border-left:none;mso-border-left-alt:solid windowtext .5pt;mso-border-alt:
+  solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt;height:53.55pt">
+      <p class="MsoNormal" align="center" style="text-align:center;mso-element:frame;
+  mso-element-frame-hspace:9.0pt;mso-element-wrap:around;mso-element-anchor-vertical:
+  paragraph;mso-element-anchor-horizontal:margin;mso-element-left:center;
+  mso-element-top:10.35pt;mso-height-rule:exactly"><span style="font-family:
+  &quot;Comic Sans MS&quot;;color:blue"><o:p>
+      &nbsp;</o:p>
+      </span></p>
+      <p class="MsoNormal" align="center" style="text-align:center;mso-element:frame;
+  mso-element-frame-hspace:9.0pt;mso-element-wrap:around;mso-element-anchor-vertical:
+  paragraph;mso-element-anchor-horizontal:margin;mso-element-left:center;
+  mso-element-top:10.35pt;mso-height-rule:exactly"><span style="font-family:
+  &quot;Comic Sans MS&quot;;color:blue">Total # of Instructions<o:p>
+      </o:p>
+      </span></p>
+    </td>
+    <td width="52" valign="top" style="width:38.7pt;border:solid windowtext 1.0pt;
+  border-left:none;mso-border-left-alt:solid windowtext .5pt;mso-border-alt:
+  solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt;height:53.55pt">
+      <p class="MsoNormal" align="center" style="text-align:center;mso-element:frame;
+  mso-element-frame-hspace:9.0pt;mso-element-wrap:around;mso-element-anchor-vertical:
+  paragraph;mso-element-anchor-horizontal:margin;mso-element-left:center;
+  mso-element-top:10.35pt;mso-height-rule:exactly"><span style="font-family:
+  &quot;Comic Sans MS&quot;;color:blue"><o:p>
+      &nbsp;</o:p>
+      </span></p>
+      <p class="MsoNormal" align="center" style="text-align:center;mso-element:frame;
+  mso-element-frame-hspace:9.0pt;mso-element-wrap:around;mso-element-anchor-vertical:
+  paragraph;mso-element-anchor-horizontal:margin;mso-element-left:center;
+  mso-element-top:10.35pt;mso-height-rule:exactly"><span style="font-family:
+  &quot;Comic Sans MS&quot;;color:blue">Load %<o:p>
+      </o:p>
+      </span></p>
+    </td>
+    <td width="59" valign="top" style="width:44.2pt;border:solid windowtext 1.0pt;
+  border-left:none;mso-border-left-alt:solid windowtext .5pt;mso-border-alt:
+  solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt;height:53.55pt">
+      <p class="MsoNormal" align="center" style="text-align:center;mso-element:frame;
+  mso-element-frame-hspace:9.0pt;mso-element-wrap:around;mso-element-anchor-vertical:
+  paragraph;mso-element-anchor-horizontal:margin;mso-element-left:center;
+  mso-element-top:10.35pt;mso-height-rule:exactly"><span style="font-family:
+  &quot;Comic Sans MS&quot;;color:blue"><o:p>
+      &nbsp;</o:p>
+      </span></p>
+      <p class="MsoNormal" align="center" style="text-align:center;mso-element:frame;
+  mso-element-frame-hspace:9.0pt;mso-element-wrap:around;mso-element-anchor-vertical:
+  paragraph;mso-element-anchor-horizontal:margin;mso-element-left:center;
+  mso-element-top:10.35pt;mso-height-rule:exactly"><span style="font-family:
+  &quot;Comic Sans MS&quot;;color:blue">Store %<o:p>
+      </o:p>
+      </span></p>
+    </td>
+    <td width="70" valign="top" style="width:52.5pt;border:solid windowtext 1.0pt;
+  border-left:none;mso-border-left-alt:solid windowtext .5pt;mso-border-alt:
+  solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt;height:53.55pt">
+      <p class="MsoNormal" align="center" style="text-align:center;mso-element:frame;
+  mso-element-frame-hspace:9.0pt;mso-element-wrap:around;mso-element-anchor-vertical:
+  paragraph;mso-element-anchor-horizontal:margin;mso-element-left:center;
+  mso-element-top:10.35pt;mso-height-rule:exactly"><span style="font-family:
+  &quot;Comic Sans MS&quot;;color:blue">Uncond Branch %<o:p>
+      </o:p>
+      </span></p>
+    </td>
+    <td width="67" valign="top" style="width:.7in;border:solid windowtext 1.0pt;
+  border-left:none;mso-border-left-alt:solid windowtext .5pt;mso-border-alt:
+  solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt;height:53.55pt">
+      <p class="MsoNormal" align="center" style="text-align:center;mso-element:frame;
+  mso-element-frame-hspace:9.0pt;mso-element-wrap:around;mso-element-anchor-vertical:
+  paragraph;mso-element-anchor-horizontal:margin;mso-element-left:center;
+  mso-element-top:10.35pt;mso-height-rule:exactly"><span style="font-family:
+  &quot;Comic Sans MS&quot;;color:blue">Cond Branch %<o:p>
+      </o:p>
+      </span></p>
+    </td>
+    <td width="107" valign="top" style="width:80.6pt;border:solid windowtext 1.0pt;
+  border-left:none;mso-border-left-alt:solid windowtext .5pt;mso-border-alt:
+  solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt;height:53.55pt">
+      <p class="MsoNormal" align="center" style="text-align:center;mso-element:frame;
+  mso-element-frame-hspace:9.0pt;mso-element-wrap:around;mso-element-anchor-vertical:
+  paragraph;mso-element-anchor-horizontal:margin;mso-element-left:center;
+  mso-element-top:10.35pt;mso-height-rule:exactly"><span style="font-family:
+  &quot;Comic Sans MS&quot;;color:blue">Integer Computation %<o:p>
+      </o:p>
+      </span></p>
+    </td>
+    <td width="107" valign="top" style="width:80.6pt;border:solid windowtext 1.0pt;
+  border-left:none;mso-border-left-alt:solid windowtext .5pt;mso-border-alt:
+  solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt;height:53.55pt">
+      <p class="MsoNormal" align="center" style="text-align:center;mso-element:frame;
+  mso-element-frame-hspace:9.0pt;mso-element-wrap:around;mso-element-anchor-vertical:
+  paragraph;mso-element-anchor-horizontal:margin;mso-element-left:center;
+  mso-element-top:10.35pt;mso-height-rule:exactly"><span style="font-family:
+  &quot;Comic Sans MS&quot;;color:blue">Floating pt Computation %<o:p>
+      </o:p>
+      </span></p>
+    </td>
+  </tr>
+  <tr style="mso-yfti-irow:1;height:17.85pt">
+    <td width="127" valign="top" style="width:95.05pt;border:solid windowtext 1.0pt;
+  border-top:none;mso-border-top-alt:solid windowtext .5pt;mso-border-alt:solid windowtext .5pt;
+  padding:0in 5.4pt 0in 5.4pt;height:17.85pt">
+      <p class="MsoNormal" style="mso-element:frame;mso-element-frame-hspace:9.0pt;
+  mso-element-wrap:around;mso-element-anchor-vertical:paragraph;mso-element-anchor-horizontal:
+  margin;mso-element-left:center;mso-element-top:10.35pt;mso-height-rule:exactly"><span style="font-family:&quot;Comic Sans MS&quot;;color:gray">anagram.alpha<o:p>
+      </o:p>
+      </span></p>
+    </td>
+    <td width="108" valign="top" style="width:80.85pt;border-top:none;border-left:
+  none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  mso-border-top-alt:solid windowtext .5pt;mso-border-left-alt:solid windowtext .5pt;
+  mso-border-alt:solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt;height:17.85pt">
+      <p class="MsoNormal" style="mso-element:frame;mso-element-frame-hspace:9.0pt;
+  mso-element-wrap:around;mso-element-anchor-vertical:paragraph;mso-element-anchor-horizontal:
+  margin;mso-element-left:center;mso-element-top:10.35pt;mso-height-rule:exactly"><span style="font-family:&quot;Comic Sans MS&quot;"><o:p>
+      &nbsp;</o:p>
+      </span></p>
+    </td>
+    <td width="52" valign="top" style="width:38.7pt;border-top:none;border-left:none;
+  border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  mso-border-top-alt:solid windowtext .5pt;mso-border-left-alt:solid windowtext .5pt;
+  mso-border-alt:solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt;height:17.85pt">
+      <p class="MsoNormal" style="mso-element:frame;mso-element-frame-hspace:9.0pt;
+  mso-element-wrap:around;mso-element-anchor-vertical:paragraph;mso-element-anchor-horizontal:
+  margin;mso-element-left:center;mso-element-top:10.35pt;mso-height-rule:exactly"><span style="font-family:&quot;Comic Sans MS&quot;"><o:p>
+      &nbsp;</o:p>
+      </span></p>
+    </td>
+    <td width="59" valign="top" style="width:44.2pt;border-top:none;border-left:none;
+  border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  mso-border-top-alt:solid windowtext .5pt;mso-border-left-alt:solid windowtext .5pt;
+  mso-border-alt:solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt;height:17.85pt">
+      <p class="MsoNormal" style="mso-element:frame;mso-element-frame-hspace:9.0pt;
+  mso-element-wrap:around;mso-element-anchor-vertical:paragraph;mso-element-anchor-horizontal:
+  margin;mso-element-left:center;mso-element-top:10.35pt;mso-height-rule:exactly"><span style="font-family:&quot;Comic Sans MS&quot;"><o:p>
+      &nbsp;</o:p>
+      </span></p>
+    </td>
+    <td width="70" valign="top" style="width:52.5pt;border-top:none;border-left:none;
+  border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  mso-border-top-alt:solid windowtext .5pt;mso-border-left-alt:solid windowtext .5pt;
+  mso-border-alt:solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt;height:17.85pt">
+      <p class="MsoNormal" style="mso-element:frame;mso-element-frame-hspace:9.0pt;
+  mso-element-wrap:around;mso-element-anchor-vertical:paragraph;mso-element-anchor-horizontal:
+  margin;mso-element-left:center;mso-element-top:10.35pt;mso-height-rule:exactly"><span style="font-family:&quot;Comic Sans MS&quot;"><o:p>
+      &nbsp;</o:p>
+      </span></p>
+    </td>
+    <td width="67" valign="top" style="width:.7in;border-top:none;border-left:none;
+  border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  mso-border-top-alt:solid windowtext .5pt;mso-border-left-alt:solid windowtext .5pt;
+  mso-border-alt:solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt;height:17.85pt">
+      <p class="MsoNormal" style="mso-element:frame;mso-element-frame-hspace:9.0pt;
+  mso-element-wrap:around;mso-element-anchor-vertical:paragraph;mso-element-anchor-horizontal:
+  margin;mso-element-left:center;mso-element-top:10.35pt;mso-height-rule:exactly"><span style="font-family:&quot;Comic Sans MS&quot;"><o:p>
+      &nbsp;</o:p>
+      </span></p>
+    </td>
+    <td width="107" valign="top" style="width:80.6pt;border-top:none;border-left:
+  none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  mso-border-top-alt:solid windowtext .5pt;mso-border-left-alt:solid windowtext .5pt;
+  mso-border-alt:solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt;height:17.85pt">
+      <p class="MsoNormal" style="mso-element:frame;mso-element-frame-hspace:9.0pt;
+  mso-element-wrap:around;mso-element-anchor-vertical:paragraph;mso-element-anchor-horizontal:
+  margin;mso-element-left:center;mso-element-top:10.35pt;mso-height-rule:exactly"><span style="font-family:&quot;Comic Sans MS&quot;"><o:p>
+      &nbsp;</o:p>
+      </span></p>
+    </td>
+    <td width="107" valign="top" style="width:80.6pt;border-top:none;border-left:
+  none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  mso-border-top-alt:solid windowtext .5pt;mso-border-left-alt:solid windowtext .5pt;
+  mso-border-alt:solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt;height:17.85pt">
+      <p class="MsoNormal" style="mso-element:frame;mso-element-frame-hspace:9.0pt;
+  mso-element-wrap:around;mso-element-anchor-vertical:paragraph;mso-element-anchor-horizontal:
+  margin;mso-element-left:center;mso-element-top:10.35pt;mso-height-rule:exactly"><span style="font-family:&quot;Comic Sans MS&quot;"><o:p>
+      &nbsp;</o:p>
+      </span></p>
+    </td>
+  </tr>
+  <tr style="mso-yfti-irow:2;height:17.85pt">
+    <td width="127" valign="top" style="width:95.05pt;border:solid windowtext 1.0pt;
+  border-top:none;mso-border-top-alt:solid windowtext .5pt;mso-border-alt:solid windowtext .5pt;
+  padding:0in 5.4pt 0in 5.4pt;height:17.85pt">
+      <p class="MsoNormal" style="mso-element:frame;mso-element-frame-hspace:9.0pt;
+  mso-element-wrap:around;mso-element-anchor-vertical:paragraph;mso-element-anchor-horizontal:
+  margin;mso-element-left:center;mso-element-top:10.35pt;mso-height-rule:exactly"><span style="font-family:&quot;Comic Sans MS&quot;;color:gray">go.alpha<o:p>
+      </o:p>
+      </span></p>
+    </td>
+    <td width="108" valign="top" style="width:80.85pt;border-top:none;border-left:
+  none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  mso-border-top-alt:solid windowtext .5pt;mso-border-left-alt:solid windowtext .5pt;
+  mso-border-alt:solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt;height:17.85pt">
+      <p class="MsoNormal" style="mso-element:frame;mso-element-frame-hspace:9.0pt;
+  mso-element-wrap:around;mso-element-anchor-vertical:paragraph;mso-element-anchor-horizontal:
+  margin;mso-element-left:center;mso-element-top:10.35pt;mso-height-rule:exactly"><span style="font-family:&quot;Comic Sans MS&quot;"><o:p>
+      &nbsp;</o:p>
+      </span></p>
+    </td>
+    <td width="52" valign="top" style="width:38.7pt;border-top:none;border-left:none;
+  border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  mso-border-top-alt:solid windowtext .5pt;mso-border-left-alt:solid windowtext .5pt;
+  mso-border-alt:solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt;height:17.85pt">
+      <p class="MsoNormal" style="mso-element:frame;mso-element-frame-hspace:9.0pt;
+  mso-element-wrap:around;mso-element-anchor-vertical:paragraph;mso-element-anchor-horizontal:
+  margin;mso-element-left:center;mso-element-top:10.35pt;mso-height-rule:exactly"><span style="font-family:&quot;Comic Sans MS&quot;"><o:p>
+      &nbsp;</o:p>
+      </span></p>
+    </td>
+    <td width="59" valign="top" style="width:44.2pt;border-top:none;border-left:none;
+  border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  mso-border-top-alt:solid windowtext .5pt;mso-border-left-alt:solid windowtext .5pt;
+  mso-border-alt:solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt;height:17.85pt">
+      <p class="MsoNormal" style="mso-element:frame;mso-element-frame-hspace:9.0pt;
+  mso-element-wrap:around;mso-element-anchor-vertical:paragraph;mso-element-anchor-horizontal:
+  margin;mso-element-left:center;mso-element-top:10.35pt;mso-height-rule:exactly"><span style="font-family:&quot;Comic Sans MS&quot;"><o:p>
+      &nbsp;</o:p>
+      </span></p>
+    </td>
+    <td width="70" valign="top" style="width:52.5pt;border-top:none;border-left:none;
+  border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  mso-border-top-alt:solid windowtext .5pt;mso-border-left-alt:solid windowtext .5pt;
+  mso-border-alt:solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt;height:17.85pt">
+      <p class="MsoNormal" style="mso-element:frame;mso-element-frame-hspace:9.0pt;
+  mso-element-wrap:around;mso-element-anchor-vertical:paragraph;mso-element-anchor-horizontal:
+  margin;mso-element-left:center;mso-element-top:10.35pt;mso-height-rule:exactly"><span style="font-family:&quot;Comic Sans MS&quot;"><o:p>
+      &nbsp;</o:p>
+      </span></p>
+    </td>
+    <td width="67" valign="top" style="width:.7in;border-top:none;border-left:none;
+  border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  mso-border-top-alt:solid windowtext .5pt;mso-border-left-alt:solid windowtext .5pt;
+  mso-border-alt:solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt;height:17.85pt">
+      <p class="MsoNormal" style="mso-element:frame;mso-element-frame-hspace:9.0pt;
+  mso-element-wrap:around;mso-element-anchor-vertical:paragraph;mso-element-anchor-horizontal:
+  margin;mso-element-left:center;mso-element-top:10.35pt;mso-height-rule:exactly"><span style="font-family:&quot;Comic Sans MS&quot;"><o:p>
+      &nbsp;</o:p>
+      </span></p>
+    </td>
+    <td width="107" valign="top" style="width:80.6pt;border-top:none;border-left:
+  none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  mso-border-top-alt:solid windowtext .5pt;mso-border-left-alt:solid windowtext .5pt;
+  mso-border-alt:solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt;height:17.85pt">
+      <p class="MsoNormal" style="mso-element:frame;mso-element-frame-hspace:9.0pt;
+  mso-element-wrap:around;mso-element-anchor-vertical:paragraph;mso-element-anchor-horizontal:
+  margin;mso-element-left:center;mso-element-top:10.35pt;mso-height-rule:exactly"><span style="font-family:&quot;Comic Sans MS&quot;"><o:p>
+      &nbsp;</o:p>
+      </span></p>
+    </td>
+    <td width="107" valign="top" style="width:80.6pt;border-top:none;border-left:
+  none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  mso-border-top-alt:solid windowtext .5pt;mso-border-left-alt:solid windowtext .5pt;
+  mso-border-alt:solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt;height:17.85pt">
+      <p class="MsoNormal" style="mso-element:frame;mso-element-frame-hspace:9.0pt;
+  mso-element-wrap:around;mso-element-anchor-vertical:paragraph;mso-element-anchor-horizontal:
+  margin;mso-element-left:center;mso-element-top:10.35pt;mso-height-rule:exactly"><span style="font-family:&quot;Comic Sans MS&quot;"><o:p>
+      &nbsp;</o:p>
+      </span></p>
+    </td>
+  </tr>
+  <tr style="mso-yfti-irow:3;height:17.85pt">
+    <td width="127" valign="top" style="width:95.05pt;border:solid windowtext 1.0pt;
+  border-top:none;mso-border-top-alt:solid windowtext .5pt;mso-border-alt:solid windowtext .5pt;
+  padding:0in 5.4pt 0in 5.4pt;height:17.85pt">
+      <p class="MsoNormal" style="mso-element:frame;mso-element-frame-hspace:9.0pt;
+  mso-element-wrap:around;mso-element-anchor-vertical:paragraph;mso-element-anchor-horizontal:
+  margin;mso-element-left:center;mso-element-top:10.35pt;mso-height-rule:exactly"><span style="font-family:&quot;Comic Sans MS&quot;;color:gray">compress.alpha<o:p>
+      </o:p>
+      </span></p>
+    </td>
+    <td width="108" valign="top" style="width:80.85pt;border-top:none;border-left:
+  none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  mso-border-top-alt:solid windowtext .5pt;mso-border-left-alt:solid windowtext .5pt;
+  mso-border-alt:solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt;height:17.85pt">
+      <p class="MsoNormal" style="mso-element:frame;mso-element-frame-hspace:9.0pt;
+  mso-element-wrap:around;mso-element-anchor-vertical:paragraph;mso-element-anchor-horizontal:
+  margin;mso-element-left:center;mso-element-top:10.35pt;mso-height-rule:exactly"><span style="font-family:&quot;Comic Sans MS&quot;"><o:p>
+      &nbsp;</o:p>
+      </span></p>
+    </td>
+    <td width="52" valign="top" style="width:38.7pt;border-top:none;border-left:none;
+  border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  mso-border-top-alt:solid windowtext .5pt;mso-border-left-alt:solid windowtext .5pt;
+  mso-border-alt:solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt;height:17.85pt">
+      <p class="MsoNormal" style="mso-element:frame;mso-element-frame-hspace:9.0pt;
+  mso-element-wrap:around;mso-element-anchor-vertical:paragraph;mso-element-anchor-horizontal:
+  margin;mso-element-left:center;mso-element-top:10.35pt;mso-height-rule:exactly"><span style="font-family:&quot;Comic Sans MS&quot;"><o:p>
+      &nbsp;</o:p>
+      </span></p>
+    </td>
+    <td width="59" valign="top" style="width:44.2pt;border-top:none;border-left:none;
+  border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  mso-border-top-alt:solid windowtext .5pt;mso-border-left-alt:solid windowtext .5pt;
+  mso-border-alt:solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt;height:17.85pt">
+      <p class="MsoNormal" style="mso-element:frame;mso-element-frame-hspace:9.0pt;
+  mso-element-wrap:around;mso-element-anchor-vertical:paragraph;mso-element-anchor-horizontal:
+  margin;mso-element-left:center;mso-element-top:10.35pt;mso-height-rule:exactly"><span style="font-family:&quot;Comic Sans MS&quot;"><o:p>
+      &nbsp;</o:p>
+      </span></p>
+    </td>
+    <td width="70" valign="top" style="width:52.5pt;border-top:none;border-left:none;
+  border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  mso-border-top-alt:solid windowtext .5pt;mso-border-left-alt:solid windowtext .5pt;
+  mso-border-alt:solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt;height:17.85pt">
+      <p class="MsoNormal" style="mso-element:frame;mso-element-frame-hspace:9.0pt;
+  mso-element-wrap:around;mso-element-anchor-vertical:paragraph;mso-element-anchor-horizontal:
+  margin;mso-element-left:center;mso-element-top:10.35pt;mso-height-rule:exactly"><span style="font-family:&quot;Comic Sans MS&quot;"><o:p>
+      &nbsp;</o:p>
+      </span></p>
+    </td>
+    <td width="67" valign="top" style="width:.7in;border-top:none;border-left:none;
+  border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  mso-border-top-alt:solid windowtext .5pt;mso-border-left-alt:solid windowtext .5pt;
+  mso-border-alt:solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt;height:17.85pt">
+      <p class="MsoNormal" style="mso-element:frame;mso-element-frame-hspace:9.0pt;
+  mso-element-wrap:around;mso-element-anchor-vertical:paragraph;mso-element-anchor-horizontal:
+  margin;mso-element-left:center;mso-element-top:10.35pt;mso-height-rule:exactly"><span style="font-family:&quot;Comic Sans MS&quot;"><o:p>
+      &nbsp;</o:p>
+      </span></p>
+    </td>
+    <td width="107" valign="top" style="width:80.6pt;border-top:none;border-left:
+  none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  mso-border-top-alt:solid windowtext .5pt;mso-border-left-alt:solid windowtext .5pt;
+  mso-border-alt:solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt;height:17.85pt">
+      <p class="MsoNormal" style="mso-element:frame;mso-element-frame-hspace:9.0pt;
+  mso-element-wrap:around;mso-element-anchor-vertical:paragraph;mso-element-anchor-horizontal:
+  margin;mso-element-left:center;mso-element-top:10.35pt;mso-height-rule:exactly"><span style="font-family:&quot;Comic Sans MS&quot;"><o:p>
+      &nbsp;</o:p>
+      </span></p>
+    </td>
+    <td width="107" valign="top" style="width:80.6pt;border-top:none;border-left:
+  none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  mso-border-top-alt:solid windowtext .5pt;mso-border-left-alt:solid windowtext .5pt;
+  mso-border-alt:solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt;height:17.85pt">
+      <p class="MsoNormal" style="mso-element:frame;mso-element-frame-hspace:9.0pt;
+  mso-element-wrap:around;mso-element-anchor-vertical:paragraph;mso-element-anchor-horizontal:
+  margin;mso-element-left:center;mso-element-top:10.35pt;mso-height-rule:exactly"><span style="font-family:&quot;Comic Sans MS&quot;"><o:p>
+      &nbsp;</o:p>
+      </span></p>
+    </td>
+  </tr>
+  <tr style="mso-yfti-irow:4;mso-yfti-lastrow:yes;height:18.65pt">
+    <td width="127" valign="top" style="width:95.05pt;border:solid windowtext 1.0pt;
+  border-top:none;mso-border-top-alt:solid windowtext .5pt;mso-border-alt:solid windowtext .5pt;
+  padding:0in 5.4pt 0in 5.4pt;height:18.65pt">
+      <p class="MsoNormal" style="mso-element:frame;mso-element-frame-hspace:9.0pt;
+  mso-element-wrap:around;mso-element-anchor-vertical:paragraph;mso-element-anchor-horizontal:
+  margin;mso-element-left:center;mso-element-top:10.35pt;mso-height-rule:exactly"><span style="font-family:&quot;Comic Sans MS&quot;;color:gray">gcc.alpha<o:p>
+      </o:p>
+      </span></p>
+    </td>
+    <td width="108" valign="top" style="width:80.85pt;border-top:none;border-left:
+  none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  mso-border-top-alt:solid windowtext .5pt;mso-border-left-alt:solid windowtext .5pt;
+  mso-border-alt:solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt;height:18.65pt">
+      <p class="MsoNormal" style="mso-element:frame;mso-element-frame-hspace:9.0pt;
+  mso-element-wrap:around;mso-element-anchor-vertical:paragraph;mso-element-anchor-horizontal:
+  margin;mso-element-left:center;mso-element-top:10.35pt;mso-height-rule:exactly"><span style="font-family:&quot;Comic Sans MS&quot;"><o:p>
+      &nbsp;</o:p>
+      </span></p>
+    </td>
+    <td width="52" valign="top" style="width:38.7pt;border-top:none;border-left:none;
+  border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  mso-border-top-alt:solid windowtext .5pt;mso-border-left-alt:solid windowtext .5pt;
+  mso-border-alt:solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt;height:18.65pt">
+      <p class="MsoNormal" style="mso-element:frame;mso-element-frame-hspace:9.0pt;
+  mso-element-wrap:around;mso-element-anchor-vertical:paragraph;mso-element-anchor-horizontal:
+  margin;mso-element-left:center;mso-element-top:10.35pt;mso-height-rule:exactly"><span style="font-family:&quot;Comic Sans MS&quot;"><o:p>
+      &nbsp;</o:p>
+      </span></p>
+    </td>
+    <td width="59" valign="top" style="width:44.2pt;border-top:none;border-left:none;
+  border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  mso-border-top-alt:solid windowtext .5pt;mso-border-left-alt:solid windowtext .5pt;
+  mso-border-alt:solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt;height:18.65pt">
+      <p class="MsoNormal" style="mso-element:frame;mso-element-frame-hspace:9.0pt;
+  mso-element-wrap:around;mso-element-anchor-vertical:paragraph;mso-element-anchor-horizontal:
+  margin;mso-element-left:center;mso-element-top:10.35pt;mso-height-rule:exactly"><span style="font-family:&quot;Comic Sans MS&quot;"><o:p>
+      &nbsp;</o:p>
+      </span></p>
+    </td>
+    <td width="70" valign="top" style="width:52.5pt;border-top:none;border-left:none;
+  border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  mso-border-top-alt:solid windowtext .5pt;mso-border-left-alt:solid windowtext .5pt;
+  mso-border-alt:solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt;height:18.65pt">
+      <p class="MsoNormal" style="mso-element:frame;mso-element-frame-hspace:9.0pt;
+  mso-element-wrap:around;mso-element-anchor-vertical:paragraph;mso-element-anchor-horizontal:
+  margin;mso-element-left:center;mso-element-top:10.35pt;mso-height-rule:exactly"><span style="font-family:&quot;Comic Sans MS&quot;"><o:p>
+      &nbsp;</o:p>
+      </span></p>
+    </td>
+    <td width="67" valign="top" style="width:.7in;border-top:none;border-left:none;
+  border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  mso-border-top-alt:solid windowtext .5pt;mso-border-left-alt:solid windowtext .5pt;
+  mso-border-alt:solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt;height:18.65pt">
+      <p class="MsoNormal" style="mso-element:frame;mso-element-frame-hspace:9.0pt;
+  mso-element-wrap:around;mso-element-anchor-vertical:paragraph;mso-element-anchor-horizontal:
+  margin;mso-element-left:center;mso-element-top:10.35pt;mso-height-rule:exactly"><span style="font-family:&quot;Comic Sans MS&quot;"><o:p>
+      &nbsp;</o:p>
+      </span></p>
+    </td>
+    <td width="107" valign="top" style="width:80.6pt;border-top:none;border-left:
+  none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  mso-border-top-alt:solid windowtext .5pt;mso-border-left-alt:solid windowtext .5pt;
+  mso-border-alt:solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt;height:18.65pt">
+      <p class="MsoNormal" style="mso-element:frame;mso-element-frame-hspace:9.0pt;
+  mso-element-wrap:around;mso-element-anchor-vertical:paragraph;mso-element-anchor-horizontal:
+  margin;mso-element-left:center;mso-element-top:10.35pt;mso-height-rule:exactly"><span style="font-family:&quot;Comic Sans MS&quot;"><o:p>
+      &nbsp;</o:p>
+      </span></p>
+    </td>
+    <td width="107" valign="top" style="width:80.6pt;border-top:none;border-left:
+  none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  mso-border-top-alt:solid windowtext .5pt;mso-border-left-alt:solid windowtext .5pt;
+  mso-border-alt:solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt;height:18.65pt">
+      <p class="MsoNormal" style="mso-element:frame;mso-element-frame-hspace:9.0pt;
+  mso-element-wrap:around;mso-element-anchor-vertical:paragraph;mso-element-anchor-horizontal:
+  margin;mso-element-left:center;mso-element-top:10.35pt;mso-height-rule:exactly"><span style="font-family:&quot;Comic Sans MS&quot;"><o:p>
+      &nbsp;</o:p>
+      </span></p>
+    </td>
+  </tr>
+</table>
+<p class="MsoNormal">&nbsp;</p>
+<p class="MsoNormal">&nbsp;</p>
+<p class="MsoNormal"><span style="font-family:&quot;Comic Sans MS&quot;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</o:p>
+</span></p>
+<p class="MsoNormal">&nbsp;</p>
+<p class="MsoNormal">&nbsp;</p>
+<p class="MsoNormal">&nbsp;</p>
+<p class="MsoNormal">&nbsp;</p>
+<p class="MsoNormal">&nbsp;</p>
+<p class="MsoNormal"><span style="font-family: Comic Sans MS">&nbsp;&nbsp; </span><span style="font-family:&quot;Comic Sans MS&quot;">Now
+answer the following questions for each individual benchmark executed above<o:p>
+</o:p>
+</span></p>
+<p class="MsoNormal"><span style="font-family:&quot;Comic Sans MS&quot;"><o:p>
+ &nbsp;</span><span style="font-family: Comic Sans MS">&nbsp;&nbsp; </span><span style="mso-list: Ignore; font-family: Comic Sans MS; mso-fareast-font-family: Comic Sans MS; mso-bidi-font-family: Comic Sans MS">1)<span style="font:7.0pt &quot;Times New Roman&quot;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span><span style="font-family:&quot;Comic Sans MS&quot;" dir="LTR">Is
+the benchmark memory intensive or computation intensive?</span></p>
+<p class="MsoNormal" style="margin-left:.5in;text-indent:-.25in;mso-list:l2 level1 lfo2;
+tab-stops:list .5in"><span style="mso-list: Ignore; font-family: Comic Sans MS; mso-fareast-font-family: Comic Sans MS; mso-bidi-font-family: Comic Sans MS">2)<span style="font:7.0pt &quot;Times New Roman&quot;">&nbsp;&nbsp;&nbsp;
+</span></span><span style="font-family:&quot;Comic Sans MS&quot;" dir="LTR">Is
+the benchmark mainly using integer or floating point computations?<o:p>
+</o:p>
+</span></p>
+<p class="MsoNormal" style="margin-left:.5in;text-indent:-.25in;mso-list:l2 level1 lfo2;
+tab-stops:list .5in"><span style="mso-list: Ignore; font-family: Comic Sans MS; mso-fareast-font-family: Comic Sans MS; mso-bidi-font-family: Comic Sans MS">3)<span style="font:7.0pt &quot;Times New Roman&quot;">&nbsp;&nbsp;&nbsp;
+</span></span><span style="font-family:&quot;Comic Sans MS&quot;" dir="LTR">What
+% of the instructions executed are conditional branches? Given this %, how many
+instructions on average does the processor execute between each pair of
+conditional branch instructions (do not include the conditional branch
+instructions)<o:p></o:p></span></p>
+<p class="MsoNormal" style="margin-left:.5in;text-indent:-.25in;mso-list:l2 level1 lfo2;
+tab-stops:list .5in">&nbsp;&nbsp;&nbsp;<span style="font-family: Comic Sans MS">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span><b><span style="font-size:14.0pt;font-family:&quot;Comic Sans MS&quot;;color:#FFCC00">Part
+2<o:p>
+&nbsp;<br>
+</o:p>
+</span></b></p>
+<p class="MsoNormal"><span style="font-family:&quot;Comic Sans MS&quot;">In this
+part, you will compare the </span><st1:City>
+<st1:place>
+<font color="#FF00FF"><span style="font-family:&quot;Comic Sans MS&quot;">PISA</span></st1:place>
+</st1:City>
+</font><span style="font-family:&quot;Comic Sans MS&quot;"><font color="#FF00FF">
+and Alpha ISA</font> by executing the same benchmarks on the two configurations.<o:p>
+</o:p>
+</span></p>
+<p class="MsoNormal"><span style="font-family:&quot;Comic Sans MS&quot;"><o:p>
+ &nbsp;Since
+the configuration from part 1 is still <font color="#FF00FF">Alpha</font>,
+execute the following benchmarks available in the <span style="color:#993300">home/simplesim-3.0/tests-alpha/bin/
+</span>directory using <span style="color:green">sim-profile</span> and record
+the results in the following table.<o:p>
+</o:p>
+</span></p>
+<p class="MsoNormal"><span style="font-family:&quot;Comic Sans MS&quot;"><o:p>&nbsp;
+</span><span style="mso-list: Ignore; font-family: Comic Sans MS; mso-fareast-font-family: Comic Sans MS; mso-bidi-font-family: Comic Sans MS">1)<span style="font:7.0pt &quot;Times New Roman&quot;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span><span style="font-family:&quot;Comic Sans MS&quot;;
+color:fuchsia" dir="LTR">test-math: </span><span style="font-family:&quot;Comic Sans MS&quot;">performs
+various math computations mostly in integer and displays their result.<span style="color:fuchsia"><o:p>
+<br>
+</span></span> <span style="mso-list: Ignore; font-family: Comic Sans MS; mso-fareast-font-family: Comic Sans MS; mso-bidi-font-family: Comic Sans MS">&nbsp;
+2)<span style="font:7.0pt &quot;Times New Roman&quot;">&nbsp;&nbsp;&nbsp;
+</span></span><span style="font-family:&quot;Comic Sans MS&quot;;
+color:fuchsia" dir="LTR">test-fmath: </span><span style="font-family:&quot;Comic Sans MS&quot;">performs
+various math functions mostly in integer.<o:p>
+&nbsp;<br>
+&nbsp;</span>&nbsp;<span style="mso-list: Ignore; font-family: Comic Sans MS; mso-fareast-font-family: Comic Sans MS; mso-bidi-font-family: Comic Sans MS">3)<span style="font:7.0pt &quot;Times New Roman&quot;">&nbsp;&nbsp;&nbsp;
+</span></span><span style="font-family:&quot;Comic Sans MS&quot;;
+color:fuchsia" dir="LTR">test-llong: <span style="mso-spacerun:yes">&nbsp;&nbsp;</span></span><span style="font-family:&quot;Comic Sans MS&quot;">performs
+computations in long format.<o:p>
+<br>
+</span><span style="font-family: Comic Sans MS">&nbsp; </span><span style="mso-list: Ignore; font-family: Comic Sans MS; mso-fareast-font-family: Comic Sans MS; mso-bidi-font-family: Comic Sans MS">4)<span style="font:7.0pt &quot;Times New Roman&quot;">&nbsp;&nbsp;&nbsp;
+</span></span><span style="font-family:&quot;Comic Sans MS&quot;;
+color:fuchsia" dir="LTR">test-printf: </span><span style="font-family:&quot;Comic Sans MS&quot;">displays
+various print statements<span style="color:fuchsia">.</span><o:p>
+</o:p>
+</span></p>
+<p class="MsoNormal" style="margin-left:.25in"><span style="font-family:&quot;Comic Sans MS&quot;"><o:p>
+ &nbsp;<o:p> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </o:p>
+</span></p>
+<table class="MsoTableGrid" border="1" cellspacing="0" cellpadding="0" width="719" style="width:539.0pt;border-collapse:collapse;border:none;mso-border-alt:solid windowtext .5pt;
+ mso-yfti-tbllook:191;mso-padding-alt:0in 5.4pt 0in 5.4pt;mso-border-insideh:
+ .5pt solid windowtext;mso-border-insidev:.5pt solid windowtext">
+  <tr style="mso-yfti-irow:0;height:51.0pt">
+    <td width="102" valign="top" style="width:76.55pt;border:solid windowtext 1.0pt;
+  mso-border-alt:solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt;height:51.0pt">
+      <p class="MsoNormal" align="center" style="text-align:center"><st1:City>
+      <st1:place>
+      <span style="font-family:&quot;Comic Sans MS&quot;;color:#CC99FF">ALPHA</span></st1:place>
+      </st1:City>
+      <span style="font-family:&quot;Comic Sans MS&quot;;color:#CC99FF"><o:p>
+      </o:p>
+      </span></p>
+      <p class="MsoNormal" align="center" style="text-align:center"><span style="font-family:&quot;Comic Sans MS&quot;;color:#3366FF">Benchmark<o:p>
+      </o:p>
+      </span></p>
+    </td>
+    <td width="103" valign="top" style="width:77.6pt;border:solid windowtext 1.0pt;
+  border-left:none;mso-border-left-alt:solid windowtext .5pt;mso-border-alt:
+  solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt;height:51.0pt">
+      <p class="MsoNormal" align="center" style="text-align:center"><span style="font-family:&quot;Comic Sans MS&quot;;color:#3366FF">Total
+      # of instructions<o:p>
+      </o:p>
+      </span></p>
+    </td>
+    <td width="82" valign="top" style="width:61.3pt;border:solid windowtext 1.0pt;
+  border-left:none;mso-border-left-alt:solid windowtext .5pt;mso-border-alt:
+  solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt;height:51.0pt">
+      <p class="MsoNormal" align="center" style="text-align:center"><span style="font-family:&quot;Comic Sans MS&quot;;color:#3366FF"><o:p>
+      &nbsp;</o:p>
+      </span></p>
+      <p class="MsoNormal" align="center" style="text-align:center"><span style="font-family:&quot;Comic Sans MS&quot;;color:#3366FF">Load<span style="mso-spacerun:yes">&nbsp;
+      </span>%<o:p>
+      </o:p>
+      </span></p>
+    </td>
+    <td width="84" valign="top" style="width:62.8pt;border:solid windowtext 1.0pt;
+  border-left:none;mso-border-left-alt:solid windowtext .5pt;mso-border-alt:
+  solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt;height:51.0pt">
+      <p class="MsoNormal" align="center" style="text-align:center"><span style="font-family:&quot;Comic Sans MS&quot;;color:#3366FF"><o:p>
+      &nbsp;</o:p>
+      </span></p>
+      <p class="MsoNormal" align="center" style="text-align:center"><span style="font-family:&quot;Comic Sans MS&quot;;color:#3366FF">Store
+      %<o:p>
+      </o:p>
+      </span></p>
+    </td>
+    <td width="86" valign="top" style="width:64.6pt;border:solid windowtext 1.0pt;
+  border-left:none;mso-border-left-alt:solid windowtext .5pt;mso-border-alt:
+  solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt;height:51.0pt">
+      <p class="MsoNormal" align="center" style="text-align:center"><span style="font-family:&quot;Comic Sans MS&quot;;color:#3366FF">Uncond
+      branch %<o:p>
+      </o:p>
+      </span></p>
+    </td>
+    <td width="85" valign="top" style="width:64.05pt;border:solid windowtext 1.0pt;
+  border-left:none;mso-border-left-alt:solid windowtext .5pt;mso-border-alt:
+  solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt;height:51.0pt">
+      <p class="MsoNormal" align="center" style="text-align:center"><span style="font-family:&quot;Comic Sans MS&quot;;color:#3366FF">Cond
+      branch %<o:p>
+      </o:p>
+      </span></p>
+    </td>
+    <td width="88" valign="top" style="width:66.15pt;border:solid windowtext 1.0pt;
+  border-left:none;mso-border-left-alt:solid windowtext .5pt;mso-border-alt:
+  solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt;height:51.0pt">
+      <p class="MsoNormal" align="center" style="text-align:center"><span style="font-family:&quot;Comic Sans MS&quot;;color:#3366FF">Integer
+      Compute %<o:p>
+      </o:p>
+      </span></p>
+    </td>
+    <td width="88" valign="top" style="width:65.95pt;border:solid windowtext 1.0pt;
+  border-left:none;mso-border-left-alt:solid windowtext .5pt;mso-border-alt:
+  solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt;height:51.0pt">
+      <p class="MsoNormal" align="center" style="text-align:center"><span style="font-family:&quot;Comic Sans MS&quot;;color:#3366FF">Floating
+      compute %<o:p>
+      </o:p>
+      </span></p>
+    </td>
+  </tr>
+  <tr style="mso-yfti-irow:1;height:30.1pt">
+    <td width="102" valign="top" style="width:76.55pt;border:solid windowtext 1.0pt;
+  border-top:none;mso-border-top-alt:solid windowtext .5pt;mso-border-alt:solid windowtext .5pt;
+  padding:0in 5.4pt 0in 5.4pt;height:30.1pt">
+      <p class="MsoNormal"><span style="font-family:&quot;Comic Sans MS&quot;;color:gray">test-math</span><span style="font-family:&quot;Comic Sans MS&quot;;color:silver"><o:p>
+      </o:p>
+      </span></p>
+    </td>
+    <td width="103" valign="top" style="width:77.6pt;border-top:none;border-left:
+  none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  mso-border-top-alt:solid windowtext .5pt;mso-border-left-alt:solid windowtext .5pt;
+  mso-border-alt:solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt;height:30.1pt">
+      <p class="MsoNormal"><b><span style="font-family:&quot;Comic Sans MS&quot;;color:#FF9900"><o:p>
+      &nbsp;</o:p>
+      </span></b></p>
+    </td>
+    <td width="82" valign="top" style="width:61.3pt;border-top:none;border-left:none;
+  border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  mso-border-top-alt:solid windowtext .5pt;mso-border-left-alt:solid windowtext .5pt;
+  mso-border-alt:solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt;height:30.1pt">
+      <p class="MsoNormal"><b><span style="font-family:&quot;Comic Sans MS&quot;;color:#FF9900"><o:p>
+      &nbsp;</o:p>
+      </span></b></p>
+    </td>
+    <td width="84" valign="top" style="width:62.8pt;border-top:none;border-left:none;
+  border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  mso-border-top-alt:solid windowtext .5pt;mso-border-left-alt:solid windowtext .5pt;
+  mso-border-alt:solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt;height:30.1pt">
+      <p class="MsoNormal"><b><span style="font-family:&quot;Comic Sans MS&quot;;color:#FF9900"><o:p>
+      &nbsp;</o:p>
+      </span></b></p>
+    </td>
+    <td width="86" valign="top" style="width:64.6pt;border-top:none;border-left:none;
+  border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  mso-border-top-alt:solid windowtext .5pt;mso-border-left-alt:solid windowtext .5pt;
+  mso-border-alt:solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt;height:30.1pt">
+      <p class="MsoNormal"><b><span style="font-family:&quot;Comic Sans MS&quot;;color:#FF9900"><o:p>
+      &nbsp;</o:p>
+      </span></b></p>
+    </td>
+    <td width="85" valign="top" style="width:64.05pt;border-top:none;border-left:
+  none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  mso-border-top-alt:solid windowtext .5pt;mso-border-left-alt:solid windowtext .5pt;
+  mso-border-alt:solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt;height:30.1pt">
+      <p class="MsoNormal"><b><span style="font-family:&quot;Comic Sans MS&quot;;color:#FF9900"><o:p>
+      &nbsp;</o:p>
+      </span></b></p>
+    </td>
+    <td width="88" valign="top" style="width:66.15pt;border-top:none;border-left:
+  none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  mso-border-top-alt:solid windowtext .5pt;mso-border-left-alt:solid windowtext .5pt;
+  mso-border-alt:solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt;height:30.1pt">
+      <p class="MsoNormal"><b><span style="font-family:&quot;Comic Sans MS&quot;;color:#FF9900"><o:p>
+      &nbsp;</o:p>
+      </span></b></p>
+    </td>
+    <td width="88" valign="top" style="width:65.95pt;border-top:none;border-left:
+  none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  mso-border-top-alt:solid windowtext .5pt;mso-border-left-alt:solid windowtext .5pt;
+  mso-border-alt:solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt;height:30.1pt">
+      <p class="MsoNormal"><b><span style="font-family:&quot;Comic Sans MS&quot;;color:#FF9900"><o:p>
+      &nbsp;</o:p>
+      </span></b></p>
+    </td>
+  </tr>
+  <tr style="mso-yfti-irow:2;height:26.5pt">
+    <td width="102" valign="top" style="width:76.55pt;border:solid windowtext 1.0pt;
+  border-top:none;mso-border-top-alt:solid windowtext .5pt;mso-border-alt:solid windowtext .5pt;
+  padding:0in 5.4pt 0in 5.4pt;height:26.5pt">
+      <p class="MsoNormal"><span style="font-family:&quot;Comic Sans MS&quot;;color:gray">test-fmath</span><span style="font-family:&quot;Comic Sans MS&quot;;color:#FF9900"><o:p>
+      </o:p>
+      </span></p>
+    </td>
+    <td width="103" valign="top" style="width:77.6pt;border-top:none;border-left:
+  none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  mso-border-top-alt:solid windowtext .5pt;mso-border-left-alt:solid windowtext .5pt;
+  mso-border-alt:solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt;height:26.5pt">
+      <p class="MsoNormal"><b><span style="font-family:&quot;Comic Sans MS&quot;;color:#FF9900"><o:p>
+      &nbsp;</o:p>
+      </span></b></p>
+    </td>
+    <td width="82" valign="top" style="width:61.3pt;border-top:none;border-left:none;
+  border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  mso-border-top-alt:solid windowtext .5pt;mso-border-left-alt:solid windowtext .5pt;
+  mso-border-alt:solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt;height:26.5pt">
+      <p class="MsoNormal"><b><span style="font-family:&quot;Comic Sans MS&quot;;color:#FF9900"><o:p>
+      &nbsp;</o:p>
+      </span></b></p>
+    </td>
+    <td width="84" valign="top" style="width:62.8pt;border-top:none;border-left:none;
+  border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  mso-border-top-alt:solid windowtext .5pt;mso-border-left-alt:solid windowtext .5pt;
+  mso-border-alt:solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt;height:26.5pt">
+      <p class="MsoNormal"><b><span style="font-family:&quot;Comic Sans MS&quot;;color:#FF9900"><o:p>
+      &nbsp;</o:p>
+      </span></b></p>
+    </td>
+    <td width="86" valign="top" style="width:64.6pt;border-top:none;border-left:none;
+  border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  mso-border-top-alt:solid windowtext .5pt;mso-border-left-alt:solid windowtext .5pt;
+  mso-border-alt:solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt;height:26.5pt">
+      <p class="MsoNormal"><b><span style="font-family:&quot;Comic Sans MS&quot;;color:#FF9900"><o:p>
+      &nbsp;</o:p>
+      </span></b></p>
+    </td>
+    <td width="85" valign="top" style="width:64.05pt;border-top:none;border-left:
+  none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  mso-border-top-alt:solid windowtext .5pt;mso-border-left-alt:solid windowtext .5pt;
+  mso-border-alt:solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt;height:26.5pt">
+      <p class="MsoNormal"><b><span style="font-family:&quot;Comic Sans MS&quot;;color:#FF9900"><o:p>
+      &nbsp;</o:p>
+      </span></b></p>
+    </td>
+    <td width="88" valign="top" style="width:66.15pt;border-top:none;border-left:
+  none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  mso-border-top-alt:solid windowtext .5pt;mso-border-left-alt:solid windowtext .5pt;
+  mso-border-alt:solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt;height:26.5pt">
+      <p class="MsoNormal"><b><span style="font-family:&quot;Comic Sans MS&quot;;color:#FF9900"><o:p>
+      &nbsp;</o:p>
+      </span></b></p>
+    </td>
+    <td width="88" valign="top" style="width:65.95pt;border-top:none;border-left:
+  none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  mso-border-top-alt:solid windowtext .5pt;mso-border-left-alt:solid windowtext .5pt;
+  mso-border-alt:solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt;height:26.5pt">
+      <p class="MsoNormal"><b><span style="font-family:&quot;Comic Sans MS&quot;;color:#FF9900"><o:p>
+      &nbsp;</o:p>
+      </span></b></p>
+    </td>
+  </tr>
+  <tr style="mso-yfti-irow:3;height:26.5pt">
+    <td width="102" valign="top" style="width:76.55pt;border:solid windowtext 1.0pt;
+  border-top:none;mso-border-top-alt:solid windowtext .5pt;mso-border-alt:solid windowtext .5pt;
+  padding:0in 5.4pt 0in 5.4pt;height:26.5pt">
+      <p class="MsoNormal"><span style="font-family:&quot;Comic Sans MS&quot;;color:gray">test-llong</span><b><span style="font-family:&quot;Comic Sans MS&quot;;color:#FF9900"><o:p>
+      </o:p>
+      </span></b></p>
+    </td>
+    <td width="103" valign="top" style="width:77.6pt;border-top:none;border-left:
+  none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  mso-border-top-alt:solid windowtext .5pt;mso-border-left-alt:solid windowtext .5pt;
+  mso-border-alt:solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt;height:26.5pt">
+      <p class="MsoNormal"><b><span style="font-family:&quot;Comic Sans MS&quot;;color:#FF9900"><o:p>
+      &nbsp;</o:p>
+      </span></b></p>
+    </td>
+    <td width="82" valign="top" style="width:61.3pt;border-top:none;border-left:none;
+  border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  mso-border-top-alt:solid windowtext .5pt;mso-border-left-alt:solid windowtext .5pt;
+  mso-border-alt:solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt;height:26.5pt">
+      <p class="MsoNormal"><b><span style="font-family:&quot;Comic Sans MS&quot;;color:#FF9900"><o:p>
+      &nbsp;</o:p>
+      </span></b></p>
+    </td>
+    <td width="84" valign="top" style="width:62.8pt;border-top:none;border-left:none;
+  border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  mso-border-top-alt:solid windowtext .5pt;mso-border-left-alt:solid windowtext .5pt;
+  mso-border-alt:solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt;height:26.5pt">
+      <p class="MsoNormal"><b><span style="font-family:&quot;Comic Sans MS&quot;;color:#FF9900"><o:p>
+      &nbsp;</o:p>
+      </span></b></p>
+    </td>
+    <td width="86" valign="top" style="width:64.6pt;border-top:none;border-left:none;
+  border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  mso-border-top-alt:solid windowtext .5pt;mso-border-left-alt:solid windowtext .5pt;
+  mso-border-alt:solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt;height:26.5pt">
+      <p class="MsoNormal"><b><span style="font-family:&quot;Comic Sans MS&quot;;color:#FF9900"><o:p>
+      &nbsp;</o:p>
+      </span></b></p>
+    </td>
+    <td width="85" valign="top" style="width:64.05pt;border-top:none;border-left:
+  none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  mso-border-top-alt:solid windowtext .5pt;mso-border-left-alt:solid windowtext .5pt;
+  mso-border-alt:solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt;height:26.5pt">
+      <p class="MsoNormal"><b><span style="font-family:&quot;Comic Sans MS&quot;;color:#FF9900"><o:p>
+      &nbsp;</o:p>
+      </span></b></p>
+    </td>
+    <td width="88" valign="top" style="width:66.15pt;border-top:none;border-left:
+  none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  mso-border-top-alt:solid windowtext .5pt;mso-border-left-alt:solid windowtext .5pt;
+  mso-border-alt:solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt;height:26.5pt">
+      <p class="MsoNormal"><b><span style="font-family:&quot;Comic Sans MS&quot;;color:#FF9900"><o:p>
+      &nbsp;</o:p>
+      </span></b></p>
+    </td>
+    <td width="88" valign="top" style="width:65.95pt;border-top:none;border-left:
+  none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  mso-border-top-alt:solid windowtext .5pt;mso-border-left-alt:solid windowtext .5pt;
+  mso-border-alt:solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt;height:26.5pt">
+      <p class="MsoNormal"><b><span style="font-family:&quot;Comic Sans MS&quot;;color:#FF9900"><o:p>
+      &nbsp;</o:p>
+      </span></b></p>
+    </td>
+  </tr>
+  <tr style="mso-yfti-irow:4;mso-yfti-lastrow:yes;height:27.4pt">
+    <td width="102" valign="top" style="width:76.55pt;border:solid windowtext 1.0pt;
+  border-top:none;mso-border-top-alt:solid windowtext .5pt;mso-border-alt:solid windowtext .5pt;
+  padding:0in 5.4pt 0in 5.4pt;height:27.4pt">
+      <p class="MsoNormal"><span style="font-family:&quot;Comic Sans MS&quot;;color:gray">Test-printf</span><span style="font-family:&quot;Comic Sans MS&quot;;color:#FF9900"><o:p>
+      </o:p>
+      </span></p>
+    </td>
+    <td width="103" valign="top" style="width:77.6pt;border-top:none;border-left:
+  none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  mso-border-top-alt:solid windowtext .5pt;mso-border-left-alt:solid windowtext .5pt;
+  mso-border-alt:solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt;height:27.4pt">
+      <p class="MsoNormal"><b><span style="font-family:&quot;Comic Sans MS&quot;;color:#FF9900"><o:p>
+      &nbsp;</o:p>
+      </span></b></p>
+    </td>
+    <td width="82" valign="top" style="width:61.3pt;border-top:none;border-left:none;
+  border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  mso-border-top-alt:solid windowtext .5pt;mso-border-left-alt:solid windowtext .5pt;
+  mso-border-alt:solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt;height:27.4pt">
+      <p class="MsoNormal"><b><span style="font-family:&quot;Comic Sans MS&quot;;color:#FF9900"><o:p>
+      &nbsp;</o:p>
+      </span></b></p>
+    </td>
+    <td width="84" valign="top" style="width:62.8pt;border-top:none;border-left:none;
+  border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  mso-border-top-alt:solid windowtext .5pt;mso-border-left-alt:solid windowtext .5pt;
+  mso-border-alt:solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt;height:27.4pt">
+      <p class="MsoNormal"><b><span style="font-family:&quot;Comic Sans MS&quot;;color:#FF9900"><o:p>
+      &nbsp;</o:p>
+      </span></b></p>
+    </td>
+    <td width="86" valign="top" style="width:64.6pt;border-top:none;border-left:none;
+  border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  mso-border-top-alt:solid windowtext .5pt;mso-border-left-alt:solid windowtext .5pt;
+  mso-border-alt:solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt;height:27.4pt">
+      <p class="MsoNormal"><b><span style="font-family:&quot;Comic Sans MS&quot;;color:#FF9900"><o:p>
+      &nbsp;</o:p>
+      </span></b></p>
+    </td>
+    <td width="85" valign="top" style="width:64.05pt;border-top:none;border-left:
+  none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  mso-border-top-alt:solid windowtext .5pt;mso-border-left-alt:solid windowtext .5pt;
+  mso-border-alt:solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt;height:27.4pt">
+      <p class="MsoNormal"><b><span style="font-family:&quot;Comic Sans MS&quot;;color:#FF9900"><o:p>
+      &nbsp;</o:p>
+      </span></b></p>
+    </td>
+    <td width="88" valign="top" style="width:66.15pt;border-top:none;border-left:
+  none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  mso-border-top-alt:solid windowtext .5pt;mso-border-left-alt:solid windowtext .5pt;
+  mso-border-alt:solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt;height:27.4pt">
+      <p class="MsoNormal"><b><span style="font-family:&quot;Comic Sans MS&quot;;color:#FF9900"><o:p>
+      &nbsp;</o:p>
+      </span></b></p>
+    </td>
+    <td width="88" valign="top" style="width:65.95pt;border-top:none;border-left:
+  none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  mso-border-top-alt:solid windowtext .5pt;mso-border-left-alt:solid windowtext .5pt;
+  mso-border-alt:solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt;height:27.4pt">
+      <p class="MsoNormal"><b><span style="font-family:&quot;Comic Sans MS&quot;;color:#FF9900"><o:p>
+      &nbsp;</o:p>
+      </span></b></p>
+    </td>
+  </tr>
+</table>
+<p class="MsoNormal" style="margin-left:.25in"><span style="font-family:&quot;Comic Sans MS&quot;"><o:p>
+ &nbsp;</span><b><span style="font-size:16.0pt;font-family:&quot;Comic Sans MS&quot;;color:#FF9900"><o:p>
+ &nbsp;</o:p>
+</span></b></p>
+<p class="MsoNormal"><span style="font-family:&quot;Comic Sans MS&quot;">Now
+change configuration to </span><st1:City>
+<st1:place>
+<span style="font-family:&quot;Comic Sans MS&quot;">PISA</span></st1:place>
+</st1:City>
+<span style="font-family:&quot;Comic Sans MS&quot;"> by typing the following
+three commands in a sequence.<o:p>
+</o:p>
+</span></p>
+<p class="MsoNormal"><span style="font-family:&quot;Comic Sans MS&quot;"><o:p></span><span style="font-family:&quot;Comic Sans MS&quot;;color:#993300">home/simplesim-3.0</span><span style="font-family:&quot;Comic Sans MS&quot;">$<span style="color:#003366">./make
+clean<o:p></o:p>
+<br>
+</span></span><span style="font-family:&quot;Comic Sans MS&quot;;color:#993300">home/simplesim-3.0</span><span style="font-family:&quot;Comic Sans MS&quot;">$<span style="color:#003366">./make
+config-pisa<o:p>
+&nbsp;<br>
+</span></span><span style="font-family:&quot;Comic Sans MS&quot;;color:#993300">home/simplesim-3.0</span><span style="font-family:&quot;Comic Sans MS&quot;">$<span style="color:#003366">./make<o:p>
+</o:p>
+</span></span></p>
+<p class="MsoNormal"><span style="font-family:&quot;Comic Sans MS&quot;"><o:p>
+ &nbsp;To
+change configuration back to Alpha, execute the same command sequence except
+that in the second command replace <span style="color:#003366">config-pisa</span>
+by <span style="color:#003366">config-alpha</span>.<o:p>
+</o:p>
+</span></p>
+<p class="MsoNormal"><span style="font-family:&quot;Comic Sans MS&quot;"><o:p>
+ &nbsp;Now
+execute the following benchmarks available in the <span style="color:#993300">home/simplesim-3.0/tests-pisa/bin/
+</span>directory using <span style="color:green">sim-profile</span> and record
+the results in the following table.<o:p>
+</o:p>
+</span></p>
+<p class="MsoNormal"><span style="font-family:&quot;Comic Sans MS&quot;"><o:p>
+ &nbsp;</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </p>
+<table class="MsoTableGrid" border="1" cellspacing="0" cellpadding="0" width="668" style="width:501.15pt;border-collapse:collapse;border:none;mso-border-alt:
+ solid windowtext .5pt;mso-yfti-tbllook:191;mso-padding-alt:0in 5.4pt 0in 5.4pt;
+ mso-border-insideh:.5pt solid windowtext;mso-border-insidev:.5pt solid windowtext">
+  <tr style="mso-yfti-irow:0;height:37.9pt">
+    <td width="108" valign="top" style="width:80.75pt;border:solid windowtext 1.0pt;
+  mso-border-alt:solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt;height:37.9pt">
+      <p class="MsoNormal" align="center" style="text-align:center"><span style="font-family:&quot;Comic Sans MS&quot;;color:#CC99FF">PISA<o:p>
+      </o:p>
+      </span></p>
+      <p class="MsoNormal" align="center" style="text-align:center"><span style="font-family:&quot;Comic Sans MS&quot;;color:#3366FF">Benchmark<o:p>
+      </o:p>
+      </span></p>
+    </td>
+    <td width="116" valign="top" style="width:87.0pt;border:solid windowtext 1.0pt;
+  border-left:none;mso-border-left-alt:solid windowtext .5pt;mso-border-alt:
+  solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt;height:37.9pt">
+      <p class="MsoNormal"><span style="font-family:&quot;Comic Sans MS&quot;;color:#3366FF">Total
+      # of instructions<o:p>
+      </o:p>
+      </span></p>
+    </td>
+    <td width="55" valign="top" style="width:41.4pt;border:solid windowtext 1.0pt;
+  border-left:none;mso-border-left-alt:solid windowtext .5pt;mso-border-alt:
+  solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt;height:37.9pt">
+      <p class="MsoNormal" align="center" style="text-align:center"><span style="font-family:&quot;Comic Sans MS&quot;;color:#3366FF"><o:p>
+      &nbsp;</o:p>
+      </span></p>
+      <p class="MsoNormal" align="center" style="text-align:center"><span style="font-family:&quot;Comic Sans MS&quot;;color:#3366FF">Load<span style="mso-spacerun:yes">&nbsp;
+      </span>%<o:p>
+      </o:p>
+      </span></p>
+    </td>
+    <td width="65" valign="top" style="width:48.7pt;border:solid windowtext 1.0pt;
+  border-left:none;mso-border-left-alt:solid windowtext .5pt;mso-border-alt:
+  solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt;height:37.9pt">
+      <p class="MsoNormal" align="center" style="text-align:center"><span style="font-family:&quot;Comic Sans MS&quot;;color:#3366FF"><o:p>
+      &nbsp;</o:p>
+      </span></p>
+      <p class="MsoNormal" align="center" style="text-align:center"><span style="font-family:&quot;Comic Sans MS&quot;;color:#3366FF">Store
+      %<o:p>
+      </o:p>
+      </span></p>
+    </td>
+    <td width="77" valign="top" style="width:58.0pt;border:solid windowtext 1.0pt;
+  border-left:none;mso-border-left-alt:solid windowtext .5pt;mso-border-alt:
+  solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt;height:37.9pt">
+      <p class="MsoNormal" align="center" style="text-align:center"><span style="font-family:&quot;Comic Sans MS&quot;;color:#3366FF">Uncond
+      branch %<o:p>
+      </o:p>
+      </span></p>
+    </td>
+    <td width="74" valign="top" style="width:55.2pt;border:solid windowtext 1.0pt;
+  border-left:none;mso-border-left-alt:solid windowtext .5pt;mso-border-alt:
+  solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt;height:37.9pt">
+      <p class="MsoNormal" align="center" style="text-align:center"><span style="font-family:&quot;Comic Sans MS&quot;;color:#3366FF">Cond
+      branch %<o:p>
+      </o:p>
+      </span></p>
+    </td>
+    <td width="88" valign="top" style="width:65.65pt;border:solid windowtext 1.0pt;
+  border-left:none;mso-border-left-alt:solid windowtext .5pt;mso-border-alt:
+  solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt;height:37.9pt">
+      <p class="MsoNormal" align="center" style="text-align:center"><span style="font-family:&quot;Comic Sans MS&quot;;color:#3366FF">Integer
+      Compute %<o:p>
+      </o:p>
+      </span></p>
+    </td>
+    <td width="86" valign="top" style="width:64.45pt;border:solid windowtext 1.0pt;
+  border-left:none;mso-border-left-alt:solid windowtext .5pt;mso-border-alt:
+  solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt;height:37.9pt">
+      <p class="MsoNormal" align="center" style="text-align:center"><span style="font-family:&quot;Comic Sans MS&quot;;color:#3366FF">Floating
+      compute %<o:p>
+      </o:p>
+      </span></p>
+    </td>
+  </tr>
+  <tr style="mso-yfti-irow:1;height:22.35pt">
+    <td width="108" valign="top" style="width:80.75pt;border:solid windowtext 1.0pt;
+  border-top:none;mso-border-top-alt:solid windowtext .5pt;mso-border-alt:solid windowtext .5pt;
+  padding:0in 5.4pt 0in 5.4pt;height:22.35pt">
+      <p class="MsoNormal"><span style="font-family:&quot;Comic Sans MS&quot;;color:gray">test-math</span><span style="font-family:&quot;Comic Sans MS&quot;;color:silver"><o:p>
+      </o:p>
+      </span></p>
+    </td>
+    <td width="116" valign="top" style="width:87.0pt;border-top:none;border-left:
+  none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  mso-border-top-alt:solid windowtext .5pt;mso-border-left-alt:solid windowtext .5pt;
+  mso-border-alt:solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt;height:22.35pt">
+      <p class="MsoNormal"><b><span style="font-family:&quot;Comic Sans MS&quot;;color:#FF9900"><o:p>
+      &nbsp;</o:p>
+      </span></b></p>
+    </td>
+    <td width="55" valign="top" style="width:41.4pt;border-top:none;border-left:none;
+  border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  mso-border-top-alt:solid windowtext .5pt;mso-border-left-alt:solid windowtext .5pt;
+  mso-border-alt:solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt;height:22.35pt">
+      <p class="MsoNormal"><b><span style="font-family:&quot;Comic Sans MS&quot;;color:#FF9900"><o:p>
+      &nbsp;</o:p>
+      </span></b></p>
+    </td>
+    <td width="65" valign="top" style="width:48.7pt;border-top:none;border-left:none;
+  border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  mso-border-top-alt:solid windowtext .5pt;mso-border-left-alt:solid windowtext .5pt;
+  mso-border-alt:solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt;height:22.35pt">
+      <p class="MsoNormal"><b><span style="font-family:&quot;Comic Sans MS&quot;;color:#FF9900"><o:p>
+      &nbsp;</o:p>
+      </span></b></p>
+    </td>
+    <td width="77" valign="top" style="width:58.0pt;border-top:none;border-left:none;
+  border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  mso-border-top-alt:solid windowtext .5pt;mso-border-left-alt:solid windowtext .5pt;
+  mso-border-alt:solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt;height:22.35pt">
+      <p class="MsoNormal"><b><span style="font-family:&quot;Comic Sans MS&quot;;color:#FF9900"><o:p>
+      &nbsp;</o:p>
+      </span></b></p>
+    </td>
+    <td width="74" valign="top" style="width:55.2pt;border-top:none;border-left:none;
+  border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  mso-border-top-alt:solid windowtext .5pt;mso-border-left-alt:solid windowtext .5pt;
+  mso-border-alt:solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt;height:22.35pt">
+      <p class="MsoNormal"><b><span style="font-family:&quot;Comic Sans MS&quot;;color:#FF9900"><o:p>
+      &nbsp;</o:p>
+      </span></b></p>
+    </td>
+    <td width="88" valign="top" style="width:65.65pt;border-top:none;border-left:
+  none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  mso-border-top-alt:solid windowtext .5pt;mso-border-left-alt:solid windowtext .5pt;
+  mso-border-alt:solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt;height:22.35pt">
+      <p class="MsoNormal"><b><span style="font-family:&quot;Comic Sans MS&quot;;color:#FF9900"><o:p>
+      &nbsp;</o:p>
+      </span></b></p>
+    </td>
+    <td width="86" valign="top" style="width:64.45pt;border-top:none;border-left:
+  none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  mso-border-top-alt:solid windowtext .5pt;mso-border-left-alt:solid windowtext .5pt;
+  mso-border-alt:solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt;height:22.35pt">
+      <p class="MsoNormal"><b><span style="font-family:&quot;Comic Sans MS&quot;;color:#FF9900"><o:p>
+      &nbsp;</o:p>
+      </span></b></p>
+    </td>
+  </tr>
+  <tr style="mso-yfti-irow:2;height:19.7pt">
+    <td width="108" valign="top" style="width:80.75pt;border:solid windowtext 1.0pt;
+  border-top:none;mso-border-top-alt:solid windowtext .5pt;mso-border-alt:solid windowtext .5pt;
+  padding:0in 5.4pt 0in 5.4pt;height:19.7pt">
+      <p class="MsoNormal"><span style="font-family:&quot;Comic Sans MS&quot;;color:gray">test-fmath</span><span style="font-family:&quot;Comic Sans MS&quot;;color:#FF9900"><o:p>
+      </o:p>
+      </span></p>
+    </td>
+    <td width="116" valign="top" style="width:87.0pt;border-top:none;border-left:
+  none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  mso-border-top-alt:solid windowtext .5pt;mso-border-left-alt:solid windowtext .5pt;
+  mso-border-alt:solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt;height:19.7pt">
+      <p class="MsoNormal"><b><span style="font-family:&quot;Comic Sans MS&quot;;color:#FF9900"><o:p>
+      &nbsp;</o:p>
+      </span></b></p>
+    </td>
+    <td width="55" valign="top" style="width:41.4pt;border-top:none;border-left:none;
+  border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  mso-border-top-alt:solid windowtext .5pt;mso-border-left-alt:solid windowtext .5pt;
+  mso-border-alt:solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt;height:19.7pt">
+      <p class="MsoNormal"><b><span style="font-family:&quot;Comic Sans MS&quot;;color:#FF9900"><o:p>
+      &nbsp;</o:p>
+      </span></b></p>
+    </td>
+    <td width="65" valign="top" style="width:48.7pt;border-top:none;border-left:none;
+  border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  mso-border-top-alt:solid windowtext .5pt;mso-border-left-alt:solid windowtext .5pt;
+  mso-border-alt:solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt;height:19.7pt">
+      <p class="MsoNormal"><b><span style="font-family:&quot;Comic Sans MS&quot;;color:#FF9900"><o:p>
+      &nbsp;</o:p>
+      </span></b></p>
+    </td>
+    <td width="77" valign="top" style="width:58.0pt;border-top:none;border-left:none;
+  border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  mso-border-top-alt:solid windowtext .5pt;mso-border-left-alt:solid windowtext .5pt;
+  mso-border-alt:solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt;height:19.7pt">
+      <p class="MsoNormal"><b><span style="font-family:&quot;Comic Sans MS&quot;;color:#FF9900"><o:p>
+      &nbsp;</o:p>
+      </span></b></p>
+    </td>
+    <td width="74" valign="top" style="width:55.2pt;border-top:none;border-left:none;
+  border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  mso-border-top-alt:solid windowtext .5pt;mso-border-left-alt:solid windowtext .5pt;
+  mso-border-alt:solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt;height:19.7pt">
+      <p class="MsoNormal"><b><span style="font-family:&quot;Comic Sans MS&quot;;color:#FF9900"><o:p>
+      &nbsp;</o:p>
+      </span></b></p>
+    </td>
+    <td width="88" valign="top" style="width:65.65pt;border-top:none;border-left:
+  none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  mso-border-top-alt:solid windowtext .5pt;mso-border-left-alt:solid windowtext .5pt;
+  mso-border-alt:solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt;height:19.7pt">
+      <p class="MsoNormal"><b><span style="font-family:&quot;Comic Sans MS&quot;;color:#FF9900"><o:p>
+      &nbsp;</o:p>
+      </span></b></p>
+    </td>
+    <td width="86" valign="top" style="width:64.45pt;border-top:none;border-left:
+  none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  mso-border-top-alt:solid windowtext .5pt;mso-border-left-alt:solid windowtext .5pt;
+  mso-border-alt:solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt;height:19.7pt">
+      <p class="MsoNormal"><b><span style="font-family:&quot;Comic Sans MS&quot;;color:#FF9900"><o:p>
+      &nbsp;</o:p>
+      </span></b></p>
+    </td>
+  </tr>
+  <tr style="mso-yfti-irow:3;height:19.7pt">
+    <td width="108" valign="top" style="width:80.75pt;border:solid windowtext 1.0pt;
+  border-top:none;mso-border-top-alt:solid windowtext .5pt;mso-border-alt:solid windowtext .5pt;
+  padding:0in 5.4pt 0in 5.4pt;height:19.7pt">
+      <p class="MsoNormal"><span style="font-family:&quot;Comic Sans MS&quot;;color:gray">test-llong</span><b><span style="font-family:&quot;Comic Sans MS&quot;;color:#FF9900"><o:p>
+      </o:p>
+      </span></b></p>
+    </td>
+    <td width="116" valign="top" style="width:87.0pt;border-top:none;border-left:
+  none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  mso-border-top-alt:solid windowtext .5pt;mso-border-left-alt:solid windowtext .5pt;
+  mso-border-alt:solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt;height:19.7pt">
+      <p class="MsoNormal"><b><span style="font-family:&quot;Comic Sans MS&quot;;color:#FF9900"><o:p>
+      &nbsp;</o:p>
+      </span></b></p>
+    </td>
+    <td width="55" valign="top" style="width:41.4pt;border-top:none;border-left:none;
+  border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  mso-border-top-alt:solid windowtext .5pt;mso-border-left-alt:solid windowtext .5pt;
+  mso-border-alt:solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt;height:19.7pt">
+      <p class="MsoNormal"><b><span style="font-family:&quot;Comic Sans MS&quot;;color:#FF9900"><o:p>
+      &nbsp;</o:p>
+      </span></b></p>
+    </td>
+    <td width="65" valign="top" style="width:48.7pt;border-top:none;border-left:none;
+  border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  mso-border-top-alt:solid windowtext .5pt;mso-border-left-alt:solid windowtext .5pt;
+  mso-border-alt:solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt;height:19.7pt">
+      <p class="MsoNormal"><b><span style="font-family:&quot;Comic Sans MS&quot;;color:#FF9900"><o:p>
+      &nbsp;</o:p>
+      </span></b></p>
+    </td>
+    <td width="77" valign="top" style="width:58.0pt;border-top:none;border-left:none;
+  border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  mso-border-top-alt:solid windowtext .5pt;mso-border-left-alt:solid windowtext .5pt;
+  mso-border-alt:solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt;height:19.7pt">
+      <p class="MsoNormal"><b><span style="font-family:&quot;Comic Sans MS&quot;;color:#FF9900"><o:p>
+      &nbsp;</o:p>
+      </span></b></p>
+    </td>
+    <td width="74" valign="top" style="width:55.2pt;border-top:none;border-left:none;
+  border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  mso-border-top-alt:solid windowtext .5pt;mso-border-left-alt:solid windowtext .5pt;
+  mso-border-alt:solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt;height:19.7pt">
+      <p class="MsoNormal"><b><span style="font-family:&quot;Comic Sans MS&quot;;color:#FF9900"><o:p>
+      &nbsp;</o:p>
+      </span></b></p>
+    </td>
+    <td width="88" valign="top" style="width:65.65pt;border-top:none;border-left:
+  none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  mso-border-top-alt:solid windowtext .5pt;mso-border-left-alt:solid windowtext .5pt;
+  mso-border-alt:solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt;height:19.7pt">
+      <p class="MsoNormal"><b><span style="font-family:&quot;Comic Sans MS&quot;;color:#FF9900"><o:p>
+      &nbsp;</o:p>
+      </span></b></p>
+    </td>
+    <td width="86" valign="top" style="width:64.45pt;border-top:none;border-left:
+  none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  mso-border-top-alt:solid windowtext .5pt;mso-border-left-alt:solid windowtext .5pt;
+  mso-border-alt:solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt;height:19.7pt">
+      <p class="MsoNormal"><b><span style="font-family:&quot;Comic Sans MS&quot;;color:#FF9900"><o:p>
+      &nbsp;</o:p>
+      </span></b></p>
+    </td>
+  </tr>
+  <tr style="mso-yfti-irow:4;mso-yfti-lastrow:yes;height:20.35pt">
+    <td width="108" valign="top" style="width:80.75pt;border:solid windowtext 1.0pt;
+  border-top:none;mso-border-top-alt:solid windowtext .5pt;mso-border-alt:solid windowtext .5pt;
+  padding:0in 5.4pt 0in 5.4pt;height:20.35pt">
+      <p class="MsoNormal"><span style="font-family:&quot;Comic Sans MS&quot;;color:gray">test-printf</span><span style="font-family:&quot;Comic Sans MS&quot;;color:#FF9900"><o:p>
+      </o:p>
+      </span></p>
+    </td>
+    <td width="116" valign="top" style="width:87.0pt;border-top:none;border-left:
+  none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  mso-border-top-alt:solid windowtext .5pt;mso-border-left-alt:solid windowtext .5pt;
+  mso-border-alt:solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt;height:20.35pt">
+      <p class="MsoNormal"><b><span style="font-family:&quot;Comic Sans MS&quot;;color:#FF9900"><o:p>
+      &nbsp;</o:p>
+      </span></b></p>
+    </td>
+    <td width="55" valign="top" style="width:41.4pt;border-top:none;border-left:none;
+  border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  mso-border-top-alt:solid windowtext .5pt;mso-border-left-alt:solid windowtext .5pt;
+  mso-border-alt:solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt;height:20.35pt">
+      <p class="MsoNormal"><b><span style="font-family:&quot;Comic Sans MS&quot;;color:#FF9900"><o:p>
+      &nbsp;</o:p>
+      </span></b></p>
+    </td>
+    <td width="65" valign="top" style="width:48.7pt;border-top:none;border-left:none;
+  border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  mso-border-top-alt:solid windowtext .5pt;mso-border-left-alt:solid windowtext .5pt;
+  mso-border-alt:solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt;height:20.35pt">
+      <p class="MsoNormal"><b><span style="font-family:&quot;Comic Sans MS&quot;;color:#FF9900"><o:p>
+      &nbsp;</o:p>
+      </span></b></p>
+    </td>
+    <td width="77" valign="top" style="width:58.0pt;border-top:none;border-left:none;
+  border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  mso-border-top-alt:solid windowtext .5pt;mso-border-left-alt:solid windowtext .5pt;
+  mso-border-alt:solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt;height:20.35pt">
+      <p class="MsoNormal"><b><span style="font-family:&quot;Comic Sans MS&quot;;color:#FF9900"><o:p>
+      &nbsp;</o:p>
+      </span></b></p>
+    </td>
+    <td width="74" valign="top" style="width:55.2pt;border-top:none;border-left:none;
+  border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  mso-border-top-alt:solid windowtext .5pt;mso-border-left-alt:solid windowtext .5pt;
+  mso-border-alt:solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt;height:20.35pt">
+      <p class="MsoNormal"><b><span style="font-family:&quot;Comic Sans MS&quot;;color:#FF9900"><o:p>
+      &nbsp;</o:p>
+      </span></b></p>
+    </td>
+    <td width="88" valign="top" style="width:65.65pt;border-top:none;border-left:
+  none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  mso-border-top-alt:solid windowtext .5pt;mso-border-left-alt:solid windowtext .5pt;
+  mso-border-alt:solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt;height:20.35pt">
+      <p class="MsoNormal"><b><span style="font-family:&quot;Comic Sans MS&quot;;color:#FF9900"><o:p>
+      &nbsp;</o:p>
+      </span></b></p>
+    </td>
+    <td width="86" valign="top" style="width:64.45pt;border-top:none;border-left:
+  none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  mso-border-top-alt:solid windowtext .5pt;mso-border-left-alt:solid windowtext .5pt;
+  mso-border-alt:solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt;height:20.35pt">
+      <p class="MsoNormal"><b><span style="font-family:&quot;Comic Sans MS&quot;;color:#FF9900"><o:p>
+      &nbsp;</o:p>
+      </span></b></p>
+    </td>
+  </tr>
+</table>
+<p class="MsoNormal"><span style="font-family:&quot;Comic Sans MS&quot;"><o:p>
+ &nbsp;</o:p>
+</span></p>
+<span style="font-size:12.0pt;font-family:&quot;Comic Sans MS&quot;;mso-fareast-font-family:
+&quot;Times New Roman&quot;;mso-bidi-font-family:&quot;Times New Roman&quot;;mso-ansi-language:
+EN-US;mso-fareast-language:EN-US;mso-bidi-language:AR-SA">Now compare the two
+ISAs using a plot (a Histogram is preferred). Use MATLAB or EXCEL to plot the
+histogram.<br>
+What can you conclude about the two ISAs from the Histogram.</span>
+
+</body>
+
+</html>

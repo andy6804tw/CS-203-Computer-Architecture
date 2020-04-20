@@ -1,0 +1,77 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="en-us">
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<meta name="GENERATOR" content="Microsoft FrontPage 4.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<title>How to use the program (1)</title>
+</head>
+
+<body>
+
+<p align="center">How to use this Program</p>
+<p align="left" style="margin: 0">&nbsp;</p>
+<p align="left" style="margin: 0"><b>STEP 1:&nbsp; </b><i>Select The set of
+instructions you want to execute</i></p>
+<ul>
+  <li>
+    <p align="left" style="margin: 0">For the Load and Store instructions, LD
+    and SD respectively, you can edit the fields of the instruction. The first
+    editable component can be changed&nbsp; to:&nbsp; F0 - F16 or any integer
+    number. The second editable component can be changed to any R#</li>
+</ul>
+<p align="center"><img border="0" src="view2.jpg" width="640" height="277"></p>
+<ul>
+  <li>
+    <p align="left">In all the instruction you can use the popup menu to select
+    a pre-entered value. The same applies for selecting the number of executions
+    for the Functional Units.</li>
+</ul>
+<p align="center"><img border="0" src="popup.jpg" width="640" height="480"></p>
+<p align="left" style="margin: 0">&nbsp;</p>
+<p align="left" style="margin: 0"><b>STEP 2:&nbsp; </b><i>Start Execution</i></p>
+<ul>
+  <li>
+    <p align="left" style="margin: 0">To start the execution press the button
+    Execute, or the keys alt-E.</li>
+</ul>
+<p align="left" style="margin: 0"><b>STEP 3:&nbsp; </b><i>Execute the algorithm
+step by step</i></p>
+<ul>
+  <li>
+    <p align="left" style="margin: 0">To execute step by step press the button
+    Next, or the keys alt-N.</li>
+  <li>
+    <p align="left" style="margin: 0">In this example: LD F6,F14,R2, has being
+    issued in the clock 1, the address (F14)+(R2) was calculated, and started
+    its execution in the clock 2, adding the stamp &lt;Executing&gt;. In the
+    clock 2 as well, the next instruction LD F2, -47(R109) was issued and its
+    address was calculated, note that it hasn't start execution yet thus why it
+    doesn't have the stamp &lt;Executing&gt;.&nbsp;</li>
+</ul>
+<p align="center"><img border="0" src="view3.jpg" width="640" height="477"></p>
+<ul>
+  <li>
+    <p align="left" style="margin: 0">In this example the second instruction LD
+    F2,F6,R3, has&nbsp; data dependency with the first instruction issued ADD
+    F6,F8,F0. Therefore the Functional Unit of the Load/Store Unit is waiting
+    for the result of F6 which is provided by Add1. The Load instruction is
+    issued because there are loads units available but it won't start executing
+    until it gets the result of the Add1.</li>
+</ul>
+<p align="center"><img border="0" src="view4.jpg" width="640" height="477"></p>
+<ul>
+  <li>
+    <p align="left" style="margin: 0">Once the first instruction ADD F6,F8,F0
+    has finished (clock number 4)&nbsp; it would write "val (ADD1)" to all pending stations, here the caps indicates that the data
+    is coming from the Functional unit Add1; and the prefix val indicates that this is an actual value-result. The Load/Store Unit which was
+    waiting for the result of F6 gets the value in this clock and calculate the
+    address to start execution in the next clock.</li>
+</ul>
+<p align="center"><img border="0" src="view5.jpg" width="640" height="477"></p>
+<p align="center"><a href="TutorialTomasulo2.htm">Next</a></p>
+
+</body>
+
+</html>

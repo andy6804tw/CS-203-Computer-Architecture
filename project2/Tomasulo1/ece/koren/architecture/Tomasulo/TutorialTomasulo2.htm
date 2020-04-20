@@ -1,0 +1,70 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="en-us">
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<meta name="GENERATOR" content="Microsoft FrontPage 4.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<title>How to use the Program (2)</title>
+</head>
+
+<body>
+
+<p align="center">How to use this Program</p>
+<p align="left" style="margin: 0">&nbsp;</p>
+<p align="left" style="margin: 0"><b>Continue STEP 3:&nbsp; </b><i>Execute the
+algorithm step by step</i></p>
+<ul>
+  <li>
+    <p align="left" style="margin: 0">Now we are in the clock 6, all the instructions
+    have been issued but there is data dependencies among the last 4
+    instructions with the 2 first instructions, therefore they can't start
+    execution even when they have been issued. In this clock 6, the second
+    instruction has finished executing and in the next clock will write its
+    result, note that there are 3 instructions&nbsp; waiting for this
+    result:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; MULTD F0,F2,F4&nbsp; ,&nbsp;&nbsp;
+    SUBD F10,F0,F6&nbsp;&nbsp; and ADDD F6,F8,F2</li>
+</ul>
+<p align="center"><img border="0" src="view6.jpg" width="640" height="477"></p>
+<ul>
+  <li>
+    <p align="left">In clock 7, the Load instruction writes its result in the
+    instruction station and forward the result to the Register file station, F2
+    holds now the value LD1, this value is send to all the units that were
+    waiting for this result. Therefore the instruction&nbsp;&nbsp; MULTD
+    F0,F2,F4&nbsp;&nbsp; can start execution, the other two
+    instructions&nbsp;&nbsp; SUBD F10,F0,F6&nbsp; and&nbsp; ADDD F6,F8,F2 can't
+    start execution yet because they still have data dependencies, check the
+    field Qj in the Reservation Station to find out who are they waiting for.</li>
+</ul>
+<p align="center"><img border="0" src="view7.jpg" width="640" height="477"></p>
+<ul>
+  <li>
+    <p align="left" style="margin: 0">In clock 17 the multiplication ends and in
+    the next clock it will write its result, can you tell now which instructions
+    are going to start execution?</li>
+</ul>
+<p align="center" style="margin: 0"><img border="0" src="view8.jpg" width="640" height="477"></p>
+<ul>
+  <li>
+    <p align="left" style="margin: 0">As you figured it out, the instructions
+    that were waiting to the multiplication to finish now have all its data and
+    can start execution.</li>
+</ul>
+<p align="center"><img border="0" src="view9.jpg" width="640" height="477"></p>
+<p align="left" style="margin: 0"><b>STEP 4:&nbsp; </b><i>Going to the end of the algorithm </i></p>
+<ul>
+  <li>
+    <p align="left" style="margin: 0">If you want to go to the end of the algorithm press the button Commit or hold the keys Alt-M, after finishing executing the algorithm you must press RESET if you want to run the algorithm again</li>
+</ul>
+<p align="left" style="margin: 0"><b>STEP 5:&nbsp; </b><i> </i></p>
+<ul>
+  <li>
+    <p align="left" style="margin: 0">If you still have no clue of what is going on here, don't panic, try reading the textbook Computer Architecture A quantitative Approach Third Edtition, by Hennesy & Patterson, ISBN 1-55860-596-7, Morgan Kaufmann publisher, pages 184-196. </li>
+</ul>
+
+<p align="center"><a href="TutorialTomasulo.htm">Previous</a></p>
+
+</body>
+
+</html>

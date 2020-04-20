@@ -1,0 +1,201 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<title>About Page</title>
+</head>
+
+<body bgcolor="#FFFFCC">
+
+<div align="center">
+  <center>
+  <table border="3" cellspacing="1" width="83%" id="AutoNumber1">
+    <tr>
+      <td width="100%" align="center" bgcolor="#808080">
+      <p align="center"><font color="#FFFFFF"><b>Multitask Cache Simulator</b></font></td>
+    </tr>
+  </table>
+  </center>
+</div>
+<p>&nbsp;</p>
+<h4>Overview</h4>
+<p>This simulator provides the capability to model a small sized cache on a
+system that supports multitasking.&nbsp; In most of the modern processors today
+it is often the case that multiple processes will need to share the resources of
+the system. Here we will simulate a cache on a system that supports multiple
+processes. The processes on the system must be scheduled in some fashion. We
+will explore some of these various scheduling methods later. The basic idea
+however is that generally we would like the processes concurrently being run on
+the system to share the available resources. If the system only has one CPU this
+means that processes may have to yield the use of the CPU for another process.
+We call the operation of stopping one process and starting another a
+context switch. Since these processes are also sharing the cache of the
+system it is possible that some of the blocks requested from this second process
+may be mapped to the same set in the cache as the previous process. If there are
+no more available slots in that set one of the blocks from the previous process
+will have to be removed according to the replacement algorithm being used. At
+some point however, the first process will be allowed to continue where it left
+off. However the second process has left a footprint in the cache and has
+replaced some of the first processes blocks. Now the first process must incur a
+penalty while it reloads the blocks it was utilizing before it was removed. We
+call this penalty the reload transient. We will now explore some of the options
+the simulator offers and how you can use the tool to simulate what we have
+discussed above.</p>
+
+<h4><font size="3">Configuring the Simulator</font></h4>
+
+<p>The simulator provides many options that the user can set to mimic various
+systems and/or scenarios. The cache content is treated as one word (4B) per
+block. After configuring the available options by pressing the &quot;Update 
+Configuration&quot; button the user can then generate a series 
+of memory accesses for each of the tasks by pressing the &quot;Generate Memory
+References&quot; button near the bottom of the form. A table displaying the memory
+references generated for each task will be displayed. The user can then press
+the &quot;Schedule Tasks&quot; button and these series of memory accesses will be
+ordered/scheduled according to the algorithm chosen in the &quot;Scheduling
+Mechanism&quot; option field. And finally the &quot;Step/Run&quot; button can be used 
+to show the state of the cache at various cycles.
+The cache will show which task and corresponding block is currently occupying a
+slot and you will also note that the memory references will be highlighted bold
+when a given miss was the result of a reload transient. Directly under the cache
+is a series of Hit/Miss/Reload Transient cells that will change color based on
+whether the last cycle resulted in a Hit Miss or Reload. Various
+statistics regarding the cache are displayed at the bottom of the page.</p>
+
+<h4>Options</h4>
+
+<table border="1" cellspacing="1" width="100%" id="AutoNumber2">
+  <tr>
+    <td width="23%"><b>Cache Size</b></td>
+    <td width="77%">This option specifies the size of the cache in number of
+    blocks. The cache size must be greater than or equal to the # of sets in the
+    cache.</td>
+  </tr>
+  <tr>
+    <td width="23%"><b># of Sets</b></td>
+    <td width="77%">This option specifies the associatively of the cache or
+    simply the number of sets that the cache contains. The number of sets must
+    be less than or equal to the cache size.</td>
+  </tr>
+  <tr>
+    <td width="23%"><b>Replacement Policy</b></td>
+    <td width="77%">This option allows the ability to set the algorithm that
+    will be used when a given cache block must be replaced due to a conflict.<ul>
+      <li>The LRU algorithm uses an aging method that will set the age of blocks
+      in a set according the time they were last accessed. The block that has
+      not been accessed in the longest amount of time will be replaced.</li>
+      <li>The FIFO algorithm will replace the block that was added to the set
+      first.</li>
+      <li>The RAND algorithm will replace a random block from the set.</li>
+    </ul>
+    </td>
+  </tr>
+  <tr>
+    <td width="23%"><b>Scheduling Mechanism</b></td>
+    <td width="77%">This option allows the ability to set the algorithm that
+    will be used when scheduling the tasks and their corresponding memory
+    requests. It is assumed at time zero that all of the generated memory
+    requests are waiting to be serviced. A memory reference is assumed to use
+    once time slice.<ul>
+      <li>The FIFO (first-in-first-out) scheduling mechanism will order the
+      tasks and all their memory references in a sequential order as it will be
+      assumed that task A made its requests first followed by task B etc.</li>
+      <li>The Round Robin scheduling algorithm attempts to distribute the
+      processing time equitably among all processes. It will allow a given task
+      to run until its time slice has expired whereby the process will be
+      preempted and the next task will be allowed to run for the same time
+      slice.</li>
+      <li>The Priority Based scheduling algorithm allows the user to assign a
+      priority to each of the various tasks. The tasks with the highest priority
+      will be scheduled first but the Round Robin algorithm will be used in
+      cases where two tasks have the same priority.</li>
+    </ul>
+    </td>
+  </tr>
+  <tr>
+    <td width="23%"><b>CPU Time Slice</b></td>
+    <td width="77%">Specifies the amount of memory accesses a task can make
+    before it must yield to another task. Note that this does not apply to the
+    FIFO scheduling mechanism.</td>
+  </tr>
+  <tr>
+    <td width="23%"><b>Use Random Access Sequence</b></td>
+    <td width="77%">Specifies that a random series of memory references should
+    be made based. The other choice is to type in the block requests for each
+    task and each reference by hand. If this box is unchecked and you press the
+    &quot;Generate Memory References&quot; button you will notice that the typical table
+    of tasks and their corresponding memory requests is drawn. The boxes will be
+    blank and should all be filled in before proceeding.</td>
+  </tr>
+  <tr>
+    <td width="23%"><b>Locality Probability</b></td>
+    <td width="77%">This option attempts to constrain the range of block
+    requests that can be generated by each task and provide a reasonable
+    simulation to the principle of locality. The higher the probability you
+    choose the greater a chance there is that a block that was previously
+    requested by a given task will be requested again. Setting the value to 100%
+    will result in the same address being used for all requests by the task. And
+    similarly setting the value to 0% will not constrain the randomness of the
+    generated addresses in any way; with the exception that the simulation has
+    been defined to limit the range of generated addresses to 4x the cache size
+    in blocks.<p>Note: This option only applies when the Use Random Access
+    Sequence option is selected.</td>
+  </tr>
+  <tr>
+    <td width="23%"><b># of Tasks</b></td>
+    <td width="77%">This option defines the number of tasks to be used for the
+    simulation.</td>
+  </tr>
+  <tr>
+    <td width="23%"><b>Priority</b></td>
+    <td width="77%">This option allows the user to assign a priority to each
+    task. The same priority may be assigned to multiple tasks.<p>Note: This
+    option is only applies when the Priority Based scheduling option is chosen.</td>
+  </tr>
+  <tr>
+    <td width="23%"><b>Allow more than 35 Memory Refs</b></td>
+    <td width="77%">This option must be set if you wish to set one or more of
+    the tasks Number of Memory References option to a value higher than 35. The
+    reason for this is because depending on how fast your machine is if you were
+    to run a simulation with 26 tasks each of which made 99 memory references
+    then the simulation could take some time to complete.</td>
+  </tr>
+  <tr>
+    <td width="23%"><b>Number of Memory References</b></td>
+    <td width="77%">This option allows you do define how many memory requests
+    you would like each of the given tasks to be used in the simulation to make.
+    You will note that the task name and it's corresponding color (that will be
+    used throughout the simulation) is displayed to the left.</td>
+  </tr>
+  <tr>
+    <td width="23%"><b>Clock Options</b></td>
+    <td width="77%">Allows control over the number of cycles that are run upon
+    each press of the &quot;Step/Run&quot; button. This option can be changed as many
+    times as one wishes throughout the course of a simulation.</td>
+  </tr>
+</table>
+
+<p>&nbsp;</p>
+
+<h4>Tips</h4>
+
+<ul>
+  <li>The same simulation can be ran as many times in a row if necessary. After
+  the simulation completes simply press the &quot;Step/Run&quot; button again and it will
+  start the simulation over again; keeping all of the same parameters and memory
+  references.</li>
+	<li>Feel free to configure the simulator with different options after an initial simulation
+	is complete. Just be sure to press the &quot;Update Configuration&quot; button after
+	making your selections so that the simulator will load itself with the current
+	configuration. The same series of memory accesses will be used unless you have changed
+	an option that requires the regeneration of memory accesses (ie changing the number of
+	tasks).</li>
+  <li>FIFO scheduling will always produce 0 reload transient penalties in this
+  simulation. This is because each task is allowed to complete in its entirety
+  before the next is serviced. In a real system there are interrupts and I/O
+  requests that can cause context switching even with FIFO scheduling.</li>
+</ul>
+
+</body>
+
+</html>

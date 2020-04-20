@@ -1,0 +1,22 @@
+<html>
+<h1> How to Use This Software </h1>
+<hr>
+<h3> 1. You can input an angle in radians, and click sine, cosine or atan button to get the value and the estimation error.</h3>
+<h3> 2. In this calculation, the following polynomials are used to approximate the sine and cosine functions:</h3>
+<p> <img src="eqs.gif"></p>
+<p>Above, Taylor polynomials are used at the point 0 and 2.1, respectively, to obtain a more accurate approximation.</p>
+<h3> 3. Because the sine and cosine are periodic functions, the following equation is used to reduce from any input to [-3.14,3.14]: </h3>
+<p><img src="eqp.gif"></p>
+For atan function, Remez's algorithm is used to calculate the coefficients using the following equations:</p>
+<p><img src="eqr.gif"></p>
+<h3> 4. The following equations are used to approximate the arctangent function:</h3>
+<p><img src="eqt.gif"></p>
+<h3> 5. The error is calculated by the following equation:</h3>
+<h3>error=p(x)-Math.sin(x)/cos(x)/atan(x)</h3>
+<h3><a href="Trigonometric.html">Back to Calculation Web</a></h3>
+<hr>
+<h3>References:</h3>
+<p>[1] J.M. MULLER,<i>"Elementary functions: Algorithms and implementation"</i>,Birkbauser,1997.</p>
+<p>[2] I. Koren,<i>"Computer Arithmetric Algorithms"</i>,A.K. Peters,2002</p>
+<p>[3] http://www.mathworks.com/help/matlab/index.html</p>
+ </html>

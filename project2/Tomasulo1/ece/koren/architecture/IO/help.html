@@ -1,0 +1,111 @@
+<HTML>
+<HEAD>
+   <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+   <META NAME="Author" CONTENT="Lilian Atieno">
+   <META NAME="GENERATOR" CONTENT="Mozilla/4.03 [en] (X11; I; Linux 2.0.30 i686) [Netscape]">
+   <TITLE>Intro</TITLE>
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#FFCC99" LINK="#0000EF" VLINK="#55188A" ALINK="#FF0000">
+&nbsp;
+<CENTER><B><FONT FACE="Copperplate Gothic Bold"><FONT SIZE=+4>Help on how to use I/O system evaluation tool</FONT></FONT></B></CENTER>
+
+<P>This tool is to help you to know how to run the program and to understand the process of designing an I/O system that meets the goals for cost and performance.
+<P>The tool has five main evaluation buttons. These are:- 
+<UL>
+<LI>
+<B> Reset Values</B></LI>
+This button resets the inputs to default values set by the program BUT it does not evaluate these input to produce any outputs.  The user can change any of the inputs then click on the evaluation buttons to produce an output. An <b>error message </b>will pop up if an input is left blank or if there is an invalid data entry. For example, if the size of the small disk is greater than the size of the large disk or if the utilization of resources is greater than 100% then an error message will pop up. 
+<LI>
+<B>Specs. of Organization</B>.
+This button will produce a table that describes the specifications of the the I/O system.  The I/O performance is limited by the weakest link in the chain, so we evaluate the maximum performance of each link in the I/O chain for each organization to determine the maximum performance of that organization. The contents of this table gives the evaluations as follows:-
+<p><B><i><font color='brown'>i) Maximum IOPS for CPU</B></I></font></p>
+<P>The CPU I/O performance is determined by the speed of the CPU and the number of instructions to perform a disk I/O</P>
+
+<P><center><b>Max IOPS for CPU = (CPU MIPS) / (Number of instructions per I/O)</center></b></p>
+
+<p><B><i><font color='brown'>ii) Maximum IOPS for main memory</B></I></font></p>
+<P>The maximum  performance of the main memory is determined by the memory cycle time, the width of the main memory, and the size of the I/O transfers.</P>
+
+<P><center><b>Max IOPS for main memory =( (1/memory cycle time) * memory width ) / (size of I/O transfers)</center></b></p>
+
+<p><B><i><font color='brown'>iii) Maximum IOPS for the I/O bus</B></I></font></p>
+<P>The I/O bus maximum performance is limited by the bus bandwidth and the size of the I/O</P>
+
+<P><center><b>Max IOPS for I/O bus = (Bus bandwidth) / (size of the I/O)</center></b></p>
+
+<p><B><i><font color='brown'>iv) Maximum IOPS per SCSI controller</B></I></font></p>
+<P>The maximum performance for each SCSI controller is determined by the SCSI controller overhead and the SCSI bus transfer time.  The whole system organization will require several controllers.</P>
+
+<P><center><b>Max IOPS per SCSI controller = 1 / (controller overhead + SCSI bus transfer time)</center></b></p>
+<p><I>But:-</p></i>
+<p><center><B> SCSI bus transfer time = (size of I/O) / (SCSI bus transfer rate) </center></b></p>
+
+<p><B><i><font color='brown'>v) Maximum IOPS (using average seeks) for disks</B></I></font></p>
+<P>The maximum disk performance is determined by the average disk I/O time</P>
+
+<P><center><b>Max IOPS per disk = 1 / (I/O time)</center></b></p>
+<p><I>But to find the average disk access time:-</p></i>
+<p><center><B> I/O time = average seek time + average rotational latency + disk transfer time </center></b></p>
+<p><center><I>Average rotational latency = (0.5 rotation) / (Disk rotation speed)</p></center></i>
+<p><center><I>Disk transfer time = (Average I/O size) / (Disk transfer rate)</p></center></i>
+<p><I>Therefore:-</p></i>
+
+<P><center><b>Max IOPS for large disks = number of large disks required * max IOPS per disk </center></b></p>
+<p><center><I>Number of large disks required = (Desired total disk capacity) /(size of  each large disk ) </p></center></i>
+<P><center><b>Max IOPS for small disks =  number of small disks required * max IOPS per disk </center></b></p>
+<p><center><I>Number of small disks required = (Desired total disk capacity) /(size of  each small disk ) </p></center></i>
+
+<p><B><i><font color='brown'>vi) Maximum IOPS for SCSI strings</B></I></font></p>
+<P>After determining the performance of each link of the I/O chain as described above, the designer has to determine the number of SCSI buses and controllers to use and how many disks to connect to each controller.</P>
+<p> The I/O bus is limited by the number of SCSI controllers and the number of disks per SCSI string.</p>
+<p><center><B> Minimum number of strings for large disks = ceiling value ( (number of large disks required)/(maximum number of disks per SCSI string) ) </center></b></p>
+<p><center><B> Minimum number of strings for small disks = ceiling value ( (number of small disks required)/(maximum number of disks per SCSI string) ) </center></b></p>
+<p><b><center> The number of disks per SCSI string at full bandwidth = floor value( (maximum IOPS per SCSI controller)/(maximum IOPS per disk) )</p></b></center>
+<p><center><B> Ideal number of strings for large disks = ceiling value ( (number of large disks required)/(number of disks per SCSI string at full bandwidth) ) </center></b></p>
+<p><center><B> Ideal number of strings for small disks = ceiling value ( (number of small disks required)/(number of disks per SCSI string at full bandwidth) ) </center></b></p>
+
+<p><I>Therefore:-</p></i>
+
+<P><center><b>Max IOPS for SCSI string of large disks =  number of strings for large disks * max IOPS per SCSI controller </center></b></p>
+
+<P><center><b>Max IOPS for SCSI string of small disks =  number of strings for small disks * max IOPS per SCSI controller </center></b></p>
+<LI>
+<B> Maximum IOPS </B></LI>
+This button produces a table that summarizes the maximum IOPS ( I/O per second)for each I/O system organization. The first two columns show the IOPS when there is no restriction on the utilization of resources ie. it assumes 100% utilization of resources. The rest of the columns show the IOPS when the rules of thumb have been applied to restrict the utilization of resources.
+<LI>
+<B>Cost of Organization</B></LI>
+This button produces a table showing the cost of each system organization. 
+<p><b><center>Cost of organization = CPU cost + (no. of strings * cost of each SCSI controller) +
+(no. of disks * disk size * cost of disk per GB) + (cost of enclosure * ceiling value(no. of disks 
+/ max. no. of disks per package) )</p></b></center> <p>The IOPS shown in the table is the minimum IOPS in each
+organization.</p> <p>The maximum performance of each organization is limited by the bottleneck IOPS</P>
+<P><i>Therefore:-</i></p>
+<p><b><center>IOPS = minimum IOPS (CPU, main memory, I/O bus, disk, SCSI string)
+</p></b></center> 
+
+<LI>
+<B>Resource utilization</B></LI>
+This button produces a table showing the percentage of utilization of each resource before and after using the rules of thumb. 
+<p>The IOPS shown in the table is the minimum IOPS in each organization.
+The maximum performance of each organization is limited by the bottleneck IOPS</P>
+<P><i>Therefore:-</i></p>
+<p><b>IOPS for the organization = minimum IOPS (CPU, main memory, I/O bus, disk, SCSI string) </p></b> 
+<P><i>and the resource utilization are as follows:-</i></p>
+
+<p><b><center>CPU utilization = (IOPS for the organization)/(maximum IOPS for CPU) </p></b></center> 
+<p><b><center>Main memory utilization = (IOPS for the organization)/(maximum IOPS for main memory) </p></b></center> 
+<p><b><center>I/O bus utilization = (IOPS for the organization)/(maximum IOPS for I/O bus) </p></b></center> 
+<p><b><center>Disk  utilization = (IOPS for the organization)/(maximum IOPS per disk<sub>100% utilization</sub> * number of disks) </p></b></center> 
+<p><b><center>SCSI bus utilization = (IOPS for the organization)/(maximum IOPS per SCSI controller<sub>100% utilization</sub> * number of SCSI strings) </p></b></center> 
+<p><b><center>seek utilization = (Average seek time)/(Time between I/Os) </p></b></center> 
+<p><i><center>Time between I/Os = 1 / (maximum IOPS per disk)</p></i></center>
+
+</UL>
+</BODY>
+</HTML>
+
+
+
+
+
+

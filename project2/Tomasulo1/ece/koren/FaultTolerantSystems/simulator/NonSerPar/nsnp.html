@@ -1,0 +1,1891 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Microsoft FrontPage 4.0">
+   <title> Reliability of Serial/Parallel and Non-Serial/Parallel System </title>
+   <base target="_self">
+<script language="LiveScript">
+
+function GraphArrayAtom()
+{
+	this.xi = 0;
+	this.yi = 0;
+	this.ch = " ";
+}
+
+function GraphArray( num )
+{
+	this.totalArray = 0;
+	this.gView = new Array(num);
+	var ix5;
+	for( ix5=0; ix5<512; ix5++ )
+		this.gView[ix5] = new GraphArrayAtom();
+}
+
+function GraphArray_AddItem(row, col, ch)
+{
+	this.gView[this.totalArray].xi = Math.round(row);
+	this.gView[this.totalArray].yi = Math.round(col);
+	this.gView[this.totalArray].ch = ch;
+	this.totalArray = this.totalArray + 1;
+}
+
+function GraphArray_UpdateItem(row, col, ch)
+{
+	var ix5;
+	for( ix5=0; ix5<this.totalArray; ix5++ )
+	{
+		if( this.gView[ix5].xi == Math.round(row) && this.gView[ix5].yi == Math.round(col) )
+		   {
+				var val1 = parseInt(this.gView[ix5].ch, 10);
+				var val2 = parseInt(ch, 10);
+				var val3 = val1 | val2;
+				this.gView[ix5].ch = val3.toString(10);
+				return;
+			}
+	}
+	this.AddItem(row, col, ch);
+}
+
+function GraphArray_ForceItem(row, col, ch)
+{
+	var ix5;
+	for( ix5=0; ix5<this.totalArray; ix5++ )
+	{
+		if( this.gView[ix5].xi == Math.round(row) && this.gView[ix5].yi == Math.round(col) )
+		   {
+				//var val1 = parseInt(this.gView[ix5].ch, 10);
+				//var val2 = parseInt(ch, 10);
+				//var val3 = val1 | val2;
+				this.gView[ix5].ch = ch;
+				return;
+			}
+	}
+	this.AddItem(row, col, ch);
+}
+
+function GraphArray_In(row, col)
+{
+	var ix5;
+	for( ix5=0; ix5<this.totalArray; ix5++ )
+	{
+		if(this.gView[ix5].xi==row && this.gView[ix5].yi == col )
+			return this.gView[ix5].ch;
+	}
+	return ".";
+}
+GraphArray.prototype.AddItem = GraphArray_AddItem;
+GraphArray.prototype.UpdateItem = GraphArray_UpdateItem;
+GraphArray.prototype.ForceItem = GraphArray_ForceItem;
+GraphArray.prototype.In = GraphArray_In;
+
+function GraphArray_DrawModule(top,left,modname)
+{
+	this.UpdateItem(Math.floor(top), Math.floor(left), "3"); 
+	this.UpdateItem(Math.floor(top), Math.floor(left)+1, "10"); 
+	this.UpdateItem(Math.floor(top), Math.floor(left)+2, "10"); 
+	this.UpdateItem(Math.floor(top), Math.floor(left)+3, "10"); 
+	this.UpdateItem(Math.floor(top), Math.floor(left)+4, "9");
+		 
+	this.UpdateItem(Math.floor(top)+1, Math.floor(left), "13"); 
+	this.UpdateItem(Math.floor(top)+1, Math.floor(left)+4, "7");
+		 
+	this.UpdateItem(Math.floor(top)+2, Math.floor(left), "6"); 
+	this.UpdateItem(Math.floor(top)+2, Math.floor(left)+1, "10"); 
+	this.UpdateItem(Math.floor(top)+2, Math.floor(left)+2, "10"); 
+	this.UpdateItem(Math.floor(top)+2, Math.floor(left)+3, "10"); 
+	this.UpdateItem(Math.floor(top)+2, Math.floor(left)+4, "12"); 
+		
+	this.UpdateItem(Math.floor(top)+1, Math.floor(left)+2, modname); 
+	
+/*	this.UpdateItem(Math.floor(top)+1, Math.floor(left)-3, "10"); 
+	this.UpdateItem(Math.floor(top)+1, Math.floor(left)-2, "10"); 
+	this.UpdateItem(Math.floor(top)+1, Math.floor(left)-1, "10"); 
+	this.UpdateItem(Math.floor(top)+1, Math.floor(left)-0, "13"); 
+
+	this.UpdateItem(Math.floor(top)+1, Math.floor(left)+4, "7");
+	this.UpdateItem(Math.floor(top)+1, Math.floor(left)+5, "10"); 
+	this.UpdateItem(Math.floor(top)+1, Math.floor(left)+6, "10"); 
+	this.UpdateItem(Math.floor(top)+1, Math.floor(left)+7, "10"); 
+*/
+}
+GraphArray.prototype.DrawModule = GraphArray_DrawModule;
+
+function System()
+{
+	this.totalNodes = 0;
+	this.totalModules = 0;
+	this.inputNode = 0;
+	this.outputNode = 0;
+	this.comboNum = 0;
+	this.systemOK = 0;
+    this.errmodule = -1;
+}
+
+function ModuleItem(iN)
+{
+	this.wflag = 0;  					// 0---undefine, 1---active, 2---inactive
+	this.iN = 0;						// input node and sequence
+	this.oN = 0;						// output node and sequence
+	this.modname = "";					// Module name
+	this.full="";						// Brief and full expression for reliability
+	this.failurerate=0.0;
+	this.reliable = 0.0;				// numeric for reliability
+	this.type = 0;						// 0---original, 1---serial, 2---parallel
+	this.p1 = "";						// parent one
+	this.p2 = "";						// parent two
+	this.row = 0;                      
+	this.col = 0;                     
+	this.xlen = 1;                  
+	this.ylen = 1;
+	this.gready=0;
+}
+	
+function ModuleItem_SetValue(name, inode, onode)
+{
+	this.iN = inode;
+	this.oN = onode;
+	this.modname = name;
+	this.wflag = 1;
+}
+
+ModuleItem.prototype.SetValue = ModuleItem_SetValue;
+
+function StringHints( )
+{
+	var strHints = "";
+	strHints = strHints + "<p align=\"left\"><font size=\"4\" face=\"Courier New\" color=\"#000000\"> ";
+	strHints = strHints + "Hints:";
+	strHints = strHints + "<blockquote>Please make sure that: " + "<br>";
+	strHints = strHints + "(1):  NodesNum>=2 and NodesNum<=20. " + "<br>";
+	strHints = strHints + "(2):  ModulesNum>=1 and ModulesNum<=20." + "<br>";
+	strHints = strHints + "(3):  InputNode is between 1 and NodesNum." + "<br>";
+	strHints = strHints + "(4):  OutputNodes is between 1 and NodesNum." + "<br>";
+	strHints = strHints + "(5):  InputNode does not equal OutputNode." + "<br>";
+	strHints = strHints + "(6):  Check whether the module name and node pairs are legible. " + "<br>";
+	strHints = strHints + "(7):  Check whether the syntax is right. " + "<br>";
+	strHints = strHints + "</blockquote>" + "<br>";
+	strHints = strHints + "<p align=\"left\"><font size=\"4\" face=\"Courier New\" color=\"#000000\" >";
+	strHints = strHints + "Click <a href=\"help-syntax.html\"><b>here</b></a> you can get more information about the syntax of configuration description. Good Luck." + "</font></p>";
+	return strHints;
+}
+
+function CharIndex( str )
+{
+	var nMod = new Array ('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z' );
+	var iTmp;
+	for( iTmp=0; iTmp<26; iTmp++ )
+		if( nMod[iTmp]==str.charAt(0) )
+			return iTmp;
+	return 0;
+}
+
+function DigitalIndex( str )
+{
+	var nMod = new Array ('0', '1', '2', '3', '4', '5', '6', '7', '8', '9' );
+	var iTmp;
+	for( iTmp=0; iTmp<10; iTmp++ )
+		if( nMod[iTmp]==str.charAt(0) )
+			return iTmp;
+	return 0;
+}
+
+
+// parse Integer, if it fails, return -1, otherwise, return number
+function parseInteger( strInt )
+{
+  var nTmp = 0;
+  for( ix1=0; ix1<strInt.length; ix1++ )
+  {
+  		if( strInt.charAt(ix1)>='0' && strInt.charAt(ix1)<='9' )
+  			nTmp = nTmp * 10 + DigitalIndex(strInt.charAt(ix1));
+  		else
+  			return -1;
+  }  
+  return nTmp;
+}
+
+// parse (??,??) to nTmp2, nTmp3, if failed, return -1; else return nTmp2*256+nTmp3
+function parseNodePairs( str, nTmp2, nTmp3 )
+{
+  if( str.charAt(0)!='(' || str.charAt(1)==',' )
+	return -1;
+  nTmp2 = nTmp3 = 0; 
+  for( ix11=1; ix11<str.length; ix11++ )
+  {
+	if( str.charAt(ix11)==',' )
+		break;
+  	if( str.charAt(ix11)>='0' && str.charAt(ix11)<='9' )
+  		nTmp2 = nTmp2 * 10 + DigitalIndex(str.charAt(ix11));
+  	else
+  		return -1;
+  }  
+  for( ix11++; ix11<str.length; ix11++ )
+  {
+	if( str.charAt(ix11)==')' )
+		break;
+  	if( str.charAt(ix11)>='0' && str.charAt(ix11)<='9' )
+  		nTmp3 = nTmp3 * 10 + DigitalIndex(str.charAt(ix11));
+  	else
+  		return -1;
+  }
+  if( ix11+1 == str.length )  
+	return (nTmp2<<8)+nTmp3;
+  return -1;
+}
+
+// parse InputLine, if it fails, return -1, otherwise, return 0
+function parseInputLine( strLine, system, modules )
+{
+	var ns = "NODESNUM=";
+	var ms = "MODULESNUM=";
+	var is = "INPUTNODE=";
+	var os = "OUTPUTNODE=";
+	
+	var nTmp = -1;
+	
+	if( strLine=="" ) 
+		return 0;
+	
+	// parse "NodesNum=??"
+	if( strLine.substring(0, ns.length)==ns )
+	{
+		nTmp = parseInteger( strLine.slice(ns.length) );
+		if( nTmp==-1 || !(nTmp>=2&&nTmp<=MAX_NODES) )
+			return -1;
+		system.totalNodes = nTmp;
+		return 0;
+	}
+	// parse "ModulesNum=??"
+	else if( strLine.substring(0, ms.length)==ms )
+	{
+		nTmp = parseInteger( strLine.slice(ms.length) );
+		if( nTmp==-1 || !(nTmp>=1&&nTmp<=MAX_MODULES) )
+			return -1;
+		system.totalModules = nTmp;
+		return 0;
+	}
+	// parse "InputNode=??"
+	else if( strLine.substring(0, is.length)==is )
+	{
+		nTmp = parseInteger( strLine.slice(is.length) );
+		if( nTmp==-1 || !(nTmp>=1&&nTmp<=system.totalNodes) )
+			return -1;
+		system.inputNode = nTmp;
+		return 0;
+	}
+	// parse "OutputNode=??"
+	else if( strLine.substring(0, os.length)==os )
+	{
+		nTmp = parseInteger( strLine.slice(os.length) );
+		if( nTmp==-1 || !(nTmp>=1&&nTmp<=system.totalNodes) )
+			return -1;
+		system.outputNode = nTmp;
+		return 0;
+	}
+	
+	// parse Module and node pairs (??,??)
+	else if( strLine.charAt(1)=='=' )
+	{
+		var nTmp1 = CharIndex(strLine);
+		// is it right module?
+		if( nTmp1 + 1 >system.totalModules )
+			return -1;
+		// parse (??, ??)
+		nTmp = parseNodePairs(strLine.slice(2));
+		// is it right input node and output node?
+		if( nTmp==-1 )  return -1;
+		var nTmp2 = nTmp>>8; 
+		var nTmp3 = nTmp&0x00ff;
+		if( ( nTmp2>=1 && nTmp2<=system.totalNodes )  
+		     && ( nTmp3>=1 && nTmp3<=system.totalNodes ) 
+		   )
+		{
+		   modules[nTmp1].SetValue(strLine.charAt(0), nTmp2, nTmp3);
+		   return 0;
+		}
+	}
+	return -1;
+}
+
+function parseInputCfg( strCfg0, system, modules )
+{
+	strCfg = strCfg0.toUpperCase();
+	len = strCfg.length;
+	line = 1; beg=0; end=0;
+	strLine="";
+	for( ix2=0; ix2<len; ix2++ )
+	{
+		if( strCfg.charAt(ix2)!='\n')
+		{
+			if( (strCfg.charAt(ix2)>='A' && strCfg.charAt(ix2)<='Z')
+				|| (strCfg.charAt(ix2)>='0' && strCfg.charAt(ix2)<='9')
+				|| (strCfg.charAt(ix2)=='=' || strCfg.charAt(ix2)==',')
+				|| (strCfg.charAt(ix2)=='(' || strCfg.charAt(ix2)==')') )
+				strLine = strLine + strCfg.charAt(ix2);
+			else if( strCfg.charAt(ix2)==' ' || strCfg.charAt(ix2)=='\t' || strCfg.charAt(ix2)=='\r' )
+				continue;
+			else
+				return -1;
+		}
+		else
+		{
+			if( parseInputLine(strLine, system, modules)==-1 )
+				return -1;
+			line = line + 1;
+			strLine = "";
+		}
+	}
+	if( strLine=="" )
+		return 0;
+	else
+		return parseInputLine(strLine, system, modules);
+
+}
+
+
+// Serial parellel processing
+function GetExpressFromSerial(modules, p1, p2)
+{
+	var newfull = "";
+	if( modules[p1].type==2 )	newfull = "(";
+	newfull = newfull + modules[p1].full;
+	if( modules[p1].type==2 )	newfull = newfull + ")";
+	newfull = newfull +"*";
+	if( modules[p2].type==2 )	newfull =  newfull + "(";
+	newfull = newfull + modules[p2].full;
+	if( modules[p2].type==2 )	newfull = newfull + ")";
+	return newfull;
+}
+
+function GetExpressFromParallel(modules, p1, p2)
+{
+	var newfull = "";
+					
+	if( modules[p1].type!=2 && modules[p2].type!=2 )
+	{
+		newfull = "1-(1-";
+		if( modules[p1].type==2 )	newfull = newfull + "(";
+		newfull = newfull + modules[p1].full;
+		if( modules[p1].type==2 )	newfull = newfull + ")";
+		newfull = newfull + ")*(1-";
+		if( modules[p2].type==2 )	newfull =  newfull + "(";
+		newfull = newfull + modules[p2].full;
+		if( modules[p2].type==2 )	newfull = newfull + ")";
+		newfull = newfull + ")";
+	}
+	else if( modules[p1].type==2 && modules[p2].type==2 )
+		newfull = modules[p1].full + "*" + modules[p2].full.slice(2);
+	else if( modules[p1].type==2 )
+		newfull = modules[p1].full + "*(1-" + modules[p2].full + ")";
+	else
+		newfull = modules[p2].full + "*(1-" + modules[p1].full + ")";
+
+	return newfull;
+}
+
+//modules and number of modules connect to node; return  (module<<8)+number
+function NumConnectFrom(modules, node)
+{
+	var ncf=0;
+	var ix201 = 0;
+	for( ix201=0; ix201<MAX_MODULES-1; ix201++ )
+	{
+		if( modules[ix201].wflag!=1 || modules[ix201].modname=="" )
+			continue;
+		if( modules[ix201].oN==node )
+			ncf = (ix201<<8) + (ncf&0x00ff) + 1;
+	}
+	return ncf;
+}
+
+//modules and number of modules connect from node; return  (module<<8)+number
+function NumConnectTo(modules, node)
+{
+	var ncf=0;
+	var ix201 = 0;
+	for( ix201=0; ix201<MAX_MODULES-1; ix201++ )
+	{
+		if( modules[ix201].wflag!=1 || modules[ix201].modname=="" )
+			continue;
+		if( modules[ix201].iN==node )
+			ncf = (ix201<<8) + (ncf&0x00ff) + 1;
+	}
+	return ncf;
+}
+
+// Add a new combo module
+function AddNewComboModule( system, modules, mod1, mod2 )
+{
+	var ix201 = 0;
+	for( ix201=0; ix201<MAX_MODULES-1; ix201++ )
+	{
+		if( modules[ix201].modname!="" )
+			continue;
+		var newModu = system.comboNum + system.totalModules;
+		modules[newModu].wflag = 1;
+		modules[newModu].modname = "Combo"+(system.comboNum+1);
+		if( modules[mod1].iN==modules[mod2].iN && modules[mod1].oN==modules[mod2].oN )
+		{
+			// parallel case
+			modules[newModu].iN = modules[mod1].iN;
+			modules[newModu].oN = modules[mod1].oN;
+			modules[newModu].type = 2;
+			modules[newModu].p1 = mod1;
+			modules[newModu].p2 = mod2;
+			modules[mod1].wflag = 2;
+			modules[mod2].wflag = 2;
+		}
+		else 
+		{
+			// serial case
+			if( modules[mod1].iN==modules[mod2].oN )
+			{
+				modules[newModu].iN = modules[mod2].iN;
+				modules[newModu].oN = modules[mod1].oN;
+				modules[newModu].p1 = mod2;
+				modules[newModu].p2 = mod1;
+			}
+			else
+			{
+				modules[newModu].iN = modules[mod1].iN;
+				modules[newModu].oN = modules[mod2].oN;
+				modules[newModu].p1 = mod1;
+				modules[newModu].p2 = mod2;
+			}
+			modules[newModu].type = 1;
+			modules[mod1].wflag = 2;
+			modules[mod2].wflag = 2;
+		}
+		system.comboNum = system.comboNum + 1;
+		return;
+	}
+}
+
+// Get the active modules number, return (module<<8 + number)
+function GetActiveModule( system, modules )
+{
+	var ix201 = 0;
+	var nAM = 0;
+	for( ix201=0; ix201<MAX_MODULES; ix201++ )
+	{
+		if( modules[ix201].wflag==1 )
+			nAM = (ix201<<8) + (nAM&0x00ff) + 1;
+	}
+	return nAM;
+}
+
+//Check Parallel Modules, if fails, return -1, else return (node1<<8 + node2)
+function CheckParallelModules( system, modules )
+{
+	var ix201 = 0;
+	var ix202 = 0;
+	// check parallel
+	for( ix201=0; ix201<MAX_MODULES-1; ix201++ )
+	{
+		if( modules[ix201].wflag!=1 || modules[ix201].modname=="" )
+			continue;
+		for( ix202=ix201+1; ix202<MAX_MODULES; ix202++ )
+		{
+			if( modules[ix202].wflag!=1 || modules[ix202].modname=="" )
+				continue;
+			if( modules[ix201].iN==modules[ix202].iN && modules[ix201].oN==modules[ix202].oN )
+				return (ix201<<8)+ix202;
+		}
+	}
+	return -1;
+}
+
+//Check Serial Modules, if fails, return -1, else return (node1<<8 + node2)
+function CheckSerialModules( system, modules )
+{
+	var ix201 = 0;
+	// check parallel
+	for( ix201=1; ix201<=system.totalNodes; ix201++ )
+	{
+		if( ix201==system.inputNode || ix201==system.outputNode )
+			continue;
+		var nCF = NumConnectFrom(modules, ix201);
+		var nCT = NumConnectTo(modules, ix201);
+		if( (nCF&0x00ff)==1 && (nCT&0x00ff)==1 )
+			return ( ((nCF>>8)<<8)+(nCT>>8) );
+	}
+	return -1;
+}
+
+function CombineModules( system, modules )
+{
+	var nParallel=0;
+	var nSerial=0;
+	
+	// combine the parallel/serial modules
+	while( !(nParallel==-1 && nParallel==-1) )
+	{
+		do {
+			nParallel = CheckParallelModules(system, modules);
+			if( nParallel!=-1 )
+			{
+				AddNewComboModule(system, modules, (nParallel>>8), (nParallel&0x00ff));
+				nSerial = 0;
+			}
+		} while ( nParallel!=-1 );
+	
+		do {
+			nSerial = CheckSerialModules(system, modules);
+			if( nSerial!=-1 )
+			{
+				AddNewComboModule(system, modules, (nSerial>>8), (nSerial&0x00ff));
+				nParallel = 0;
+			}
+		} while( nSerial!=-1 );
+	}
+	// finally, if only one module is active, and inputnode and output node are right
+	var nActiveModu = GetActiveModule(system, modules);
+	if( (nActiveModu&0x00ff)==1 )
+	{
+		system.systemOK = 1;
+	}
+	else
+	{
+		system.systemOK = 0;
+	}
+}
+
+// Read Numeric Value for modules, ith=1, 2, 3 ... , if error, return -1;
+
+function ReadNumericValue( strValue, ith )
+{
+
+	var ix4 = 0;
+	var beg = 0;
+	var strTmp;
+	for( ix4=0; ix4<strValue.length; ix4++ )
+	{
+		if( strValue.charAt(ix4)>='0' && strValue.charAt(ix4)<='9' )
+			continue;
+		else if( strValue.charAt(ix4)==',' || strValue.charAt(ix4)=='.' )
+			continue;
+		else if( strValue.charAt(ix4)=='\t' || strValue.charAt(ix4)==' ' )
+			continue;
+		else if( strValue.charAt(ix4)=='\n' || strValue.charAt(ix4)=='\r' )
+			continue;
+		else 
+			return -1;
+	}
+	
+	strTmp = strValue;
+	for( ix4=0; ix4<ith-1; ix4++ )
+	{
+		beg = strTmp.search(",");
+		if( beg==-1 )
+			return -1;
+		strTmp = strTmp.slice(beg+1);
+	}
+	
+	var fRet = 0.0;
+	fRet = parseFloat(strTmp);
+	if( isNaN(fRet) )
+		return -1;
+	else
+		return fRet;
+	
+}
+
+function SetValueForAtom( system, modules, ith, value)
+{	
+	if( ith>=0 && ith<system.totalModules )
+		modules[ith].reliable = value;
+}
+
+/* bwu cb
+function GetSystemValue( system, modules )
+{
+	var ix3 = 0;
+	for( ix3=system.totalModules; ix3<system.totalModules+system.comboNum; ix3++ )
+	{
+		var p1 = modules[ix3].p1;
+		var p2 = modules[ix3].p2;
+		if( modules[ix3].type==1 ) //serial
+			modules[ix3].reliable = modules[p1].reliable * modules[p2].reliable;
+		else // parallel
+			modules[ix3].reliable =1-(1-modules[p1].reliable)*(1-modules[p2].reliable);
+	}
+	return modules[ix3-1].reliable;
+}
+
+bwu ce
+*/
+
+function GetSystemValueAtT( system, sysrlt, modules, fT)
+{
+	var ix3 = 0;
+	for( ix3=0; ix3<system.totalModules; ix3++ )
+		modules[ix3].reliable =  Math.exp( modules[ix3].failurerate*fT*(-1) ) ;
+	return GetSystemValue( sysrlt, modules)
+}
+
+
+function RevGetSystemValue( system,sysrlt, modules, fVal)
+{
+	var beg = 0.0;
+	var end = 1000.0;
+	var mid = (beg+end)/2;
+	
+	while( GetSystemValueAtT(system, sysrlt,modules, end) > fVal )
+		end = 2 * end;
+	
+	mid = (beg+end)/2;
+	while( Math.abs(GetSystemValueAtT(system, sysrlt,modules, mid) - fVal)>0.01*fVal )
+	{
+		if( GetSystemValueAtT(system,sysrlt, modules, mid) > fVal )
+			beg = mid;
+		else
+			end = mid;
+		mid = (beg+end)/2;
+	}
+     /* var trancmid;
+        trancmid = Math.floor(mid*100000);
+        mid = mid/100000; */
+	return mid;
+}
+
+function AnasysFloat( fValue )
+{
+	var p1 = 0;
+	var p2 = 0;
+	var p3 = 0;
+	var val = fValue;
+	if( val>=10 )
+	{
+		do {
+		  p2 = p2+1;
+		  val = val/10;
+		} while ( val>=10 );
+	}
+	if( val<1 )
+	{
+		do {
+			p3 = p3+1;
+			val = val*10;
+		} while( val<1 );
+	}
+	
+	if( Math.round(val) ==1 )
+	{
+		if( p2>0 )
+			p2 = p2 - 1;
+		else
+			p3 = p3 + 1;
+		p1 = 10;
+	}
+	else if( Math.round(val)<=2 )
+	{
+		p1 = 20;
+		if( p2>0 )
+			p2 = p2 - 1;
+		else
+			p3 = p3 + 1;
+	}
+	else if( Math.round(val)<=5 )
+		p1 = 5;
+	else 
+		p1 = 10; 
+	
+	if( p2>0 )
+		return (p1<<8) + (p2);
+	else
+		return (p1<<8) + (1<<7) + (p3); 
+}
+
+function GetGraphOfRel(system, sysrlt,modules)
+{
+	var graph="";
+	var x01= 0;
+	var xyaxis;
+	var xstep = 0;
+
+	var g = new GraphArray(128);
+
+	x01 = RevGetSystemValue( system, sysrlt,modules, 0.1 );
+	
+	xyaxis = AnasysFloat(x01);
+	var tIndex = 0;
+	if( (xyaxis&0x0080)==0 )
+		xstep = (xyaxis>>8)*Math.pow(10, (xyaxis&0x00ff));
+	else
+		xstep = (xyaxis>>8)*Math.pow(10, (-1)*(xyaxis&0x007f));
+		
+	for( tIndex = 0; tIndex<=10; tIndex++ )
+		g.AddItem( 14 - 10 * GetSystemValueAtT(system,sysrlt,modules, xstep*tIndex*0.1), 4*tIndex+4, "*"); 
+	
+	// Add axis
+	g.AddItem(2, 4, "^");
+	for ( tIndex=2; tIndex<14; tIndex++ )
+		g.AddItem(tIndex+1, 4, "|");
+	for ( tIndex=0; tIndex<43; tIndex++ )
+		g.AddItem(14, tIndex+5, "-");
+	g.AddItem(14, 44+4, ">");
+	g.ForceItem(14, 4, "L");
+	
+	g.AddItem(4, 1, "1"); g.AddItem(4, 2, ","); g.AddItem(4, 3, "0");
+	g.AddItem(9, 1, "0"); g.AddItem(9, 2, ","); g.AddItem(9, 3, "5");
+	g.AddItem(14, 3, "0");
+
+
+	graph = "<PRE><BR>"
+	var iX=0; var iY=0; var fontType = 0;
+	for( iX = 0; iX < 15; iX++ )
+	{
+		//graph = graph + "<BR>";
+		for( iY=0; iY<46+8; iY++ )
+		{
+			if( g.In(iX, iY)=="^" )
+				graph = graph + "<IMG SRC=image/axis-y.gif>";
+			else if( g.In(iX, iY)==">" )
+				graph = graph + "<IMG SRC=image/axis-x.gif>";
+			else if( g.In(iX, iY)=="*" )
+				graph = graph + "<IMG SRC=image/star.gif>";
+			else if( g.In(iX, iY)=="-" )
+				graph = graph + "<IMG SRC=image/line-10.gif>";
+			else if( g.In(iX, iY)=="|" )
+				graph = graph + "<IMG SRC=image/line-5.gif>";
+			else if( g.In(iX, iY)=="L" )
+				graph = graph + "<IMG SRC=image/line-6.gif>";
+			else if( g.In(iX, iY)=="0" || DigitalIndex(g.In(iX, iY))>0 ) 
+				graph = graph + "<IMG SRC = ./image/num-" + parseInt(g.In(iX,iY),10) + ".gif>";
+			else if( g.In(iX, iY)=="," )
+				graph = graph + "<IMG SRC=image/num-dot.gif>";
+			else
+				graph = graph + "<IMG SRC=image/line-null.gif>";
+		}
+		graph = graph + "<BR>";
+	}
+		
+	if( (xyaxis>>8)==10 )
+	{
+		graph = graph + "<IMG SRC=image/line-null.gif><IMG SRC=image/line-null.gif><IMG SRC=image/line-null.gif><IMG SRC=image/line-null.gif>";
+		graph = graph + "<IMG SRC=image/num-0.gif><IMG SRC=image/line-null.gif><IMG SRC=image/line-null.gif><IMG SRC=image/line-null.gif><IMG SRC=image/line-null.gif><IMG SRC=image/line-null.gif><IMG SRC=image/line-null.gif><IMG SRC=image/line-null.gif>";
+		graph = graph + "<IMG SRC=image/num-2.gif><IMG SRC=image/line-null.gif><IMG SRC=image/line-null.gif><IMG SRC=image/line-null.gif><IMG SRC=image/line-null.gif><IMG SRC=image/line-null.gif><IMG SRC=image/line-null.gif><IMG SRC=image/line-null.gif>";
+		graph = graph + "<IMG SRC=image/num-4.gif><IMG SRC=image/line-null.gif><IMG SRC=image/line-null.gif><IMG SRC=image/line-null.gif><IMG SRC=image/line-null.gif><IMG SRC=image/line-null.gif><IMG SRC=image/line-null.gif><IMG SRC=image/line-null.gif>";
+		graph = graph + "<IMG SRC=image/num-6.gif><IMG SRC=image/line-null.gif><IMG SRC=image/line-null.gif><IMG SRC=image/line-null.gif><IMG SRC=image/line-null.gif><IMG SRC=image/line-null.gif><IMG SRC=image/line-null.gif><IMG SRC=image/line-null.gif>";
+		graph = graph + "<IMG SRC=image/num-8.gif><IMG SRC=image/line-null.gif><IMG SRC=image/line-null.gif><IMG SRC=image/line-null.gif><IMG SRC=image/line-null.gif><IMG SRC=image/line-null.gif><IMG SRC=image/line-null.gif><IMG SRC=image/line-null.gif>";
+		graph = graph + "<IMG SRC=image/num-1.gif><IMG SRC=image/num-0.gif><IMG SRC=image/line-null.gif><IMG SRC=image/line-null.gif>";
+	}
+	else if( (xyaxis>>8)==20 )
+	{
+		graph = graph + "<IMG SRC=image/line-null.gif><IMG SRC=image/line-null.gif><IMG SRC=image/line-null.gif><IMG SRC=image/line-null.gif>";
+		graph = graph + "<IMG SRC=image/num-0.gif><IMG SRC=image/line-null.gif><IMG SRC=image/line-null.gif><IMG SRC=image/line-null.gif><IMG SRC=image/line-null.gif><IMG SRC=image/line-null.gif><IMG SRC=image/line-null.gif><IMG SRC=image/line-null.gif>";
+		graph = graph + "<IMG SRC=image/num-4.gif><IMG SRC=image/line-null.gif><IMG SRC=image/line-null.gif><IMG SRC=image/line-null.gif><IMG SRC=image/line-null.gif><IMG SRC=image/line-null.gif><IMG SRC=image/line-null.gif><IMG SRC=image/line-null.gif>";
+		graph = graph + "<IMG SRC=image/num-8.gif><IMG SRC=image/line-null.gif><IMG SRC=image/line-null.gif><IMG SRC=image/line-null.gif><IMG SRC=image/line-null.gif><IMG SRC=image/line-null.gif><IMG SRC=image/line-null.gif><IMG SRC=image/line-null.gif>";
+		graph = graph + "<IMG SRC=image/num-1.gif><IMG SRC=image/num-2.gif><IMG SRC=image/line-null.gif><IMG SRC=image/line-null.gif><IMG SRC=image/line-null.gif><IMG SRC=image/line-null.gif><IMG SRC=image/line-null.gif><IMG SRC=image/line-null.gif>";
+		graph = graph + "<IMG SRC=image/num-1.gif><IMG SRC=image/num-6.gif><IMG SRC=image/line-null.gif><IMG SRC=image/line-null.gif><IMG SRC=image/line-null.gif><IMG SRC=image/line-null.gif><IMG SRC=image/line-null.gif><IMG SRC=image/line-null.gif>";
+		graph = graph + "<IMG SRC=image/num-2.gif><IMG SRC=image/num-0.gif><IMG SRC=image/line-null.gif><IMG SRC=image/line-null.gif>";
+	}
+	else //if( (xyaxis>>8)==5 )
+	{
+		graph = graph + "<IMG SRC=image/line-null.gif><IMG SRC=image/line-null.gif><IMG SRC=image/line-null.gif><IMG SRC=image/line-null.gif>";
+		graph = graph + "<IMG SRC=image/num-0.gif><IMG SRC=image/line-null.gif><IMG SRC=image/line-null.gif><IMG SRC=image/line-null.gif><IMG SRC=image/line-null.gif><IMG SRC=image/line-null.gif><IMG SRC=image/line-null.gif><IMG SRC=image/line-null.gif>";
+		graph = graph + "<IMG SRC=image/num-1.gif><IMG SRC=image/line-null.gif><IMG SRC=image/line-null.gif><IMG SRC=image/line-null.gif><IMG SRC=image/line-null.gif><IMG SRC=image/line-null.gif><IMG SRC=image/line-null.gif><IMG SRC=image/line-null.gif>";
+		graph = graph + "<IMG SRC=image/num-2.gif><IMG SRC=image/line-null.gif><IMG SRC=image/line-null.gif><IMG SRC=image/line-null.gif><IMG SRC=image/line-null.gif><IMG SRC=image/line-null.gif><IMG SRC=image/line-null.gif><IMG SRC=image/line-null.gif>";
+		graph = graph + "<IMG SRC=image/num-3.gif><IMG SRC=image/line-null.gif><IMG SRC=image/line-null.gif><IMG SRC=image/line-null.gif><IMG SRC=image/line-null.gif><IMG SRC=image/line-null.gif><IMG SRC=image/line-null.gif><IMG SRC=image/line-null.gif>";
+		graph = graph + "<IMG SRC=image/num-4.gif><IMG SRC=image/line-null.gif><IMG SRC=image/line-null.gif><IMG SRC=image/line-null.gif><IMG SRC=image/line-null.gif><IMG SRC=image/line-null.gif><IMG SRC=image/line-null.gif><IMG SRC=image/line-null.gif>";
+		graph = graph + "<IMG SRC=image/num-5.gif><IMG SRC=image/line-null.gif><IMG SRC=image/line-null.gif><IMG SRC=image/line-null.gif>";
+	}
+	if( (xyaxis&0x0080)==0 && (xyaxis&0x007f)>0 )
+		graph = graph + "<font color=\"#CCCCCC\">x10<sup>" + (xyaxis&0x00ff)+"</sup>";
+	else if( (xyaxis&0x0080)!=0 && (xyaxis&0x007f)>0 )
+		graph = graph + "x10<sup>-" + (xyaxis&0x007f)+"</sup>";
+	graph = graph + "sec</font><br>";
+	
+	graph = graph + "<p align=\"left\"><font size=\"4\" face=\"Courier New\" color=\"#000000\"> ";
+	graph = graph + "<br>R(t) = 0.8  when t = " + RevGetSystemValue( system, sysrlt,modules, 0.8 );
+	graph = graph + "<br>R(t) = 0.5  when t = " + RevGetSystemValue( system, sysrlt,modules, 0.5 );
+	graph = graph + "<br>R(t) = 0.3  when t = " + RevGetSystemValue( system, sysrlt,modules, 0.3 );
+	graph = graph + "<br>R(t) = 0.1  when t = " + RevGetSystemValue( system, sysrlt,modules, 0.1 );
+	graph = graph + "</font></p>";
+
+	graph = graph + "</PRE>";
+	return graph;
+}
+
+
+
+//BEGIN  BWUBWU BWU BWU BWU BWU BWU BWU BWU BWU BWU BWU BWU BWU BWU BWU BWU 
+//Using var to declare a global variable is optional. However, you must use var to declare a variable inside a function.
+MAX_MODULES = 40
+MAX_NODES = 20
+np = 80
+nm = 80
+MAXTERMLEN = 20
+MAX_NUM_TERM = 100
+
+
+function Pathinfo()
+{
+   var i;
+   // np is the maxmium number of paths, nm is the maxinum number of modules on a paths
+   this.path = new Array(np);     // the paths from system in to system out
+   this.pathlen = new Array(np);  // the lengths of the paths
+   this.descendorder = new Array(np);
+   for(i=0;i<np;i++)
+   {
+      this.path[i] = new Array(nm);
+      this.pathlen[i] = 0;
+   }
+
+   this.npath = 0;               // the number of paths in this system
+}
+
+function getpaths(system,modules,pathinfo)
+{
+   var ix201 = 0;
+   var ix202 = 0;
+   var ipath = 0;
+   var finalpath = 0;
+   var finalmod = 0;
+   var finaloutnode = 0;
+
+      TheTop = "<HTML><HEAD><TITLE>Tablet</TITLE></HEAD><BODY bgcolor=white text=black bgproperties=\"fixed\">";
+         Bottom = "</BODY> </HTML>";
+
+   for( ix201=0; ix201<system.totalModules; ix201++ )
+   {
+      if( modules[ix201].wflag!=1 || modules[ix201].modname=="" )
+         continue;
+      if( modules[ix201].iN==system.inputNode )
+      {
+         pathinfo.path[pathinfo.npath][0] = ix201;
+      //   pathinfo.path[0][0] = ix201;
+         pathinfo.pathlen[pathinfo.npath] +=1;
+         pathinfo.npath += 1;
+      }
+   }
+
+   ipath = 0;
+   while(ipath<pathinfo.npath)
+   {// iteration on each path
+      finalmod = pathinfo.pathlen[ipath]-1;
+      outnode = modules[pathinfo.path[ipath][finalmod]].oN;
+      while(outnode != system.outputNode)
+      {//iteration on models to find all the models on a path
+
+         find = 0;
+         for( ix201=0; ix201<system.totalModules; ix201++ )
+         {
+            if( modules[ix201].wflag!=1 || modules[ix201].modname=="" )
+               continue;
+            if( modules[ix201].iN == outnode)
+            {
+               if(find == 0)
+               {
+                  pathinfo.path[ipath][finalmod+1] = ix201;
+                  pathinfo.pathlen[ipath] += 1;
+                  find += 1;
+               }
+               else if(find > 0)
+               {
+                  finalpath = pathinfo.npath;
+                  for(ix202=0;ix202<=finalmod;ix202++)
+                     pathinfo.path[finalpath][ix202] = pathinfo.path[ipath][ix202];
+                  pathinfo.path[finalpath][finalmod+1] = ix201;
+                  pathinfo.pathlen[finalpath] = pathinfo.pathlen[ipath];
+                  pathinfo.npath += 1;
+               }
+               else
+               {
+                   parent.frames[2].document.open();
+                   parent.frames[2].document.write(TheTop);
+                   parent.frames[2].document.write("error when finding" + ipath + " path <br>");
+                   parent.frames[2].document.write(Bottom);
+                   parent.frames[2].document.close();
+               }
+            }
+         }//for(ix201...
+
+         if(find == 0)
+         {//find==0 means no molule was find to match the path
+            systerm.errmodule = finalmod;
+            return -1;
+         }
+
+         finalmod = pathinfo.pathlen[ipath]-1;
+         if(finalmod+1 >= nm)
+            return -1;
+         outnode = modules[pathinfo.path[ipath][finalmod]].oN;
+
+      }//while(outnode...
+      ipath += 1;
+   }//while( ipath ...
+
+   //sort the paths according the lengths of the paths
+   var lpathidx = 0;
+   var lcm = new Array(pathinfo.npath);
+   for(ix201=0;ix201<pathinfo.npath;ix201++)
+   {
+      lcm[ix201] = 0;
+      if(pathinfo.pathlen[ix201] > pathinfo.pathlen[lpathidx])
+         lpathidx = ix201;
+   }
+      
+   for(ix201=0;ix201<pathinfo.pathlen[lpathidx];ix201++)
+   {
+      for(ix202=1;ix202<pathinfo.npath;ix202++)
+      {
+         for(ix203=0;ix203<pathinfo.pathlen[ix202];ix203++)
+         {
+            if(pathinfo.path[ix202][ix203] == pathinfo.path[lpathidx][ix201])
+               lcm[ix202] += 1;
+         }
+      }   
+   }   
+   
+   
+   ipath = 0;
+   while(ipath<pathinfo.npath)
+   {
+      pathinfo.descendorder[ipath] = ipath;
+      ipath++;
+   }
+   
+   var tmp;
+   var itr = 1;
+   var xchgflag = 0;
+
+   while(itr < pathinfo.npath)
+   {
+      ipath = 0;
+      while(ipath<pathinfo.npath-itr)
+      {
+         if(pathinfo.pathlen[pathinfo.descendorder[ipath]] == pathinfo.pathlen[pathinfo.descendorder[ipath]+1])
+         {
+            if(pathinfo.descendorder[ipath] != lpathidx && lcm[pathinfo.descendorder[ipath]]<lcm[pathinfo.descendorder[ipath]+1])
+               xchgflag = 1;
+         }
+
+         if(xchgflag==1 || pathinfo.pathlen[pathinfo.descendorder[ipath]] < pathinfo.pathlen[pathinfo.descendorder[ipath]+1])
+         {
+            xchgflag = 0;
+            tmp = pathinfo.descendorder[ipath];
+            pathinfo.descendorder[ipath] = pathinfo.descendorder[ipath+1];
+            pathinfo.descendorder[ipath+1] = tmp;  
+         }
+         ipath++;
+      }
+      itr++;
+   }
+
+   system.systemOK = 1;
+
+}
+
+function Term()
+{
+   this.type = 0;    // 1: number 2:poly
+   this.coeff = 0;   // if type==1, coeff will be the term's value, or it will be the coefficient of this term
+   this.mod = new Array(MAXTERMLEN);
+   this.modpow = new Array(MAXTERMLEN);
+   this.nmod = 0;
+}
+
+function Polyn()
+{
+   this.term = new Array(MAX_NUM_TERM);
+   for(it201=0;it201<MAX_NUM_TERM;it201++)
+      this.term[it201] = new Term();
+   this.nterm = 0;
+   this.ptrstart = 0;
+   this.ptrend = 0;
+}
+
+function Polyn_GetNumOfTerm()
+{
+   var num;
+   if(this.ptrend >= this.ptrstart)
+      num = this.ptrend - this.ptrstart + 1;
+   else
+      num = MAX_NUM_TERM - (this.ptrstart-this.ptrend) + 1;
+   return num;
+}
+
+Polyn.prototype.GetNumOfTerm = Polyn_GetNumOfTerm;
+
+function Polyn_rmend()
+{
+   this.ptrend = (MAX_NUM_TERM+this.ptrend-1) % MAX_NUM_TERM;
+}
+Polyn.prototype.rmend = Polyn_rmend;
+
+function Polyn_addend()
+{
+   this.ptrend = (ptrend+1)%MAX_NUM_TERM;
+}
+Polyn.prototype.addend = Polyn_addend;
+
+function Polyn_CombineTerm(modules)
+{
+   var irr = 0;
+   var imiter = 0;
+   var tmp = 0;
+   var nmod = 0;
+   var imf = 0;
+   var imb = 0;
+   var SAME;
+   var nterm;  
+   //combine constant terms
+   ptrstart = this.ptrstart;
+   ptrend = this.ptrend;
+   var ptr = ptrstart;
+   var ptr1 = ptrstart;
+   var stopflag = 1;
+   while(this.term[ptr].type != 1)
+      ptr = (ptr+1)%MAX_NUM_TERM;
+   ptr1 = (ptr+1)%MAX_NUM_TERM;
+   do{
+      ptrend = this.ptrend;
+      if(ptr1 == this.ptrend)
+         stopflag = 0;
+      if(this.term[ptr1].type != 1)
+         ptr1 = (ptr1+1)%MAX_NUM_TERM;
+      else if(this.term[ptr1].type == 1)
+      {
+         this.term[ptr].coeff += this.term[ptr1].coeff;
+         termcpy(this.term[this.ptrend],this.term[ptr1]);
+         this.rmend();
+      }
+   }while(stopflag)
+   if(this.term[ptr].coeff == 0)
+   {
+      termcpy(this.term[this.ptrend],this.term[ptr]);
+      this.rmend();
+   }
+   
+   //sort each term of type 2
+   ptrend = this.ptrend;
+   nterm = this.GetNumOfTerm();
+   for(ir=0;ir<nterm;ir++)
+   {
+      irr = (this.ptrstart+ir) % MAX_NUM_TERM;
+      if(this.term[irr].type == 2);
+      {
+         nmod = this.term[irr].nmod;
+         while(nmod > 0)
+         {        
+            for(imiter=0;imiter<nmod-1;imiter++)
+            {
+               imf = this.term[irr].mod[imiter]; 
+               imb = this.term[irr].mod[imiter+1];               
+              
+               if(modules[imf].modname > modules[imb].modname)
+               {
+                  this.term[irr].mod[imiter] = imb;
+                  this.term[irr].mod[imiter+1] = imf;
+               }
+            }
+            nmod--;
+         }
+      }
+   }
+   
+   //combine terms;
+   var nconst = 0;
+   var nititer = 0;
+   var niter = 0;
+   var ititer = this.ptrstart;
+   nterm = this.GetNumOfTerm();
+   while(nititer < nterm-1)
+   {
+      if(this.term[ititer].type != 2)
+      {
+         nconst += 1;
+         ititer = (ititer+1)%MAX_NUM_TERM;
+         nititer++;
+         continue;
+      }
+      else if(this.term[ititer].type == 2)
+      {
+         iter = (ititer + 1)%MAX_NUM_TERM;
+         niter = nititer+1;
+         while(niter < nterm)
+         {
+            if(this.term[iter].nmod != this.term[ititer].nmod)
+            {
+               iter = (iter+1) % MAX_NUM_TERM;
+               niter++;
+               continue;
+            }
+            else
+            {
+               SAME = 1;
+               for(imiter=0;imiter<this.term[iter].nmod;imiter++)
+               {
+                  if(this.term[iter].mod[imiter] != this.term[ititer].mod[imiter])
+                  {
+                     SAME = 0;
+                     break;
+                  }
+               }
+               if(SAME == 1)//combine the two terms
+               {
+                  this.term[ititer].coeff += this.term[iter].coeff;
+                  termcpy(this.term[this.ptrend],this.term[iter]);
+                  this.rmend();                
+               }
+            }
+            if(SAME != 1)
+            {
+               iter = (iter+1)%MAX_NUM_TERM;
+            }
+            niter++;
+         // nterm = this.GetNumOfTerm();
+         }//while(iter...
+      }
+      ititer = (ititer+1)%MAX_NUM_TERM;
+      nititer++;
+      nterm = this.GetNumOfTerm();
+  }//while(ititer...        
+  
+  if(nconst > 1)
+     return -1;
+}
+Polyn.prototype.CombineTerm = Polyn_CombineTerm;
+
+function termcpy(term1,term2)
+{
+   var ix = 0;
+
+   term2.type = term1.type;
+   term2.coeff = term1.coeff;
+   for(ix=0;ix<term1.nmod;ix++)
+   {
+      term2.mod[ix] = term1.mod[ix];
+      term2.modpow[ix] = term1.modpow[ix];
+   }
+   term2.nmod = term1.nmod;
+}
+
+function GetSystemPolyn(pathinfo,modules,result)
+{
+   var poly = new Polyn();
+   var is201 = 0;
+   var is211 = 0;
+   var ir = 0;
+   var ip = 0;
+   var nterm = 0;
+   var lenmod = 0;
+   var prr = 0;
+   var ptrend = 0;
+   var mflag = 1;
+  
+   result.term[0].type = 1;
+   result.term[0].coeff = 1;
+
+   result.term[1].type = 2;
+   result.term[1].coeff = -1;
+   result.term[1].nmod = pathinfo.pathlen[0];
+   for(is201=0;is201<pathinfo.pathlen[0];is201++)
+   {
+      result.term[1].mod[is201] = pathinfo.path[0][is201];
+      result.term[1].modpow[is201] = 1;
+   }
+   result.ptrstart = 0;
+   result.ptrend = 1;
+
+   for(is211=1;is211<pathinfo.npath;is211++)
+   {
+      poly.term[0].type = 1;
+      poly.term[0].coeff = 1;
+
+      poly.term[1].type = 2;
+      poly.term[1].coeff = -1;
+      poly.term[1].nmod = pathinfo.pathlen[is211];
+      for(is201=0;is201<pathinfo.pathlen[is211];is201++)
+      {
+         poly.term[1].mod[is201] = pathinfo.path[is211][is201];
+         poly.term[1].modpow[is201] = 1;
+      }
+      poly.ptrstart = 0;
+      poly.ptrend = 1;
+
+      //multiply result by poly and save the product in result
+      ptrend = result.ptrend;
+      nterm = result.GetNumOfTerm();
+      for(ir=0;ir<nterm;ir++)
+      {
+         irr = (result.ptrstart+ir) % MAX_NUM_TERM;
+         for(ip=0;ip<2;ip++)
+         {
+            ptrend = (ptrend+1)%MAX_NUM_TERM;
+            if(ptrend == result.ptrstart)
+               return -1;
+            if(result.term[irr].type == 1 && poly.term[ip].type == 1)
+            {
+               result.term[ptrend].type = 1;
+               result.term[ptrend].coeff = result.term[irr].coeff* poly.term[ip].coeff;
+            }
+            else if(result.term[irr].type == 1 && poly.term[ip].type == 2)
+            {
+               termcpy(poly.term[ip],result.term[ptrend]);
+               result.term[ptrend].type = 2;
+               result.term[ptrend].coeff = result.term[irr].coeff* poly.term[ip].coeff;
+            }
+            else if(result.term[irr].type == 2 && poly.term[ip].type == 1)
+            {
+               termcpy(result.term[irr],result.term[ptrend]);
+               result.term[ptrend].coeff = result.term[irr].coeff* poly.term[ip].coeff;
+            }
+            else if(result.term[irr].type == 2 && poly.term[ip].type == 2)
+            {
+               termcpy(result.term[irr],result.term[ptrend]);
+               result.term[ptrend].coeff = result.term[irr].coeff* poly.term[ip].coeff;
+               for(itpoly=0;itpoly<poly.term[ip].nmod;itpoly++)
+               {
+                  mflag = 0;
+                  for(itrlt=0;itrlt<result.term[irr].nmod;itrlt++)
+                  {
+                     if(poly.term[ip].mod[itpoly] == result.term[irr].mod[itrlt])
+                     {
+                        result.term[ptrend].modpow[itrlt] +=1;
+                        mflag = 1;
+                     }
+                  }
+                  if(mflag == 0)
+                  {
+                     lenmod = result.term[ptrend].nmod;
+                     result.term[ptrend].mod[lenmod] = poly.term[ip].mod[itpoly];
+                     result.term[ptrend].modpow[lenmod] = 1;
+                     result.term[ptrend].nmod += 1;
+                  }
+               }  
+            }
+         }//for(ip......
+      }//for(ir...
+
+      result.ptrstart = result.ptrend + 1;
+      result.ptrend = ptrend;
+   }//for(is211...
+
+   ptrend = result.ptrend;
+   nterm = result.GetNumOfTerm();
+   for(ir=0;ir<nterm;ir++)
+   {
+      irr = (result.ptrstart+ir) % MAX_NUM_TERM;
+      result.term[irr].coeff *= -1;
+   }
+   result.ptrstart = (MAX_NUM_TERM + result.ptrstart-1) % MAX_NUM_TERM;
+   result.term[result.ptrstart].type = 1;
+   result.term[result.ptrstart].coeff = 1;
+
+   result.CombineTerm(modules);
+
+}
+
+// Calculate the final value of the Systerm
+function GetSystemExpress(modules,result)
+{
+   var ptrend = 0;
+   var nterm = 0;
+   var Rsys = 0;
+   var termvalue = 0;
+   var itm = 0;
+   var imod = 0;
+   var express = "";
+
+   ptrend = result.ptrend;
+   nterm = result.GetNumOfTerm();
+   for(ir=0;ir<nterm;ir++)
+   {
+      irr = (result.ptrstart+ir) % MAX_NUM_TERM;
+      if(result.term[irr].type == 1)
+      {
+         express  = express + result.term[irr].coeff;
+      }
+      else if(result.term[irr].type == 2)
+      {
+         if(result.term[irr].coeff>0)
+            express += "<br>     + ";
+         else if(result.term[irr].coeff<0)
+            express += "<br>     - ";
+         if(Math.abs(result.term[irr].coeff) != 1 && result.term[irr].coeff != 0)
+           express  = express + Math.abs(result.term[irr].coeff);
+         for(itm=0;itm<result.term[irr].nmod;itm++)
+         {
+            imod = result.term[irr].mod[itm];
+            if(itm != 0)
+               express = express + "*";
+            express = express + modules[imod].full;
+         }
+      }
+      else
+         return -1;
+   }
+   return express;
+}
+
+
+// Calculate the final value of the Systerm
+function GetSystemValue(result,modules)
+{
+   var ptrend = 0;
+   var nterm = 0;
+   var Rsys = 0;
+   var termvalue = 0;
+   var itm = 0;
+   var imod = 0;
+
+   ptrend = result.ptrend;
+   nterm = result.GetNumOfTerm();
+   for(ir=0;ir<nterm;ir++)
+   {
+      irr = (result.ptrstart+ir) % MAX_NUM_TERM;
+      if(result.term[irr].type == 1)
+         termvalue = result.term[irr].coeff;
+      else if(result.term[irr].type == 2)
+      {
+         termvalue = result.term[irr].coeff;
+         for(itm=0;itm<result.term[irr].nmod;itm++)
+         {
+            imod = result.term[irr].mod[itm];
+            termvalue *= modules[imod].reliable;
+         }
+      }
+      else
+         return -1;
+
+      Rsys += termvalue;
+   }
+
+   trancRsys = Math.floor(Rsys*100000);
+   Rsys = trancRsys/100000;
+   return Rsys;
+}
+
+//END BWU BWU BWU BWU BWU BWU BWU BWU BWU BWU BWU BWU BWU BWU BWU BWU BWU BWU BWU BWU BWU
+
+function GetInputCfg( form )
+{
+	TheTop = "<HTML><HEAD><TITLE>Tablet</TITLE></HEAD><BODY bgcolor=white text=black bgproperties=\"fixed\">";
+	Middle = "";
+	Bottom = "</BODY> </HTML>";
+	
+	parent.frames[2].document.open();
+	parent.frames[2].document.write("Please wait ... ");
+	parent.frames[2].document.close();
+	
+	var system = new System(); 
+	var modules = new Array(MAX_MODULES);
+	for( ix3=0; ix3<MAX_MODULES; ix3++ )
+		modules[ix3] = new ModuleItem();
+	
+    var pathinfo = new Pathinfo();
+    var sysrlt = new Polyn();
+
+	line = 0;	
+	cfg = form.InputWindow.value;
+
+    var tmpcfg = "NodesNum = " + parseInteger(form.T1.value, 10) + "\n";
+	tmpcfg = tmpcfg + "ModulesNum = " + parseInteger(form.T2.value, 10) + "\n";
+	tmpcfg = tmpcfg + "InputNode = " + parseInteger(form.T3.value, 10) + "\n";
+	tmpcfg = tmpcfg + "OutputNode = " + parseInteger(form.T4.value, 10) + "\n";
+	
+	tmpcfg = tmpcfg + cfg;
+
+	if( parseInputCfg(tmpcfg, system, modules)==-1 )
+	{
+		Middle = "<p align=\"left\"><font size=\"4\" face=\"Courier New\" color=\"#990000\"> ";
+		Middle = Middle + "Error Message: <br>";
+		Middle = Middle + "      There is an error in the line " + line + ".";
+		Middle = Middle + "</font></p>";
+		Middle = Middle + StringHints();
+	}
+	else 
+	{
+		// Combine the Modules
+		//CombineModules( system, modules );
+        getpaths(system,modules,pathinfo);
+		if( system.systemOK==1 )
+		{
+		    var ix3 = 0;
+            for( ix3=0; ix3<system.totalModules; ix3++ )
+               modules[ix3].full = "R<sub><i>"+modules[ix3].modname.toLowerCase()+"</i></sub>";
+            GetSystemPolyn(pathinfo,modules,sysrlt);
+            Middle = "<p align=\"left\"><b><font size=\"4\" face=\"Courier New\" color=\"#CCCCCC\">";
+            Middle = Middle + "Result:<br></font><font size=\"4\" face=\"Courier New\" color=\"#000000\">";
+        //  Middle = Middle + "<blockquote>This is a serial/parallel system.<br>";
+            Middle = Middle + "The diagram is shown below<br><br>";
+            Middle = Middle + GetSystemDiagram(system,pathinfo, modules);
+                        
+            Middle = Middle + "<font size=\"4\" face=\"Courier New\" color=\"#000000\">"
+            Middle = Middle + "<br><br><PRE>System Reliability = " + GetSystemExpress(modules,sysrlt)+"</PRE>";
+            Middle = Middle + "</blockquote></font>";
+            Middle = Middle + "<font size=\"4\" face=\"Courier New\" color=\"#CCCCCC\">End</font></b></p>";
+         
+		}
+		else
+		{
+			Middle = "<p align=\"left\"><font size=\"4\" face=\"Courier New\" color=\"#990000\"> ";
+			Middle = Middle + "Error Message: ";
+			Middle = Middle + "</font></p>";
+
+			Middle = Middle + "<p align=\"left\"><font size=\"4\" face=\"Courier New\" color=\"#990000\"> ";
+			Middle = Middle + "ERROR of the input of the system in module " + system.errmodule + ".";
+			Middle = Middle + "</font></p>"
+			Middle = Middle + "<p align=\"left\"><font size=\"4\" face=\"Courier New\" color=\"#000000\" >";
+			Middle = Middle + "Click <a href=\"help.html\"><b>here</b></a> you can get more information. Good Luck." + "</font></p>";
+		}
+	}
+
+	parent.frames[2].document.open();
+	parent.frames[2].document.write(TheTop);
+	parent.frames[2].document.write(Middle);
+	parent.frames[2].document.write(Bottom);
+	parent.frames[2].document.close();
+
+
+}
+
+function CalcRelForNum( form, fn )
+{
+
+	TheTop = "<HTML><HEAD><TITLE>Tablet</TITLE></HEAD><BODY bgcolor=white text=black bgproperties=\"fixed\">";
+	Middle = "";
+	Bottom = "</BODY> </HTML>";
+	
+	parent.frames[2].document.open();
+	parent.frames[2].document.write(TheTop+"Please wait ... ");
+	parent.frames[2].document.close();
+	
+	var system = new System(); 
+	var modules = new Array(MAX_MODULES);
+	for( ix3=0; ix3<MAX_MODULES; ix3++ )
+		modules[ix3] = new ModuleItem();
+	
+    var pathinfo = new Pathinfo();
+    var sysrlt = new Polyn();
+
+	line = 0;	
+	cfg = form.InputWindow.value;
+    
+    var tmpcfg = "NodesNum = " + parseInteger(form.T1.value, 10) + "\n";
+	tmpcfg = tmpcfg + "ModulesNum = " + parseInteger(form.T2.value, 10) + "\n";
+	tmpcfg = tmpcfg + "InputNode = " + parseInteger(form.T3.value, 10) + "\n";
+	tmpcfg = tmpcfg + "OutputNode = " + parseInteger(form.T4.value, 10) + "\n";
+	
+	tmpcfg = tmpcfg + cfg;
+
+
+	if( parseInputCfg(tmpcfg, system, modules)==-1 )
+	{
+		Middle = "<p align=\"left\"><font size=\"4\" face=\"Courier New\" color=\"#990000\"> ";
+		Middle = Middle + "Error Message: <br>";
+		Middle = Middle + "      There is an error in the line " + line + ".";
+		Middle = Middle + "</font></p>";
+		Middle = Middle + StringHints();
+	}
+	else 
+	{
+		// Combine the Modules
+		//CombineModules( system, modules );
+        getpaths(system,modules,pathinfo);
+		if( system.systemOK==1 )
+		{
+			var numInputError = 0;
+			var ix3 = 0;
+			for( ix3=0; ix3<system.totalModules; ix3++ )
+			{
+			    var relValue = 1.0;
+				if(fn==2)
+				{   
+				   
+				   relValue = ReadNumericValue(form.relWnd.value, ix3+1);
+				   if( relValue<0 || relValue>1  )
+				   {
+					   numInputError = 1;
+					   break;
+				   }
+				   else
+				   {
+					   SetValueForAtom(system, modules, ix3, relValue);
+					   modules[ix3].full = "R<sub><i>"+modules[ix3].modname.toLowerCase()+"</i></sub>";
+				   }
+				}
+				else if(fn==3)
+				{
+				   relvalue = ReadNumericValue(form.failrateWnd.value, ix3+1);
+        	       if( relvalue<0 )
+				   {
+					   numInputError = 1;
+					   break;
+				   }
+				   else
+				   {
+				       
+					   modules[ix3].failurerate = relvalue;
+					   modules[ix3].full = "<i>e</i><sup>-" + relvalue + "t</sup>";
+				   }
+				}
+			}
+			GetSystemPolyn(pathinfo,modules,sysrlt);
+			if( numInputError==0 )
+			{
+            //  GetSystemPolyn(pathinfo,modules,sysrlt);
+				Middle = "<p align=\"left\"><b><font size=\"4\" face=\"Courier New\" color=\"#CCCCCC\">";
+				Middle = Middle + "Result:<br></font><font size=\"4\" face=\"Courier New\" color=\"#000000\">";
+			//	Middle = Middle + "<blockquote>This is a serial/parallel system.<br>";
+				Middle = Middle + "The diagram is shown below<br><br>";
+				Middle = Middle + GetSystemDiagram(system,pathinfo, modules);
+			
+				Middle = Middle + "<font size=\"4\" face=\"Courier New\" color=\"#000000\">"
+				Middle = Middle + "<br><br><PRE>System Reliability = " + "<br>" + GetSystemExpress(modules,sysrlt) + "</PRE>";
+				if(fn == 2)
+				{
+				   Middle = Middle + "<br><br>" + "Given ";
+			       for( ix3=0; ix3<system.totalModules; ix3++ )
+					   Middle = Middle + modules[ix3].full + "=" + modules[ix3].reliable + ", ";
+				   Middle = Middle + "<br>R<sub>system</sub> = " + GetSystemValue(sysrlt, modules );
+			    }
+			    else if(fn==3)
+			    {
+			       if( form.GraphOnly[0].checked==true )
+			       {
+			          Middle = Middle + "<br><br>The diagram of R(t) vs time t is shown below:<br>";
+				      Middle = Middle + GetGraphOfRel(system,sysrlt,modules);
+				   }
+				   else
+			       {
+				      var tpVal = parseFloat(form.timeWnd.value);
+			          if( !isNaN(tpVal) )
+				      {
+				          var tpVal = parseFloat(form.timeWnd.value);
+					      Middle = Middle + "<br><br><font size=\"4\" face=\"Courier New\" color=\"#000000\">";
+					      Middle = Middle + "At time t = " + tpVal + ",  R(t) = ";
+				          Middle = Middle + GetSystemValueAtT(system, sysrlt,modules, tpVal)+"<br><br></font>";
+				      }
+				   }
+				   Middle = Middle + "</blockquote></font>";
+				   Middle = Middle + "<font size=\"4\" face=\"Courier New\" color=\"#CCCCCC\">End</font></b></p>";
+			    }
+			}
+			else
+			{
+				Middle = "<p align=\"left\"><font size=\"4\" face=\"Courier New\" color=\"#990000\"> ";
+				Middle = Middle + "Error Message: <br>";
+			//	Middle = Middle + "This is a serial/parallel system. ";
+				Middle = Middle + "But the input for numerical value is invalid. Please check and try again.";
+				Middle = Middle + "</font></p><br>";
+				Middle = Middle + "<p align=\"left\"><font size=\"4\" face=\"Courier New\" color=\"#000000\" >";
+				Middle = Middle + "Click <a href=\"help-num.html\"><b>here</b></a> you can get more information. Good Luck." + "</font></p>";
+			}
+		
+		}
+		else
+		{
+			Middle = "<p align=\"left\"><font size=\"4\" face=\"Courier New\" color=\"#990000\"> ";
+			Middle = Middle + "Error Message: ";
+			Middle = Middle + "</font></p>";
+
+			Middle = Middle + "<p align=\"left\"><font size=\"4\" face=\"Courier New\" color=\"#990000\"> ";
+			Middle = Middle + "ERROR of the input of the system in module " + system.errmodule + ".";
+			Middle = Middle + "</font></p>"
+			Middle = Middle + "<p align=\"left\"><font size=\"4\" face=\"Courier New\" color=\"#000000\" >";
+			Middle = Middle + "Click <a href=\"help.html\"><b>here</b></a> you can get more information. Good Luck." + "</font></p>";
+		}
+	}
+
+	parent.frames[2].document.open();
+	parent.frames[2].document.write(TheTop);
+	parent.frames[2].document.write(Middle);
+	parent.frames[2].document.write(Bottom);
+	parent.frames[2].document.close();
+
+
+}
+
+
+/* BWU BWU BWU BWU BWUbwu's GetSystemDiagram() follows BWU BWU BWU BWU BWU */
+function Nodeginfo()
+{
+   this.ready = 0;
+   this.row = 0;
+   this.col = 0;
+   this.x=0;
+   this.y=0;
+}
+
+function GetSystemDiagram(system,pathinfo,modules)
+{
+    var nodeflags = new Array(system.totalNodes+1);//nodes start with node 1
+    var garray = new Array(pathinfo.npath*2-1);
+	var graph = "";
+	var systop = 0;
+	var sysleft = 0;
+	var ix6 = 0;
+	var ix7 = 0;
+	var pathlen = 0;
+
+	var g = new GraphArray(512);	
+  /*
+    modules will be placed only on the odd columns and even rows
+	nodes will be placed only on even columns even rows.
+	even rows are only used to walk the lines.
+	
+	* the columns and rows are counted from zero.
+  */
+	for(ix6=0;ix6<=system.totalNodes;ix6++)
+	   nodeflags[ix6] = new Nodeginfo();
+	for(ix6=0;ix6<pathinfo.npath*2-1;ix6++)
+	{
+	   pathlen = pathinfo.pathlen[pathinfo.descendorder[0]];
+	   garray[ix6] = new Array(2*pathlen + 1);
+	   for(ix7=0;ix7<2*pathlen+1;ix7++)
+	      garray[ix6][ix7] = 0;
+	}
+	   
+	var imod = 0;
+	var ipath = 0;
+	var iN;
+	var oN;
+	var wodd = 5;
+	var weven = 5;
+	var hodd = 3;
+	var heven = 3;
+	var top, left;
+	var modname;
+	var row;
+	var col;
+	var Nnode_on_col = 0;
+	var Nmod_on_row = 0;
+	
+	/* draw the longest path first  */
+	ipath = pathinfo.descendorder[0];
+	pathlen = pathinfo.pathlen[ipath];
+    for(ix7=0;ix7<pathlen;ix7++)
+	{
+	   imod = pathinfo.path[ipath][ix7];
+	   top = systop;
+       left = sysleft + weven*Math.floor(ix7+1/2.0) + wodd*Math.ceil(ix7+1/2.0);
+       modname = modules[imod].modname;
+       g.DrawModule(top,left,modname);
+	   
+	   g.UpdateItem(Math.floor(top)+1, Math.floor(left)-3, "10");
+	   g.UpdateItem(Math.floor(top)+1, Math.floor(left)-2, "10"); 
+	   g.UpdateItem(Math.floor(top)+1, Math.floor(left)-1, "10"); 
+	   
+	   g.UpdateItem(Math.floor(top)+1, Math.floor(left)+5, "10"); 
+	   g.UpdateItem(Math.floor(top)+1, Math.floor(left)+6, "10"); 
+	   g.UpdateItem(Math.floor(top)+1, Math.floor(left)+7, "10");
+	   
+       modules[imod].gready = 1;
+       iN = modules[imod].iN;
+       oN = modules[imod].oN;
+       nodeflags[iN].ready = 1;
+       nodeflags[iN].x = left - Math.ceil(wodd/2.0);
+       nodeflags[iN].y = top + Math.floor(hodd/2.0);
+       nodeflags[iN].row = 0;
+       nodeflags[iN].col = 2*ix7;
+    
+       nodeflags[oN].ready = 1;
+       nodeflags[oN].x = left + wodd + Math.floor(wodd/2.0);
+       nodeflags[oN].y = top + Math.floor(hodd/2.0);       
+       nodeflags[oN].row = 0;
+       nodeflags[oN].col = 2*ix7+2;
+       
+       garray[0][2*ix7] = 1;
+       garray[0][2*ix7+1] = 1;
+       garray[0][2*ix7+2] =1;
+    }
+	
+	/* draw the other paths other than the longest path   */
+	for(ix6=1;ix6<pathinfo.npath;ix6++)
+	{
+	   ipath = pathinfo.descendorder[ix6];
+	   pathlen = pathinfo.pathlen[ipath];
+	   for(ix7=0;ix7<pathlen;ix7++)
+	   {
+	      imod = pathinfo.path[ipath][ix7];
+	      if(modules[imod].gready != 1)
+	      {
+	         iN = modules[imod].iN;
+	         oN = modules[imod].oN;
+	         if(nodeflags[oN].ready == 0)
+	         {
+	            col = nodeflags[iN].col + 2;
+	            for(row=nodeflags[iN].row;row<=(ix6+1)*2-2;row+=2)
+	            {
+	               if(garray[row][col]==0 && garray[row][col-1]==0)
+	               {
+	                  nodeflags[oN].row = row;
+	                  nodeflags[oN].col = col;
+	              //  nodeflags[oN].x = nodeflags[iN].x + wodd + weven;
+	                  nodeflags[oN].x = Math.floor(weven/2) + (wodd+weven)*Math.floor(col/2.0);
+	                  Nnode_on_col = 0;
+	                  for(ix8=0;ix8<system.totalNodes;ix8++)
+	                      if(nodeflags[ix8].ready==1 && nodeflags[ix8].col==col)
+	                         Nnode_on_col += 1;
+	              /*  for(ix8=0;ix8<row;ix8++)
+	                     Nnode_on_col += garray[ix8][col];  */
+	                  if((Nnode_on_col%2) == 0)
+	                     nodeflags[oN].x -= Math.ceil(Nnode_on_col/2.0);
+	                  else
+	                     nodeflags[oN].x += Math.ceil(Nnode_on_col/2.0);
+	                  
+	                  nodeflags[oN].y = systop + hodd*Math.floor(row/2.0) + heven*Math.floor(row/2.0);
+	                  nodeflags[oN].y += Math.floor(heven/2.0);
+	                  break;
+	               }
+	            }
+	            nodeflags[oN].ready = 1;
+	         }
+	            
+	         row = Math.max(nodeflags[iN].row,nodeflags[oN].row);
+	         Nmod_on_row = 1;
+	         while(Nmod_on_row != 0)
+	         {
+	            Nmod_on_row = 0;
+	            for(ix8=nodeflags[iN].col+1;ix8<nodeflags[oN].col;ix8+=2)
+	               Nmod_on_row += garray[row][ix8];
+	            if(Nmod_on_row != 0)
+	               row += 2;
+	         }
+	         
+	         col = nodeflags[iN].col + 1 + 2*Math.floor((nodeflags[oN].col-nodeflags[iN].col)/4)   
+	         top = systop + heven*Math.floor(row/2)+hodd*Math.floor(row/2);
+	      /* left = sysleft + weven*Math.ceil((nodeflags[iN].col+1)/2.0)+wodd*Math.floor(nodeflags[iN].col/2);
+	         left += (weven+wodd)*Math.floor((nodeflags[oN].col-nodeflags[iN].col)/4.0);
+	      */
+	         left = left = sysleft + weven*Math.ceil((nodeflags[iN].col+1)/2.0)+wodd*Math.floor(nodeflags[iN].col/2);
+	         g.DrawModule(top,left,modules[imod].modname);
+	         garray[row][col] = 1;
+	         
+	         // vertical left line
+	         for(ix8=nodeflags[iN].y;ix8<=top+Math.floor(heven/2.0);ix8++)
+	         {
+	            if(nodeflags[iN].y == (top+Math.floor(heven/2.0)))
+	               break;
+	            if(ix8 == nodeflags[iN].y)
+	               g.UpdateItem(ix8, nodeflags[iN].x, "1");	
+	            else if(ix8 == top+Math.floor(heven/2.0))
+	               g.UpdateItem(ix8, nodeflags[iN].x, "4");	               
+	            else
+	            {
+	               g.UpdateItem(ix8, nodeflags[iN].x, "5");	           
+	            }	         
+	         }
+	         	         
+	         col = Math.floor(nodeflags[iN].x/wodd);
+	         for(ix8 = Math.floor(nodeflags[iN].y/hodd);ix8<=Math.floor(top)/hodd;ix8++)
+	            garray[ix8][col] = 1;
+	         
+	         // vertical right line
+	         for(ix8=nodeflags[oN].y;ix8<=top+Math.floor(heven/2.0);ix8++)
+	         {
+	            if(nodeflags[oN].y == (top+Math.floor(heven/2.0)))
+	               break;
+	            if(ix8 == nodeflags[oN].y)
+	               g.UpdateItem(ix8, nodeflags[oN].x, "1");	
+	            else if(ix8 == top+Math.floor(heven/2.0))
+	               g.UpdateItem(ix8, nodeflags[oN].x, "4");
+	            else
+	               g.UpdateItem(ix8, nodeflags[oN].x, "5");
+	         }
+	         
+	         col = Math.floor(nodeflags[oN].x/wodd);
+	         for(ix8 = Math.floor(nodeflags[oN].y/hodd);ix8<=Math.floor(top)/hodd;ix8++)
+	            garray[ix8][col] = 1;
+	         
+	         // horizental left line
+	         for(ix8=nodeflags[iN].x;ix8<left;ix8++)
+	         {
+	            if(ix8 == nodeflags[iN].x)
+	               g.UpdateItem(top+Math.floor(heven/2.0),ix8,"2");
+	            else 
+	               g.UpdateItem(top+Math.floor(heven/2.0),ix8,"10");
+	         }
+	           
+	         row = Math.floor(top/hodd);
+	         for(ix8 = Math.floor(nodeflags[iN].x/wodd);ix8<=Math.floor(left/wodd);ix8++)
+	            garray[row][ix8] = 1;
+	         
+	         // horizental right line  
+	         for(ix8=left+wodd;ix8<=nodeflags[oN].x;ix8++)
+	         {
+	            if(ix8 == nodeflags[oN].x)
+	               g.UpdateItem(top+Math.floor(heven/2.0),ix8,"8");
+	            else 
+	               g.UpdateItem(top+Math.floor(heven/2.0),ix8,"10");   
+	         }
+	         
+	         row = Math.floor(top/hodd);
+	         for(ix8 = Math.floor(left/wodd)+1;ix8<=Math.floor(nodeflags[oN].x/wodd);ix8++)
+	            garray[row][ix8] = 1;
+	         modules[imod].gready = 1;   
+	     }//if(modules[imod].gready != 1)
+	  }   //for(ix7=... <pathlen
+   }//for(ix=6...<npath
+
+   for(ix6=1;ix6<=system.totalNodes;ix6++)
+   { 
+	   row = nodeflags[ix6].y;
+	   col = nodeflags[ix6].x;
+	   g.UpdateItem(row,col,"16");
+	   row += 1;
+	   if(col == 0)
+	      col +=1;
+	   else 
+	      col -=1;  
+	   ix8 = ix6+1000;
+	   g.AddItem(row, col, ix8.toString(10));
+   }
+
+	pathlen = pathinfo.pathlen[pathinfo.descendorder[0]];
+	var iX; var iY;
+	graph = "<PRE>";
+	
+	for( iX=0; iX<(heven+hodd)*pathinfo.npath-hodd; iX++ )
+	{
+		graph = graph + "<BR>";
+		
+		for( iY=0; iY<(weven+wodd)*pathlen+weven; iY++ )		
+		{//
+			if(g.In(iX, iY)=="A" ||  CharIndex(g.In(iX, iY))>0 ) 
+				graph = graph + "<IMG SRC = ./image/mod-" + g.In(iX,iY).toLowerCase() + ".gif>";
+			else if( parseInt(g.In(iX, iY), 10)>0 && parseInt(g.In(iX, iY), 10)<1000)
+				graph = graph + "<IMG SRC = ./image/line-" + parseInt(g.In(iX, iY), 10) + ".gif>";
+			else if(parseInt(g.In(iX, iY), 10)>1000)
+			    graph = graph + "<IMG SRC = ./image/num-" + (parseInt(g.In(iX, iY), 10)-1000) + ".gif>";
+			else //if( g.In(iX, iY)=="." )
+				graph = graph + "<IMG SRC = ./image/line-null.gif>";
+				
+		}
+		//graph = graph + "</PRE>";
+	}
+	graph = graph + "</PRE>";
+	return graph;
+}
+
+</script>
+</head>
+<body text="#FFFFFF" background="cyprbk.jpg" bgproperties="fixed">
+<form target="tablet">
+<pre><font face="Times New Roman" size="3">Input the configuration: (<a href="help.html" target="tablet">help</a>)</font>
+<font face="Fixedsys" size="1">NodesNum: <input type="text" name="T1" size="2"> ModulesNum:<input type="text" name="T2" size="2">
+InputNode:<input type="text" name="T3" size="2"> OutputNode:<input type="text" name="T4" size="2"></font></pre>
+<pre><font size="3" face="Times New Roman">The node pairs for each module:</font>
+<textarea rows="4" name="InputWindow" cols="24" style="font-family: Courier New; font-size: 12pt" tabindex="1"></textarea>
+<input type="button" name="enter" value="RUN" onClick="GetInputCfg(this.form)" tabindex="2"> <font size="3" face="Times New Roman">(Get Expression of Reliability )</font></pre>
+<hr>
+<pre><font face="Times New Roman" size="3">The reliability of each module: (<a href="help-num.html" target="tablet">help</a>)</font>
+<textarea rows="2" name="relWnd" cols="29" tabindex="3"></textarea>
+<input type="button" value="RUN" name="B1" onClick="CalcRelForNum(this.form,2)" tabindex="4"> <font size="3" face="Times New Roman">(Get Reliability)</font></pre>
+<hr>
+<pre><font face="Times New Roman" size="3">The failure rate of each module: (<a href="help-fr.html" target="tablet">help</a>)</font>
+<textarea rows="2" name="failrateWnd" cols="29" tabindex="5"></textarea>
+<font face="Times New Roman" size="2"> </font><font face="Times New Roman" size="3">at time t = </font><input type="text" name="timeWnd" size="23" tabindex="6"></pre>
+<pre><font face="Fixedsys" size="1"><input type="radio" value="V3" checked name="GraphOnly">Graph Only </font>    <font face="Fixedsys" size="1"><input type="radio" value="V4" name="GraphOnly">Value Only</font></pre>
+<pre><input type="button" value="RUN" name="numbutton" onClick="CalcRelForNum(this.form,3)" , tabindex="7"> <font size="3" face="Times New Roman">(Get Graph or Reliability)</font></pre>
+<hr></form>
+
+</body>
+</html>
+
+

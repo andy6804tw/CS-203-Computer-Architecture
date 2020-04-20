@@ -1,0 +1,92 @@
+<HTML>
+<HEAD>
+   <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+   <META NAME="Author" CONTENT="sameer">
+   <META NAME="GENERATOR" CONTENT="Mozilla/4.03 [en] (X11; I; Linux 2.0.30 i686) [Netscape]">
+   <TITLE>Intro</TITLE>
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#FFCC99" LINK="#0000EF" VLINK="#55188A" ALINK="#FF0000">
+&nbsp;
+<CENTER><B><FONT FACE="Copperplate Gothic Bold"><FONT SIZE=+4>An Introduction
+to RAID</FONT></FONT></B></CENTER>
+
+<DIV ALIGN=right><FONT FACE="Copperplate Gothic Light">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</FONT><FONT FACE="Times New Roman,Times"><FONT SIZE=+1><A HREF="raidhome.html">HOME
+</A>/ <A HREF="why.html">NEXT</A></FONT></FONT></DIV>
+&nbsp;
+<BR><B><FONT FACE="Copperplate Gothic Bold"><FONT SIZE=+2>RAID</FONT></FONT></B>
+stands for <B>R</B>edundant <B>A</B>rray of <B>I</B>nexpensive <B>D</B>isks.
+<BR>&nbsp;
+
+<P>RAID is the <B><U>organization of multiple disks</U></B> into a large,
+high performance logical disk.
+
+<P>Disk arrays stripe data across multiple disks and <B><U>access them
+in parallel</U></B> to achieve:
+<BR>&nbsp;
+<UL>
+<LI>
+<B><U>Higher data transfer rates on large data accesses</U></B> and</LI>
+
+<LI>
+<B><U>Higher I/O rates on small data accesses</U></B>.</LI>
+</UL>
+Data striping also results in uniform load balancing across all of the
+disks, eliminating hot spots that otherwise saturate a small number of
+disks, while the majority of disks sit idle.
+<BR>&nbsp;
+
+<P><B><FONT FACE="Copperplate Gothic Bold"><FONT SIZE=+1>But</FONT></FONT></B>....
+
+<P>Large disk arrays, however are highly <B><U>vulnerable to disk failures</U></B>.
+A disk array with a hundred disks is a hundred times more likely to fail
+than a single disk. An MTTF (mean-time-to-failure) 500,000 hours for a
+single disk implies an <A HREF="glossary.html#MTTF">MTTF</A> of 500,000/100
+i.e. 5000 hours for a disk array with a hundred disks.
+<BR>&nbsp;
+
+<P><B><FONT FACE="Copperplate Gothic Bold"><FONT SIZE=+1>So</FONT></FONT></B>....
+
+<P>The solution to the problem of lower reliability in disk arrays is to
+improve the<B><U> </U><A HREF="glossary.html#Availability">availability</A></B>
+of the system. This can be achieved <B><U>by employing redundancy</U></B>
+in the form of error-correcting codes to tolerate disk failures. A redundant
+disk array can now retain data for much longer time than an unprotected
+single disk.
+
+<P>Do not confuse between reliability and availability.
+
+<P><B><U>Reliability</U></B> is how well a system can work without any
+failures in its components. If there is a failure, the system was not reliable.
+
+<P><B><U>Availability</U></B> is how well a system can work in times of
+a failure. If a system is able to work even in the presence of a failure
+of one or more system components, the system is said to be available.
+
+<P>Redundancy improves the availability of a system, but cannot improve
+the reliability. Reliability can only be increased by improving manufacturing
+technologies or using lesser individual components in a system.
+<BR>&nbsp;
+<BR>&nbsp;
+<CENTER><B><FONT FACE="Copperplate Gothic Bold"><FONT SIZE=+2>Disadvantages
+due to Redundancy</FONT></FONT></B></CENTER>
+
+
+<P>Every time there is a write operation, there is a change of data. This
+change also, has to be reflected in the disks storing redundant information.
+This <B><U>worsens the performance of writes</U></B> in redundant disk
+arrays significantly compared to the performance of writes in non redundant
+disk arrays.
+
+<P>Also, <B><U>keeping the redundant information consistent in the presence
+of concurrent I/O operation and the possibility of system crashes can be
+difficult</U>.</B>
+<BR>&nbsp;
+<BR>&nbsp;
+<BR>&nbsp;
+<BR>&nbsp;
+<DIV ALIGN=right><FONT FACE="Times New Roman,Times"><FONT SIZE=+1><A HREF="raidhome.html">HOME</A>
+/ <A HREF="why.html">NEXT</A></FONT></FONT></DIV>
+
+</BODY>
+</HTML>

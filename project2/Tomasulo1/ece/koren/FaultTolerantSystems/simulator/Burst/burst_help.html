@@ -1,0 +1,42 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>HELP/INFORMATION</title>
+<meta name="description" content="">
+<meta name="keywords" content="">
+<meta name="author" content="aldonina@attbi.com">
+<meta name="generator" content="AceHTML 5 Freeware">
+</head>
+<body>
+
+<b><font size="+3">BURST ERROR DETECTION INFORMATION</font></b><br>
+
+A burst error occurs when more than one bit on a message is incorrect.  This errors are common on optical and magnetic data storage devices.<br><br>
+
+This simulator explains how burst error detection is achieved, and allows the user to encode and decode a message.  Also the user can introduce errors into an encoded message and use the simulator to detect these errors.<br><br>
+
+There is also simulators for two common burst error detection codes, CRC16, and CRC-CCICT. Both of this code allows the user to detect up to 16-bit burst errors. The error are detected by multiplying the message by a characteristic polynomial during the encoding, and then dividing by the same polynomial during the decoding process.  If the remainder of the division is not zero, an error has been detected.<br><br>
+
+<b>CRC16</b><br>
+
+This is a Cyclic Redundancy Code that uses the following generating polynomial<br><br>
+
+G(X)=X<sup>16</sup>+X<sup>15</sup>+X<sup>2</sup>+1<br><br>
+
+To use the simulator type an encoded message (hex, no longer than 9 hex characters) in the "Data Word" field and click on the encode button.  The result will be the (hex) encoded message.  The encoded message will also be placed onto the "Encoded Word" field; this will allow you to decode it by clicking on the decode button or insert an error before decoding.  If not error are inserted on the encoded word, the remainder should be zero and the "NO Failure Detected" message should appear.  If an error is inserted the remainder should appear on the "remainder" field and the "Failure Detected Message" should appear.<br><br>
+
+<b>CRC-CCITT</b><br>
+
+This is a Cyclic Redundancy Code with the following generating polynomial:<br><br>
+
+G(X)=X<sup>16</sup>+X<sup>12</sup>+X<sup>5</sup>+1<br><br>
+
+To use the simulator type an encoded message (hex, no longer than 9 hex characters) in the "Data Word" field and click on the encode button.  The result will be the (hex) encoded message.  The encoded message will also be placed onto the "Encoded Word" field; this will allow you to decode it by clicking on the decode button or insert an error before decoding.  If not error are inserted on the encoded word, the remainder should be zero and the "NO Failure Detected" message should appear.  If an error is inserted the remainder should appear on the "remainder" field and the "Failure Detected Message" should appear.<br><br>
+
+<cite><u>References</u><br>
+
+1) Reliability of Computer Systems and Networks.  Martil L. Sooman.<br>
+2) ECE 655 Lecture Notes, University of Massachusetts.<br> 
+</cite>
+</body>
+</html>

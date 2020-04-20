@@ -1,0 +1,89 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Observations</title>
+<style type="text/css">
+<!--
+body {
+	font: 100% Verdana, Arial, Helvetica, sans-serif;
+	background: #666666;
+	margin: 0; /* it's good practice to zero the margin and padding of the body element to account for differing browser defaults */
+	padding: 0;
+	text-align: center; /* this centers the container in IE 5* browsers. The text is then set to the left aligned default in the #container selector */
+	color: #000000;
+	background-color: #999999;
+}
+
+/* Tips for Elastic layouts
+1. Since the elastic layouts overall sizing is based on the user's default fonts size, they are more unpredictable. Used correctly, they are also more accessible for those that need larger fonts size since the line length remains proportionate.
+2. Sizing of divs in this layout are based on the 100% font size in the body element. If you decrease the text size overall by using a font-size: 80% on the body element or the #container, remember that the entire layout will downsize proportionately. You may want to increase the widths of the various divs to compensate for this.
+3. If font sizing is changed in differing amounts on each div instead of on the overall design (ie: #sidebar1 is given a 70% font size and #mainContent is given an 85% font size), this will proportionately change each of the divs overall size. You may want to adjust based on your final font sizing.
+*/
+.oneColElsCtrHdr #container {
+	width: 46em;  /* this width will create a container that will fit in an 800px browser window if text is left at browser default font sizes */
+	background: #FFFFFF;
+	margin: 0 auto; /* the auto margins (in conjunction with a width) center the page */
+	border: 1px solid #000000;
+	text-align: left; /* this overrides the text-align: center on the body element. */
+}
+.oneColElsCtrHdr #header {
+	background: #000033;
+	padding: 0 10px 0 20px;  /* this padding matches the left alignment of the elements in the divs that appear beneath it. If an image is used in the #header instead of text, you may want to remove the padding. */
+	color:#FFFFFF;
+}
+.oneColElsCtrHdr #header h1 {
+	margin: 0; /* zeroing the margin of the last element in the #header div will avoid margin collapse - an unexplainable space between divs. If the div has a border around it, this is not necessary as that also avoids the margin collapse */
+	padding: 10px 0; /* using padding instead of margin will allow you to keep the element away from the edges of the div */
+}
+.oneColElsCtrHdr #mainContent {
+	padding: 0 20px; /* remember that padding is the space inside the div box and margin is the space outside the div box */
+	background: #FFFFFF;
+}
+.oneColElsCtrHdr #footer {
+	padding: 0 10px; /* this padding matches the left alignment of the elements in the divs that appear above it. */
+	background:#000033;
+	color:#FFFFFF;
+}
+.oneColElsCtrHdr #footer p {
+	margin: 0; /* zeroing the margins of the first element in the footer will avoid the possibility of margin collapse - a space between divs */
+	padding: 10px 0; /* padding on this element will create space, just as the the margin would have, without the margin collapse issue */
+}
+.style1 {font-family: "Comic Sans MS"}
+body,td,th {
+	font-family: Comic Sans MS;
+}
+.style2 {color: #FF0000}
+.style3 {color: #0000FF}
+-->
+</style></head>
+
+<body class="oneColElsCtrHdr">
+
+<div id="container">
+  <div id="header">
+    <h1 align="center" class="style1">Observations</h1>
+  </div>
+  <div id="mainContent">
+    <ul>
+      <li>
+        <div align="justify">For the benchmarks used, the energy reduction achieved by using a <span class="style3">Filter</span> Cache (as opposed to a Nominal 2-level cache) is of the order of 37-45% with a marginal performance penalty of 2-5%. The corresponding temperature values of the I-Cache are reduced by 7-10%. Increasing the size of the Filter Cache (256 bytes from 128 bytes) reduces the energy values further by 2-5% but there is negligible effect on the temperature values.</div>
+      </li>
+      <li>
+        <div align="justify"><span class="style2">HotSpot</span> Cache reduces the energy further by 18-22% and temperature values by 4-6%. This is much lower than the proclaimed 52% in the original paper which is probably because the benchmarks used are not multimedia applications (comprising of distinct phases of different sets of ‘<span class="style2"><em>hot</em></span>’/frequently accessed basic blocks). Increasing the size of the filter cache (L0) in the HotSpot architecture reduces energy values by another 5 10%. The temperature values tend to fall in the same range for both Filter Cache and HotSpot with the values for the HotSpot Cache being marginally lower.</div>
+      </li>
+      <li>
+        <div align="justify">In any cache-architecture, having 4-way or 8-way associativity provides the best results in terms of energy and temperature while the values increase for both direct-mapped and fully-associative configurations.</div>
+      </li>
+      <li>
+        <div align="justify">The LRU and FIFO replacement policies tend to have similar energy and temperature values for any cache configuration. The ‘random’ replacement policy tends to consume more energy and cause a higher temperature in the I-Cache.</div>
+      </li>
+    </ul>
+    <h1>&nbsp;</h1>
+  <!-- end #mainContent --></div>
+  <div id="footer">
+    <p class="style1">ECE 668 Computer Architecture - Fall 2006</p>
+    <!-- end #footer --></div>
+<!-- end #container --></div>
+</body>
+</html>

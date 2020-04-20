@@ -1,0 +1,116 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="en-us">
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<meta name="GENERATOR" content="Microsoft FrontPage 4.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<title>Help for Radix-4 Square Root</title>
+</head>
+
+<body>
+<DL>
+<CENTER>
+<H1>Radix-4 Square Root Online Help</H1></CENTER>
+
+</DL>
+
+<UL>
+<LI>
+Radix-4 Square-Root is based on Non-Restoring Algorithm r<SUB>i</SUB> = 4r<SUB>i-1</SUB> - q<SUB>i</SUB>(2Q<SUB>i-1</SUB> +  q<SUB>i</SUB>4<SUP>-i</SUP>),
+to find the square root of X. The steps are as follows, for i = 1,2,...(Initialization: Q<SUB>0</SUB> = 0)
+<UL><br>
+<LI>For <I>Alpha</I> = 2, the digit set q<SUB>i</SUB> {-2,-1,0,1,2} is used.
+
+<p><table><tr><td nowrap align=center> if r<sub>i-1</sub><U>&gt;</U></td>
+<td nowrap align=center>3<hr noshade>4<br></td><td nowrap align=center>Q<sub>i-1</sub> + 
+<td nowrap align=center>3<hr noshade>2<br></td><td nowrap align=center>&times;4<sup>-i-1</sup>
+, then q<SUB>i</SUB> = 2, r<SUB>i</SUB> = 4r<SUB>i-1</SUB> - (4Q<SUB>i-1</SUB> + 4<SUP>-i+1</SUP>); 
+ </td></tr></table> 
+
+<p><table><tr><td nowrap align=center> if r<sub>i-1</sub><U>&gt;</U></td>
+<td nowrap align=center>1<hr noshade>4<br></td><td nowrap align=center>Q<sub>i-1</sub> + 
+<td nowrap align=center>1<hr noshade>2<br></td><td nowrap align=center>&times;4<sup>-i-1</sup>
+ , then 
+q<SUB>i</SUB> = 1, r<SUB>i</SUB> = 4r<SUB>i-1</SUB> - (2Q<SUB>i-1</SUB> + 4<SUP>-i</SUP>);
+</td></tr></table>
+
+<p><table><tr><td nowrap align=center> if r<sub>i-1</sub><U>&gt;</U> - (</td>
+<td nowrap align=center>1<hr noshade>4<br></td><td nowrap align=center>Q<sub>i-1</sub> - 
+<td nowrap align=center>1<hr noshade>2<br></td><td nowrap align=center>&times;4<sup>-i-1</sup>)
+ , then  q<SUB>i</SUB> = 0, r<SUB>i</SUB> = 4r<SUB>i-1</SUB> ;
+</td></tr></table>
+
+<p><table><tr><td nowrap align=center> if r<sub>i-1</sub><U>&gt;</U> - (</td>
+<td nowrap align=center>3<hr noshade>4<br></td><td nowrap align=center>Q<sub>i-1</sub> - 
+<td nowrap align=center>3<hr noshade>2<br></td><td nowrap align=center>&times;4<sup>-i-1</sup>)
+ , then 
+q<SUB>i</SUB> = -1, r<SUB>i</SUB> = 4r<SUB>i-1</SUB> + (2Q<SUB>i-1</SUB> - 4<SUP>-i</SUP>);
+</td></tr></table>
+
+<p><table><tr><td nowrap align=center> if r<sub>i-1</sub><U>&lt;</U> - (</td>
+<td nowrap align=center>3<hr noshade>4<br></td><td nowrap align=center>Q<sub>i-1</sub> - 
+<td nowrap align=center>3<hr noshade>2<br></td><td nowrap align=center>&times;4<sup>-i-1</sup>), then
+q<SUB>i</SUB> = -2, r<SUB>i</SUB> = 4r<SUB>i-1</SUB> + (4Q<SUB>i-1</SUB> - 4<SUP>-i+1</SUP>).
+</td></tr></table>
+
+<p>
+<LI>For <I>Alpha</I> = 3, the digit set q<SUB>i</SUB> {-3,-2,-1,0,1,2,3} is used.
+
+<p><table><tr><td nowrap align=center> if r<sub>i-1</sub><U>&gt;</U></td>
+<td nowrap align=center>3<hr noshade>2<br></td><td nowreap align=center>Q<sub>i-1</sub> + 
+9&times;4<sup>-i-1</sup> , then  
+q<SUB>i</SUB> = 3, r<SUB>i</SUB> = 4r<SUB>i-1</SUB> - 3(2Q<SUB>i-1</SUB> + 3&times;4<SUP>-i</SUP>);
+</tr></table> 
+
+
+<p><table><tr><td nowrap align=center> if Q<sub>i-1</sub> + 4<sup>-i</sup> <U>&lt;</U> 
+r<sub>i-1</sub> <U>&lt;</U> </td><td nowrap align=center>3<hr noshade>2<br></td>
+<td nowreap align=center>Q<sub>i-1</sub> + 9&times;4<sup>-i-1</sup> 
+, then  q<SUB>i</SUB> = 2, r<SUB>i</SUB> = 4r<SUB>i-1</SUB> - (4Q<SUB>i-1</SUB> + 4<SUP>-i+1</SUP>);
+</tr></table> 
+
+
+<p><table><tr><td nowrap align=center> if </td><td nowrap align=center>1<hr noshade>2<br></td>
+<td nowrap align=center>Q<sub>i-1</sub> + 4<sup>-i-1</sup> <U>&lt;</U> r<sub>i-1</sub> <U>&lt;</U> 
+Q<sub>i-1</sub> + 4<sup>-i</sup> , then  
+q<SUB>i</SUB> = 1, r<SUB>i</SUB> = 4r<SUB>i-1</SUB> - (2Q<SUB>i-1</SUB> + 4<SUP>-i</SUP>);</td></tr></table>
+
+
+
+<p><table><tr><td nowrap align=center> if - (</td><td nowrap align=center>1<hr noshade>2<br></td>
+<td nowrap align=center>Q<sub>i-1</sub> - 4<sup>-i-1</sup>) <U>&lt;</U> r<sub>i-1</sub> <U>&lt;</U> </td>
+<td nowrap align=center>1<hr noshade>2<br></td><td nowreap align=center>Q<sub>i-1</sub> + 
+4<sup>-i-1</sup> , then  q<SUB>i</SUB> = 0, r<SUB>i</SUB> = 4r<SUB>i-1</SUB> ;</tr></table>
+
+
+
+<p><table><tr><td nowrap align=center> if - (Q<sub>i-1</sub> - 4<sup>-i</sup>) <U>&lt;</U> 
+r<sub>i-1</sub> <U>&lt;</U> - ( </td><td nowrap align=center>1<hr noshade>2<br></td>
+<td nowreap align=center>Q<sub>i-1</sub> - 4<sup>-i-1</sup>) , then  
+q<SUB>i</SUB> = -1, r<SUB>i</SUB> = 4r<SUB>i-1</SUB> + (2Q<SUB>i-1</SUB> - 4<SUP>-i</SUP>);</tr></table> 
+
+
+
+
+<p><table><tr><td nowrap align=center> if - (</td><td nowrap align=center>3<hr noshade>2<br></td>
+<td nowreap align=center>Q<sub>i-1</sub> - 9&times;4<sup>-i-1</sup>) <U>&lt;</U> 
+r<sub>i-1</sub> <U>&lt;</U> <td nowrap align=center> - (Q<sub>i-1</sub> - 4<sup>-i</sup>) 
+, then  q<SUB>i</SUB> = -2, r<SUB>i</SUB> = 4r<SUB>i-1</SUB> + (4Q<SUB>i-1</SUB> - 4<SUP>-i+1</SUP>);</td></tr></table> 
+
+
+
+
+<p><table><tr><td nowrap align=center> if r<sub>i-1</sub> <U>&lt;</U> - (</td>
+<td nowrap align=center>3<hr noshade>2<br></td><td nowreap align=center>Q<sub>i-1</sub> - 
+9&times;4<sup>-i-1</sup>) , then q<SUB>i</SUB> = -3, r<SUB>i</SUB> = 4r<SUB>i-1</SUB> + 3(2Q<SUB>i-1</SUB> - 3&times;4<SUP>-i</SUP>).</tr></table>
+
+
+<p>
+</UL>
+
+
+
+</body>
+
+</html>

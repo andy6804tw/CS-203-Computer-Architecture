@@ -1,0 +1,145 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="en-us">
+<meta name="GENERATOR" content="Microsoft FrontPage 5.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<title>Time Chart for different scheduling algorithms</title>
+<style>
+<!--
+ p.MsoNormal
+	{mso-style-parent:"";
+	margin-bottom:.0001pt;
+	font-size:12.0pt;
+	font-family:"Times New Roman";
+	margin-left:0in; margin-right:0in; margin-top:0in}
+-->
+</style>
+</head>
+
+<body bgcolor="#CCCCCC">
+
+<h2 align="center">
+<u><font color="#FF0000">Time chart for different scheduling algorithms </font>
+</u>
+</h2>
+
+<p class="MsoNormal" align="left">&nbsp;</p>
+<p class="MsoNormal">&nbsp;</p>
+<p class="MsoNormal">Following are the steps to use this software (for default 
+execution, Step 2-5 can be skipped initially):</p>
+<p class="MsoNormal">&nbsp;</p>
+<p class="MsoNormal" style="text-align: justify"><font color="#0000FF"><b>Step1: 
+Selection of MIPS instruction set</b></font></p>
+<p class="MsoNormal" style="text-align: justify">Insert MIPS instructions by 
+pressing “Insert Instruction”. After an instruction is inserted, its type, 
+destination and sources can be changed. Last instruction can be removed by 
+pressing “Remove Instruction”.</p>
+<p class="MsoNormal" style="text-align: justify">&nbsp;</p>
+<p class="MsoNormal" style="text-align: justify"><font color="#0000FF"><b>Step 
+2: Configuring number of cycles for different execution </b></font></p>
+<p class="MsoNormal" style="text-align: justify">The number of cycles for 
+execution of each function can be configured. For e.g.: number of cycles to 
+execute “Multiply” can be chosen from 1 to 10 cycles.</p>
+<p class="MsoNormal" style="text-align: justify">&nbsp;</p>
+<p class="MsoNormal" style="text-align: justify"><font color="#0000FF"><b>Step 
+3: Configuring number of functional units</b></font></p>
+<p class="MsoNormal" style="text-align: justify">The number of functional units 
+for each function can be configured. For e.g.: number of functional units for 
+load/store can be chosen from 1 to 10.</p>
+<p class="MsoNormal" style="text-align: justify">&nbsp;</p>
+<p class="MsoNormal" style="text-align: justify"><font color="#0000FF"><b>Step 
+4: Configuring number of reservation stations (ONLY for Tomasulo)</b></font></p>
+<p class="MsoNormal" style="text-align: justify">The number of reservation 
+stations for each functional unit in Tomasulo dynamic scheduling algorithms can 
+be configured. For e.g: number of reservation stations for add/sub can be chosen 
+between 1 and 10.</p>
+<p class="MsoNormal" style="text-align: justify">&nbsp;</p>
+<p class="MsoNormal" style="text-align: justify"><font color="#0000FF"><b>Step 
+5: Configuring whether functional units are pipelined or not</b></font></p>
+<p class="MsoNormal" style="text-align: justify">Different functional units can 
+be separately configured for pipeline or not pipeline execution.</p>
+<p class="MsoNormal" style="text-align: justify">&nbsp;</p>
+<p class="MsoNormal" style="text-align: justify"><font color="#0000FF"><b>Step 
+6: Selection of scheduling algorithms</b></font></p>
+<p class="MsoNormal" style="text-align: justify">The software implements static 
+scheduling with forwarding and without forwarding and dynamic scheduling namely 
+Tomasulo and Scoreboarding. It provides flexibility to chose one or more 
+scheduling algorithms.</p>
+<p class="MsoNormal" style="text-align: justify">&nbsp;</p>
+<p class="MsoNormal" style="text-align: justify"><font color="#0000FF"><b>Step 
+7: Start the execution</b></font></p>
+<p class="MsoNormal" style="text-align: justify">The execution can be started by 
+pressing “Execute”. It executes the chosen algorithm in the background and shows 
+the empty time chart.</p>
+<p class="MsoNormal" style="text-align: justify">&nbsp;</p>
+<p class="MsoNormal" style="text-align: justify"><font color="#0000FF"><b>Step 
+8: Viewing results</b></font></p>
+<p class="MsoNormal" style="text-align: justify">Time chart can be view 
+step-by-step by pressing “Step-by-Step” on the basis of cycle. The total time 
+chart can be seen any time by pressing “Final”. The time chart is shown in 
+different colors for different scheduling algorithms and the stall cycles are 
+shown in dark red color to clearly differentiate it from other pipeline stages 
+and helps in differentiating across the algorithms.</p>
+<p class="MsoNormal" style="text-align: justify">&nbsp;</p>
+<p class="MsoNormal" style="text-align: justify">The whole process can be reset 
+anytime by pressing “Reset” button. Then you can start by going to Step 1.</p>
+
+<p class="MsoNormal" style="text-align: justify">&nbsp;</p>
+<p class="MsoNormal" style="text-align: justify">&nbsp;</p>
+<p class="MsoNormal" style="text-align: justify"><u><b>Assumptions for 
+Scoreboarding Implementation</b></u></p>
+<p class="MsoNormal" style="text-align: justify">&nbsp;</p>
+<p class="MsoNormal" style="text-align: justify">Scoreboarding can be 
+implemented in such a way that time chart for scoreboarding and tomasulo will be 
+same. In this software, the scoreboarding is implemented based on the following 
+design description:</p>
+<font FACE="ComicSansMS-Bold" COLOR="#0237bd">
+<p ALIGN="LEFT" style="margin-top: 0; margin-bottom: 0">Issue</font><font FACE="ComicSansMS-Bold">—decode 
+instructions &amp; check for structural hazards (</font><font FACE="ComicSansMS-Bold" COLOR="#fd0128">I</font><font FACE="ComicSansMS-Bold">)</p>
+</font><font FACE="SymbolMT" SIZE="5" COLOR="#9a0000">
+<p ALIGN="LEFT" style="margin-top: 0; margin-bottom: 0">• </font>
+<font FACE="ComicSansMS-Bold" SIZE="2">Instructions issued in program order (for 
+hazard checking)</p>
+</font><font FACE="SymbolMT" SIZE="5" COLOR="#9a0000">
+<p ALIGN="LEFT" style="margin-top: 0; margin-bottom: 0">• </font>
+<font FACE="ComicSansMS-Bold" SIZE="2">Don’t issue if structural hazard</p>
+</font>
+<p ALIGN="LEFT" style="margin-top: 0; margin-bottom: 0">
+<font FACE="ComicSansMS-Bold" COLOR="#0237bd">Read operands</font><font FACE="ComicSansMS-Bold">—wait 
+until no data hazards, then read operands (<font color="#FD0128">D</font>)</p>
+</font><font FACE="SymbolMT" SIZE="5" COLOR="#9a0000">
+<p ALIGN="LEFT" style="margin-top: 0; margin-bottom: 0">• </font>
+<font FACE="ComicSansMS-Bold" SIZE="2">No forwarding of data in this model</p>
+</font>
+<p ALIGN="LEFT" style="margin-top: 0; margin-bottom: 0">
+<font FACE="ComicSansMS-Bold" COLOR="#0237bd">Execution </font>
+<font FACE="ComicSansMS-Bold">— operate on operands (</font><font FACE="ComicSansMS-Bold" COLOR="#fd0128">E</font><font FACE="ComicSansMS-Bold">)</p>
+</font><font FACE="SymbolMT" SIZE="5" COLOR="#9a0000">
+<p ALIGN="LEFT" style="margin-top: 0; margin-bottom: 0">• </font>
+<font FACE="ComicSansMS-Bold" SIZE="2">All real dependencies (RAW hazards) 
+resolved in this stage, since we wait for instructions to write back data</p>
+</font><font FACE="SymbolMT" SIZE="5" COLOR="#9a0000">
+<p ALIGN="LEFT" style="margin-top: 0; margin-bottom: 0">• </font>
+<font FACE="ComicSansMS-Bold" SIZE="2">The functional unit begins execution upon 
+receiving operands. When the result is ready, it notifies the scoreboard that it 
+has completed execution</p>
+</font>
+<p ALIGN="LEFT" style="margin-top: 0; margin-bottom: 0">
+<font FACE="ComicSansMS-Bold" COLOR="#0237bd">Write result </font>
+<font FACE="ComicSansMS-Bold">— finish execution (</font><font FACE="ComicSansMS-Bold" COLOR="#fd0128">W</font><font FACE="ComicSansMS-Bold">)</p>
+</font><font FACE="SymbolMT" SIZE="5" COLOR="#9a0000">
+<p ALIGN="LEFT" style="margin-top: 0; margin-bottom: 0">• </font>
+<font FACE="ComicSansMS-Bold" SIZE="2">Don’t issue if instruction is output 
+dependent on any previously issued but uncompleted instruction (no WAW hazards)</p>
+</font><font FACE="SymbolMT" SIZE="5" COLOR="#9a0000">
+<p ALIGN="LEFT" style="margin-top: 0; margin-bottom: 0">• </font>
+<font FACE="ComicSansMS-Bold" SIZE="2">Stall until no WAR hazards with previous 
+instructions</p>
+</font>
+<p class="MsoNormal" style="text-align: justify">&nbsp;</p>
+
+</body>
+
+</html>

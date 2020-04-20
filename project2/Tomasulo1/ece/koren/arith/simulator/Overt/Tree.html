@@ -1,0 +1,2385 @@
+<html>
+<head> <title> overturned  stair tree simulation</title> </head>
+<Body BGCOLOR="#DDC440"> 
+<script language="JavaScript">
+
+function BinToDec (BinStr) {
+        Num=0;
+//        if (fracmode!=0) {
+//        for (var i=0; i<=BinStr.length-1 ; i++) {
+//                if (BinStr[BinStr.length-1-i] !=".") {
+//                Num += eval(BinStr[BinStr.length-1-i])*Math.pow(2,-(BinStr.length-i-1));} }
+//        }
+//        else
+{for (var i=0; i<=BinStr.length-1 ; i++) {
+                Num += eval(BinStr[BinStr.length-1-i])*Math.pow(2,i);}}
+        return Num;
+}
+
+function OrderOfMagnitude (TheNum) {
+        // returns the highest place which has a "1" in TheNum's
+        // binary representation - special non-2's complement version
+
+        LogBaseTwo = Math.log(TheNum)/Math.LN2;
+        return Math.floor(LogBaseTwo)
+        //return Math.round(LogBaseTwo)
+}
+
+function PrintBinary(TheNum, NumDecs) {
+        // initialize the string
+        S = "";
+        // deal with negative numbers
+        if (TheNum < 0) {
+        parent.frames[1].document.writeln(PrintError("This simulation works only with positive numbers."))
+        TheNum *= -1
+        }
+        StartPlace = OrderOfMagnitude(TheNum)
+        if (StartPlace < 0) {StartPlace = 0}
+        for (CurPlace = StartPlace; CurPlace >= -NumDecs; CurPlace--) {
+                if (CurPlace == -1) {S += "."}
+                CurPower = Math.pow(2, CurPlace)
+                if (TheNum >= CurPower) {
+                        S += "1"
+                        TheNum = TheNum - CurPower
+                } else  {
+                        S += "0"
+                }
+        }
+        return S
+}
+
+
+function counter_sum(bit_x,bit_y,bit_z) {
+        count=0
+        s="0"
+        if (bit_x=="1") {count+=1}
+        if (bit_y=="1") {count+=1}
+        if (bit_z=="1") {count+=1}
+        if (count >= 2) {count+=-2}
+        if (count==1) {s="1"}
+        return s
+}
+
+function counter_carry(bit_x,bit_y,bit_z,s) {
+        count=0
+        if (bit_x=="1") {count+=1}
+        if (bit_y=="1") {count+=1}
+        if (bit_z=="1") {count+=1}
+        if (s=="1") {count+=-1}
+        count*=0.5;
+        return count
+}
+
+
+function csa_module(x1,x2,x3) {
+    
+    num_bits = x1.length
+    sum=""
+    carry=""
+   
+  for (var i=0; i<num_bits; i++) 
+          {
+                sum+=counter_sum(x1[i],x2[i],x3[i])
+                carry+=counter_carry(x1[i],x2[i],x3[i],sum[i])
+          }
+        sum=Extend(sum);
+        carry=LeftShift(carry);
+        result = carry + sum;  // c,s bits are just concatenated
+        return result;
+}        
+
+//******* functions for arithemtic  operations *********
+ 
+function LeftShift(op) 
+{
+        l=op.length
+        op+="0";
+        newop=""
+        for (var i=0; i<l+1; i++) 
+        {
+           newop+=op[i]
+        }
+        return newop
+}
+
+function Append_0(bits) {
+        new_bits=Reverse_Bits(bits);
+        new_bits+="0";
+        new_bits=Reverse_Bits(new_bits);
+        return new_bits;
+        }
+
+function Extend(bits) {
+       new_bits=Reverse_Bits(bits);
+        if (Twos==0) {new_bits+="0";}
+        else {new_bits+=bits[0];}
+        new_bits=Reverse_Bits(new_bits);
+        return new_bits;
+      }
+
+function Reverse_Bits(bits) {
+
+        rev_bits=""
+        for (var i=bits.length-1; i>-1; i--) 
+        {
+        rev_bits+=bits[i]
+        }
+        return rev_bits
+}
+
+
+function PrintError(Message) {
+        Error = "<BODY BGCOLOR=#ffffff> </BODY>"
+        Error += "<CENTER><H1> ERROR </H1></CENTER> <P>\n"
+        Error += "<CENTER> <EM>" + Message + "</EM> </CENTER>\n <HR>"
+        return Error
+}
+
+//**************************** functions ***************************
+
+function oper2(x1, x2, x3, ts, tc)
+{
+
+         parent.frames[1].document.writeln("<br><b> Level 1</b> <br>")
+         parent.frames[1].document.writeln("<dd>X<sub>1,1</sub> = "+x1+"--->T<sub>1,1</sub>=0")
+         parent.frames[1].document.writeln("<dd>X<sub>1,2</sub> = "+x2+"--->T<sub>1,2</sub>=0")
+         parent.frames[1].document.writeln("<dd>X<sub>1,3</sub> = "+x3+"--->T<sub>1,3</sub>=0")
+
+         res = csa_module(x1, x2, x3);
+         carry1=""
+         sum1 = ""
+         for (var i=0; i<res.length/2; i++)
+            {
+                carry1+=res[i]
+                sum1+=res[i+res.length/2]
+             }
+         parent.frames[1].document.writeln("<br><b> Tree Result (CPA Input) </b>")
+         parent.frames[1].document.writeln("<br><b> C</b> =" + carry1 + "--->T<sub>c</sub>=" +tc)
+         parent.frames[1].document.writeln("<br><b> S</b> =" + sum1+ "--->T<sub>s</sub>=" +ts)
+         parent.frames[1].document.writeln("<br><b>Final Result: " + Extend(finres_bin)+"<sub>2</sub> =" + finres_dec +"<sub>10</sub>" )
+}
+
+function oper3(x1, x2, x3, ts, tc)
+{
+   
+         parent.frames[1].document.writeln("<br><b> Level 1</b> <br>")
+         parent.frames[1].document.writeln("<dd>X<sub>1,1</sub> = "+x1+"--->T<sub>1,1</sub>=0")  
+         parent.frames[1].document.writeln("<dd>X<sub>1,2</sub> = "+x2+"--->T<sub>1,2</sub>=0")
+         parent.frames[1].document.writeln("<dd>X<sub>1,3</sub> = "+x3+"--->T<sub>1,3</sub>=0")
+
+         res = csa_module(x1, x2, x3);
+         carry1=""
+         sum1 = ""
+         for (var i=0; i<res.length/2; i++) 
+            {
+                carry1+=res[i]
+                sum1+=res[i+res.length/2] 
+             }
+         parent.frames[1].document.writeln("<br><b> Tree Result (CPA Input) </b>")  
+         parent.frames[1].document.writeln("<br><b> C</b> =" + carry1 + "--->T<sub>c</sub>=" +tc) 
+         parent.frames[1].document.writeln("<br><b> S</b> =" + sum1+ "--->T<sub>s</sub>=" +ts) 
+         parent.frames[1].document.writeln("<br><b>Final Result: " + Extend(finres_bin)+"<sub>2</sub> =" + finres_dec +"<sub>10</sub>" )     
+
+}  
+
+
+
+function oper4(x1, x2, x3, x4, ts, tc)
+{
+         parent.frames[1].document.writeln("<br><b> Level 2</b> <br>")
+         parent.frames[1].document.writeln("<dd>X<sub>2,1</sub> = "+x1+"--->T<sub>2,1</sub>=0")
+         parent.frames[1].document.writeln("<dd>X<sub>2,2</sub> = "+x2+"--->T<sub>2,2</sub>=0")
+         parent.frames[1].document.writeln("<dd>X<sub>2,3</sub> = "+x3+"--->T<sub>2,3</sub>=0")
+         parent.frames[1].document.writeln("<dd>X<sub>2,4</sub> = "+x4+"--->T<sub>2,4</sub>=0")
+         res = csa_module(x1, x2, x3);
+         carry1=""
+         sum1 = ""
+         for (var i=0; i<res.length/2; i++)
+            {
+                carry1+=res[i]
+                sum1+=res[i+res.length/2]
+             }
+        x4=Extend(x4); 
+        t11=ts;
+        t12=tc;
+        t13=0;  
+         parent.frames[1].document.writeln("<br><b> Level 1</b> <br>")
+         parent.frames[1].document.writeln("<dd>X<sub>1,1</sub> = "+sum1+"--->T<sub>1,1</sub>="+t11)
+         parent.frames[1].document.writeln("<dd>X<sub>1,2</sub> = "+carry1+"--->T<sub>1,2</sub>="+t12)
+         parent.frames[1].document.writeln("<dd>X<sub>1,3</sub> = "+x4+"--->T<sub>1,3</sub>="+t13) 
+         res1= csa_module(sum1, carry1, x4); 
+         carry=""
+         sum=""  
+         for (var i=0; i<res1.length/2; i++)
+            {
+                carry+=res1[i]
+                sum+=res1[i+res1.length/2]
+             }
+         tsum=Math.max( Math.max(t12,t13)+ts, t11+(ts/2)); 
+         tcarry=Math.max(Math.max(t11,t12),t13)+tc;
+          
+         parent.frames[1].document.writeln("<br><b> Tree Result (CPA Input) </b>")
+         parent.frames[1].document.writeln("<br><b> C</b> =" + carry+ "--->T<sub>c</sub>=" +tcarry )
+         parent.frames[1].document.writeln("<br><b> S</b> =" + sum +"--->T<sub>s</sub>=" +tsum)
+         parent.frames[1].document.writeln("<br><b>Final Result: " + Extend(finres_bin)+"<sub>2</sub> =" + finres_dec+"<sub>10</sub>" )
+
+}
+
+function oper5(x1, x2, x3, x4, x5, ts, tc)
+{
+         parent.frames[1].document.writeln("<br><b> Level 3</b> <br>")
+         parent.frames[1].document.writeln("<dd>X<sub>3,1</sub> = "+x1+"--->T<sub>3,1</sub>=0")
+         parent.frames[1].document.writeln("<dd>X<sub>3,2</sub> = "+x2+"--->T<sub>3,2</sub>=0")
+         parent.frames[1].document.writeln("<dd>X<sub>3,3</sub> = "+x3+"--->T<sub>3,3</sub>=0")
+         parent.frames[1].document.writeln("<dd>X<sub>3,4</sub> = "+x4+"--->T<sub>3,4</sub>=0")
+         parent.frames[1].document.writeln("<dd>X<sub>3,5</sub> = "+x5+"--->T<sub>3,5</sub>=0") 
+         res31 = csa_module(x1, x2, x3);
+         res32 = csa_module(x4,x5,0);
+         carry31=""
+         sum31 = ""
+         carry32=""
+         sum32=""
+         for (var i=0; i<res31.length/2; i++)
+            {
+                carry31+=res31[i]
+                carry32+=res32[i]
+                sum31+=res31[i+res31.length/2]
+                sum32+=res32[i+res32.length/2]
+             }
+         t21=ts;
+         t22=tc;
+         t23=tc;
+         t24=ts; 
+         parent.frames[1].document.writeln("<br><b> Level 2</b> <br>")
+         parent.frames[1].document.writeln("<dd>X<sub>2,1</sub> = "+sum31+"--->T<sub>2,1</sub>="+t21)
+         parent.frames[1].document.writeln("<dd>X<sub>2,2</sub> = "+carry31+"--->T<sub>2,2</sub>="+t22)
+         parent.frames[1].document.writeln("<dd>X<sub>2,3</sub> = "+carry32+"--->T<sub>2,3</sub>="+t23)
+         parent.frames[1].document.writeln("<dd>X<sub>2,4</sub> = "+sum32+"--->T<sub>2,4</sub>="+t24)
+         res21= csa_module(sum31, carry31, carry32);
+         carry21=""
+         sum21="" 
+         for (var i=0; i<res21.length/2; i++)
+            {
+                carry21+=res21[i]
+                sum21+=res21[i+res21.length/2]
+             }
+         t11= Math.max(Math.max(t22,t23)+ts, t21+(ts/2));
+         t12= Math.max(Math.max(t21,t22),t23)+tc;
+         t13= t24; 
+         sum32=Extend(sum32); 
+         parent.frames[1].document.writeln("<br><b> Level 1</b> <br>")
+         parent.frames[1].document.writeln("<dd>X<sub>1,1</sub> = "+sum21+"--->T<sub>1,1</sub>="+t11)
+         parent.frames[1].document.writeln("<dd>X<sub>1,2</sub> = "+carry21+"--->T<sub>1,2</sub>="+t12)
+         parent.frames[1].document.writeln("<dd>X<sub>1,3</sub> = "+sum32+"--->T<sub>1,3</sub>="+t13)
+         res = csa_module(carry21, sum21, sum32);
+         carry=""
+         sum =""
+         for (var i=0; i<res.length/2; i++)
+            {
+                carry+=res[i]
+                sum+=res[i+res.length/2]
+             }
+         tcarry= Math.max(Math.max(t11,t12),t13)+tc;
+         tsum= Math.max(Math.max(t12,t13)+ts, t11+(ts/2));
+         parent.frames[1].document.writeln("<br><b> Tree Result (CPA Input) </b>")
+         parent.frames[1].document.writeln("<br><b> C</b> =" + carry+"--->T<sub>c</sub>="+tcarry )
+         parent.frames[1].document.writeln("<br><b> S</b> =" + sum+"--->T<sub>s</sub>="+tsum )
+         parent.frames[1].document.writeln("<br><b>Final Result:</b> " + Extend(finres_bin) +"<sub>2</sub> =" + finres_dec+"<sub>10</sub>" )
+
+}
+
+
+function oper6(x1, x2, x3, x4, x5, x6, t31,t32,t33,t34,t35,t36,ts, tc)
+{
+         parent.frames[1].document.writeln("<br><b> Level 3</b> <br>")
+         parent.frames[1].document.writeln("<dd>X<sub>3,1</sub> = "+x1+"--->T<sub>3,1</sub>="+t31)
+         parent.frames[1].document.writeln("<dd>X<sub>3,2</sub> = "+x2+"--->T<sub>3,2</sub>="+t32)
+         parent.frames[1].document.writeln("<dd>X<sub>3,3</sub> = "+x3+"--->T<sub>3,3</sub>="+t33)
+         parent.frames[1].document.writeln("<dd>X<sub>3,4</sub> = "+x4+"--->T<sub>3,4</sub>="+t34)
+         parent.frames[1].document.writeln("<dd>X<sub>3,5</sub> = "+x5+"--->T<sub>3,5</sub>="+t35)
+         parent.frames[1].document.writeln("<dd>X<sub>3,6</sub> = "+x6+"--->T<sub>3,6</sub>="+t36)
+         res31 = csa_module(x1, x2, x3);
+         res32 = csa_module(x4, x5, x6);
+         carry31=""; sum31=""; carry32=""; sum32=""; 
+         for (var i=0; i<res31.length/2; i++)
+            {
+                carry31+=res31[i]
+                carry32+=res32[i]
+                sum31+=res31[i+res31.length/2]
+                sum32+=res32[i+res32.length/2]
+             }
+         t21=Math.max(Math.max(t32,t33)+ts, t31+(ts/2));
+         t22=Math.max(Math.max(t31,t32),t33)+tc;
+         t23=Math.max(Math.max(t34,t35),t36)+tc;
+         t24=Math.max(Math.max(t35,t36)+ts, t34+(ts/2)); 
+         parent.frames[1].document.writeln("<br><b> Level 2</b> <br>")
+         parent.frames[1].document.writeln("<dd>X<sub>2,1</sub> = "+sum31+"--->T<sub>2,1</sub>="+t21)
+         parent.frames[1].document.writeln("<dd>X<sub>2,2</sub> = "+carry31+"--->T<sub>2,2</sub>="+t22)
+         parent.frames[1].document.writeln("<dd>X<sub>2,3</sub> = "+carry32+"--->T<sub>2,3</sub>="+t23)
+         parent.frames[1].document.writeln("<dd>X<sub>2,4</sub> = "+sum32+"--->T<sub>2,4</sub>="+t24)
+      
+         res21= csa_module(sum31, carry31, carry32);
+         carry21=""
+         sum21=""
+         for (var i=0; i<res21.length/2; i++)
+            {
+                carry21+=res21[i]
+                sum21+=res21[i+res21.length/2]
+             }
+        
+         t11=Math.max(Math.max(t22,t23)+ts, t21+(ts/2));
+         t12=Math.max(Math.max(t21,t22),t23)+tc;
+         t13=t24; 
+         sum32=Extend(sum32); 
+         parent.frames[1].document.writeln("<br><b> Level 1</b> <br>")
+         parent.frames[1].document.writeln("<dd>X<sub>1,1</sub> = "+sum21+"--->T<sub>1,1</sub>="+t11)
+         parent.frames[1].document.writeln("<dd>X<sub>1,2</sub> = "+carry21+"--->T<sub>1,2</sub>="+t12)
+         parent.frames[1].document.writeln("<dd>X<sub>1,3</sub> = "+sum32+"--->T<sub>1,3</sub>="+t13)
+         res = csa_module(sum21, carry21,sum32);
+         carry=""
+         sum =""
+         for (var i=0; i<res.length/2; i++)
+            {
+                carry+=res[i]
+                sum+=res[i+res.length/2]
+             }
+         tcarry=Math.max(Math.max(t11,t12),t13)+tc;
+         tsum=Math.max(Math.max(t12,t13)+ts, t11+(ts/2));
+         parent.frames[1].document.writeln("<br><b> Tree Result (CPA Input) </b>")
+         parent.frames[1].document.writeln("<br><b> C</b> =" + carry+"--->T<sub>c</sub>="+tcarry )
+         parent.frames[1].document.writeln("<br><b> S</b> =" + sum+"--->T<sub>s</sub>="+tsum )
+         parent.frames[1].document.writeln("<br><b>Final Result:</b> "+ Extend(finres_bin) +"<sub>2</sub> =" + finres_dec +"<sub>10</sub>" )
+
+}
+
+
+function oper7(x1,x2,x3,x4,x5,x6,x7,t41,t42,t43,t44,t45,t46,t47,ts,tc)
+{
+         parent.frames[1].document.writeln("<br><b> Level 4</b> <br>")
+         parent.frames[1].document.writeln("<dd>X<sub>4,1</sub> = "+x1+"--->T<sub>4,1</sub>="+t41)
+         parent.frames[1].document.writeln("<dd>X<sub>4,2</sub> = "+x2+"--->T<sub>4,2</sub>="+t42)
+         parent.frames[1].document.writeln("<dd>X<sub>4,3</sub> = "+x3+"--->T<sub>4,3</sub>="+t43)
+         parent.frames[1].document.writeln("<dd>X<sub>4,4</sub> = "+x4+"--->T<sub>4,4</sub>="+t44)
+         parent.frames[1].document.writeln("<dd>X<sub>4,5</sub> = "+x5+"--->T<sub>4,5</sub>="+t45)
+         parent.frames[1].document.writeln("<dd>X<sub>4,6</sub> = "+x6+"--->T<sub>4,6</sub>="+t46)
+         parent.frames[1].document.writeln("<dd>X<sub>4,7</sub> = "+x7+"--->T<sub>4,7</sub>="+t47)
+
+         res41 = csa_module(x1,x2,x3);
+         carry41=""
+         sum41=""
+         for (var i=0; i<res41.length/2; i++)
+            {
+                carry41+=res41[i]
+                sum41+=res41[i+res41.length/2]
+             }
+         x4 = Extend(x4); 
+         x5 = Extend(x5);
+         x6 = Extend(x6);
+         x7 = Extend(x7);
+         t31=Math.max(Math.max(t42,t43)+ts, t41+(ts/2));
+         t32=Math.max(Math.max(t41,t42),t43)+tc; 
+         t33=t44;
+         t34=t45;
+         t35=t46;
+         t36=t47; 
+
+         oper6(sum41, carry41, x4, x5, x6, x7,t31,t32,t33,t34,t35,t36, ts,tc) 
+}
+
+
+function oper8(x1,x2,x3,x4,x5,x6,x7,x8,t41,t42,t43,t44,t45,t46,t47,t48,ts,tc)
+{
+         parent.frames[1].document.writeln("<br><b> Level 4</b> <br>")
+         parent.frames[1].document.writeln("<dd>X<sub>4,1</sub> = "+x1+"--->T<sub>4,1</sub>="+t41)
+         parent.frames[1].document.writeln("<dd>X<sub>4,2</sub> = "+x2+"--->T<sub>4,2</sub>="+t42)
+         parent.frames[1].document.writeln("<dd>X<sub>4,3</sub> = "+x3+"--->T<sub>4,3</sub>="+t43)
+         parent.frames[1].document.writeln("<dd>X<sub>4,4</sub> = "+x4+"--->T<sub>4,4</sub>="+t44)
+         parent.frames[1].document.writeln("<dd>X<sub>4,5</sub> = "+x5+"--->T<sub>4,5</sub>="+t45)
+         parent.frames[1].document.writeln("<dd>X<sub>4,6</sub> = "+x6+"--->T<sub>4,6</sub>="+t46)
+         parent.frames[1].document.writeln("<dd>X<sub>4,7</sub> = "+x7+"--->T<sub>4,7</sub>="+t47)
+         parent.frames[1].document.writeln("<dd>X<sub>4,8</sub> = "+x8+"--->T<sub>4,8</sub>="+t48)
+         res41 = csa_module(x1,x2,x3);
+         res42 = csa_module(x4,x5,x6); 
+         carry41=""
+         sum41=""
+         carry42=""
+         sum42="" 
+         for (var i=0; i<res41.length/2; i++)
+            {
+                carry41+=res41[i]
+                carry42 += res42[i]
+                sum41+=res41[i+res41.length/2]
+                sum42+=res42[i+res42.length/2]   
+            }
+         x7 = Extend(x7);
+         x8 = Extend(x8);
+              
+         t31=Math.max(Math.max(t42,t43)+ts, t41+(ts/2));
+         t32=Math.max(Math.max(t41,t42),t43)+tc;
+         t33=Math.max(Math.max(t44,t45),t46)+tc;
+         t34=Math.max(Math.max(t45,t46)+ts, t44+(ts/2));
+         t35=t47;
+         t36=t48;        
+
+ 
+         oper6(sum41,carry41,carry42,sum42,x7,x8,t31,t32,t33,t34,t35,t36,ts,tc) 
+}
+
+
+function oper9(x1,x2,x3,x4,x5,x6,x7,x8,x9,t41,t42,t43,t44,t45,t46,t47,t48,t49,ts, tc)
+{
+         parent.frames[1].document.writeln("<br><b> Level 4</b> <br>")
+         parent.frames[1].document.writeln("<dd>X<sub>4,1</sub> = "+x1+"--->T<sub>4,1</sub>="+t41)
+         parent.frames[1].document.writeln("<dd>X<sub>4,2</sub> = "+x2+"--->T<sub>4,2</sub>="+t42)
+         parent.frames[1].document.writeln("<dd>X<sub>4,3</sub> = "+x3+"--->T<sub>4,3</sub>="+t43)
+         parent.frames[1].document.writeln("<dd>X<sub>4,4</sub> = "+x4+"--->T<sub>4,4</sub>="+t44)
+         parent.frames[1].document.writeln("<dd>X<sub>4,5</sub> = "+x5+"--->T<sub>4,5</sub>="+t45)
+         parent.frames[1].document.writeln("<dd>X<sub>4,6</sub> = "+x6+"--->T<sub>4,6</sub>="+t46)
+         parent.frames[1].document.writeln("<dd>X<sub>4,7</sub> = "+x7+"--->T<sub>4,7</sub>="+t47)
+         parent.frames[1].document.writeln("<dd>X<sub>4,8</sub> = "+x8+"--->T<sub>4,8</sub>="+t48)
+         parent.frames[1].document.writeln("<dd>X<sub>4,9</sub> = "+x9+"--->T<sub>4,9</sub>="+t49)
+
+         res41 = csa_module(x1,x2,x3);
+         res42 = csa_module(x4,x5,x6);
+         res43 = csa_module(x7,x8,x9);  
+         carry41=""
+         sum41=""
+         carry42=""
+         sum42=""
+         carry43=""
+         sum43=""
+         for (var i=0; i<res41.length/2; i++)
+            {
+                carry41 += res41[i]
+                carry42 += res42[i]
+                carry43 += res43[i] 
+                sum41+=res41[i+res41.length/2]
+                sum42+=res42[i+res42.length/2]
+                sum43+=res43[i+res43.length/2]
+            }
+
+
+         t31=Math.max(Math.max(t42,t43)+ts, t41+(ts/2));
+         t32=Math.max(Math.max(t41,t42),t43)+tc;
+         t33=Math.max(Math.max(t44,t45),t46)+tc;
+         t34=Math.max(Math.max(t45,t46)+ts, t44+(ts/2));
+         t35=Math.max(Math.max(t47,t48),t49)+tc;
+         t36=Math.max(Math.max(t48,t49)+ts, t47+(ts/2));
+
+         oper6(sum41,carry41,carry42,sum42,carry43,sum43,t31,t32,t33,t34,t35,t36,ts,tc)
+}
+
+
+function oper10(x1,x2,x3,x4,x5,x6,x7,x8,x9,x10,t51,t52,t53,t54,t55,t56,t57,t58,t59,t510,ts,tc)
+{
+         parent.frames[1].document.writeln("<br><b> Level 5</b> <br>")
+         parent.frames[1].document.writeln("<dd>X<sub>5,1</sub> = "+x1+"--->T<sub>5,1</sub>="+t51)
+         parent.frames[1].document.writeln("<dd>X<sub>5,2</sub> = "+x2+"--->T<sub>5,2</sub>="+t52)
+         parent.frames[1].document.writeln("<dd>X<sub>5,3</sub> = "+x3+"--->T<sub>5,3</sub>="+t53)
+         parent.frames[1].document.writeln("<dd>X<sub>5,4</sub> = "+x4+"--->T<sub>5,4</sub>="+t54)
+         parent.frames[1].document.writeln("<dd>X<sub>5,5</sub> = "+x5+"--->T<sub>5,5</sub>="+t55)
+         parent.frames[1].document.writeln("<dd>X<sub>5,6</sub> = "+x6+"--->T<sub>5,6</sub>="+t56)
+         parent.frames[1].document.writeln("<dd>X<sub>5,7</sub> = "+x7+"--->T<sub>5,7</sub>="+t57)
+         parent.frames[1].document.writeln("<dd>X<sub>5,8</sub> = "+x8+"--->T<sub>5,8</sub>="+t58)
+         parent.frames[1].document.writeln("<dd>X<sub>5,9</sub> = "+x9+"--->T<sub>5,9</sub>="+t59)
+         parent.frames[1].document.writeln("<dd>X<sub>5,10</sub> = "+x10+"--->T<sub>5,10</sub>="+t510)
+
+         res51 = csa_module(x1,x2,x3);
+         res52 = csa_module(x4,x5,x6);
+         carry51=""
+         sum51=""
+         carry52=""
+         sum52=""
+         for (var i=0; i<res51.length/2; i++)
+            {
+                carry51 += res51[i]
+                carry52 += res52[i]
+                sum51+=res51[i+res51.length/2]
+                sum52+=res52[i+res52.length/2]
+            }
+
+         x7=Extend(x7)
+         x8=Extend(x8)
+         x9=Extend(x9)
+         x10=Extend(x10)
+       
+        t41=Math.max(Math.max(t52,t53)+ts,t51+(ts/2));
+        t42=Math.max(Math.max(t51,t52),t53)+tc;
+        t43=Math.max(Math.max(t55,t56)+ts,t54+(ts/2));
+        t44=Math.max(Math.max(t54,t55),t56)+tc;
+        t45=t57;
+        t46=t58;
+        t47=t59;
+        t48=t510; 
+           
+        oper8(sum51, carry51, carry52, sum52,x7,x8,x9,x10,t41,t42,t43,t44,t45,t46,t47,t48,ts,tc)
+}
+
+
+function oper11(x1,x2,x3,x4,x5,x6,x7,x8,x9,x10,x11,t51,t52,t53,t54,t55,t56,t57,t58,t59,t510,t511,ts,tc)
+{
+         parent.frames[1].document.writeln("<br><b> Level 5</b> <br>")
+         parent.frames[1].document.writeln("<dd>X<sub>5,1</sub> = "+x1+"--->T<sub>5,1</sub>="+t51)
+         parent.frames[1].document.writeln("<dd>X<sub>5,2</sub> = "+x2+"--->T<sub>5,2</sub>="+t52)
+         parent.frames[1].document.writeln("<dd>X<sub>5,3</sub> = "+x3+"--->T<sub>5,3</sub>="+t53)
+         parent.frames[1].document.writeln("<dd>X<sub>5,4</sub> = "+x4+"--->T<sub>5,4</sub>="+t54)
+         parent.frames[1].document.writeln("<dd>X<sub>5,5</sub> = "+x5+"--->T<sub>5,5</sub>="+t55)
+         parent.frames[1].document.writeln("<dd>X<sub>5,6</sub> = "+x6+"--->T<sub>5,6</sub>="+t56)
+         parent.frames[1].document.writeln("<dd>X<sub>5,7</sub> = "+x7+"--->T<sub>5,7</sub>="+t57)
+         parent.frames[1].document.writeln("<dd>X<sub>5,8</sub> = "+x8+"--->T<sub>5,8</sub>="+t58)
+         parent.frames[1].document.writeln("<dd>X<sub>5,9</sub> = "+x9+"--->T<sub>5,9</sub>="+t59)
+         parent.frames[1].document.writeln("<dd>X<sub>5,10</sub> = "+x10+"--->T<sub>5,10</sub>="+t510)
+         parent.frames[1].document.writeln("<dd>X<sub>5,11</sub> = "+x11+"--->T<sub>5,11</sub>="+t511)
+         res51 = csa_module(x1,x2,x3);
+         res52 = csa_module(x4,x5,x6);
+         res53 = csa_module(x7,x8,x9); 
+         carry51=""
+         sum51=""
+         carry52=""
+         sum52=""
+         carry53=""
+         sum53=""
+
+         for (var i=0; i<res51.length/2; i++)
+            {
+                carry51+=res51[i]
+                carry52+=res52[i]
+                carry53+=res53[i]
+                sum51+=res51[i+res51.length/2]
+                sum52+=res52[i+res52.length/2]
+                sum53+=res53[i+res53.length/2]
+            }
+         x10=Extend(x10)
+         x11=Extend(x11)
+
+        t41=Math.max(Math.max(t52,t53)+ts,t51+(ts/2));
+        t42=Math.max(Math.max(t51,t52),t53)+tc;
+        t43=Math.max(Math.max(t55,t56)+ts,t54+(ts/2));
+        t44=Math.max(Math.max(t54,t55),t56)+tc;
+        t45=Math.max(Math.max(t57,t58),t59)+tc;
+        t46=Math.max(Math.max(t58,t59)+ts,t57+(ts/2));
+        t47=t510;
+        t48=t511;
+
+        oper8(sum51,carry51,carry52,sum52,carry53,sum53,x10,x11,t41,t42,t43,t44,t45,t46,t47,t48,ts,tc)
+}
+
+
+function oper12(x1,x2,x3,x4,x5,x6,x7,x8,x9,x10,x11,x12,t51,t52,t53,t54,t55,t56,t57,t58,t59,t510,t511,t512,ts,tc)
+{
+         parent.frames[1].document.writeln("<br><b> Level 5</b> <br>")
+         parent.frames[1].document.writeln("<dd>X<sub>5,1</sub> = "+x1+"--->T<sub>5,1</sub>="+t51)
+         parent.frames[1].document.writeln("<dd>X<sub>5,2</sub> = "+x2+"--->T<sub>5,2</sub>="+t52)
+         parent.frames[1].document.writeln("<dd>X<sub>5,3</sub> = "+x3+"--->T<sub>5,3</sub>="+t53)
+         parent.frames[1].document.writeln("<dd>X<sub>5,4</sub> = "+x4+"--->T<sub>5,4</sub>="+t54)
+         parent.frames[1].document.writeln("<dd>X<sub>5,5</sub> = "+x5+"--->T<sub>5,5</sub>="+t55)
+         parent.frames[1].document.writeln("<dd>X<sub>5,6</sub> = "+x6+"--->T<sub>5,6</sub>="+t56)
+         parent.frames[1].document.writeln("<dd>X<sub>5,7</sub> = "+x7+"--->T<sub>5,7</sub>="+t57)
+         parent.frames[1].document.writeln("<dd>X<sub>5,8</sub> = "+x8+"--->T<sub>5,8</sub>="+t58)
+         parent.frames[1].document.writeln("<dd>X<sub>5,9</sub> = "+x9+"--->T<sub>5,9</sub>="+t59)
+         parent.frames[1].document.writeln("<dd>X<sub>5,10</sub> = "+x10+"--->T<sub>5,10</sub>="+t510)
+         parent.frames[1].document.writeln("<dd>X<sub>5,11</sub> = "+x11+"--->T<sub>5,11</sub>="+t511)
+         parent.frames[1].document.writeln("<dd>X<sub>5,12</sub> = "+x12+"--->T<sub>5,12</sub>="+t512)
+
+
+         res51 = csa_module(x1,x2,x3);
+         res52 = csa_module(x4,x5,x6);
+         res53 = csa_module(x7,x8,x9);
+         carry51=""
+         sum51=""
+         carry52=""
+         sum52=""
+         carry53=""
+         sum53=""
+
+         for (var i=0; i<res51.length/2; i++)
+            {
+                carry51+=res51[i]
+                carry52+=res52[i]
+                carry53+=res53[i]
+                sum51+=res51[i+res51.length/2]
+                sum52+=res52[i+res52.length/2]
+                sum53+=res53[i+res53.length/2]
+            }
+
+         x10=Extend(x10)
+         x11=Extend(x11)
+         x12=Extend(x12)
+        t41=Math.max(Math.max(t52,t53)+ts,t51+(ts/2));
+        t42=Math.max(Math.max(t51,t52),t53)+tc;
+        t43=Math.max(Math.max(t55,t56)+ts,t54+(ts/2));
+        t44=Math.max(Math.max(t54,t55),t56)+tc;
+        t45=Math.max(Math.max(t57,t58),t59)+tc;
+        t46=Math.max(Math.max(t58,t59)+ts,t57+(ts/2));
+        t47=t510;
+        t48=t511;
+        t49=t512;
+
+        oper9(sum51,carry51,carry52,sum52,carry53,sum53,x10,x11,x12,t41,t42,t43,t44,t45,t46,t47,t48,t49,ts,tc)
+}
+
+
+function oper13(x1,x2,x3,x4,x5,x6,x7,x8,x9,x10,x11,x12,x13,t51,t52,t53,t54,t55,t56,t57,t58,t59,t510,t511,t512,t513,ts,tc)
+{
+         parent.frames[1].document.writeln("<br><b> Level 5</b> <br>")
+         parent.frames[1].document.writeln("<dd>X<sub>5,1</sub> = "+x1+"--->T<sub>5,1</sub>="+t51)
+         parent.frames[1].document.writeln("<dd>X<sub>5,2</sub> = "+x2+"--->T<sub>5,2</sub>="+t52)
+         parent.frames[1].document.writeln("<dd>X<sub>5,3</sub> = "+x3+"--->T<sub>5,3</sub>="+t53)
+         parent.frames[1].document.writeln("<dd>X<sub>5,4</sub> = "+x4+"--->T<sub>5,4</sub>="+t54)
+         parent.frames[1].document.writeln("<dd>X<sub>5,5</sub> = "+x5+"--->T<sub>5,5</sub>="+t55)
+         parent.frames[1].document.writeln("<dd>X<sub>5,6</sub> = "+x6+"--->T<sub>5,6</sub>="+t56)
+         parent.frames[1].document.writeln("<dd>X<sub>5,7</sub> = "+x7+"--->T<sub>5,7</sub>="+t57)
+         parent.frames[1].document.writeln("<dd>X<sub>5,8</sub> = "+x8+"--->T<sub>5,8</sub>="+t58)
+         parent.frames[1].document.writeln("<dd>X<sub>5,9</sub> = "+x9+"--->T<sub>5,9</sub>="+t59)
+         parent.frames[1].document.writeln("<dd>X<sub>5,10</sub> = "+x10+"--->T<sub>5,10</sub>="+t510)
+         parent.frames[1].document.writeln("<dd>X<sub>5,11</sub> = "+x11+"--->T<sub>5,11</sub>="+t511)
+         parent.frames[1].document.writeln("<dd>X<sub>5,12</sub> = "+x12+"--->T<sub>5,12</sub>="+t512)
+         parent.frames[1].document.writeln("<dd>X<sub>5,13</sub> = "+x13+"--->T<sub>5,13</sub>="+t513)
+         res51 = csa_module(x1,x2,x3);
+         res52 = csa_module(x4,x5,x6);
+         res53 = csa_module(x7,x8,x9);
+         res54 = csa_module(x10,x11,x12);
+         carry51=""
+         sum51=""
+         carry52=""
+         sum52=""
+         carry53=""
+         sum53=""
+         carry54=""
+         sum54="" 
+
+         for (var i=0; i<res51.length/2; i++)
+            {
+                carry51+=res51[i]
+                carry52+=res52[i]
+                carry53+=res53[i]
+                carry54+=res54[i]
+                sum51+=res51[i+res51.length/2]
+                sum52+=res52[i+res52.length/2]
+                sum53+=res53[i+res53.length/2]
+                sum54+=res54[i+res54.length/2]
+            }
+
+         x13=Extend(x13)
+       
+        t41=Math.max(Math.max(t52,t53)+ts,t51+(ts/2));
+        t42=Math.max(Math.max(t51,t52),t53)+tc;
+        t43=Math.max(Math.max(t55,t56)+ts,t54+(ts/2));
+        t44=Math.max(Math.max(t54,t55),t56)+tc;
+        t45=Math.max(Math.max(t57,t58),t59)+tc;
+        t46=Math.max(Math.max(t58,t59)+ts,t57+(ts/2));
+        t47=Math.max(Math.max(t511,t512)+ts,t510+(ts/2));
+        t48=Math.max(Math.max(t510,t511),t512)+tc;
+        t49=t513;
+
+
+
+        oper9(sum51,carry51,carry52,sum52,carry53,sum53,sum54,carry54,x13,t41,t42,t43,t44,t45,t46,t47,t48,t49,ts,tc)
+}
+
+function oper14(x1,x2,x3,x4,x5,x6,x7,x8,x9,x10,x11,x12,x13,x14,t61,t62,t63,t64,t65,t66,t67,t68,t69,t610,t611,t612,t613,t614,ts,tc)
+{
+         parent.frames[1].document.writeln("<br><b> Level 6</b> <br>")
+         parent.frames[1].document.writeln("<dd>X<sub>6,1</sub> = "+x1+"--->T<sub>6,1</sub>="+t61)
+         parent.frames[1].document.writeln("<dd>X<sub>6,2</sub> = "+x2+"--->T<sub>6,2</sub>="+t62)
+         parent.frames[1].document.writeln("<dd>X<sub>6,3</sub> = "+x3+"--->T<sub>6,3</sub>="+t63)
+         parent.frames[1].document.writeln("<dd>X<sub>6,4</sub> = "+x4+"--->T<sub>6,4</sub>="+t64)
+         parent.frames[1].document.writeln("<dd>X<sub>6,5</sub> = "+x5+"--->T<sub>6,5</sub>="+t65)
+         parent.frames[1].document.writeln("<dd>X<sub>6,6</sub> = "+x6+"--->T<sub>6,6</sub>="+t66)
+         parent.frames[1].document.writeln("<dd>X<sub>6,7</sub> = "+x7+"--->T<sub>6,7</sub>="+t67)
+         parent.frames[1].document.writeln("<dd>X<sub>6,8</sub> = "+x8+"--->T<sub>6,8</sub>="+t68)
+         parent.frames[1].document.writeln("<dd>X<sub>6,9</sub> = "+x9+"--->T<sub>6,9</sub>="+t69)
+         parent.frames[1].document.writeln("<dd>X<sub>6,10</sub> = "+x10+"--->T<sub>6,10</sub>="+t610)
+         parent.frames[1].document.writeln("<dd>X<sub>6,11</sub> = "+x11+"--->T<sub>6,11</sub>="+t611)
+         parent.frames[1].document.writeln("<dd>X<sub>6,12</sub> = "+x12+"--->T<sub>6,12</sub>="+t612)
+         parent.frames[1].document.writeln("<dd>X<sub>6,13</sub> = "+x13+"--->T<sub>6,13</sub>="+t613)
+         parent.frames[1].document.writeln("<dd>X<sub>6,14</sub> = "+x14+"--->T<sub>6,14</sub>="+t614)
+        
+         res61= csa_module(x1,x2,x3)
+         res62= csa_module(x4,x5,x6)         
+         carry61=""
+         sum61 =""
+         carry62=""
+         sum62=""
+         for (var i=0; i<res61.length/2; i++)
+            {
+                carry61+=res61[i]
+                carry62+=res62[i]
+                sum61+=res61[i+res61.length/2]
+                sum62+=res62[i+res62.length/2]
+            }
+        x7= Extend(x7); 
+        x8= Extend(x8);
+        x9= Extend(x9);
+        x10 = Extend(x10);
+        x11 = Extend(x11);
+        x12 = Extend(x12);
+        x13 = Extend(x13);
+        x14 = Extend(x14);
+     
+        t51= Math.max(Math.max(t62,t63)+ts, t61+(ts/2)); 
+        t52= Math.max(Math.max(t61,t62),t63)+tc; 
+        t53= Math.max(Math.max(t64,t65),t66)+tc; 
+        t54= Math.max(Math.max(t65,t66)+ts, t64+(ts/2)); 
+        t55=t67;
+        t56=t68;
+        t57=t69;
+        t58=t610;
+        t59=t611;
+        t510=t612;
+        t511=t613;
+        t512=t614; 
+
+        oper12(sum61,carry61,carry62,sum62,x7,x8,x9,x10,x11,x12,x13,x14,t51,t52,t53,t54,t55,t56,t57,t58,t59,t510,t511,t512,ts,tc)
+}
+
+function oper15(x1,x2,x3,x4,x5,x6,x7,x8,x9,x10,x11,x12,x13,x14,x15,t61,t62,t63,t64,t65,t66,t67,t68,t69,t610,t611,t612,t613,t614,t615,ts,tc)
+{
+         parent.frames[1].document.writeln("<br><b> Level 6</b> <br>")
+         parent.frames[1].document.writeln("<dd>X<sub>6,1</sub> = "+x1+"--->T<sub>6,1</sub>="+t61)
+         parent.frames[1].document.writeln("<dd>X<sub>6,2</sub> = "+x2+"--->T<sub>6,2</sub>="+t62)
+         parent.frames[1].document.writeln("<dd>X<sub>6,3</sub> = "+x3+"--->T<sub>6,3</sub>="+t63)
+         parent.frames[1].document.writeln("<dd>X<sub>6,4</sub> = "+x4+"--->T<sub>6,4</sub>="+t64)
+         parent.frames[1].document.writeln("<dd>X<sub>6,5</sub> = "+x5+"--->T<sub>6,5</sub>="+t65)
+         parent.frames[1].document.writeln("<dd>X<sub>6,6</sub> = "+x6+"--->T<sub>6,6</sub>="+t66)
+         parent.frames[1].document.writeln("<dd>X<sub>6,7</sub> = "+x7+"--->T<sub>6,7</sub>="+t67)
+         parent.frames[1].document.writeln("<dd>X<sub>6,8</sub> = "+x8+"--->T<sub>6,8</sub>="+t68)
+         parent.frames[1].document.writeln("<dd>X<sub>6,9</sub> = "+x9+"--->T<sub>6,9</sub>="+t69)
+         parent.frames[1].document.writeln("<dd>X<sub>6,10</sub> = "+x10+"--->T<sub>6,10</sub>="+t610)
+         parent.frames[1].document.writeln("<dd>X<sub>6,11</sub> = "+x11+"--->T<sub>6,11</sub>="+t611)
+         parent.frames[1].document.writeln("<dd>X<sub>6,12</sub> = "+x12+"--->T<sub>6,12</sub>="+t612)
+         parent.frames[1].document.writeln("<dd>X<sub>6,13</sub> = "+x13+"--->T<sub>6,13</sub>="+t613)
+         parent.frames[1].document.writeln("<dd>X<sub>6,14</sub> = "+x14+"--->T<sub>6,14</sub>="+t614)
+         parent.frames[1].document.writeln("<dd>X<sub>6,15</sub> = "+x15+"--->T<sub>6,15</sub>="+t615)
+         res61= csa_module(x1,x2,x3)
+         res62= csa_module(x4,x5,x6)
+         res63= csa_module(x7,x8,x9) 
+         carry61=""
+         sum61 =""
+         carry62=""
+         sum62=""
+         carry63=""
+         sum63=""
+         for (var i=0; i<res61.length/2; i++)
+            {
+                carry61+=res61[i]
+                carry62+=res62[i]
+                carry63+=res63[i]
+                sum61+=res61[i+res61.length/2]
+                sum62+=res62[i+res62.length/2]
+                sum63+=res63[i+res63.length/2]
+            }
+        x10 = Extend(x10);
+        x11 = Extend(x11);
+        x12 = Extend(x12);
+        x13 = Extend(x13);
+        x14 = Extend(x14);
+        x15 = Extend(x15);
+
+        t51= Math.max(Math.max(t62,t63)+ts, t61+(ts/2));
+        t52= Math.max(Math.max(t61,t62),t63)+tc;                                           
+        t53= Math.max(Math.max(t64,t65),t66)+tc;                                           
+        t54= Math.max(Math.max(t65,t66)+ts, t64+(ts/2));
+        t55= Math.max(Math.max(t67,t68),t69)+tc;
+        t56= Math.max(Math.max(t68,t69)+ts, t67+(ts/2));
+        t57=t610;
+        t58=t611;
+        t59=t612;
+        t510=t613;
+        t511=t614;
+        t512=t615;
+ 
+
+        oper12(sum61,carry61,carry62,sum62,carry63,sum63,x10,x11,x12,x13,x14,x15,t51,t52,t53,t54,t55,t56,t57,t58,t59,t510,t511,t512,ts,tc)
+}
+
+function oper16(x1,x2,x3,x4,x5,x6,x7,x8,x9,x10,x11,x12,x13,x14,x15,x16,t61,t62,t63,t64,t65,t66,t67,t68,t69,t610,t611,t612,t613,t614,t615,t616,ts,tc)
+{
+         parent.frames[1].document.writeln("<br><b> Level 6</b> <br>")
+         parent.frames[1].document.writeln("<dd>X<sub>6,1</sub> = "+x1+"--->T<sub>6,1</sub>="+t61)
+         parent.frames[1].document.writeln("<dd>X<sub>6,2</sub> = "+x2+"--->T<sub>6,2</sub>="+t62)
+         parent.frames[1].document.writeln("<dd>X<sub>6,3</sub> = "+x3+"--->T<sub>6,3</sub>="+t63)
+         parent.frames[1].document.writeln("<dd>X<sub>6,4</sub> = "+x4+"--->T<sub>6,4</sub>="+t64)
+         parent.frames[1].document.writeln("<dd>X<sub>6,5</sub> = "+x5+"--->T<sub>6,5</sub>="+t65)
+         parent.frames[1].document.writeln("<dd>X<sub>6,6</sub> = "+x6+"--->T<sub>6,6</sub>="+t66)
+         parent.frames[1].document.writeln("<dd>X<sub>6,7</sub> = "+x7+"--->T<sub>6,7</sub>="+t67)
+         parent.frames[1].document.writeln("<dd>X<sub>6,8</sub> = "+x8+"--->T<sub>6,8</sub>="+t68)
+         parent.frames[1].document.writeln("<dd>X<sub>6,9</sub> = "+x9+"--->T<sub>6,9</sub>="+t69)
+         parent.frames[1].document.writeln("<dd>X<sub>6,10</sub> = "+x10+"--->T<sub>6,10</sub>="+t610)
+         parent.frames[1].document.writeln("<dd>X<sub>6,11</sub> = "+x11+"--->T<sub>6,11</sub>="+t611)
+         parent.frames[1].document.writeln("<dd>X<sub>6,12</sub> = "+x12+"--->T<sub>6,12</sub>="+t612)
+         parent.frames[1].document.writeln("<dd>X<sub>6,13</sub> = "+x13+"--->T<sub>6,13</sub>="+t613)
+         parent.frames[1].document.writeln("<dd>X<sub>6,14</sub> = "+x14+"--->T<sub>6,14</sub>="+t614)
+         parent.frames[1].document.writeln("<dd>X<sub>6,15</sub> = "+x15+"--->T<sub>6,15</sub>="+t615)
+         parent.frames[1].document.writeln("<dd>X<sub>6,16</sub> = "+x16+"--->T<sub>6,16</sub>="+t616)
+         res61= csa_module(x1,x2,x3)
+         res62= csa_module(x4,x5,x6)
+         res63= csa_module(x7,x8,x9)
+         res64= csa_module(x10,x11,x12)
+         carry61=""
+         sum61 =""
+         carry62=""
+         sum62=""
+         carry63=""
+         sum63=""
+         carry64=""
+         sum64=""
+         for (var i=0; i<res61.length/2; i++)
+            {
+                carry61+=res61[i]
+                carry62+=res62[i]
+                carry63+=res63[i]
+                carry64+=res64[i]
+                sum61+=res61[i+res61.length/2]
+                sum62+=res62[i+res62.length/2]
+                sum63+=res63[i+res63.length/2]
+                sum64+=res64[i+res64.length/2]
+            }
+        x13 = Extend(x13);
+        x14 = Extend(x14);
+        x15 = Extend(x15);
+        x16 = Extend(x16);
+
+        t51= Math.max(Math.max(t62,t63)+ts, t61+(ts/2));
+        t52= Math.max(Math.max(t61,t62),t63)+tc;
+        t53= Math.max(Math.max(t64,t65),t66)+tc;
+        t54= Math.max(Math.max(t65,t66)+ts, t64+(ts/2));
+        t55= Math.max(Math.max(t67,t68),t69)+tc;
+        t56= Math.max(Math.max(t68,t69)+ts, t67+(ts/2));
+        t57= Math.max(Math.max(t611,t612)+ts, t610+(ts/2));
+        t58= Math.max(Math.max(t610,t611),t612)+tc;
+        t59=t613;
+        t510=t614;
+        t511=t615;
+        t512=t616;
+
+       oper12(sum61,carry61,carry62,sum62,carry63,sum63,sum64,carry64,x13,x14,x15,x16,t51,t52,t53,t54,t55,t56,t57,t58,t59,t510,t511,t512,ts,tc) 
+}
+
+
+function oper17(x1,x2,x3,x4,x5,x6,x7,x8,x9,x10,x11,x12,x13,x14,x15,x16,x17,t61,t62,t63,t64,t65,t66,t67,t68,t69,t610,t611,t612,t613,t614,t615,t616,t617,ts,tc)
+{
+         parent.frames[1].document.writeln("<br><b> Level 6</b> <br>")
+         parent.frames[1].document.writeln("<dd>X<sub>6,1</sub> = "+x1+"--->T<sub>6,1</sub>="+t61)
+         parent.frames[1].document.writeln("<dd>X<sub>6,2</sub> = "+x2+"--->T<sub>6,2</sub>="+t62)
+         parent.frames[1].document.writeln("<dd>X<sub>6,3</sub> = "+x3+"--->T<sub>6,3</sub>="+t63)
+         parent.frames[1].document.writeln("<dd>X<sub>6,4</sub> = "+x4+"--->T<sub>6,4</sub>="+t64)
+         parent.frames[1].document.writeln("<dd>X<sub>6,5</sub> = "+x5+"--->T<sub>6,5</sub>="+t65)
+         parent.frames[1].document.writeln("<dd>X<sub>6,6</sub> = "+x6+"--->T<sub>6,6</sub>="+t66)
+         parent.frames[1].document.writeln("<dd>X<sub>6,7</sub> = "+x7+"--->T<sub>6,7</sub>="+t67)
+         parent.frames[1].document.writeln("<dd>X<sub>6,8</sub> = "+x8+"--->T<sub>6,8</sub>="+t68)
+         parent.frames[1].document.writeln("<dd>X<sub>6,9</sub> = "+x9+"--->T<sub>6,9</sub>="+t69)
+         parent.frames[1].document.writeln("<dd>X<sub>6,10</sub> = "+x10+"--->T<sub>6,10</sub>="+t610)
+         parent.frames[1].document.writeln("<dd>X<sub>6,11</sub> = "+x11+"--->T<sub>6,11</sub>="+t611)
+         parent.frames[1].document.writeln("<dd>X<sub>6,12</sub> = "+x12+"--->T<sub>6,12</sub>="+t612)
+         parent.frames[1].document.writeln("<dd>X<sub>6,13</sub> = "+x13+"--->T<sub>6,13</sub>="+t613)
+         parent.frames[1].document.writeln("<dd>X<sub>6,14</sub> = "+x14+"--->T<sub>6,14</sub>="+t614)
+         parent.frames[1].document.writeln("<dd>X<sub>6,15</sub> = "+x15+"--->T<sub>6,15</sub>="+t615)
+         parent.frames[1].document.writeln("<dd>X<sub>6,16</sub> = "+x16+"--->T<sub>6,16</sub>="+t616)
+         parent.frames[1].document.writeln("<dd>X<sub>6,17</sub> = "+x17+"--->T<sub>6,17</sub>="+t617)
+         res61= csa_module(x1,x2,x3)
+         res62= csa_module(x4,x5,x6)
+         res63= csa_module(x7,x8,x9)
+         res64= csa_module(x10,x11,x12)
+
+         carry61=""
+         sum61 =""
+         carry62=""
+         sum62=""
+         carry63=""
+         sum63=""
+         carry64=""
+         sum64=""
+         for (var i=0; i<res61.length/2; i++)
+            {
+                carry61+=res61[i]
+                carry62+=res62[i]
+                carry63+=res63[i]
+                carry64+=res64[i]
+                sum61+=res61[i+res61.length/2]
+                sum62+=res62[i+res62.length/2]
+                sum63+=res63[i+res63.length/2]
+                sum64+=res64[i+res64.length/2]
+            }
+        x13 = Extend(x13);
+        x14 = Extend(x14);
+        x15 = Extend(x15);
+        x16 = Extend(x16);
+        x17 = Extend(x17);
+       
+        t51= Math.max(Math.max(t62,t63)+ts, t61+(ts/2));
+        t52= Math.max(Math.max(t61,t62),t63)+tc;
+        t53= Math.max(Math.max(t64,t65),t66)+tc;
+        t54= Math.max(Math.max(t65,t66)+ts, t64+(ts/2));
+        t55= Math.max(Math.max(t67,t68),t69)+tc;
+        t56= Math.max(Math.max(t68,t69)+ts, t67+(ts/2));
+        t57= Math.max(Math.max(t611,t612)+ts, t610+(ts/2));
+        t58= Math.max(Math.max(t610,t611),t612)+tc;
+        t59=t613;
+        t510=t614;
+        t511=t615;
+        t512=t616;
+        t513=t617;
+
+        oper13(sum61,carry61,carry62,sum62,carry63,sum63,sum64,carry64,x13,x14,x15,x16,x17,t51,t52,t53,t54,t55,t56,t57,t58,t59,t510,t511,t512,t513,ts,tc)
+}
+
+function oper18(x1,x2,x3,x4,x5,x6,x7,x8,x9,x10,x11,x12,x13,x14,x15,x16,x17,x18,t61,t62,t63,t64,t65,t66,t67,t68,t69,t610,t611,t612,t613,t614,t615,t616,t617,t618,ts,tc)
+{
+         parent.frames[1].document.writeln("<br><b> Level 6</b> <br>")
+         parent.frames[1].document.writeln("<dd>X<sub>6,1</sub> = "+x1+"--->T<sub>6,1</sub>="+t61)
+         parent.frames[1].document.writeln("<dd>X<sub>6,2</sub> = "+x2+"--->T<sub>6,2</sub>="+t62)
+         parent.frames[1].document.writeln("<dd>X<sub>6,3</sub> = "+x3+"--->T<sub>6,3</sub>="+t63)
+         parent.frames[1].document.writeln("<dd>X<sub>6,4</sub> = "+x4+"--->T<sub>6,4</sub>="+t64)
+         parent.frames[1].document.writeln("<dd>X<sub>6,5</sub> = "+x5+"--->T<sub>6,5</sub>="+t65)
+         parent.frames[1].document.writeln("<dd>X<sub>6,6</sub> = "+x6+"--->T<sub>6,6</sub>="+t66)
+         parent.frames[1].document.writeln("<dd>X<sub>6,7</sub> = "+x7+"--->T<sub>6,7</sub>="+t67)
+         parent.frames[1].document.writeln("<dd>X<sub>6,8</sub> = "+x8+"--->T<sub>6,8</sub>="+t68)
+         parent.frames[1].document.writeln("<dd>X<sub>6,9</sub> = "+x9+"--->T<sub>6,9</sub>="+t69)
+         parent.frames[1].document.writeln("<dd>X<sub>6,10</sub> = "+x10+"--->T<sub>6,10</sub>="+t610)
+         parent.frames[1].document.writeln("<dd>X<sub>6,11</sub> = "+x11+"--->T<sub>6,11</sub>="+t611)
+         parent.frames[1].document.writeln("<dd>X<sub>6,12</sub> = "+x12+"--->T<sub>6,12</sub>="+t612)
+         parent.frames[1].document.writeln("<dd>X<sub>6,13</sub> = "+x13+"--->T<sub>6,13</sub>="+t613)
+         parent.frames[1].document.writeln("<dd>X<sub>6,14</sub> = "+x14+"--->T<sub>6,14</sub>="+t614)
+         parent.frames[1].document.writeln("<dd>X<sub>6,15</sub> = "+x15+"--->T<sub>6,15</sub>="+t615)
+         parent.frames[1].document.writeln("<dd>X<sub>6,16</sub> = "+x16+"--->T<sub>6,16</sub>="+t616)
+         parent.frames[1].document.writeln("<dd>X<sub>6,17</sub> = "+x17+"--->T<sub>6,17</sub>="+t617)
+         parent.frames[1].document.writeln("<dd>X<sub>6,18</sub> = "+x18+"--->T<sub>6,18</sub>="+t618)
+         res61= csa_module(x1,x2,x3)
+         res62= csa_module(x4,x5,x6)
+         res63= csa_module(x7,x8,x9)
+         res64= csa_module(x10,x11,x12)
+         res65= csa_module(x14,x15,x16)
+         carry61=""
+         sum61 =""
+         carry62=""
+         sum62=""
+         carry63=""
+         sum63=""
+         carry64=""
+         sum64=""
+         carry65=""
+         sum65="" 
+         for (var i=0; i<res61.length/2; i++)
+            {
+                carry61+=res61[i]
+                carry62+=res62[i]
+                carry63+=res63[i]
+                carry64+=res64[i]
+                carry65+=res65[i]
+                sum61+=res61[i+res61.length/2]
+                sum62+=res62[i+res62.length/2]
+                sum63+=res63[i+res63.length/2]
+                sum64+=res64[i+res64.length/2]
+                sum65+=res65[i+res65.length/2]
+            }
+        x13 = Extend(x13);
+        x17 = Extend(x17);
+        x18 = Extend(x18);
+        t51= Math.max(Math.max(t62,t63)+ts, t61+(ts/2));
+        t52= Math.max(Math.max(t61,t62),t63)+tc;
+        t53= Math.max(Math.max(t64,t65),t66)+tc;
+        t54= Math.max(Math.max(t65,t66)+ts, t64+(ts/2));
+        t55= Math.max(Math.max(t67,t68),t69)+tc;
+        t56= Math.max(Math.max(t68,t69)+ts, t67+(ts/2));
+        t57= Math.max(Math.max(t611,t612)+ts, t610+(ts/2));
+        t58= Math.max(Math.max(t610,t611),t612)+tc;
+        t59=t613;
+        t510=Math.max(Math.max(t615,t616)+ts, t614+(ts/2));
+        t511=Math.max(Math.max(t614,t615),t616)+tc;
+        t512=t617;
+        t513=t618;
+
+        oper13(sum61,carry61,carry62,sum62,carry63,sum63,sum64,carry64,x13,sum65,carry65,x17,x18,t51,t52,t53,t54,t55,t56,t57,t58,t59,t510,t511,t512,t513,ts,tc)
+}
+
+function oper19(x1,x2,x3,x4,x5,x6,x7,x8,x9,x10,x11,x12,x13,x14,x15,x16,x17,x18,x19,t71,t72,t73,t74,t75,t76,t77,t78,t79,t710,t711,t712,t713,t714,t715,t716,t717,t718,t719,ts,tc)
+{
+         parent.frames[1].document.writeln("<br><b> Level 7</b> <br>")
+         parent.frames[1].document.writeln("<dd>X<sub>7,1</sub> = "+x1+"--->T<sub>7,1</sub>="+t71)
+         parent.frames[1].document.writeln("<dd>X<sub>7,2</sub> = "+x2+"--->T<sub>7,2</sub>="+t72)
+         parent.frames[1].document.writeln("<dd>X<sub>7,3</sub> = "+x3+"--->T<sub>7,3</sub>="+t73)
+         parent.frames[1].document.writeln("<dd>X<sub>7,4</sub> = "+x4+"--->T<sub>7,4</sub>="+t74)
+         parent.frames[1].document.writeln("<dd>X<sub>7,5</sub> = "+x5+"--->T<sub>7,5</sub>="+t75)
+         parent.frames[1].document.writeln("<dd>X<sub>7,6</sub> = "+x6+"--->T<sub>7,6</sub>="+t76)
+         parent.frames[1].document.writeln("<dd>X<sub>7,7</sub> = "+x7+"--->T<sub>7,7</sub>="+t77)
+         parent.frames[1].document.writeln("<dd>X<sub>7,8</sub> = "+x8+"--->T<sub>7,8</sub>="+t78)
+         parent.frames[1].document.writeln("<dd>X<sub>7,9</sub> = "+x9+"--->T<sub>7,9</sub>="+t79)
+         parent.frames[1].document.writeln("<dd>X<sub>7,10</sub> = "+x10+"--->T<sub>7,10</sub>="+t710)
+         parent.frames[1].document.writeln("<dd>X<sub>7,11</sub> = "+x11+"--->T<sub>7,11</sub>="+t711)
+         parent.frames[1].document.writeln("<dd>X<sub>7,12</sub> = "+x12+"--->T<sub>7,12</sub>="+t712)
+         parent.frames[1].document.writeln("<dd>X<sub>7,13</sub> = "+x13+"--->T<sub>7,13</sub>="+t713)
+         parent.frames[1].document.writeln("<dd>X<sub>7,14</sub> = "+x14+"--->T<sub>7,14</sub>="+t714)
+         parent.frames[1].document.writeln("<dd>X<sub>7,15</sub> = "+x15+"--->T<sub>7,15</sub>="+t715)
+         parent.frames[1].document.writeln("<dd>X<sub>7,16</sub> = "+x16+"--->T<sub>7,16</sub>="+t716)
+         parent.frames[1].document.writeln("<dd>X<sub>7,17</sub> = "+x17+"--->T<sub>7,17</sub>="+t717)
+         parent.frames[1].document.writeln("<dd>X<sub>7,18</sub> = "+x18+"--->T<sub>7,18</sub>="+t718)
+         parent.frames[1].document.writeln("<dd>X<sub>7,19</sub> = "+x19+"--->T<sub>7,19</sub>="+t719)
+         res71= csa_module(x1,x2,x3)
+         res72= csa_module(x4,x5,x6)
+         res73= csa_module(x7,x8,x9)
+         res74= csa_module(x10,x11,x12)
+         carry71=""
+         sum71 =""
+         carry72=""
+         sum72=""
+         carry73=""
+         sum73=""
+         carry74=""
+         sum74=""
+         for (var i=0; i<res71.length/2; i++)
+            {
+                carry71+=res71[i]
+                carry72+=res72[i]
+                carry73+=res73[i]
+                carry74+=res74[i]
+                sum71+=res71[i+res71.length/2]
+                sum72+=res72[i+res72.length/2]
+                sum73+=res73[i+res73.length/2]
+                sum74+=res74[i+res74.length/2]
+            }
+        x13 = Extend(x13);
+        x14 = Extend(x14);
+        x15 = Extend(x15);
+        x16 = Extend(x16);
+        x17 = Extend(x17);
+        x18 = Extend(x18);
+        x19 = Extend(x19);
+        
+        t61=Math.max(Math.max(t72,t73)+ts, t71+(ts/2));
+        t62=Math.max(Math.max(t71,t72),t73)+tc;
+        t63=Math.max(Math.max(t74,t75),t76)+tc;
+        t64=Math.max(Math.max(t75,t76)+ts, t74+(ts/2));
+        t65=Math.max(Math.max(t77,t78),t79)+tc;
+        t66=Math.max(Math.max(t78,t79)+ts, t77+(ts/2));
+        t67=Math.max(Math.max(t711,t712)+ts, t710+(ts/2));
+        t68=Math.max(Math.max(t710,t711),t712)+tc;
+        t69=t713;
+        t610=t714;
+        t611=t715;
+        t612=t716;
+        t613=t717;
+        t614=t718;
+        t615=t719;   
+
+        oper15(sum71,carry71,carry72,sum72,carry73,sum73,sum74,carry74,x13,x14,x15,x16,x17,x18,x19,t61,t62,t63,t64,t65,t66,t67,t68,t69,t610,t611,t612,t613,t614,t615,ts,tc)
+}
+
+function oper20(x1,x2,x3,x4,x5,x6,x7,x8,x9,x10,x11,x12,x13,x14,x15,x16,x17,x18,x19,x20,t71,t72,t73,t74,t75,t76,t77,t78,t79,t710,t711,t712,t713,t714,t715,t716,t717,t718,t719,t720,ts,tc)
+{
+         parent.frames[1].document.writeln("<br><b> Level 7</b> <br>")
+         parent.frames[1].document.writeln("<dd>X<sub>7,1</sub> = "+x1+"--->T<sub>7,1</sub>="+t71)
+         parent.frames[1].document.writeln("<dd>X<sub>7,2</sub> = "+x2+"--->T<sub>7,2</sub>="+t72)
+         parent.frames[1].document.writeln("<dd>X<sub>7,3</sub> = "+x3+"--->T<sub>7,3</sub>="+t73)
+         parent.frames[1].document.writeln("<dd>X<sub>7,4</sub> = "+x4+"--->T<sub>7,4</sub>="+t74)
+         parent.frames[1].document.writeln("<dd>X<sub>7,5</sub> = "+x5+"--->T<sub>7,5</sub>="+t75)
+         parent.frames[1].document.writeln("<dd>X<sub>7,6</sub> = "+x6+"--->T<sub>7,6</sub>="+t76)
+         parent.frames[1].document.writeln("<dd>X<sub>7,7</sub> = "+x7+"--->T<sub>7,7</sub>="+t77)
+         parent.frames[1].document.writeln("<dd>X<sub>7,8</sub> = "+x8+"--->T<sub>7,8</sub>="+t78)
+         parent.frames[1].document.writeln("<dd>X<sub>7,9</sub> = "+x9+"--->T<sub>7,9</sub>="+t79)
+         parent.frames[1].document.writeln("<dd>X<sub>7,10</sub> = "+x10+"--->T<sub>7,10</sub>="+t710)
+         parent.frames[1].document.writeln("<dd>X<sub>7,11</sub> = "+x11+"--->T<sub>7,11</sub>="+t711)
+         parent.frames[1].document.writeln("<dd>X<sub>7,12</sub> = "+x12+"--->T<sub>7,12</sub>="+t712)
+         parent.frames[1].document.writeln("<dd>X<sub>7,13</sub> = "+x13+"--->T<sub>7,13</sub>="+t713)
+         parent.frames[1].document.writeln("<dd>X<sub>7,14</sub> = "+x14+"--->T<sub>7,14</sub>="+t714)
+         parent.frames[1].document.writeln("<dd>X<sub>7,15</sub> = "+x15+"--->T<sub>7,15</sub>="+t715)
+         parent.frames[1].document.writeln("<dd>X<sub>7,16</sub> = "+x16+"--->T<sub>7,16</sub>="+t716)
+         parent.frames[1].document.writeln("<dd>X<sub>7,17</sub> = "+x17+"--->T<sub>7,17</sub>="+t717)
+         parent.frames[1].document.writeln("<dd>X<sub>7,18</sub> = "+x18+"--->T<sub>7,18</sub>="+t718)
+         parent.frames[1].document.writeln("<dd>X<sub>7,19</sub> = "+x19+"--->T<sub>7,19</sub>="+t719)
+         parent.frames[1].document.writeln("<dd>X<sub>7,20</sub> = "+x20+"--->T<sub>7,20</sub>="+t720)
+
+         res71= csa_module(x1,x2,x3)
+         res72= csa_module(x4,x5,x6)
+         res73= csa_module(x7,x8,x9)
+         res74= csa_module(x10,x11,x12)
+         carry71=""
+         sum71 =""
+         carry72=""
+         sum72=""
+         carry73=""
+         sum73=""
+         carry74=""
+         sum74=""
+         for (var i=0; i<res71.length/2; i++)
+            {
+                carry71+=res71[i]
+                carry72+=res72[i]
+                carry73+=res73[i]
+                carry74+=res74[i]
+                sum71+=res71[i+res71.length/2]
+                sum72+=res72[i+res72.length/2]
+                sum73+=res73[i+res73.length/2]
+                sum74+=res74[i+res74.length/2]
+            }
+        x13 = Extend(x13);
+        x14 = Extend(x14);
+        x15 = Extend(x15);
+        x16 = Extend(x16);
+        x17 = Extend(x17);
+        x18 = Extend(x18);
+        x19 = Extend(x19);
+        x20 = Extend(x20);
+        t61=Math.max(Math.max(t72,t73)+ts, t71+(ts/2));
+        t62=Math.max(Math.max(t71,t72),t73)+tc;
+        t63=Math.max(Math.max(t74,t75),t76)+tc;
+        t64=Math.max(Math.max(t75,t76)+ts, t74+(ts/2));
+        t65=Math.max(Math.max(t77,t78),t79)+tc;
+        t66=Math.max(Math.max(t78,t79)+ts, t77+(ts/2));
+        t67=Math.max(Math.max(t711,t712)+ts, t710+(ts/2));
+        t68=Math.max(Math.max(t710,t711),t712)+tc;
+        t69=t713;
+        t610=t714;
+        t611=t715;
+        t612=t716;
+        t613=t717;
+        t614=t718;
+        t615=t719; 
+        t616=t720;
+        
+       oper16(sum71,carry71,carry72,sum72,carry73,sum73,sum74,carry74,x13,x14,x15,x16,x17,x18,x19,x20,t61,t62,t63,t64,t65,t66,t67,t68,t69,t610,t611,t612,t613,t614,t615,t616,ts,tc)
+}
+
+function oper21(x1,x2,x3,x4,x5,x6,x7,x8,x9,x10,x11,x12,x13,x14,x15,x16,x17,x18,x19,x20,x21,t71,t72,t73,t74,t75,t76,t77,t78,t79,t710,t711,t712,t713,t714,t715,t716,t717,t718,t719,t720,t721,ts,tc)
+{
+         parent.frames[1].document.writeln("<br><b> Level 7</b> <br>")
+         parent.frames[1].document.writeln("<dd>X<sub>7,1</sub> = "+x1+"--->T<sub>7,1</sub>="+t71)
+         parent.frames[1].document.writeln("<dd>X<sub>7,2</sub> = "+x2+"--->T<sub>7,2</sub>="+t72)
+         parent.frames[1].document.writeln("<dd>X<sub>7,3</sub> = "+x3+"--->T<sub>7,3</sub>="+t73)
+         parent.frames[1].document.writeln("<dd>X<sub>7,4</sub> = "+x4+"--->T<sub>7,4</sub>="+t74)
+         parent.frames[1].document.writeln("<dd>X<sub>7,5</sub> = "+x5+"--->T<sub>7,5</sub>="+t75)
+         parent.frames[1].document.writeln("<dd>X<sub>7,6</sub> = "+x6+"--->T<sub>7,6</sub>="+t76)
+         parent.frames[1].document.writeln("<dd>X<sub>7,7</sub> = "+x7+"--->T<sub>7,7</sub>="+t77)
+         parent.frames[1].document.writeln("<dd>X<sub>7,8</sub> = "+x8+"--->T<sub>7,8</sub>="+t78)
+         parent.frames[1].document.writeln("<dd>X<sub>7,9</sub> = "+x9+"--->T<sub>7,9</sub>="+t79)
+         parent.frames[1].document.writeln("<dd>X<sub>7,10</sub> = "+x10+"--->T<sub>7,10</sub>="+t710)
+         parent.frames[1].document.writeln("<dd>X<sub>7,11</sub> = "+x11+"--->T<sub>7,11</sub>="+t711)
+         parent.frames[1].document.writeln("<dd>X<sub>7,12</sub> = "+x12+"--->T<sub>7,12</sub>="+t712)
+         parent.frames[1].document.writeln("<dd>X<sub>7,13</sub> = "+x13+"--->T<sub>7,13</sub>="+t713)
+         parent.frames[1].document.writeln("<dd>X<sub>7,14</sub> = "+x14+"--->T<sub>7,14</sub>="+t714)
+         parent.frames[1].document.writeln("<dd>X<sub>7,15</sub> = "+x15+"--->T<sub>7,15</sub>="+t715)
+         parent.frames[1].document.writeln("<dd>X<sub>7,16</sub> = "+x16+"--->T<sub>7,16</sub>="+t716)
+         parent.frames[1].document.writeln("<dd>X<sub>7,17</sub> = "+x17+"--->T<sub>7,17</sub>="+t717)
+         parent.frames[1].document.writeln("<dd>X<sub>7,18</sub> = "+x18+"--->T<sub>7,18</sub>="+t718)
+         parent.frames[1].document.writeln("<dd>X<sub>7,19</sub> = "+x19+"--->T<sub>7,19</sub>="+t719)
+         parent.frames[1].document.writeln("<dd>X<sub>7,20</sub> = "+x20+"--->T<sub>7,20</sub>="+t720)
+         parent.frames[1].document.writeln("<dd>X<sub>7,21</sub> = "+x21+"--->T<sub>7,21</sub>="+t721)
+
+         res71= csa_module(x1,x2,x3)
+         res72= csa_module(x4,x5,x6)
+         res73= csa_module(x7,x8,x9)
+         res74= csa_module(x10,x11,x12)
+         res75= csa_module(x14,x15,x16)
+       
+         carry71=""
+         sum71 =""
+         carry72=""
+         sum72=""
+         carry73=""
+         sum73=""
+         carry74=""
+         sum74=""
+         carry75=""
+         sum75=""
+
+         for (var i=0; i<res71.length/2; i++)
+            {
+                carry71+=res71[i]
+                carry72+=res72[i]
+                carry73+=res73[i]
+                carry74+=res74[i]
+                carry75+=res75[i]
+                sum71+=res71[i+res71.length/2]
+                sum72+=res72[i+res72.length/2]
+                sum73+=res73[i+res73.length/2]
+                sum74+=res74[i+res74.length/2]
+                sum75+=res75[i+res75.length/2] 
+            }
+        x13 = Extend(x13);
+        x17 = Extend(x17);
+        x18 = Extend(x18);
+        x19 = Extend(x19);
+        x20 = Extend(x20);
+        x21 = Extend(x21);
+       
+        t61=Math.max(Math.max(t72,t73)+ts, t71+(ts/2));
+        t62=Math.max(Math.max(t71,t72),t73)+tc;
+        t63=Math.max(Math.max(t74,t75),t76)+tc;
+        t64=Math.max(Math.max(t75,t76)+ts, t74+(ts/2));
+        t65=Math.max(Math.max(t77,t78),t79)+tc;
+        t66=Math.max(Math.max(t78,t79)+ts, t77+(ts/2));
+        t67=Math.max(Math.max(t711,t712)+ts, t710+(ts/2));
+        t68=Math.max(Math.max(t710,t711),t712)+tc;
+        t69=t713;
+        t610=Math.max(Math.max(t715,t716)+ts, t714+(ts/2));;
+        t611=Math.max(Math.max(t714,t715),t716)+tc;
+        t612=t717;
+        t613=t718;
+        t614=t719;
+        t615=t720;
+        t616=t721;
+
+
+        oper16(sum71,carry71,carry72,sum72,carry73,sum73,sum74,carry74,x13,sum75,carry75,x17,x18,x19,x20,x21,t61,t62,t63,t64,t65,t66,t67,t68,t69,t610,t611,t612,t613,t614,t615,t616,ts,tc)
+
+}
+
+function oper22(x1,x2,x3,x4,x5,x6,x7,x8,x9,x10,x11,x12,x13,x14,x15,x16,x17,x18,x19,x20,x21,x22,t71,t72,t73,t74,t75,t76,t77,t78,t79,t710,t711,t712,t713,t714,t715,t716,t717,t718,t719,t720,t721,t722,ts,tc)
+{
+         parent.frames[1].document.writeln("<br><b> Level 7</b> <br>")
+         parent.frames[1].document.writeln("<dd>X<sub>7,1</sub> = "+x1+"--->T<sub>7,1</sub>="+t71)
+         parent.frames[1].document.writeln("<dd>X<sub>7,2</sub> = "+x2+"--->T<sub>7,2</sub>="+t72)
+         parent.frames[1].document.writeln("<dd>X<sub>7,3</sub> = "+x3+"--->T<sub>7,3</sub>="+t73)
+         parent.frames[1].document.writeln("<dd>X<sub>7,4</sub> = "+x4+"--->T<sub>7,4</sub>="+t74)
+         parent.frames[1].document.writeln("<dd>X<sub>7,5</sub> = "+x5+"--->T<sub>7,5</sub>="+t75)
+         parent.frames[1].document.writeln("<dd>X<sub>7,6</sub> = "+x6+"--->T<sub>7,6</sub>="+t76)
+         parent.frames[1].document.writeln("<dd>X<sub>7,7</sub> = "+x7+"--->T<sub>7,7</sub>="+t77)
+         parent.frames[1].document.writeln("<dd>X<sub>7,8</sub> = "+x8+"--->T<sub>7,8</sub>="+t78)
+         parent.frames[1].document.writeln("<dd>X<sub>7,9</sub> = "+x9+"--->T<sub>7,9</sub>="+t79)
+         parent.frames[1].document.writeln("<dd>X<sub>7,10</sub> = "+x10+"--->T<sub>7,10</sub>="+t710)
+         parent.frames[1].document.writeln("<dd>X<sub>7,11</sub> = "+x11+"--->T<sub>7,11</sub>="+t711)
+         parent.frames[1].document.writeln("<dd>X<sub>7,12</sub> = "+x12+"--->T<sub>7,12</sub>="+t712)
+         parent.frames[1].document.writeln("<dd>X<sub>7,13</sub> = "+x13+"--->T<sub>7,13</sub>="+t713)
+         parent.frames[1].document.writeln("<dd>X<sub>7,14</sub> = "+x14+"--->T<sub>7,14</sub>="+t714)
+         parent.frames[1].document.writeln("<dd>X<sub>7,15</sub> = "+x15+"--->T<sub>7,15</sub>="+t715)
+         parent.frames[1].document.writeln("<dd>X<sub>7,16</sub> = "+x16+"--->T<sub>7,16</sub>="+t716)
+         parent.frames[1].document.writeln("<dd>X<sub>7,17</sub> = "+x17+"--->T<sub>7,17</sub>="+t717)
+         parent.frames[1].document.writeln("<dd>X<sub>7,18</sub> = "+x18+"--->T<sub>7,18</sub>="+t718)
+         parent.frames[1].document.writeln("<dd>X<sub>7,19</sub> = "+x19+"--->T<sub>7,19</sub>="+t719)
+         parent.frames[1].document.writeln("<dd>X<sub>7,20</sub> = "+x20+"--->T<sub>7,20</sub>="+t720)
+         parent.frames[1].document.writeln("<dd>X<sub>7,21</sub> = "+x21+"--->T<sub>7,21</sub>="+t721)
+         parent.frames[1].document.writeln("<dd>X<sub>7,22</sub> = "+x22+"--->T<sub>7,22</sub>="+t722)
+
+         res71= csa_module(x1,x2,x3)
+         res72= csa_module(x4,x5,x6)
+         res73= csa_module(x7,x8,x9)
+         res74= csa_module(x10,x11,x12)
+         res75= csa_module(x14,x15,x16)
+         carry71=""
+         sum71 =""
+         carry72=""
+         sum72=""
+         carry73=""
+         sum73=""
+         carry74=""
+         sum74=""
+         carry75=""
+         sum75=""
+
+         for (var i=0; i<res71.length/2; i++)
+            {
+                carry71+=res71[i]
+                carry72+=res72[i]
+                carry73+=res73[i]
+                carry74+=res74[i]
+                carry75+=res75[i]
+                sum71+=res71[i+res71.length/2]
+                sum72+=res72[i+res72.length/2]
+                sum73+=res73[i+res73.length/2]
+                sum74+=res74[i+res74.length/2]
+                sum75+=res75[i+res75.length/2]
+            }
+        x13 = Extend(x13);
+        x17 = Extend(x17);
+        x18 = Extend(x18);
+        x19 = Extend(x19);
+        x20 = Extend(x20);
+        x21 = Extend(x21);
+        x22 = Extend(x22);
+
+        t61=Math.max(Math.max(t72,t73)+ts, t71+(ts/2));
+        t62=Math.max(Math.max(t71,t72),t73)+tc;
+        t63=Math.max(Math.max(t74,t75),t76)+tc;
+        t64=Math.max(Math.max(t75,t76)+ts, t74+(ts/2));
+        t65=Math.max(Math.max(t77,t78),t79)+tc;
+        t66=Math.max(Math.max(t78,t79)+ts, t77+(ts/2));
+        t67=Math.max(Math.max(t711,t712)+ts, t710+(ts/2));
+        t68=Math.max(Math.max(t710,t711),t712)+tc;
+        t69=t713;
+        t610=Math.max(Math.max(t715,t716)+ts, t714+(ts/2));;
+        t611=Math.max(Math.max(t714,t715),t716)+tc;
+        t612=t717;
+        t613=t718;
+        t614=t719;
+        t615=t720;
+        t616=t721;
+        t617=t722;
+
+        oper17(sum71,carry71,carry72,sum72,carry73,sum73,sum74,carry74,x13,sum75,carry75,x17,x18,x19,x20,x21,x22,t61,t62,t63,t64,t65,t66,t67,t68,t69,t610,t611,t612,t613,t614,t615,t616,t617,ts,tc)
+}
+
+function oper23(x1,x2,x3,x4,x5,x6,x7,x8,x9,x10,x11,x12,x13,x14,x15,x16,x17,x18,x19,x20,x21,x22,x23,t71,t72,t73,t74,t75,t76,t77,t78,t79,t710,t711,t712,t713,t714,t715,t716,t717,t718,t719,t720,t721,t722,t723,ts,tc)
+{
+         parent.frames[1].document.writeln("<br><b> Level 7</b> <br>")
+         parent.frames[1].document.writeln("<dd>X<sub>7,1</sub> = "+x1+"--->T<sub>7,1</sub>="+t71)
+         parent.frames[1].document.writeln("<dd>X<sub>7,2</sub> = "+x2+"--->T<sub>7,2</sub>="+t72)
+         parent.frames[1].document.writeln("<dd>X<sub>7,3</sub> = "+x3+"--->T<sub>7,3</sub>="+t73)
+         parent.frames[1].document.writeln("<dd>X<sub>7,4</sub> = "+x4+"--->T<sub>7,4</sub>="+t74)
+         parent.frames[1].document.writeln("<dd>X<sub>7,5</sub> = "+x5+"--->T<sub>7,5</sub>="+t75)
+         parent.frames[1].document.writeln("<dd>X<sub>7,6</sub> = "+x6+"--->T<sub>7,6</sub>="+t76)
+         parent.frames[1].document.writeln("<dd>X<sub>7,7</sub> = "+x7+"--->T<sub>7,7</sub>="+t77)
+         parent.frames[1].document.writeln("<dd>X<sub>7,8</sub> = "+x8+"--->T<sub>7,8</sub>="+t78)
+         parent.frames[1].document.writeln("<dd>X<sub>7,9</sub> = "+x9+"--->T<sub>7,9</sub>="+t79)
+         parent.frames[1].document.writeln("<dd>X<sub>7,10</sub> = "+x10+"--->T<sub>7,10</sub>="+t710)
+         parent.frames[1].document.writeln("<dd>X<sub>7,11</sub> = "+x11+"--->T<sub>7,11</sub>="+t711)
+         parent.frames[1].document.writeln("<dd>X<sub>7,12</sub> = "+x12+"--->T<sub>7,12</sub>="+t712)
+         parent.frames[1].document.writeln("<dd>X<sub>7,13</sub> = "+x13+"--->T<sub>7,13</sub>="+t713)
+         parent.frames[1].document.writeln("<dd>X<sub>7,14</sub> = "+x14+"--->T<sub>7,14</sub>="+t714)
+         parent.frames[1].document.writeln("<dd>X<sub>7,15</sub> = "+x15+"--->T<sub>7,15</sub>="+t715)
+         parent.frames[1].document.writeln("<dd>X<sub>7,16</sub> = "+x16+"--->T<sub>7,16</sub>="+t716)
+         parent.frames[1].document.writeln("<dd>X<sub>7,17</sub> = "+x17+"--->T<sub>7,17</sub>="+t717)
+         parent.frames[1].document.writeln("<dd>X<sub>7,18</sub> = "+x18+"--->T<sub>7,18</sub>="+t718)
+         parent.frames[1].document.writeln("<dd>X<sub>7,19</sub> = "+x19+"--->T<sub>7,19</sub>="+t719)
+         parent.frames[1].document.writeln("<dd>X<sub>7,20</sub> = "+x20+"--->T<sub>7,20</sub>="+t720)
+         parent.frames[1].document.writeln("<dd>X<sub>7,21</sub> = "+x21+"--->T<sub>7,21</sub>="+t721)
+         parent.frames[1].document.writeln("<dd>X<sub>7,22</sub> = "+x22+"--->T<sub>7,22</sub>="+t722)
+         parent.frames[1].document.writeln("<dd>X<sub>7,23</sub> = "+x23+"--->T<sub>7,23</sub>="+t723)
+
+         res71= csa_module(x1,x2,x3)
+         res72= csa_module(x4,x5,x6)
+         res73= csa_module(x7,x8,x9)
+         res74= csa_module(x10,x11,x12)
+         res75= csa_module(x14,x15,x16)
+         carry71=""
+         sum71 =""
+         carry72=""
+         sum72=""
+         carry73=""
+         sum73=""
+         carry74=""
+         sum74=""
+         carry75=""
+         sum75=""
+
+         for (var i=0; i<res71.length/2; i++)
+            {
+                carry71+=res71[i]
+                carry72+=res72[i]
+                carry73+=res73[i]
+                carry74+=res74[i]
+                carry75+=res75[i]
+                sum71+=res71[i+res71.length/2]
+                sum72+=res72[i+res72.length/2]
+                sum73+=res73[i+res73.length/2]
+                sum74+=res74[i+res74.length/2]
+                sum75+=res75[i+res75.length/2]
+            }
+        x13 = Extend(x13);
+        x17 = Extend(x17);
+        x18 = Extend(x18);
+        x19 = Extend(x19);
+        x20 = Extend(x20);
+        x21 = Extend(x21);
+        x22 = Extend(x22);
+        x23 = Extend(x23);
+
+        t61=Math.max(Math.max(t72,t73)+ts, t71+(ts/2));
+        t62=Math.max(Math.max(t71,t72),t73)+tc;
+        t63=Math.max(Math.max(t74,t75),t76)+tc;
+        t64=Math.max(Math.max(t75,t76)+ts, t74+(ts/2));
+        t65=Math.max(Math.max(t77,t78),t79)+tc;
+        t66=Math.max(Math.max(t78,t79)+ts, t77+(ts/2));
+        t67=Math.max(Math.max(t711,t712)+ts, t710+(ts/2));
+        t68=Math.max(Math.max(t710,t711),t712)+tc;
+        t69=t713;
+        t610=Math.max(Math.max(t715,t716)+ts, t714+(ts/2));;
+        t611=Math.max(Math.max(t714,t715),t716)+tc;
+        t612=t717;
+        t613=t718;
+        t614=t719;
+        t615=t720;
+        t616=t721;
+        t617=t722;
+        t618=t723;
+
+        oper18(sum71,carry71,carry72,sum72,carry73,sum73,sum74,carry74,x13,sum75,carry75,x17,x18,x19,x20,x21,x22,x23,t61,t62,t63,t64,t65,t66,t67,t68,t69,t610,t611,t612,t613,t614,t615,t616,t617,t618,ts,tc)
+}
+
+function oper24(x1,x2,x3,x4,x5,x6,x7,x8,x9,x10,x11,x12,x13,x14,x15,x16,x17,x18,x19,x20,x21,x22,x23,x24,t71,t72,t73,t74,t75,t76,t77,t78,t79,t710,t711,t712,t713,t714,t715,t716,t717,t718,t719,t720,t721,t722,t723,t724,ts,tc)
+{
+         parent.frames[1].document.writeln("<br><b> Level 7</b> <br>")
+         parent.frames[1].document.writeln("<dd>X<sub>7,1</sub> = "+x1+"--->T<sub>7,1</sub>="+t71)
+         parent.frames[1].document.writeln("<dd>X<sub>7,2</sub> = "+x2+"--->T<sub>7,2</sub>="+t72)
+         parent.frames[1].document.writeln("<dd>X<sub>7,3</sub> = "+x3+"--->T<sub>7,3</sub>="+t73)
+         parent.frames[1].document.writeln("<dd>X<sub>7,4</sub> = "+x4+"--->T<sub>7,4</sub>="+t74)
+         parent.frames[1].document.writeln("<dd>X<sub>7,5</sub> = "+x5+"--->T<sub>7,5</sub>="+t75)
+         parent.frames[1].document.writeln("<dd>X<sub>7,6</sub> = "+x6+"--->T<sub>7,6</sub>="+t76)
+         parent.frames[1].document.writeln("<dd>X<sub>7,7</sub> = "+x7+"--->T<sub>7,7</sub>="+t77)
+         parent.frames[1].document.writeln("<dd>X<sub>7,8</sub> = "+x8+"--->T<sub>7,8</sub>="+t78)
+         parent.frames[1].document.writeln("<dd>X<sub>7,9</sub> = "+x9+"--->T<sub>7,9</sub>="+t79)
+         parent.frames[1].document.writeln("<dd>X<sub>7,10</sub> = "+x10+"--->T<sub>7,10</sub>="+t710)
+         parent.frames[1].document.writeln("<dd>X<sub>7,11</sub> = "+x11+"--->T<sub>7,11</sub>="+t711)
+         parent.frames[1].document.writeln("<dd>X<sub>7,12</sub> = "+x12+"--->T<sub>7,12</sub>="+t712)
+         parent.frames[1].document.writeln("<dd>X<sub>7,13</sub> = "+x13+"--->T<sub>7,13</sub>="+t713)
+         parent.frames[1].document.writeln("<dd>X<sub>7,14</sub> = "+x14+"--->T<sub>7,14</sub>="+t714)
+         parent.frames[1].document.writeln("<dd>X<sub>7,15</sub> = "+x15+"--->T<sub>7,15</sub>="+t715)
+         parent.frames[1].document.writeln("<dd>X<sub>7,16</sub> = "+x16+"--->T<sub>7,16</sub>="+t716)
+         parent.frames[1].document.writeln("<dd>X<sub>7,17</sub> = "+x17+"--->T<sub>7,17</sub>="+t717)
+         parent.frames[1].document.writeln("<dd>X<sub>7,18</sub> = "+x18+"--->T<sub>7,18</sub>="+t718)
+         parent.frames[1].document.writeln("<dd>X<sub>7,19</sub> = "+x19+"--->T<sub>7,19</sub>="+t719)
+         parent.frames[1].document.writeln("<dd>X<sub>7,20</sub> = "+x20+"--->T<sub>7,20</sub>="+t720)
+         parent.frames[1].document.writeln("<dd>X<sub>7,21</sub> = "+x21+"--->T<sub>7,21</sub>="+t721)
+         parent.frames[1].document.writeln("<dd>X<sub>7,22</sub> = "+x22+"--->T<sub>7,22</sub>="+t722)
+         parent.frames[1].document.writeln("<dd>X<sub>7,23</sub> = "+x23+"--->T<sub>7,23</sub>="+t723)
+         parent.frames[1].document.writeln("<dd>X<sub>7,24</sub> = "+x24+"--->T<sub>7,24</sub>="+t724)
+
+
+         res71= csa_module(x1,x2,x3)
+         res72= csa_module(x4,x5,x6)
+         res73= csa_module(x7,x8,x9)
+         res74= csa_module(x10,x11,x12)
+         res75= csa_module(x14,x15,x16)
+         res76= csa_module(x19,x20,x21)
+         carry71=""
+         sum71 =""
+         carry72=""
+         sum72=""
+         carry73=""
+         sum73=""
+         carry74=""
+         sum74=""
+         carry75=""
+         sum75=""
+         carry76=""
+         sum76=""
+
+         for (var i=0; i<res71.length/2; i++)
+            {
+                carry71+=res71[i]
+                carry72+=res72[i]
+                carry73+=res73[i]
+                carry74+=res74[i]
+                carry75+=res75[i]
+                carry76+=res76[i]  
+                sum71+=res71[i+res71.length/2]
+                sum72+=res72[i+res72.length/2]
+                sum73+=res73[i+res73.length/2]
+                sum74+=res74[i+res74.length/2]
+                sum75+=res75[i+res75.length/2]
+                sum76+=res76[i+res76.length/2] 
+            }
+        x13 = Extend(x13);
+        x17 = Extend(x17);
+        x18 = Extend(x18);
+        x22 = Extend(x22);
+        x23 = Extend(x23);
+        x24 = Extend(x24);
+
+        t61=Math.max(Math.max(t72,t73)+ts, t71+(ts/2));
+        t62=Math.max(Math.max(t71,t72),t73)+tc;
+        t63=Math.max(Math.max(t74,t75),t76)+tc;
+        t64=Math.max(Math.max(t75,t76)+ts, t74+(ts/2));
+        t65=Math.max(Math.max(t77,t78),t79)+tc;
+        t66=Math.max(Math.max(t78,t79)+ts, t77+(ts/2));
+        t67=Math.max(Math.max(t711,t712)+ts, t710+(ts/2));
+        t68=Math.max(Math.max(t710,t711),t712)+tc;
+        t69=t713;
+        t610=Math.max(Math.max(t715,t716)+ts, t714+(ts/2));
+        t611=Math.max(Math.max(t714,t715),t716)+tc;
+        t612=t717;
+        t613=t718;
+        t614=Math.max(Math.max(t720,t721)+ts, t719+(ts/2));
+        t615=Math.max(Math.max(t719,t720),t721)+tc;
+        t616=t722;
+        t617=t723;
+        t618=t724;
+
+        oper18(sum71,carry71,carry72,sum72,carry73,sum73,sum74,carry74,x13,sum75,carry75,x17,x18,sum76,carry76,x22,x23,x24,t61,t62,t63,t64,t65,t66,t67,t68,t69,t610,t611,t612,t613,t614,t615,t616,t617,t618,ts,tc)
+}
+
+function oper25(x1,x2,x3,x4,x5,x6,x7,x8,x9,x10,x11,x12,x13,x14,x15,x16,x17,x18,x19,x20,x21,x22,x23,x24,x25,ts,tc)
+{
+         parent.frames[1].document.writeln("<br><b> Level 8</b> <br>")
+         parent.frames[1].document.writeln("<dd>X<sub>8,1</sub> = "+x1+"--->T<sub>8,1</sub>=0")
+         parent.frames[1].document.writeln("<dd>X<sub>8,2</sub> = "+x2+"--->T<sub>8,2</sub>=0")
+         parent.frames[1].document.writeln("<dd>X<sub>8,3</sub> = "+x3+"--->T<sub>8,3</sub>=0")
+         parent.frames[1].document.writeln("<dd>X<sub>8,4</sub> = "+x4+"--->T<sub>8,4</sub>=0")
+         parent.frames[1].document.writeln("<dd>X<sub>8,5</sub> = "+x5+"--->T<sub>8,5</sub>=0")
+         parent.frames[1].document.writeln("<dd>X<sub>8,6</sub> = "+x6+"--->T<sub>8,6</sub>=0")
+         parent.frames[1].document.writeln("<dd>X<sub>8,7</sub> = "+x7+"--->T<sub>8,7</sub>=0")
+         parent.frames[1].document.writeln("<dd>X<sub>8,8</sub> = "+x8+"--->T<sub>8,8</sub>=0")
+         parent.frames[1].document.writeln("<dd>X<sub>8,9</sub> = "+x9+"--->T<sub>8,9</sub>=0")
+         parent.frames[1].document.writeln("<dd>X<sub>8,10</sub> = "+x10+"--->T<sub>8,10</sub>=0")
+         parent.frames[1].document.writeln("<dd>X<sub>8,11</sub> = "+x11+"--->T<sub>8,11</sub>=0")
+         parent.frames[1].document.writeln("<dd>X<sub>8,12</sub> = "+x12+"--->T<sub>8,12</sub>=0")
+         parent.frames[1].document.writeln("<dd>X<sub>8,13</sub> = "+x13+"--->T<sub>8,13</sub>=0")
+         parent.frames[1].document.writeln("<dd>X<sub>8,14</sub> = "+x14+"--->T<sub>8,14</sub>=0")
+         parent.frames[1].document.writeln("<dd>X<sub>8,15</sub> = "+x15+"--->T<sub>8,15</sub>=0")
+         parent.frames[1].document.writeln("<dd>X<sub>8,16</sub> = "+x16+"--->T<sub>8,16</sub>=0")
+         parent.frames[1].document.writeln("<dd>X<sub>8,17</sub> = "+x17+"--->T<sub>8,17</sub>=0")
+         parent.frames[1].document.writeln("<dd>X<sub>8,18</sub> = "+x18+"--->T<sub>8,18</sub>=0")
+         parent.frames[1].document.writeln("<dd>X<sub>8,19</sub> = "+x19+"--->T<sub>8,19</sub>=0")
+         parent.frames[1].document.writeln("<dd>X<sub>8,20</sub> = "+x20+"--->T<sub>8,20</sub>=0")
+         parent.frames[1].document.writeln("<dd>X<sub>8,21</sub> = "+x21+"--->T<sub>8,21</sub>=0")
+         parent.frames[1].document.writeln("<dd>X<sub>8,22</sub> = "+x22+"--->T<sub>8,22</sub>=0")
+         parent.frames[1].document.writeln("<dd>X<sub>8,23</sub> = "+x23+"--->T<sub>8,23</sub>=0")
+         parent.frames[1].document.writeln("<dd>X<sub>8,24</sub> = "+x24+"--->T<sub>8,24</sub>=0")
+         parent.frames[1].document.writeln("<dd>X<sub>8,25</sub> = "+x25+"--->T<sub>8,25</sub>=0")
+         res81= csa_module(x1,x2,x3)
+         res82= csa_module(x4,x5,x6)
+         res83= csa_module(x7,x8,x9)
+         res84= csa_module(x10,x11,x12)
+         res85= csa_module(x14,x15,x16)
+         carry81=""
+         sum81 =""
+         carry82=""
+         sum82=""
+         carry83=""
+         sum83=""
+         carry84=""
+         sum84=""
+         carry85=""
+         sum85=""
+
+         for (var i=0; i<res81.length/2; i++)
+            {
+                carry81+=res81[i]
+                carry82+=res82[i]
+                carry83+=res83[i]
+                carry84+=res84[i]
+                carry85+=res85[i]
+                sum81+=res81[i+res81.length/2]
+                sum82+=res82[i+res82.length/2]
+                sum83+=res83[i+res83.length/2]
+                sum84+=res84[i+res84.length/2]
+                sum85+=res85[i+res85.length/2]
+            }
+        x13 = Extend(x13);
+        x17 = Extend(x17);
+        x18 = Extend(x18);
+        x19 = Extend(x19);
+        x20 = Extend(x20);
+        x21 = Extend(x21);
+        x22 = Extend(x22);
+        x23 = Extend(x23);
+        x24 = Extend(x24);
+        x25 = Extend(x25);
+        
+        t71=ts;
+        t72=tc;
+        t73=tc;
+        t74=ts;
+        t75=tc;
+        t76=ts;
+        t77=ts;
+        t78=tc;
+        t79=0;                 
+        t710=ts;
+        t711=tc;
+        t712=0;
+        t713=0;
+        t714=0;
+        t715=0;
+        t716=0;
+        t717=0;
+        t718=0;
+        t719=0;
+        t720=0;
+
+     oper20(sum81,carry81,carry82,sum82,carry83,sum83,sum84,carry84,x13,sum85,carry85,x17,x18,x19,x20,x21,x22,x23,x24,x25,t71,t72,t73,t74,t75,t76,t77,t78,t79,t710,t711,t712,t713,t714,t715,t716,t717,t718,t719,t720,ts,tc)
+}
+
+function oper26(x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, x13, x14, x15,x16,x17,x18,x19,x20,x21,x22,x23,x24,x25,x26,ts,tc)
+{
+         parent.frames[1].document.writeln("<br><b> Level 8</b> <br>")
+         parent.frames[1].document.writeln("<dd>X<sub>8,1</sub> = "+x1+"--->T<sub>8,1</sub>=0")
+         parent.frames[1].document.writeln("<dd>X<sub>8,2</sub> = "+x2+"--->T<sub>8,2</sub>=0")
+         parent.frames[1].document.writeln("<dd>X<sub>8,3</sub> = "+x3+"--->T<sub>8,3</sub>=0")
+         parent.frames[1].document.writeln("<dd>X<sub>8,4</sub> = "+x4+"--->T<sub>8,4</sub>=0")
+         parent.frames[1].document.writeln("<dd>X<sub>8,5</sub> = "+x5+"--->T<sub>8,5</sub>=0")
+         parent.frames[1].document.writeln("<dd>X<sub>8,6</sub> = "+x6+"--->T<sub>8,6</sub>=0")
+         parent.frames[1].document.writeln("<dd>X<sub>8,7</sub> = "+x7+"--->T<sub>8,7</sub>=0")
+         parent.frames[1].document.writeln("<dd>X<sub>8,8</sub> = "+x8+"--->T<sub>8,8</sub>=0")
+         parent.frames[1].document.writeln("<dd>X<sub>8,9</sub> = "+x9+"--->T<sub>8,9</sub>=0")
+         parent.frames[1].document.writeln("<dd>X<sub>8,10</sub> = "+x10+"--->T<sub>8,10</sub>=0")
+         parent.frames[1].document.writeln("<dd>X<sub>8,11</sub> = "+x11+"--->T<sub>8,11</sub>=0")
+         parent.frames[1].document.writeln("<dd>X<sub>8,12</sub> = "+x12+"--->T<sub>8,12</sub>=0")
+         parent.frames[1].document.writeln("<dd>X<sub>8,13</sub> = "+x13+"--->T<sub>8,13</sub>=0")
+         parent.frames[1].document.writeln("<dd>X<sub>8,14</sub> = "+x14+"--->T<sub>8,14</sub>=0")
+         parent.frames[1].document.writeln("<dd>X<sub>8,15</sub> = "+x15+"--->T<sub>8,15</sub>=0")
+         parent.frames[1].document.writeln("<dd>X<sub>8,16</sub> = "+x16+"--->T<sub>8,16</sub>=0")
+         parent.frames[1].document.writeln("<dd>X<sub>8,17</sub> = "+x17+"--->T<sub>8,17</sub>=0")
+         parent.frames[1].document.writeln("<dd>X<sub>8,18</sub> = "+x18+"--->T<sub>8,18</sub>=0")
+         parent.frames[1].document.writeln("<dd>X<sub>8,19</sub> = "+x19+"--->T<sub>8,19</sub>=0")
+         parent.frames[1].document.writeln("<dd>X<sub>8,20</sub> = "+x20+"--->T<sub>8,20</sub>=0")
+         parent.frames[1].document.writeln("<dd>X<sub>8,21</sub> = "+x21+"--->T<sub>8,21</sub>=0")
+         parent.frames[1].document.writeln("<dd>X<sub>8,22</sub> = "+x22+"--->T<sub>8,22</sub>=0")
+         parent.frames[1].document.writeln("<dd>X<sub>8,23</sub> = "+x23+"--->T<sub>8,23</sub>=0")
+         parent.frames[1].document.writeln("<dd>X<sub>8,24</sub> = "+x24+"--->T<sub>8,24</sub>=0")
+         parent.frames[1].document.writeln("<dd>X<sub>8,25</sub> = "+x25+"--->T<sub>8,25</sub>=0")
+         parent.frames[1].document.writeln("<dd>X<sub>8,26</sub> = "+x26+"--->T<sub>8,26</sub>=0")
+ 
+         res81= csa_module(x1,x2,x3)
+         res82= csa_module(x4,x5,x6)
+         res83= csa_module(x7,x8,x9)
+         res84= csa_module(x10,x11,x12)
+         res85= csa_module(x14,x15,x16)
+         carry81=""
+         sum81 =""
+         carry82=""
+         sum82=""
+         carry83=""
+         sum83=""
+         carry84=""
+         sum84=""
+         carry85=""
+         sum85=""
+
+         for (var i=0; i<res81.length/2; i++)
+            {
+                carry81+=res81[i]
+                carry82+=res82[i]
+                carry83+=res83[i]
+                carry84+=res84[i]
+                carry85+=res85[i]
+                sum81+=res81[i+res81.length/2]
+                sum82+=res82[i+res82.length/2]
+                sum83+=res83[i+res83.length/2]
+                sum84+=res84[i+res84.length/2]
+                sum85+=res85[i+res85.length/2]
+            }
+        x13 = Extend(x13);
+        x17 = Extend(x17);
+        x18 = Extend(x18);
+        x19 = Extend(x19);
+        x20 = Extend(x20);
+        x21 = Extend(x21);
+        x22 = Extend(x22);
+        x23 = Extend(x23);
+        x24 = Extend(x24);
+        x25 = Extend(x25);
+        x26 = Extend(x26);
+       
+        t71=ts;
+        t72=tc;
+        t73=tc;
+        t74=ts;
+        t75=tc;
+        t76=ts;
+        t77=ts;
+        t78=tc;
+        t79=0;
+        t710=ts;
+        t711=tc;
+        t712=0;
+        t713=0;
+        t714=0;
+        t715=0;
+        t716=0;
+        t717=0;
+        t718=0;
+        t719=0;
+        t720=0;
+        t721=0;
+
+        oper21(sum81,carry81,carry82,sum82,carry83,sum83,sum84,carry84,x13,sum85,carry85,x17,x18,x19,x20,x21,x22,x23,x24,x25,x26,t71,t72,t73,t74,t75,t76,t77,t78,t79,t710,t711,t712,t713,t714,t715,t716,t717,t718,t719,t720,t721,ts,tc)
+}
+
+function oper27(x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, x13, x14, x15,x16,x17,x18,x19,x20,x21,x22,x23,x24,x25,x26,x27,ts,tc)
+{
+         parent.frames[1].document.writeln("<br><b> Level 8</b> <br>")
+         parent.frames[1].document.writeln("<dd>X<sub>8,1</sub> = "+x1+"--->T<sub>8,1</sub>=0")
+         parent.frames[1].document.writeln("<dd>X<sub>8,2</sub> = "+x2+"--->T<sub>8,2</sub>=0")
+         parent.frames[1].document.writeln("<dd>X<sub>8,3</sub> = "+x3+"--->T<sub>8,3</sub>=0")
+         parent.frames[1].document.writeln("<dd>X<sub>8,4</sub> = "+x4+"--->T<sub>8,4</sub>=0")
+         parent.frames[1].document.writeln("<dd>X<sub>8,5</sub> = "+x5+"--->T<sub>8,5</sub>=0")
+         parent.frames[1].document.writeln("<dd>X<sub>8,6</sub> = "+x6+"--->T<sub>8,6</sub>=0")
+         parent.frames[1].document.writeln("<dd>X<sub>8,7</sub> = "+x7+"--->T<sub>8,7</sub>=0")
+         parent.frames[1].document.writeln("<dd>X<sub>8,8</sub> = "+x8+"--->T<sub>8,8</sub>=0")
+         parent.frames[1].document.writeln("<dd>X<sub>8,9</sub> = "+x9+"--->T<sub>8,9</sub>=0")
+         parent.frames[1].document.writeln("<dd>X<sub>8,10</sub> = "+x10+"--->T<sub>8,10</sub>=0")
+         parent.frames[1].document.writeln("<dd>X<sub>8,11</sub> = "+x11+"--->T<sub>8,11</sub>=0")
+         parent.frames[1].document.writeln("<dd>X<sub>8,12</sub> = "+x12+"--->T<sub>8,12</sub>=0")
+         parent.frames[1].document.writeln("<dd>X<sub>8,13</sub> = "+x13+"--->T<sub>8,13</sub>=0")
+         parent.frames[1].document.writeln("<dd>X<sub>8,14</sub> = "+x14+"--->T<sub>8,14</sub>=0")
+         parent.frames[1].document.writeln("<dd>X<sub>8,15</sub> = "+x15+"--->T<sub>8,15</sub>=0")
+         parent.frames[1].document.writeln("<dd>X<sub>8,16</sub> = "+x16+"--->T<sub>8,16</sub>=0")
+         parent.frames[1].document.writeln("<dd>X<sub>8,17</sub> = "+x17+"--->T<sub>8,17</sub>=0")
+         parent.frames[1].document.writeln("<dd>X<sub>8,18</sub> = "+x18+"--->T<sub>8,18</sub>=0")
+         parent.frames[1].document.writeln("<dd>X<sub>8,19</sub> = "+x19+"--->T<sub>8,19</sub>=0")
+         parent.frames[1].document.writeln("<dd>X<sub>8,20</sub> = "+x20+"--->T<sub>8,20</sub>=0")
+         parent.frames[1].document.writeln("<dd>X<sub>8,21</sub> = "+x21+"--->T<sub>8,21</sub>=0")
+         parent.frames[1].document.writeln("<dd>X<sub>8,22</sub> = "+x22+"--->T<sub>8,22</sub>=0")
+         parent.frames[1].document.writeln("<dd>X<sub>8,23</sub> = "+x23+"--->T<sub>8,23</sub>=0")
+         parent.frames[1].document.writeln("<dd>X<sub>8,24</sub> = "+x24+"--->T<sub>8,24</sub>=0")
+         parent.frames[1].document.writeln("<dd>X<sub>8,25</sub> = "+x25+"--->T<sub>8,25</sub>=0")
+         parent.frames[1].document.writeln("<dd>X<sub>8,26</sub> = "+x26+"--->T<sub>8,26</sub>=0")
+         parent.frames[1].document.writeln("<dd>X<sub>8,27</sub> = "+x27+"--->T<sub>8,27</sub>=0")
+         res81= csa_module(x1,x2,x3)
+         res82= csa_module(x4,x5,x6)
+         res83= csa_module(x7,x8,x9)
+         res84= csa_module(x10,x11,x12)
+         res85= csa_module(x14,x15,x16)
+         res86= csa_module(x19,x20,x21)
+         carry81=""
+         sum81 =""
+         carry82=""
+         sum82=""
+         carry83=""
+         sum83=""
+         carry84=""
+         sum84=""
+         carry85=""
+         sum85=""
+         carry86=""
+         sum86="" 
+
+         for (var i=0; i<res81.length/2; i++)
+            {
+                carry81+=res81[i]
+                carry82+=res82[i]
+                carry83+=res83[i]
+                carry84+=res84[i]
+                carry85+=res85[i]
+                carry86+=res86[i]
+                sum81+=res81[i+res81.length/2]
+                sum82+=res82[i+res82.length/2]
+                sum83+=res83[i+res83.length/2]
+                sum84+=res84[i+res84.length/2]
+                sum85+=res85[i+res85.length/2]
+                sum86+=res86[i+res86.length/2]
+            }
+        x13 = Extend(x13);
+        x17 = Extend(x17);
+        x18 = Extend(x18);
+        x22 = Extend(x22);
+        x23 = Extend(x23);
+        x24 = Extend(x24);
+        x25 = Extend(x25);
+        x26 = Extend(x26);
+        x27 = Extend(x27);
+
+        t71=ts;
+        t72=tc;
+        t73=tc;
+        t74=ts;
+        t75=tc;
+        t76=ts;
+        t77=ts;
+        t78=tc;
+        t79=0;
+        t710=ts;
+        t711=tc;
+        t712=0;
+        t713=0;
+        t714=ts;
+        t715=tc;
+        t716=0;
+        t717=0;
+        t718=0;
+        t719=0;
+        t720=0;
+        t721=0;
+
+
+        oper21(sum81,carry81,carry82,sum82,carry83,sum83,sum84,carry84,x13,sum85,carry85,x17,x18,sum86,carry86,x22,x23,x24,x25,x26,x27,t71,t72,t73,t74,t75,t76,t77,t78,t79,t710,t711,t712,t713,t714,t715,t716,t717,t718,t719,t720,t721,ts,tc)
+}
+
+//************************************
+// Main Program
+//************************************
+
+function Mainfunc(form){
+
+           parent.frames[1].document.open()
+           parent.frames[2].document.open()
+
+     formatbin = form.TypeNumber[0].checked;
+     formatdec = form.TypeNumber[1].checked;
+     if (formatbin) {decimal=0} else {decimal=1} 
+
+           T_SUM=parseFloat(form.ts1.value);
+           T_CARRY=parseFloat(form.ts2.value);
+
+                opr1 = form.o1.value;
+                opr2 = form.o2.value;
+                opr3 = form.o3.value;
+                opr4 = form.o4.value;
+                opr5 = form.o5.value;
+                opr6 = form.o6.value;
+                opr7 = form.o7.value;
+                opr8 = form.o8.value;
+                opr9 = form.o9.value;
+               opr10 = form.o10.value;
+               opr11 = form.o11.value;
+               opr12 = form.o12.value;
+               opr13 = form.o13.value;
+               opr14 = form.o14.value;
+               opr15 = form.o15.value;
+               opr16 = form.o16.value;
+               opr17 = form.o17.value;
+               opr18 = form.o18.value;
+               opr19 = form.o19.value;
+               opr20 = form.o20.value;
+               opr21 = form.o21.value;
+               opr22 = form.o22.value;
+               opr23 = form.o23.value;
+               opr24 = form.o24.value;
+               opr25 = form.o25.value;
+               opr26 = form.o26.value;
+               opr27 = form.o27.value;
+
+arr= new Array(26);
+arr1= new Array(26);
+
+arr[0]=opr1;
+arr[1]=opr2;
+arr[2]=opr3;
+arr[3]=opr4;
+arr[4]=opr5;
+arr[5]=opr6;
+arr[6]=opr7;
+arr[7]=opr8;
+arr[8]=opr9;
+arr[9]=opr10;
+arr[10]=opr11;
+arr[11]=opr12;
+arr[12]=opr13;
+arr[13]=opr14;
+arr[14]=opr15;
+arr[15]=opr16;
+arr[16]=opr17;
+arr[17]=opr18;
+arr[18]=opr19;
+arr[19]=opr20;
+arr[20]=opr21;
+arr[21]=opr22;
+arr[22]=opr23;
+arr[23]=opr24;
+arr[24]=opr25;
+arr[25]=opr26;
+arr[26]=opr27;
+
+arr1[0]="";
+arr1[1]="";
+arr1[2]="";
+arr1[3]="";
+arr1[4]="";
+arr1[5]="";
+arr1[6]="";
+arr1[7]="";
+arr1[8]="";
+arr1[9]="";
+arr1[10]="";
+arr1[11]="";
+arr1[12]="";
+arr1[13]="";
+arr1[14]="";
+arr1[15]="";
+arr1[16]="";
+arr1[17]="";
+arr1[18]="";
+arr1[19]="";
+arr1[20]="";
+arr1[21]="";
+arr1[22]="";
+arr1[23]="";
+arr1[24]="";
+arr1[25]="";
+arr1[26]="";
+
+cnt=0;
+cnt1=0;
+while(cnt<27){
+  if(arr[cnt]!=""){
+        arr1[cnt1]=arr[cnt];
+        cnt1=cnt1+1;
+     }
+cnt=cnt+1;
+}
+
+opr1=arr1[0];
+opr2=arr1[1];           
+opr3=arr1[2];
+opr4=arr1[3];
+opr5=arr1[4];
+opr6=arr1[5];
+opr7=arr1[6];
+opr8=arr1[7];
+opr9=arr1[8];
+opr10=arr1[9];
+opr11=arr1[10];
+opr12=arr1[11];
+opr13=arr1[12];
+opr14=arr1[13];
+opr15=arr1[14];
+opr16=arr1[15];
+opr17=arr1[16];
+opr18=arr1[17];
+opr19=arr1[18];
+opr20=arr1[19];
+opr21=arr1[20];
+opr22=arr1[21];
+opr23=arr1[22];
+opr24=arr1[23];
+opr25=arr1[24];
+opr26=arr1[25];
+opr27=arr1[26];
+
+
+
+ 
+
+
+
+//****************** Bin to Dec conversion **************
+if (decimal!=1){
+               if (opr1!="")  {opr1 = BinToDec(opr1);}
+               if (opr2!="")  {opr2 = BinToDec(opr2);}
+               if (opr3!="")  {opr3 = BinToDec(opr3);}
+               if (opr4!="")  {opr4 = BinToDec(opr4);}
+               if (opr5!="")  {opr5 = BinToDec(opr5);}
+               if (opr6!="")  {opr6 = BinToDec(opr6);}
+               if (opr7!="")  {opr7 = BinToDec(opr7);}
+               if (opr8!="")  {opr8 = BinToDec(opr8);}
+               if (opr9!="")  {opr9 = BinToDec(opr9);}
+               if (opr10!="")  {opr10 = BinToDec(opr10);}
+               if (opr11!="")  {opr11 = BinToDec(opr11);}
+               if (opr12!="")  {opr12 = BinToDec(opr12);}
+               if (opr13!="")  {opr13 = BinToDec(opr13);}
+               if (opr14!="")  {opr14 = BinToDec(opr14);}
+               if (opr15!="")  {opr15 = BinToDec(opr15);}
+               if (opr16!="")  {opr16 = BinToDec(opr16);}
+               if (opr17!="")  {opr17 = BinToDec(opr17);}
+               if (opr18!="") { opr18 = BinToDec(opr18);}
+               if (opr19!="") {opr19 = BinToDec(opr19);}
+               if (opr20!="") {opr20 = BinToDec(opr20);}
+               if (opr21!="") {opr21 = BinToDec(opr21);}
+               if (opr22!="") {opr22 = BinToDec(opr22);}
+               if (opr23!="") {opr23 = BinToDec(opr23);}
+               if (opr24!="") {opr24 = BinToDec(opr24);}
+               if (opr25!="") {opr25 = BinToDec(opr25);}
+               if (opr26!="") {opr26 = BinToDec(opr26);}
+               if (opr27!="") {opr27 = BinToDec(opr27);}
+
+               decimal = 1;
+}
+
+
+//************  extract number from string *****
+               fop1 = parseInt(opr1);
+               fop2 = parseInt(opr2);
+               fop3 = parseInt(opr3);
+               fop4 = parseInt(opr4);
+               fop5 = parseInt(opr5);
+               fop6 = parseInt(opr6);
+               fop7 = parseInt(opr7);
+               fop8 = parseInt(opr8);
+               fop9 = parseInt(opr9);
+               fop10 = parseInt(opr10);
+               fop11 = parseInt(opr11);
+               fop12 = parseInt(opr12);
+               fop13 = parseInt(opr13);
+               fop14 = parseInt(opr14);
+               fop15 = parseInt(opr15);
+               fop16 = parseInt(opr16);
+               fop17 = parseInt(opr17);
+               fop18 = parseInt(opr18);
+               fop19 = parseInt(opr19);
+               fop20 = parseInt(opr20);
+               fop21 = parseInt(opr21);
+               fop22 = parseInt(opr22);
+               fop23 = parseInt(opr23);
+               fop24 = parseInt(opr24);  
+               fop25 = parseInt(opr25);
+               fop26 = parseInt(opr26);
+               fop27 = parseInt(opr27);
+
+               if(isNaN(fop1)){fop1=0 };
+               if(isNaN(fop2)){fop2=0 };
+               if(isNaN(fop3)){fop3=0 };
+               if(isNaN(fop4)){fop4=0 };
+               if(isNaN(fop5)){fop5=0 };
+               if(isNaN(fop6)){fop6=0 };
+               if(isNaN(fop7)){fop7=0 };
+               if(isNaN(fop8)){fop8=0 };
+               if(isNaN(fop9)){fop9=0 };
+               if(isNaN(fop10)){fop10=0 };
+               if(isNaN(fop11)){fop11=0 };
+               if(isNaN(fop12)){fop12=0 };
+               if(isNaN(fop13)){fop13=0 };
+               if(isNaN(fop14)){fop14=0 };
+               if(isNaN(fop15)){fop15=0 };
+               if(isNaN(fop16)){fop16=0 };
+               if(isNaN(fop17)){fop17=0 };
+               if(isNaN(fop18)){fop18=0 };
+               if(isNaN(fop19)){fop19=0 };
+               if(isNaN(fop20)){fop20=0 };
+               if(isNaN(fop21)){fop21=0 };
+               if(isNaN(fop22)){fop22=0 };
+               if(isNaN(fop23)){fop23=0 };
+               if(isNaN(fop24)){fop24=0 };
+               if(isNaN(fop25)){fop25=0 };
+               if(isNaN(fop26)){fop26=0 };
+               if(isNaN(fop27)){fop27=0 };
+
+
+finres_dec =0; 
+finres_dec = fop1+fop2+fop3+fop4+fop5+fop6+fop7+fop8+fop9+fop10+fop11+fop12+
+fop13+fop14+fop15+fop16+fop17+fop18+fop19+fop20+fop21+fop22+fop23+fop24+fop25+
+fop26+fop27;
+
+finres_bin = PrintBinary(finres_dec, 0);
+
+if(decimal){
+
+//***************** finding the maximum value **************
+
+max_val1=Math.max(Math.max(Math.max(Math.max(Math.max(opr1,opr2),opr3),opr4),opr5),opr6);
+max_val2=Math.max(Math.max(Math.max(Math.max(Math.max(opr7,opr8),opr9),opr10),opr11),opr12);
+max_val3=Math.max(Math.max(Math.max(Math.max(Math.max(opr13,opr14),opr15),opr16),opr17),opr18);
+max_val4=Math.max(Math.max(Math.max(Math.max(Math.max(opr19,opr20),opr21),opr22),opr23),opr24);
+max_val5=Math.max(Math.max(opr25,opr26),opr27);
+
+max_val=Math.max(Math.max(Math.max(Math.max(max_val1,max_val2),max_val3),max_val4),max_val5);
+
+// ***** appending bits...*********************************
+
+        convert_hi=PrintBinary(max_val,0);
+        bit_len=convert_hi.length;
+        if (opr1.length!=0){opr1=PrintBinary(opr1,0);
+        while (opr1.length<bit_len) {opr1=Append_0(opr1)}}
+        if (opr2.length!=0){opr2=PrintBinary(opr2,0);
+        while (opr2.length<bit_len) {opr2=Append_0(opr2)}}
+        if (opr3.length!=0){opr3=PrintBinary(opr3,0);
+        while (opr3.length<bit_len) {opr3=Append_0(opr3)}}
+        if (opr4.length!=0){opr4=PrintBinary(opr4,0);
+        while (opr4.length<bit_len) {opr4=Append_0(opr4)}}
+        if (opr5.length!=0){opr5=PrintBinary(opr5,0);
+        while (opr5.length<bit_len) {opr5=Append_0(opr5)}}
+        if (opr6.length!=0){opr6=PrintBinary(opr6,0);
+        while (opr6.length<bit_len) {opr6=Append_0(opr6)}}
+        if (opr7.length!=0){opr7=PrintBinary(opr7,0);
+        while (opr7.length<bit_len) {opr7=Append_0(opr7)}}
+        if (opr8.length!=0){opr8=PrintBinary(opr8,0);
+        while (opr8.length<bit_len) {opr8=Append_0(opr8)}}
+        if (opr9.length!=0){opr9=PrintBinary(opr9,0);
+        while (opr9.length<bit_len) {opr9=Append_0(opr9)}}
+        if (opr10.length!=0){opr10=PrintBinary(opr10,0);
+        while (opr10.length<bit_len) {opr10=Append_0(opr10)}}
+        if (opr11.length!=0){opr11=PrintBinary(opr11,0);
+        while (opr11.length<bit_len) {opr11=Append_0(opr11)}}
+        if (opr12.length!=0){opr12=PrintBinary(opr12,0);
+        while (opr12.length<bit_len) {opr12=Append_0(opr12)}}
+        if (opr13.length!=0){opr13=PrintBinary(opr13,0);
+        while (opr13.length<bit_len) {opr13=Append_0(opr13)}}
+        if (opr14.length!=0){opr14=PrintBinary(opr14,0);
+        while (opr14.length<bit_len) {opr14=Append_0(opr14)}}
+        if (opr15.length!=0){opr15=PrintBinary(opr15,0);
+        while (opr15.length<bit_len) {opr15=Append_0(opr15)}}
+        if (opr16.length!=0){opr16=PrintBinary(opr16,0);
+        while (opr16.length<bit_len) {opr16=Append_0(opr16)}}
+        if (opr17.length!=0){opr17=PrintBinary(opr17,0);
+        while (opr17.length<bit_len) {opr17=Append_0(opr17)}}
+        if (opr18.length!=0){opr18=PrintBinary(opr18,0);
+        while (opr18.length<bit_len) {opr18=Append_0(opr18)}}
+        if (opr19.length!=0){opr19=PrintBinary(opr19,0);
+        while (opr19.length<bit_len) {opr19=Append_0(opr19)}}
+        if (opr20.length!=0){opr20=PrintBinary(opr20,0);
+        while (opr20.length<bit_len) {opr20=Append_0(opr20)}}
+        if (opr21.length!=0){opr21=PrintBinary(opr21,0);
+        while (opr21.length<bit_len) {opr21=Append_0(opr21)}}
+        if (opr22.length!=0){opr22=PrintBinary(opr22,0);
+        while (opr22.length<bit_len) {opr22=Append_0(opr22)}}
+        if (opr23.length!=0){opr23=PrintBinary(opr23,0);
+        while (opr23.length<bit_len) {opr23=Append_0(opr23)}}
+        if (opr24.length!=0){opr24=PrintBinary(opr24,0);
+        while (opr24.length<bit_len) {opr24=Append_0(opr24)}}
+        if (opr25.length!=0){opr25=PrintBinary(opr25,0);
+        while (opr25.length<bit_len) {opr25=Append_0(opr25)}}
+        if (opr26.length!=0){opr26=PrintBinary(opr26,0);
+        while (opr26.length<bit_len) {opr26=Append_0(opr26)}}
+        if (opr27.length!=0){opr27=PrintBinary(opr27,0);
+        while (opr27.length<bit_len) {opr27=Append_0(opr27)}}
+        
+}
+     num_ops=27;
+
+               if (opr1=="") {num_ops+=-1}
+               if (opr2=="") {num_ops+=-1}
+               if (opr3=="") {num_ops+=-1}
+               if (opr4=="") {num_ops+=-1}
+               if (opr5=="") {num_ops+=-1}
+               if (opr6=="") {num_ops+=-1}
+               if (opr7=="") {num_ops+=-1}
+               if (opr8=="") {num_ops+=-1}
+               if (opr9=="") {num_ops+=-1}
+               if (opr10=="") {num_ops+=-1}
+               if (opr11=="") {num_ops+=-1}
+               if (opr12=="") {num_ops+=-1}
+               if (opr13=="") {num_ops+=-1}
+               if (opr14=="") {num_ops+=-1}
+               if (opr15=="") {num_ops+=-1}
+               if (opr16=="") {num_ops+=-1}
+               if (opr17=="") {num_ops+=-1}
+               if (opr18=="") {num_ops+=-1}
+               if (opr19=="") {num_ops+=-1}
+               if (opr20=="") {num_ops+=-1}
+               if (opr21=="") {num_ops+=-1}
+               if (opr22=="") {num_ops+=-1}
+               if (opr23=="") {num_ops+=-1}
+               if (opr24=="") {num_ops+=-1}
+               if (opr25=="") {num_ops+=-1}
+               if (opr26=="") {num_ops+=-1}
+               if (opr27=="") {num_ops+=-1}
+
+
+parent.frames[1].document.writeln("<body bgcolor=#ffffff></body>")
+parent.frames[2].document.writeln("<body bgcolor=#ffffff></body>")
+Twos=0;
+
+
+if (num_ops==0) {parent.frames[1].document.writeln(PrintError("--->There must be at least two operands."))}
+if (num_ops==1) {parent.frames[1].document.writeln(PrintError("--->There must be at least two operands."))}
+
+
+if( num_ops>=2  && num_ops<=3) {parent.frames[1].document.writeln("For "+num_ops+" operands, a 1 level OS Tree is required") }
+if( num_ops==4) {parent.frames[1].document.writeln("For "+num_ops+" operands, a 2 level OS Tree is required")}
+if( num_ops>=5  && num_ops<=6) {parent.frames[1].document.writeln("For "+num_ops+" operands, a 3 level OS Tree is required")}
+if( num_ops>=7  && num_ops<=9) {parent.frames[1].document.writeln("For "+num_ops +" operands, a 4 level OS Tree is required")}
+if( num_ops>=10  && num_ops<=13) {parent.frames[1].document.writeln("For "+num_ops+" operands, a 5 level OS Tree is required")}
+if( num_ops>=14  && num_ops<=18) {parent.frames[1].document.writeln("For "+num_ops+" operands, a 6 level OS Tree is required")}
+if( num_ops>=19  && num_ops<=24) {parent.frames[1].document.writeln("For "+num_ops+" operands, a 7 level OS Tree is required")}
+if( num_ops>=25  && num_ops<=31) {parent.frames[1].document.writeln("For "+num_ops+" operands, a 8 level OS Tree is required")}
+
+
+
+
+
+if (num_ops==2) {
+                 parent.frames[2].document.writeln("<IMG SRC =\"2.gif\"> </a>")
+                 res = oper2(opr1, opr2, 0, T_SUM, T_CARRY) 
+                }  
+
+if (num_ops==3) {
+                  parent.frames[2].document.writeln("<IMG SRC =\"3.gif\"> </a>")
+                  res = oper3(opr1, opr2, opr3, T_SUM, T_CARRY) 
+                }
+if (num_ops==4) {
+                  parent.frames[2].document.writeln("<IMG SRC =\"4.gif\"> </a>")
+                  res = oper4(opr1, opr2, opr3, opr4, T_SUM, T_CARRY) 
+                }
+if (num_ops==5) {
+                  parent.frames[2].document.writeln("<IMG SRC =\"5.gif\"> </a>")
+                  res = oper5(opr1, opr2, opr3, opr4, opr5, T_SUM, T_CARRY) 
+                }
+if (num_ops==6) {
+                  parent.frames[2].document.writeln("<IMG SRC =\"6.gif\"> </a>")
+                  res = oper6(opr1, opr2, opr3, opr4, opr5, opr6,0,0,0,0,0,0,T_SUM,T_CARRY)
+                }
+
+if (num_ops==7) {
+                  parent.frames[2].document.writeln("<IMG SRC =\"7.gif\"> </a>")
+                  res = oper7(opr1,opr2,opr3,opr4,opr5,opr6,opr7,0,0,0,0,0,0,0,T_SUM,T_CARRY) 
+                }
+if (num_ops==8) {
+                  parent.frames[2].document.writeln("<IMG SRC =\"8.gif\"> </a>")
+                  res=oper8(opr1,opr2,opr3,opr4,opr5,opr6,opr7,opr8,0,0,0,0,0,0,0,0,T_SUM,T_CARRY) 
+                }
+if (num_ops==9) {
+                  parent.frames[2].document.writeln("<IMG SRC =\"9.gif\"> </a>")
+                  res=oper9(opr1,opr2,opr3,opr4,opr5,opr6,opr7,opr8,opr9,0,0,0,0,0,0,0,0,0,T_SUM,T_CARRY)  
+                 }
+if (num_ops==10) {
+                   parent.frames[2].document.writeln("<IMG SRC =\"10.gif\"> </a>")
+                   res = oper10(opr1,opr2,opr3,opr4,opr5,opr6,opr7,opr8, opr9, opr10,0,0,0,0,0,0,0,0,0,0,T_SUM,T_CARRY) 
+                 }
+if (num_ops==11) {
+                 parent.frames[2].document.writeln("<IMG SRC =\"11.gif\"> </a>")
+                 res = oper11(opr1,opr2,opr3,opr4,opr5,opr6,opr7,opr8,opr9,opr10,opr11,0,0,0,0,0,0,0,0,0,0,0,T_SUM,T_CARRY) 
+                 }
+if (num_ops==12) {
+                 parent.frames[2].document.writeln("<IMG SRC =\"12.gif\"> </a>")
+                 res=oper12(opr1,opr2,opr3,opr4,opr5,opr6,opr7,opr8,opr9,opr10,opr11,opr12,0,0,0,0,0,0,0,0,0,0,0,0,T_SUM,T_CARRY)  
+                 }
+if (num_ops==13) {
+                  parent.frames[2].document.writeln("<IMG SRC =\"13.gif\"> </a>")
+                  res=oper13(opr1,opr2,opr3,opr4,opr5,opr6,opr7,opr8,opr9,opr10,opr11,opr12,opr13,0,0,0,0,0,0,0,0,0,0,0,0,0,T_SUM,T_CARRY) 
+                 }
+if (num_ops==14) {
+                  parent.frames[2].document.writeln("<IMG SRC =\"14.gif\"> </a>")
+                  res=oper14(opr1,opr2,opr3,opr4,opr5,opr6,opr7,opr8,opr9,opr10,opr11,opr12,opr13,opr14,0,0,0,0,0,0,0,0,0,0,0,0,0,0, T_SUM, T_CARRY) 
+                  }
+if (num_ops==15) {
+                  parent.frames[2].document.writeln("<IMG SRC =\"15.gif\"> </a>")
+                  res=oper15(opr1,opr2,opr3,opr4,opr5,opr6,opr7,opr8,opr9,opr10,opr11,opr12,opr13,opr14,opr15,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,T_SUM,T_CARRY)
+                 }
+if (num_ops==16) {
+                  parent.frames[2].document.writeln("<IMG SRC =\"16.gif\"> </a>")
+                  res=oper16(opr1,opr2,opr3,opr4,opr5,opr6,opr7,opr8,opr9,opr10,opr11,opr12,opr13,opr14,opr15,opr16,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, T_SUM, T_CARRY)
+                  }
+if (num_ops==17) {
+                  parent.frames[2].document.writeln("<IMG SRC =\"17.gif\"> </a>")
+                  res=oper17(opr1,opr2,opr3,opr4,opr5,opr6,opr7,opr8,opr9,opr10,opr11,opr12,opr13,opr14,opr15,opr16,opr17,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, T_SUM, T_CARRY)
+                 }
+if (num_ops==18) {
+                  parent.frames[2].document.writeln("<IMG SRC =\"18.gif\"> </a>")
+                  res=oper18(opr1,opr2,opr3,opr4,opr5,opr6,opr7,opr8,opr9,opr10,opr11,opr12,opr13,opr14,opr15,opr16,opr17,opr18,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, T_SUM, T_CARRY)
+                 }
+if (num_ops==19) {
+                  parent.frames[2].document.writeln("<IMG SRC =\"19.gif\"> </a>")
+                  res =oper19(opr1,opr2,opr3,opr4,opr5,opr6,opr7,opr8,opr9,opr10,opr11,opr12,opr13,opr14,opr15,opr16,opr17,opr18,opr19,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,T_SUM, T_CARRY)
+                 }
+if (num_ops==20) {
+                  parent.frames[2].document.writeln("<IMG SRC =\"20.gif\"> </a>")
+                  res=oper20(opr1,opr2,opr3,opr4,opr5,opr6,opr7,opr8,opr9,opr10,opr11,opr12,opr13,opr14,opr15,opr16,opr17,opr18,opr19,opr20,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,T_SUM,T_CARRY)
+ }
+if (num_ops==21) {
+                  parent.frames[2].document.writeln("<IMG SRC =\"21.gif\"> </a>")
+                  res=oper21(opr1,opr2,opr3,opr4,opr5,opr6,opr7,opr8,opr9,opr10,opr11,opr12,opr13,opr14,opr15,opr16,opr17,opr18,opr19,opr20,opr21,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,T_SUM,T_CARRY) 
+                 }
+if (num_ops==22) {
+                  parent.frames[2].document.writeln("<IMG SRC =\"22.gif\"> </a>")
+                  res=oper22(opr1,opr2,opr3,opr4,opr5,opr6,opr7,opr8,opr9,opr10,opr11,opr12,opr13,opr14,opr15,opr16,opr17,opr18,opr19,opr20,opr21,opr22,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,T_SUM,T_CARRY)
+                 }
+if (num_ops==23) {
+                  parent.frames[2].document.writeln("<IMG SRC =\"23.gif\"> </a>")
+                  res=oper23(opr1,opr2,opr3,opr4,opr5,opr6,opr7,opr8,opr9,opr10,opr11,opr12,opr13,opr14,opr15,opr16,opr17,opr18,opr19,opr20,opr21,opr22,opr23,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,T_SUM,T_CARRY)
+                 }
+if (num_ops==24) {
+                  parent.frames[2].document.writeln("<IMG SRC =\"24.gif\"> </a>")
+                  res=oper24(opr1,opr2,opr3,opr4,opr5,opr6,opr7,opr8,opr9,opr10,opr11,opr12,opr13,opr14,opr15,opr16,opr17,opr18,opr19,opr20,opr21,opr22,opr23,opr24,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,T_SUM,T_CARRY) 
+                 }
+if (num_ops==25) {
+                  parent.frames[2].document.writeln("<IMG SRC =\"25.gif\"> </a>")
+                  res=oper25(opr1,opr2,opr3,opr4,opr5,opr6,opr7,opr8,opr9,opr10,opr11,opr12,opr13,opr14,opr15,opr16,opr17,opr18,opr19,opr20,opr21,opr22,opr23,opr24,opr25,T_SUM,T_CARRY) 
+                 }
+if (num_ops==26) {
+                  parent.frames[2].document.writeln("<IMG SRC =\"26.gif\"> </a>")
+                  res=oper26(opr1,opr2,opr3,opr4,opr5,opr6,opr7,opr8,opr9,opr10,opr11,opr12,opr13,opr14,opr15,opr16,opr17,opr18,opr19,opr20,opr21,opr22,opr23,opr24,opr25,opr26,T_SUM,T_CARRY) 
+                 }
+if (num_ops==27) {
+                   parent.frames[2].document.writeln("<IMG SRC =\"27.gif\"> </a>")
+             res=oper27(opr1,opr2,opr3,opr4,opr5,opr6,opr7,opr8,opr9,opr10,opr11,opr12,opr13,opr14,opr15,opr16,opr17,opr18,opr19,opr20,opr21,opr22,opr23,opr24,opr25,opr26,opr27,T_SUM,T_CARRY) 
+                 }
+
+
+
+parent.frames[1].document.close()
+parent.frames[2].document.close()
+}
+
+</script>
+
+<body>
+<Center>
+   <h3>Overturned-Stairs Tree</h3>  
+
+<I>[Note: this simulator currently works with almost all browsers
+except Internet Explorer.]</I>
+
+<FORM>
+        <I>bin</I>
+        <INPUT NAME="TypeNumber" TYPE=Radio VALUE="Bin" >
+        <I>dec</I>
+        <INPUT NAME="TypeNumber" TYPE=Radio VALUE="Dec" CHECKED>
+<br>
+<br>  
+        <I>Sum Delay </I>
+        <INPUT TYPE="Text" SIZE="7" NAME="ts1" VALUE=2.0 >
+<br>
+        <I>Carry Delay </I>
+        <INPUT TYPE="Text" SIZE="7" NAME="ts2" VALUE=1.5 >
+<br> 
+<br>
+                        
+                      <INPUT TYPE="Button" VALUE="  Compute  " onClick ="Mainfunc(this.form)" >    
+<br>
+                      <INPUT TYPE="Reset" VALUE="  Reset  " >    
+
+<br>                  <INPUT TYPE="Button" VALUE="Help " onClick=parent.frames[2].location.href="help.html">                          
+
+<br>
+                        <I> Operand 1 </I><BR>
+                        <INPUT TYPE="Text" SIZE="16" NAME="o1" >
+<br>
+                        <I> Operand 2 </I><BR>
+                        <INPUT TYPE="Text" SIZE="16" NAME="o2" >
+<br>
+                        <I> Operand 3 </I><BR>
+                        <INPUT TYPE="Text" SIZE="16" NAME="o3" >
+<br>
+                        <I> Operand 4 </I><BR>
+                        <INPUT TYPE="Text" SIZE="16" NAME="o4">
+<br>
+                        <I> Operand 5 </I><BR>
+                        <INPUT TYPE="Text" SIZE="16" NAME="o5" >
+<br>
+                        <I> Operand 6 </I><BR>
+                        <INPUT TYPE="Text" SIZE="16" NAME="o6">
+<br>
+                        <I> Operand 7 </I><BR>
+                        <INPUT TYPE="Text" SIZE="16" NAME="o7">
+<br>
+                        <I> Operand 8 </I><BR>
+                        <INPUT TYPE="Text" SIZE="16" NAME="o8" >
+<br>
+                        <I> Operand 9 </I><BR>
+                        <INPUT TYPE="Text" SIZE="16" NAME="o9" >
+<br>
+                        <I>Operand 10</I><BR>
+                        <INPUT TYPE="Text" SIZE="16" NAME="o10" >
+<br>                  
+                        <I>Operand 11</I><BR>
+                        <INPUT TYPE="Text" SIZE="16" NAME="o11" >
+<br>
+                        <i>Operand 12</i><br>
+                        <input TYPE="Text" SIZE="16" NAME="o12" >
+<br>
+                        <i>Operand 13</i><br>
+                        <input TYPE="Text" SIZE="16" NAME="o13">
+<br>
+                        <i>Operand 14</i><br>
+                        <input TYPE="Text" SIZE="16" NAME="o14" >
+<br>
+                        <i>Operand 15</i><br>
+                        <input TYPE="Text" SIZE="16" NAME="o15">
+<br>
+                        <i>Operand 16</i><br>
+                        <input TYPE="Text" SIZE="16" NAME="o16">
+<br>
+                        <i>Operand 17</i><br>
+                        <input TYPE="Text" SIZE="16" NAME="o17" >
+<br>
+                        <i>Operand 18</i><br>
+                        <input TYPE="Text" SIZE="16" NAME="o18" >
+<br>
+                        <i>Operand 19</i><br>
+                        <input TYPE="Text" SIZE="16" NAME="o19" >
+<br>
+                        <i>Operand 20</i><br>
+                        <input TYPE="Text" SIZE="16" NAME="o20" >
+<br>
+                        <i>Operand 21</i><br>
+                        <input TYPE="Text" SIZE="16" NAME="o21" >
+<br>
+                        <i>Operand 22</i><br>
+                        <input TYPE="Text" SIZE="16" NAME="o22">
+<br>
+                        <i>Operand 23</i><br>
+                        <input TYPE="Text" SIZE="16" NAME="o23" >
+<br>
+                        <i>Operand 24</i><br>
+                        <input TYPE="Text" SIZE="16" NAME="o24">
+<br>
+                        <i>Operand 25</i><br>
+                        <input TYPE="Text" SIZE="16" NAME="o25">
+<br>
+                        <i>Operand 26</i><br>
+                        <input TYPE="Text" SIZE="16" NAME="o26" >
+<br>
+                        <i>Operand 27</i><br>
+                        <input TYPE="Text" SIZE="16" NAME="o27" >
+
+<br>
+                        
+                      <INPUT TYPE="Button" VALUE="  Compute  " onClick="Mainfunc(this.form)" >    
+<br>
+                      <INPUT TYPE="Reset" VALUE="  Reset  " >    
+
+<br>                  <INPUT TYPE="Button" VALUE="Help " onClick=parent.frames[2].location.href="help.html">                          
+
+</FORM>
+ </CENTER>
+</body>
+</html>

@@ -1,0 +1,3532 @@
+<html>
+
+<head>
+<title>RC5</title>
+<SCRIPT language="JavaScript">
+
+// note: no initial values, on change read in everything
+var ws = 32; //word size
+var edbar = 1; //encryption, decryption bar
+//var f = parent.frames[1].document.forms[0];
+
+var itext; // the input text
+
+var wah; // word A in hex; note: wah[0] is the hex number on the right side
+var wbh;
+
+var wab; // word A in bin; note: wab[0] is the bit on the right side
+var wbb;
+var wab1;
+var wbb1;
+
+var r = 16; // number of rounds
+var previous_r = 16;
+var cps; //checkpoints (an array)
+var cpeds; // check point error detections; cpeds[r+1][4] 0=no error detected
+var edcnames; // an array with the names
+
+var key; //the secret key
+var keys; // key as string
+var b; // the number of bytes in the secret key
+
+var dc = new Array(3); // Display configuration
+var dchbbar; // display blocks in: HEX(1) or BIN(0)
+
+var ffda; // fault free data; generated after start(); ffd[r][3][ws]: for each round, after each operation,
+var ffdb;
+var ffd0a; // fault free data before first round; ffd0[ws]
+var ffd0b;
+
+var s; // the key table S; s[2(r+1)][ws]
+var t = 34; 
+
+var d = " "; // the display content
+
+var edcs; // edcs of s
+
+var edcffa00; // edcs of plaintext
+var edcffa0;  // edcs after first addition
+var edcffb00; 
+var edcffb0;
+
+var edcffa; //error detection codes - fault free; edcffa[4][1-8]
+var edcffb;
+
+var edcdda; // edc display data
+var edcdca; // edc display color   -   0=black,  1=red
+
+var edcdda00;
+var edcdda0;
+var edcdca00;
+var edcdca0;
+
+var edcddb; // edc display data
+var edcdcb; // edc display color   -   0=black,  1=red
+
+var edcddb00;
+var edcddb0;
+var edcdcb00;
+var edcdcb0;
+
+var wadd; // word a display data
+var wadc; // word a display color
+var wadch; // for HEX display
+var wbdd;
+var wbdc;
+var wbdch;
+
+var wadd0; // note: 00 not necessary, because no fault injection in plaintext
+var wadc0;
+var wadc0h;
+var wbdd0;
+var wbdc0;
+var wbdc0h;
+
+var norir; // number of rows in round
+var rowtype;
+
+// fault locations
+var flsa;
+var flsedca;
+var flsb;
+var flsedcb;
+
+function help() {
+  //test
+  //parent.frames[1].document.forms[0].inputtext.value = ;
+  helpwindow = open("help.htm","window2","width=1000,height=700,left=0,top=0,scrollbars=yes,resizable=1");
+}
+
+function encryption_decryption() {
+  edbar = parseInt(parent.frames[1].document.forms[0].ed.value);
+  read_configurations();
+  
+  draw_new_cfg_display();
+}
+
+function word_size_change() {
+  ws = parseInt(parent.frames[1].document.forms[0].wordsize.value)
+  randomtext();
+  read_configurations();
+  
+  
+    
+  draw_new_cfg_display(); // because name of algorithm changed
+}
+
+function randomtext() {
+  var newtext = "";
+  for (var i=0; i<(ws/2); i++) {
+    x = Math.random() * 15;
+    x = Math.round(x);
+    if (x == 15) {newtext += "f";}
+    else if (x == 14) {newtext += "e";}
+    else if (x == 13) {newtext += "d";}
+    else if (x == 12) {newtext += "c";}
+    else if (x == 11) {newtext += "b";}
+    else if (x == 10) {newtext += "a";}
+    else {newtext += x;}
+  }
+  parent.frames[1].document.forms[0].inputtext.value = newtext;   
+}
+
+function change_round_number() {
+  read_configurations(); // in final version
+  
+  previous_r = r;
+
+  draw_new_cfg_display(); // because name of algorithm and size of checkpoint table changed
+}
+
+function select_all_cps() {
+  read_configurations();
+  for (var i=0; i<r; i++) {
+    cps[i] = 1;
+  }
+  draw_new_cfg_display();
+}
+
+function key_change() {
+  read_configurations();
+  
+  draw_new_cfg_display();
+  
+}
+
+
+function random_key() {
+  b = parseInt(parent.frames[1].document.forms[0].bvalue.value);
+  var newb = "";
+  for (var i=0; i<(b*2); i++) {
+    x = Math.random() * 15;
+    x = Math.round(x);
+    if (x == 15) {newb += "f";}
+    else if (x == 14) {newb += "e";}
+    else if (x == 13) {newb += "d";}
+    else if (x == 12) {newb += "c";}
+    else if (x == 11) {newb += "b";}
+    else if (x == 10) {newb += "a";}
+    else {newb += x;}
+  }
+  parent.frames[1].document.forms[0].secretkey.value = newb;  
+  
+  read_configurations();
+  draw_new_cfg_display();
+}
+
+function show_s() {
+  read_configurations();
+  create_s();
+  draw_cfg_with_s();
+}
+
+
+
+// --------------------------------------------------------------------------------- READ CONFIGURATIONS ----------------------
+
+function read_configurations() {
+  
+  
+  // encryption_decryption
+  //edbar = parseInt(parent.frames[1].document.forms[0].ed.value); // not necessary
+  //word size(ws)
+  
+  //ws = parseInt(parent.frames[1].document.forms[0].wordsize.value); // not necessary
+  
+  itext = parent.frames[1].document.forms[0].inputtext.value;
+  
+  
+
+  
+  r = parseInt(parent.frames[1].document.forms[0].numberofrounds.value);
+  t = 2*(r+1);
+  //alert (r);
+  // read in checkpoints
+  
+  if (previous_r == r) { // i.e. if r did not change; if it changed dont save checkpoints but draw new table with last ckecked
+                         // cover following case on start(): r changed but Apply was not clicked (i.e. table was not updated)
+			 // in this case just take the previous value of r !
+    cps = new Array(r+1);
+    
+    for (var i=0; i<r+1; i++) {
+      if (parent.frames[1].document.forms[0].cp1[i].checked == true) {
+        cps[i] = 1;
+      }
+      else {
+        cps[i] = 0;
+      }
+      
+    }
+    
+  }
+  else {
+    cps = new Array(r+1);
+    for (var i=0; i<r; i++) {
+      cps[i] = 0;
+    }
+    cps[r] = 1;  // checkpoint after last round
+  }
+  
+ 
+  
+  keys = parent.frames[1].document.forms[0].secretkey.value;
+  key = s2a(keys);
+  
+  //var vkey = (key.length)/2;
+  //vkey = Math.round(vkey);
+  //if (vkey != (key.length)/2) { //if odd hex number count
+    //key = "0" + key; // attach 4 0 bits on the left side (here still hex)
+    // remove this! instead: alert (because the key is a byte stream, my automatic correction above is wrong)
+  //}
+  b = (key.length)/2;
+  
+  
+  // read in display settings
+  for (var i=0; i<3; i++) {
+    if (parent.frames[1].document.forms[0].displaycfg[i].checked == true) {
+      dc[i] = 1;
+    }
+    else {
+      dc[i] = 0;
+    }
+  }  
+  
+  if (parent.frames[1].document.forms[0].bin_hex[0].checked == true) {
+    dchbbar = 0;
+  }
+  else {
+    dchbbar = 1;
+  }
+  
+  
+}
+
+
+
+//------------------------------------------------ START ---------------------------------------------------------
+
+function start() {
+  read_configurations();
+  
+  //check_all_values(); // this function generates alerts in case of invalid cfg; returns 1 if everything is ok
+  
+  var itexta;
+  itexta = s2a(itext);
+  wah = text2rega(itexta);
+  wbh = text2regb(itexta);  // here a abbreviates array !  
+  wab = new Array(ws);
+  wbb = new Array(ws);
+  wab = hex2bit(wah);
+  wbb = hex2bit(wbh);
+  
+  //alert(wab);
+  
+  wab1 = new Array(ws);
+  wbb1 = new Array(ws);
+  wab1 = wab;
+  wbb1 = wbb;
+  
+  create_s(); // create the key table S
+  
+  
+ 
+  //run_rc5();
+  encryption();
+  
+  draw_cfg_with_enc();
+  
+  //test_output(); // to see if the implementation is correct (examples in paper)
+  
+}
+
+function test_output() {
+  
+  var ha = bit2hex(ffda[r-1][2]);
+  var hb = bit2hex(ffdb[r-1][2]);
+  var chipherout = reg2text(ha,hb);
+  alert(chipherout.join(""));
+  
+}
+
+//-----------------------------------------------------ENCRYPTION, DECRYPTION --------------------------------
+
+function encryption() {
+
+  //ctime_note();
+
+  ffda = new Array(r); // fault free data
+  for (var i=0; i<r; i++) {
+    ffda[i] = new Array(3);
+    for (var j=0; j<3; j++) {
+      ffda[i][j] = new Array(ws);
+    }
+  }
+  ffdb = new Array(r); // fault free data
+  for (var i=0; i<r; i++) {
+    ffdb[i] = new Array(3);
+    for (var j=0; j<3; j++) {
+      ffdb[i][j] = new Array(ws);
+    }
+  }
+
+  ffd0a = new Array(ws);
+  ffd0b = new Array(ws);
+  
+  
+  edcffa00 = new Array(4);
+  edcffa00[0] = new Array(1);
+  edcffa00[1] = new Array(ws/8);
+  edcffa00[2] = new Array(2);
+  edcffa00[3] = new Array(ws/8); // do not draw this if ws == 16
+
+  edcffb00 = new Array(4);
+  edcffb00[0] = new Array(1);
+  edcffb00[1] = new Array(ws/8);
+  edcffb00[2] = new Array(2);
+  edcffb00[3] = new Array(ws/8); // do not draw this if ws == 16
+
+  edcffa0 = new Array(4);
+  edcffa0[0] = new Array(1);
+  edcffa0[1] = new Array(ws/8);
+  edcffa0[2] = new Array(2);
+  edcffa0[3] = new Array(ws/8); // do not draw this if ws == 16
+
+  edcffb0 = new Array(4);
+  edcffb0[0] = new Array(1);
+  edcffb0[1] = new Array(ws/8);
+  edcffb0[2] = new Array(2);
+  edcffb0[3] = new Array(ws/8); // do not draw this if ws == 16
+
+  edcffa = new Array(r);
+  for (var i=0; i<r; i++) {
+    edcffa[i] = new Array(3);
+    for (var j=0; j<3; j++) {
+      edcffa[i][j] = new Array(4);
+      edcffa[i][j][0] = new Array(1);
+      edcffa[i][j][1] = new Array(ws/8);
+      edcffa[i][j][2] = new Array(2);
+      edcffa[i][j][3] = new Array(ws/8); // do not draw this if ws == 16
+    }
+  }
+  
+  edcffb = new Array(r);
+  for (var i=0; i<r; i++) {
+    edcffb[i] = new Array(3);
+    for (var j=0; j<3; j++) {
+      edcffb[i][j] = new Array(4);
+      edcffb[i][j][0] = new Array(1);
+      edcffb[i][j][1] = new Array(ws/8);
+      edcffb[i][j][2] = new Array(2);
+      edcffb[i][j][3] = new Array(ws/8); // do not draw this if ws == 16
+    }
+  }
+  
+  var vwab = new Array(ws);
+  var vwbb = new Array(ws);
+    
+  ffd0a = addb(wab,s[0]);
+  ffd0b = addb(wbb,s[1]);
+  //ffd0a = vwab;
+  //ffd0b = vwbb;
+  
+  for (var i=0; i<ws; i++) {
+    vwab[i] = ffd0a[i];
+    vwbb[i] = ffd0b[i];
+  }
+  
+  //alert(wab);
+  
+  var va1 = new Array(ws);
+  var va2 = new Array(ws);
+  var vb1 = new Array(ws);
+  var vb2 = new Array(ws);
+  
+  
+  
+  
+  for (var i=1; i<r+1; i++) {
+    
+    va1 = xorw(vwab,vwbb);
+    va2 = lshift2(va1,vwbb);
+    vwab = addb(va2,s[2*i]);
+    
+    for (var j=0; j<ws; j++) {
+      ffda[i-1][0][j] = va1[j];
+      ffda[i-1][1][j] = va2[j];
+      ffda[i-1][2][j] = vwab[j];
+    }
+    
+    vb1 = xorw(vwbb,vwab);
+    vb2 = lshift2(vb1,vwab);
+    vwbb = addb(vb2,s[2*i+1]);
+    
+    for (var j=0; j<ws; j++) {
+      ffdb[i-1][0][j] = vb1[j];
+      ffdb[i-1][1][j] = vb2[j];
+      ffdb[i-1][2][j] = vwbb[j];   
+    } 
+  }
+  
+  // calculate the fault free EDCs
+  
+  edcs = new Array(2*(r+1));
+  for (var i=0; i<(2*(r+1)); i++) {
+    edcs[i] = new Array(4);
+    edcs[i][0] = new Array(1);
+    edcs[i][1] = new Array(ws/8);
+    edcs[i][2] = new Array(2);
+    edcs[i][3] = new Array(ws/8); // do not draw this if ws == 16
+  }  
+  
+  
+  
+  for (var i=0; i<(2*(r+1)); i++) {
+    edcs[i][0][0] = getWordParity(s[i]);
+    edcs[i][1] = getByteParities(s[i]);
+    edcs[i][2] = getR(s[i],2);
+    edcs[i][3] = getR(s[i],ws/8);
+  }
+  //alert(wab);
+  edcffa00[0][0] = getWordParity(wab);
+  //alert(edcffa00[0]);
+  edcffa00[1] = getByteParities(wab);
+  edcffa00[2] = getR(wab,2);
+  edcffa00[3] = getR(wab,ws/8);
+
+  edcffb00[0][0] = getWordParity(wbb);
+  edcffb00[1] = getByteParities(wbb);
+  edcffb00[2] = getR(wbb,2);
+  edcffb00[3] = getR(wbb,ws/8);
+    
+  edcffa0[0][0] = predictWpAddb(wab,s[0],edcffa00[0],edcs[0][0]);
+  edcffa0[1] = predictBpAddb(wab,s[0],edcffa00[1],edcs[0][1]);
+  edcffa0[2] = predictRAddb(wab,s[0],edcffa00[2],edcs[0][2]);
+  edcffa0[3] = predictRAddb(wab,s[0],edcffa00[3],edcs[0][3]);
+  
+  edcffb0[0][0] = predictWpAddb(wbb,s[1],edcffb00[0],edcs[1][0]);
+  edcffb0[1] = predictBpAddb(wbb,s[1],edcffb00[1],edcs[1][1]);
+  //alert(wbb);
+  //alert(s[1]);
+  //alert(edcffb00[1]);
+  //alert(edcs[1][1]);
+  edcffb0[2] = predictRAddb(wbb,s[1],edcffb00[2],edcs[1][2]);
+  edcffb0[3] = predictRAddb(wbb,s[1],edcffb00[3],edcs[1][3]);
+  
+  //alert(wab);
+  //alert(edcffb0[1]);
+  //alert(s[0].length);
+  //alert(edcffa00[2]);
+  
+  // for i==1 ; other arguments than in loop
+  
+  //vwbb = ffd0b
+  
+  //va1 = xorw(vwab,vwbb);
+  edcffa[0][0][0][0] = predictWpXor(edcffa0[0][0],edcffb0[0][0]);
+  edcffa[0][0][1] = predictBpXor(edcffa0[1],edcffb0[1]);
+  edcffa[0][0][2] = predictRXor(ffd0a,ffd0b,edcffa0[2],edcffb0[2]);
+  edcffa[0][0][3] = predictRXor(ffd0a,ffd0b,edcffa0[3],edcffb0[3]);
+  
+  
+    
+  //va2 = lshift2(va1,vwbb);
+  edcffa[0][1][0][0] = edcffa[0][0][0][0]; // Word Parity stays the same when rotating
+  edcffa[0][1][1] = predictBpLRot2(ffda[0][0],edcffa[0][0][1],ffd0b);
+  edcffa[0][1][2] = predictRLRot2(edcffa[0][0][2],ffd0b);
+  edcffa[0][1][3] = predictRLRot2(edcffa[0][0][3],ffd0b);
+  
+  
+    
+  //vwab = addb(va2,s[2*i]);
+  edcffa[0][2][0][0] = predictWpAddb(ffda[0][1],s[2],edcffa[0][1][0][0],edcs[2][0][0]);
+  edcffa[0][2][1] = predictBpAddb(ffda[0][1],s[2],edcffa[0][1][1],edcs[2][1]);
+  edcffa[0][2][2] = predictRAddb(ffda[0][1],s[2],edcffa[0][1][2],edcs[2][2]);
+  edcffa[0][2][3] = predictRAddb(ffda[0][1],s[2],edcffa[0][1][3],edcs[2][3]);
+    
+  //ffda[i-1][0] = va1;
+  //ffda[i-1][1] = va2;
+  //ffda[i-1][2] = vwab;
+    
+    
+    
+  //vwbb = ffdb[i-2][2]
+  //vwab = ffda[i-1][2]
+    
+  //vb1 = xorw(vwbb,vwab);
+  edcffb[0][0][0][0] = predictWpXor(edcffb0[0][0],edcffa[0][2][0][0]);
+  edcffb[0][0][1] = predictBpXor(edcffb0[1],edcffa[0][2][1]);
+  edcffb[0][0][2] = predictRXor(ffd0b,ffda[0][2],edcffb0[2],edcffa[0][2][2]);
+  edcffb[0][0][3] = predictRXor(ffd0b,ffda[0][2],edcffb0[3],edcffa[0][2][3]);
+    
+  //vb2 = lshift2(vb1,vwab);
+  edcffb[0][1][0][0] = edcffb[0][0][0][0];
+  edcffb[0][1][1] = predictBpLRot2(ffdb[0][0],edcffb[0][0][1],ffda[0][2]);
+  edcffb[0][1][2] = predictRLRot2(edcffb[0][0][2],ffda[0][2]);
+  edcffb[0][1][3] = predictRLRot2(edcffb[0][0][3],ffda[0][2]);
+
+  //vwbb = addb(vb2,s[2*i+1]);
+  edcffb[0][2][0][0] = predictWpAddb(ffdb[0][1],s[3],edcffb[0][1][0][0],edcs[3][0][0]);
+  edcffb[0][2][1] = predictBpAddb(ffdb[0][1],s[3],edcffb[0][1][1],edcs[3][1]);
+  edcffb[0][2][2] = predictRAddb(ffdb[0][1],s[3],edcffb[0][1][2],edcs[3][2]);
+  edcffb[0][2][3] = predictRAddb(ffdb[0][1],s[3],edcffb[0][1][3],edcs[3][3]);
+    
+  //ffdb[i-1][0] = vb1;
+  //ffdb[i-1][1] = vb2;
+  //ffdb[i-1][2] = vwbb; 
+  
+  //alert(wab);
+  
+  for (var i=2; i<r+1; i++) {
+    
+    //va1 = xorw(vwab,vwbb);
+    edcffa[i-1][0][0][0] = predictWpXor(edcffa[i-2][2][0][0],edcffb[i-2][2][0][0]);
+    edcffa[i-1][0][1] = predictBpXor(edcffa[i-2][2][1],edcffb[i-2][2][1]);
+    edcffa[i-1][0][2] = predictRXor(ffda[i-2][2],ffdb[i-2][2],edcffa[i-2][2][2],edcffb[i-2][2][2]);
+    edcffa[i-1][0][3] = predictRXor(ffda[i-2][2],ffdb[i-2][2],edcffa[i-2][2][3],edcffb[i-2][2][3]);
+    
+    //va2 = lshift2(va1,vwbb);
+    edcffa[i-1][1][0][0] = edcffa[i-1][0][0][0]; // Word Parity stays the same when rotating
+    edcffa[i-1][1][1] = predictBpLRot2(ffda[i-1][0],edcffa[i-1][0][1],ffdb[i-2][2]);
+    edcffa[i-1][1][2] = predictRLRot2(edcffa[i-1][0][2],ffdb[i-2][2]);
+    edcffa[i-1][1][3] = predictRLRot2(edcffa[i-1][0][3],ffdb[i-2][2]);
+    
+    //vwab = addb(va2,s[2*i]);
+    edcffa[i-1][2][0][0] = predictWpAddb(ffda[i-1][1],s[2*i],edcffa[i-1][1][0][0],edcs[2*i][0][0]);
+    edcffa[i-1][2][1] = predictBpAddb(ffda[i-1][1],s[2*i],edcffa[i-1][1][1],edcs[2*i][1]);
+    edcffa[i-1][2][2] = predictRAddb(ffda[i-1][1],s[2*i],edcffa[i-1][1][2],edcs[2*i][2]);
+    edcffa[i-1][2][3] = predictRAddb(ffda[i-1][1],s[2*i],edcffa[i-1][1][3],edcs[2*i][3]);
+    
+    //ffda[i-1][0] = va1;
+    //ffda[i-1][1] = va2;
+    //ffda[i-1][2] = vwab;
+    
+    //vwbb = ffdb[i-2][2]
+    //vwab = ffda[i-1][2]
+    
+    //vb1 = xorw(vwbb,vwab);
+    edcffb[i-1][0][0][0] = predictWpXor(edcffb[i-2][2][0][0],edcffa[i-1][2][0][0]);
+    edcffb[i-1][0][1] = predictBpXor(edcffb[i-2][2][1],edcffa[i-1][2][1]);
+    edcffb[i-1][0][2] = predictRXor(ffdb[i-2][2],ffda[i-1][2],edcffb[i-2][2][2],edcffa[i-1][2][2]);
+    edcffb[i-1][0][3] = predictRXor(ffdb[i-2][2],ffda[i-1][2],edcffb[i-2][2][3],edcffa[i-1][2][3]);
+    
+    //vb2 = lshift2(vb1,vwab);
+    edcffb[i-1][1][0][0] = edcffb[i-1][0][0][0];
+    edcffb[i-1][1][1] = predictBpLRot2(ffdb[i-1][0],edcffb[i-1][0][1],ffda[i-1][2]);
+    edcffb[i-1][1][2] = predictRLRot2(edcffb[i-1][0][2],ffda[i-1][2]);
+    edcffb[i-1][1][3] = predictRLRot2(edcffb[i-1][0][3],ffda[i-1][2]);
+
+    //vwbb = addb(vb2,s[2*i+1]);
+    edcffb[i-1][2][0][0] = predictWpAddb(ffdb[i-1][1],s[2*i+1],edcffb[i-1][1][0][0],edcs[2*i+1][0][0]);
+    edcffb[i-1][2][1] = predictBpAddb(ffdb[i-1][1],s[2*i+1],edcffb[i-1][1][1],edcs[2*i+1][1]);
+    edcffb[i-1][2][2] = predictRAddb(ffdb[i-1][1],s[2*i+1],edcffb[i-1][1][2],edcs[2*i+1][2]);
+    edcffb[i-1][2][3] = predictRAddb(ffdb[i-1][1],s[2*i+1],edcffb[i-1][1][3],edcs[2*i+1][3]);
+    
+    //ffdb[i-1][0] = vb1;
+    //ffdb[i-1][1] = vb2;
+    //ffdb[i-1][2] = vwbb;    
+  }
+  //alert(wab);
+  
+  wadd = new Array(r); // fault free data
+  for (var i=0; i<r; i++) {
+    wadd[i] = new Array(3);
+    for (var j=0; j<3; j++) {
+      wadd[i][j] = new Array(ws);
+      for (var k=0; k<ws; k++) {
+        wadd[i][j][k] = ffda[i][j][k];
+      }
+    }
+  }
+  wbdd = new Array(r); // fault free data
+  for (var i=0; i<r; i++) {
+    wbdd[i] = new Array(3);
+    for (var j=0; j<3; j++) {
+      wbdd[i][j] = new Array(ws);
+      for (var k=0; k<ws; k++) {
+        wbdd[i][j][k] = ffdb[i][j][k];
+      }
+    }
+  }
+
+  wadd0 = new Array(ws);
+  wbdd0 = new Array(ws);
+    
+  //wadd = ffda; // this does not copy the bits, but only creates a pointer
+  //wbdd = ffdb;
+  
+  
+  for (var k=0; k<ws; k++) {
+    wadd0[k] = ffd0a[k];
+    wbdd0[k] = ffd0b[k];
+  }
+
+  wadc = new Array(r); // bit color
+  for (var i=0; i<r; i++) {
+    wadc[i] = new Array(3);
+    for (var j=0; j<3; j++) {
+      wadc[i][j] = new Array(ws);
+      for (var k=0; k<ws; k++) {
+        wadc[i][j][k] = 0;
+      }
+    }
+  }
+  wbdc = new Array(r); 
+  for (var i=0; i<r; i++) {
+    wbdc[i] = new Array(3);
+    for (var j=0; j<3; j++) {
+      wbdc[i][j] = new Array(ws);
+      for (var k=0; k<ws; k++) {
+        wbdc[i][j][k] = 0;
+      }
+    }
+  }  
+  
+  wadc0 = new Array(ws);
+  for (var i=0; i<ws; i++) {
+    wadc0[i] = 0;
+  }
+  
+  wbdc0 = new Array(ws);
+  for (var i=0; i<ws; i++) {
+    wbdc0[i] = 0;
+  }
+
+  wadch = new Array(r); // hex color
+  for (var i=0; i<r; i++) {
+    wadch[i] = new Array(3);
+    for (var j=0; j<3; j++) {
+      wadch[i][j] = new Array(ws/4);
+      for (var k=0; k<ws/4; k++) {
+        wadch[i][j][k] = 0;
+      }
+    }
+  }
+  wbdch = new Array(r); 
+  for (var i=0; i<r; i++) {
+    wbdch[i] = new Array(3);
+    for (var j=0; j<3; j++) {
+      wbdch[i][j] = new Array(ws/4);
+      for (var k=0; k<ws/4; k++) {
+        wbdch[i][j][k] = 0;
+      }
+    }
+  }  
+
+  wadc0h = new Array(ws/4);
+  for (var i=0; i<ws/4; i++) {
+    wadc0h[i] = 0;
+  }
+  
+  wbdc0h = new Array(ws/4);
+  for (var i=0; i<ws/4; i++) {
+    wbdc0h[i] = 0;
+  }
+
+  //wadc0h[2] = 1;
+
+  edcdda00 = new Array(4);
+  edcdda00[0] = new Array(1);
+  edcdda00[1] = new Array(ws/8);
+  edcdda00[2] = new Array(2);
+  edcdda00[3] = new Array(ws/8); // do not draw this if ws == 16
+
+  edcdda00[0][0] = edcffa00[0][0];
+  for (var k=0; k<ws/8; k++) {
+    edcdda00[1][k] = edcffa00[1][k];
+  }
+  for (var k=0; k<2; k++) {
+    edcdda00[2][k] = edcffa00[2][k];
+  }
+  for (var k=0; k<ws/8; k++) {
+    edcdda00[3][k] = edcffa00[3][k];
+  }
+
+  //edcdda00 = edcffa00;
+
+  //alert(edcdda00[0]);
+
+  edcddb00 = new Array(4);
+  edcddb00[0] = new Array(1);
+  edcddb00[1] = new Array(ws/8);
+  edcddb00[2] = new Array(2);
+  edcddb00[3] = new Array(ws/8); // do not draw this if ws == 16
+
+  edcddb00[0][0] = edcffb00[0][0];
+  for (var i=0; i<ws/8; i++) {
+    edcddb00[1][i] = edcffb00[1][i];
+  }
+  for (var i=0; i<2; i++) {
+    edcddb00[2][i] = edcffb00[2][i];
+  }
+  for (var i=0; i<ws/8; i++) {
+    edcddb00[3][i] = edcffb00[3][i];
+  }
+  
+  //edcddb00 = edcffb00;
+
+  edcdda0 = new Array(4);
+  edcdda0[0] = new Array(1);
+  edcdda0[1] = new Array(ws/8);
+  edcdda0[2] = new Array(2);
+  edcdda0[3] = new Array(ws/8); // do not draw this if ws == 16
+
+  edcdda0[0][0] = edcffa0[0][0];
+  for (var k=0; k<ws/8; k++) {
+    edcdda0[1][k] = edcffa0[1][k];
+  }
+  for (var k=0; k<2; k++) {
+    edcdda0[2][k] = edcffa0[2][k];
+  }
+  for (var k=0; k<ws/8; k++) {
+    edcdda0[3][k] = edcffa0[3][k];
+  }
+  //edcdda0 = edcffa0;
+
+  edcddb0 = new Array(4);
+  edcddb0[0] = new Array(1);
+  edcddb0[1] = new Array(ws/8);
+  edcddb0[2] = new Array(2);
+  edcddb0[3] = new Array(ws/8); // do not draw this if ws == 16
+
+  edcddb0[0][0] = edcffb0[0][0];
+
+  for (var i=0; i<ws/8; i++) {
+    edcddb0[1][i] = edcffb0[1][i];
+  }
+  for (var i=0; i<2; i++) {
+    edcddb0[2][i] = edcffb0[2][i];
+  }
+  for (var i=0; i<ws/8; i++) {
+    edcddb0[3][i] = edcffb0[3][i];
+  }
+  
+  //edcddb0 = edcffb0;
+
+  edcdda = new Array(r);
+  for (var i=0; i<r; i++) {
+    edcdda[i] = new Array(3);
+    for (var j=0; j<3; j++) {
+      edcdda[i][j] = new Array(4);
+      edcdda[i][j][0] = new Array(1);
+      edcdda[i][j][1] = new Array(ws/8);
+      edcdda[i][j][2] = new Array(2);
+      edcdda[i][j][3] = new Array(ws/8); // do not draw this if ws == 16
+      
+      edcdda[i][j][0][0] = edcffa[i][j][0][0];
+      
+      for (var k=0; k<ws/8; k++) {
+        edcdda[i][j][1][k] = edcffa[i][j][1][k];
+      }
+      for (var k=0; k<2; k++) {
+        edcdda[i][j][2][k] = edcffa[i][j][2][k];
+      }
+      for (var k=0; k<ws/8; k++) {
+        edcdda[i][j][3][k] = edcffa[i][j][3][k];  
+      }    
+    }
+  }
+  
+  //edcdda = edcffa;
+  
+  edcddb = new Array(r);
+  for (var i=0; i<r; i++) {
+    edcddb[i] = new Array(3);
+    for (var j=0; j<3; j++) {
+      edcddb[i][j] = new Array(4);
+      edcddb[i][j][0] = new Array(1);
+      edcddb[i][j][1] = new Array(ws/8);
+      edcddb[i][j][2] = new Array(2);
+      edcddb[i][j][3] = new Array(ws/8); // do not draw this if ws == 16
+      
+      edcddb[i][j][0][0] = edcffb[i][j][0][0];
+      for (var k=0; k<ws/8; k++) {
+        edcddb[i][j][1][k] = edcffb[i][j][1][k];
+      }
+      for (var k=0; k<2; k++) {
+        edcddb[i][j][2][k] = edcffb[i][j][2][k];
+      }
+      for (var k=0; k<ws/8; k++) {
+        edcddb[i][j][3][k] = edcffb[i][j][3][k];
+      }
+    }
+  }
+  
+  //edcddb = edcffb; // this creates just a pointer
+  
+  edcdca00 = new Array(4);
+  edcdca00[0] = new Array(1);
+  edcdca00[0][0] = 0;
+  edcdca00[1] = new Array(ws/8);
+  for (var i=0; i<ws/8; i++) {
+    edcdca00[1][i] = 0;
+  }
+  edcdca00[2] = new Array(2);
+  for (var i=0; i<2; i++) {
+    edcdca00[2][i] = 0;
+  }
+  edcdca00[3] = new Array(ws/8); // do not draw this if ws == 16
+  for (var i=0; i<ws/8; i++) {
+    edcdca00[3][i] = 0;
+  }
+
+  edcdcb00 = new Array(4);
+  edcdcb00[0] = new Array(1);
+  edcdcb00[0][0] = 0;
+  edcdcb00[1] = new Array(ws/8);
+  for (var i=0; i<ws/8; i++) {
+    edcdcb00[1][i] = 0;
+  }
+  edcdcb00[2] = new Array(2);
+  for (var i=0; i<2; i++) {
+    edcdcb00[2][i] = 0;
+  }
+  edcdcb00[3] = new Array(ws/8); // do not draw this if ws == 16
+  for (var i=0; i<ws/8; i++) {
+    edcdcb00[3][i] = 0;
+  }
+
+  edcdca0 = new Array(4);
+  edcdca0[0] = new Array(1);
+  edcdca0[0][0] = 0;
+  edcdca0[1] = new Array(ws/8);
+  for (var i=0; i<ws/8; i++) {
+    edcdca0[1][i] = 0;
+  }
+  edcdca0[2] = new Array(2);
+  for (var i=0; i<2; i++) {
+    edcdca0[2][i] = 0;
+  }
+  edcdca0[3] = new Array(ws/8); // do not draw this if ws == 16
+  for (var i=0; i<ws/8; i++) {
+    edcdca0[3][i] = 0;
+  }
+
+  edcdcb0 = new Array(4);
+  edcdcb0[0] = new Array(1);
+  edcdcb0[0][0] = 0;
+  edcdcb0[1] = new Array(ws/8);
+  for (var i=0; i<ws/8; i++) {
+    edcdcb0[1][i] = 0;
+  }
+  edcdcb0[2] = new Array(2);
+  for (var i=0; i<2; i++) {
+    edcdcb0[2][i] = 0;
+  }
+  edcdcb0[3] = new Array(ws/8); // do not draw this if ws == 16
+  for (var i=0; i<ws/8; i++) {
+    edcdcb0[3][i] = 0;
+  }
+
+  edcdca = new Array(r);
+  for (var i=0; i<r; i++) {
+    edcdca[i] = new Array(3);
+    for (var j=0; j<3; j++) {
+      edcdca[i][j] = new Array(4);
+      edcdca[i][j][0] = new Array(1);
+      edcdca[i][j][0][0] = 0;
+      edcdca[i][j][1] = new Array(ws/8);
+      for (var k=0; k<ws/8; k++) {
+        edcdca[i][j][1][k] = 0;
+      }
+      edcdca[i][j][2] = new Array(2);
+      edcdca[i][j][2][0] = 0;
+      edcdca[i][j][2][1] = 0;
+      edcdca[i][j][3] = new Array(ws/8); // do not draw this if ws == 16
+      for (var k=0; k<ws/8; k++) {
+        edcdca[i][j][3][k] = 0;
+      }
+
+    }
+  }
+  
+  edcdcb = new Array(r);
+  for (var i=0; i<r; i++) {
+    edcdcb[i] = new Array(3);
+    for (var j=0; j<3; j++) {
+      edcdcb[i][j] = new Array(4);
+      edcdcb[i][j][0] = new Array(1);
+      edcdcb[i][j][0][0] = 0;
+      edcdcb[i][j][1] = new Array(ws/8);
+      for (var k=0; k<ws/8; k++) {
+        edcdcb[i][j][1][k] = 0;
+      }
+      edcdcb[i][j][2] = new Array(2);
+      edcdcb[i][j][2][0] = 0;
+      edcdcb[i][j][2][1] = 0;
+      edcdcb[i][j][3] = new Array(ws/8); // do not draw this if ws == 16
+      for (var k=0; k<ws/8; k++) {
+        edcdcb[i][j][3][k] = 0;
+      }
+
+    }
+  }  
+  
+  // initialization of fls (fault locations)
+  
+  flsa = new Array(r+1);
+  for (var i=0; i<r+1; i++) {
+    flsa[i] = new Array(3);
+    for (var j=0; j<3; j++) {
+      flsa[i][j] = new Array(ws);
+      for (var k=0; k<ws; k++) {
+        flsa[i][j][k] = 0;
+      }
+    }
+  }
+  flsb = new Array(r+1);
+  for (var i=0; i<r+1; i++) {
+    flsb[i] = new Array(3);
+    for (var j=0; j<3; j++) {
+      flsb[i][j] = new Array(ws);
+      for (var k=0; k<ws; k++) {
+        flsb[i][j][k] = 0;
+      }
+    }
+  }
+  flsedca = new Array(r+1);
+  for (var i=0; i<r+1; i++) {
+    flsedca[i] = new Array(3);
+    for (var j=0; j<3; j++) {
+      flsedca[i][j] = new Array(4);
+      for (var l=0; l<4; l++) {
+        flsedca[i][j][l] = new Array(ws/8);
+        for (var k=0; k<ws/8; k++) {
+          flsedca[i][j][l][k] = 0;
+        }
+      }
+    }
+  }
+  flsedcb = new Array(r+1);
+  for (var i=0; i<r+1; i++) {
+    flsedcb[i] = new Array(3);
+    for (var j=0; j<3; j++) {
+      flsedcb[i][j] = new Array(4);
+      for (var l=0; l<4; l++) {
+        flsedcb[i][j][l] = new Array(ws/8);
+        for (var k=0; k<ws/8; k++) {
+          flsedcb[i][j][l][k] = 0;
+        }
+      }
+    }
+  }
+  
+  // Initialization of cp error detection array
+  
+  cpeds = new Array(r+1);
+  for (var i=0; i<r+1; i++) {
+    cpeds[i] = new Array(4);
+    for (var j=0; j<4; j++) {
+      cpeds[i][j] = 0;
+    }
+  }
+  
+  edcnames = new Array(4);
+  edcnames[0] = "Word Parity";
+  edcnames[1] = "Byte Parity";
+  edcnames[2] = "Residue 2^2-1";
+  edcnames[3] = "Residue 2^"+ws/8+"-1";
+}
+
+
+// ---------------------------------------------------------Key Expansion -----------------------------------------
+
+function create_s() {  // Key Expansion
+  
+  s = new Array(t);
+  for (var i=0; i<t; i++) {
+    s[i] = new Array(ws);
+  }
+  var c_s;
+  var l_s;
+  var u_s = ws/8; // number of bytes/word
+  
+  var v1;
+  var v2;
+  var v3;
+  //var kba; // the key as bit array (still original byte order)
+  
+  // the two magic constants
+  var P;
+  var Q;
+  switch (ws) {
+    case 16 : P = new Array(16); P = [1,0,1,1,0,1,1,1,1,1,1,0,0,0,0,1];
+              Q = new Array(16); Q = [1,0,0,1,1,1,1,0,0,0,1,1,0,1,1,1];
+	      break;
+    case 32 : P = new Array(32); P = [1,0,1,1,0,1,1,1,1,1,1,0,0,0,0,1,0,1,0,1,0,0,0,1,0,1,1,0,0,0,1,1]
+              Q = new Array(32); Q = [1,0,0,1,1,1,1,0,0,0,1,1,0,1,1,1,0,1,1,1,1,0,0,1,1,0,1,1,1,0,0,1]
+	      break;
+    case 64 : P = new Array(64); 
+    P = [1,0,1,1,0,1,1,1,1,1,1,0,0,0,0,1,0,1,0,1,0,0,0,1,0,1,1,0,0,0,1,0,1,0,0,0,1,0,1,0,1,1,1,0,1,1,0,1,0,0,1,0,1,0,1,0,0,1,1,0,1,0,1,1];
+              Q = new Array(64); 
+    Q = [1,0,0,1,1,1,1,0,0,0,1,1,0,1,1,1,0,1,1,1,1,0,0,1,1,0,1,1,1,0,0,1,0,1,1,1,1,1,1,1,0,1,0,0,1,0,1,0,0,1,1,1,1,1,0,0,0,0,0,1,0,1,0,1];
+	      break;
+  }
+  // !note: P and Q have the wrong order now => correct this with reverse()
+  P = rv2(P);
+  Q = rv2(Q);
+  
+  
+  
+  // first algorithmic step
+  
+  if (b == 0) { // if b==0, reset c to 1 and set L[0] to zero
+    c_s = 1;
+    l_s = new Array(1);
+    l_s[0] = new Array(ws);
+    for (var i=0; i<ws; i++) {
+      l_s[0][i] = 0;
+    }
+  }
+  else {
+    //kba = new Array(b*4);
+    //kba = hex2bit(key);
+    v2 = new Array(ws/4);
+    v3 = new Array(ws);
+    
+    c_s = Math.ceil(b/u_s);
+    l_s = new Array(c_s);
+    for (var i=0; i<c_s; i++) {
+      l_s[i] = new Array(ws);
+    }
+    v1 = b;
+    
+    for (var i=0; i<c_s; i++) {
+      
+      for (var j=0; j<ws/8; j++) {
+      
+        if (v1 > 0) {
+	  v2[2*j] = key[i*(ws/4)+2*j+1];
+	  v2[2*j+1] = key[i*(ws/4)+2*j];
+	  v1--;
+	}
+	else {
+	  v2[2*j] = "0";
+	  v2[2*j+1] = "0";
+	}
+      }
+      
+      v3 = hex2bit(v2);
+      for (var k=0; k<ws; k++) {
+        l_s[i][k] = v3[k]; 
+      } 
+        
+    }
+  }
+  
+  
+  
+  // second algorithmic step
+  
+  for (var k=0; k<ws; k++) {
+    s[0][k] = P[k];
+  }
+  for (var i=1; i<t; i++) {
+    s[i] = addb(s[i-1],Q);
+  }
+  
+  
+  // third algorithmic step
+  
+  var iv = 0;
+  var jv = 0;
+  var av = new Array(ws);
+  var bv = new Array(ws);
+  for (var i=0; i<ws; i++) {
+    av[i] = 0;
+    bv[i] = 0;
+  }
+  
+  for (var i=0; i<3*(Math.max(t,c_s)); i++) {
+    s[iv] = lshift(addb(addb(s[iv],av),bv),3);
+    for (var k=0; k<ws; k++) {
+      av[k] = s[iv][k];
+    }
+    l_s[jv] = lshift2(addb(addb(l_s[jv],av),bv),addb(av,bv));
+    for (var k=0; k<ws; k++) {
+      bv[k] = l_s[jv][k];
+    }
+    iv = (iv+1)%t;
+    jv = (jv+1)%c_s;
+  }
+  
+  
+}
+
+// --------------------------------------  Operator Funtions: XOR, SHIFT, ADD, SUB --------------------------
+
+function xorw(opa,opb) {
+  var resultv = new Array(opa.length);  
+  for (var i=0; i<opa.length; i++) {
+    if (opa[i] == opb[i]) {
+      resultv[i] = 0;
+    }
+    else {
+      resultv[i] = 1;
+    }
+  }
+  return resultv;
+}
+
+function lshift2(aword2, amount2) { // amount2 is a word
+  var v1;
+  switch (ws) {
+    case 16 : v1 = 4; break;
+    case 32 : v1 = 5; break;
+    case 64 : v1 = 6; break;
+  }
+  var v2 = 0;
+  
+  var v3 = new Array(v1);
+  for (var i=0; i<v1; i++) {
+    v3[i] = amount2[i];
+  }
+  
+  v2 = b2i(v3);
+  /*
+  for (var i=0; i<v1; i++) {
+    if (amount2[i] == 1) {
+      v2 = v2 + Math.pow(2,i);
+    }
+  }
+  */
+  var result2 = new Array(aword2.length);
+  result2 = lshift(aword2,v2);
+  return result2;
+}
+
+function lshift(aword,amount) { // amount is an int
+  var v1;
+  var v2 = new Array(aword.length-1);
+  var resultv = new Array(aword.length);
+  for (var i=0; i<aword.length; i++) {
+    resultv[i] = aword[i];
+  }
+  //resultv = aword;
+  for (var i=0; i<amount; i++) {
+    v1 = resultv[aword.length-1];
+    for (var j=0; j<aword.length-1; j++) {
+      v2[j] = resultv[j];
+    }
+    //v2 = resultv.slice(0,-1); // because of pointer problem
+    resultv[0] = v1;
+    for (var j=1; j<aword.length; j++) {
+      resultv[j] = v2[j-1];
+    }
+  
+     
+     //resultv = v1.concat(v2);
+  }
+  return resultv;
+}
+
+function rshift2(aword2, amount2) { // amount2 is a word
+  var v1;
+  switch (ws) {
+    case 16 : v1 = 4; break;
+    case 32 : v1 = 5; break;
+    case 64 : v1 = 6; break;
+  }
+  var v2 = 0;
+  
+  var v3 = new Array(v1);
+  for (var i=0; i<v1; i++) {
+    v3[i] = amount2[i];
+  }
+  
+  v2 = b2i(v3);
+  /*
+  for (var i=0; i<v1; i++) {
+    if (amount2[i] == 1) {
+      v2 = v2 + Math.pow(2,i);
+    }
+  }
+  */
+  var result2;
+  result2 = rshift(aword2,v2);
+  return result2;
+}
+
+function rshift(aword,amount) { // amount is an int
+  var v1;
+  var v2 = new Array(aword.length-1);
+  var resultv = new Array(aword.length);
+  for (var i=0; i<aword.length; i++) {
+    resultv[i] = aword[i];
+  }
+  for (var i=0; i<amount; i++) {
+     v1 = resultv[0];
+     for (var j=0; j<aword.length-1; j++) {
+       v2[j] = resultv[j+1];
+     }
+     for (var j=0; j<aword.length-1; j++) {
+       resultv[j] = v2[j];
+     }
+     resultv[aword.length-1] = v1
+     //resultv = v2.concat(v1);
+     
+  }
+  return resultv;
+}
+
+function addb(opa,opb) {
+  var resultv = new Array(opa.length);
+  var carry = 0;
+  var v1;
+  for (var i=0; i<opa.length; i++) {
+    v1 = opa[i] + opb[i] + carry;
+    switch (v1) {
+      case 3 : resultv[i] = 1; carry = 1; break;
+      case 2 : resultv[i] = 0; carry = 1; break;
+      case 1 : resultv[i] = 1; carry = 0; break;
+      case 0 : resultv[i] = 0; carry = 0; break;
+    }
+  }
+  return resultv;
+}
+
+//----------------------------------------------------------- EDC FUNCTIONS ----------------------------------
+
+function getWordParity(aword) {
+  var vwp;
+  vwp = aword[0]^aword[1];
+  for (var i=2; i<aword.length; i++) {
+    vwp = vwp^aword[i];
+  }
+  return vwp;
+}
+
+function getByteParities(aword22) {
+  var vbps = new Array((aword22.length)/8);
+  var vb1 = new Array(8);
+  for (var i=0; i<aword22.length/8; i++) {
+    for (var j=0; j<8; j++) {
+      vb1[j] = aword22[8*i+j];
+    }
+    vbps[i] = getWordParity(vb1);
+    
+    
+  }
+  return vbps;
+}
+
+// ------------------- Prediction for Word Parity --------------
+
+function predictWpAddb(word1, word2, p1, p2) {
+  var vwpa;
+  var carry = 0;
+  var v1;
+  vwpa = p1^p2;
+  for (var i=0; i<word1.length-1; i++) { // -1 because last carry out not considered
+    v1 = word1[i] + word2[i] + carry;
+    switch (v1) {
+      case 3 : carry = 1; break;
+      case 2 : carry = 1; break;
+      case 1 : carry = 0; break;
+      case 0 : carry = 0; break;
+    }
+    vwpa = vwpa^carry;
+  }
+  return vwpa;
+}
+
+function predictWpXor(p1,p2) {
+  var vwpx;
+  vwpx = p1^p2;
+  return vwpx;
+}
+
+function predictWpRot() { // not needed, because parity stays the same
+}
+
+
+// -------------------Prediction for Byte Parity -------------------
+
+function predictBpAddb(word1, word2, ps1, ps2) {
+  var vbpa = new Array(ps1.length);
+  var carry = 0;
+  var v1;
+  for (var i=0; i<ps1.length; i++) {
+    vbpa[i] = ps1[i]^ps2[i];
+    vbpa[i] ^= carry;
+    for (var j=0; j<7; j++) {
+      v1 = word1[8*i+j] + word2[8*i+j] + carry;
+      switch (v1) {
+        case 3 : carry = 1; break;
+        case 2 : carry = 1; break;
+        case 1 : carry = 0; break;
+        case 0 : carry = 0; break;
+      }
+      vbpa[i] ^= carry;
+    }
+    v1 = word1[8*i+7] + word2[8*i+7] + carry;
+    switch (v1) {
+      case 3 : carry = 1; break;
+      case 2 : carry = 1; break;
+      case 1 : carry = 0; break;
+      case 0 : carry = 0; break;
+    }
+  }
+  return vbpa;
+}
+
+function predictBpXor(ps1, ps2) {
+  var vbpx = new Array(ps1.length);
+  for (var i=0; i<ps1.length; i++) {
+    vbpx[i] = ps1[i]^ps2[i];
+  }
+  return vbpx;
+}
+
+function predictBpLRot(word, par, sAmount) {
+  /*
+  var ph2 = new Array(ws/8);
+  
+  //alert(sAmount);
+  
+  for (var i=0; i<ws/8; i++) {
+    var v4 = sAmount/8;
+    var v5 = Math.floor(v4);
+    var v6 = i-v5;
+    var v7;
+    if (v6 < 0) {
+      v7 = (ws/8) + v6;
+    }
+    else {
+      v7 = v6;
+    }
+    ph2[v7] = par[i]; 
+  }
+  */
+  var vn;
+  vn = sAmount%8;
+  
+  //alert(vn);
+  
+  
+  var vbplr = new Array(par.length);
+  var vbplr2 = new Array(par.length);
+  var v1;
+  
+  //* // --- works, but not good because it does not use previous parity bits
+  for (var i=0; i<ws/8; i++) {
+    v1 = 8*i-vn;
+    if (v1 < 0) {
+      vbplr[i] = word[ws+v1];
+    }
+    else {
+      vbplr[i] = word[v1];
+    } 
+    for (var j=1; j<8; j++) {
+      v1 = 8*i-vn+j;
+      if (v1 < 0) {
+        vbplr[i] ^= word[ws+v1];
+      }
+      else {
+        vbplr[i] ^= word[v1];
+      }  
+    }
+  }     
+  //*/                                      // -------------------------------
+  
+  /*
+  if (vn<4) {
+    for (var i=0; i<par.length; i++) {
+      //vbplr[i] = ph2[i];
+      vbplr[i] = par[i];
+      if (vn<2) {
+        for (var j=7; j<9-vn; j++) {
+	  vbplr[i] ^= word[(8*i+j)%ws];
+	}
+	for (var j=7; j<9-vn; j++) {
+	  if (i==0) {
+	    if (j==7) {
+	      v1 = ws-1;
+	      vbplr[i] ^= word[v1];
+	    }
+	    else { //j==8
+	      vbplr[i] ^= word[0];
+	    }
+	  }
+	  else {
+	    vbplr[i] ^= word[(8*(i-1)+j)%ws];
+	  }
+	}
+      }
+      else { // if vn==2 or vn==3
+        for (var j=8-vn; j<8; j++) {
+	  vbplr[i] ^= word[(8*i+j)%ws];
+	}
+	for (var j=8-vn; j<8; j++) {
+	  if (i==0) {
+	    
+	      v1 = ws-(8-j);
+	      vbplr[i] ^= word[v1];
+	    
+	    
+	     
+	    
+	  }
+	  else {
+	    vbplr[i] ^= word[(8*(i-1)+j)%ws];
+	  }
+	}
+      }	
+    }
+  }
+  else { //if vn>3
+    var v2 = new Array(word.length);
+    var v3 = new Array(par.length);
+    v2 = rshift(word,(8-vn));
+    
+    
+    v3 = getByteParities(v2);
+    vbplr[0] = v3[par.length-1];
+    for (var i=1; i<par.length; i++) {
+      vbplr[i] = v3[i-1];
+    }
+  }
+  
+  */
+  
+  
+  //return vbplr;  
+  for (var i=0; i<ws/8; i++) {
+    var v4 = sAmount/8;
+    var v5 = Math.floor(v4);
+    var v6 = i-v5;
+    var v7;
+    if (v6 < 0) {
+      v7 = (ws/8) + v6;
+    }
+    else {
+      v7 = v6;
+    }
+    vbplr2[i] = vbplr[v7];
+  }
+  
+  return vbplr2;
+   
+}
+
+function predictBpLRot2(word, par, amount2) { // amount2 is a word
+  var v1;
+  switch (ws) {
+    case 16 : v1 = 4; break;
+    case 32 : v1 = 5; break;
+    case 64 : v1 = 6; break;
+  }
+  
+  
+  
+  var v2 = 0;
+  
+  var v3 = new Array(v1);
+  for (var i=0; i<v1; i++) {
+    v3[i] = amount2[i];
+  }
+  
+  v2 = b2i(v3);
+  /*
+  for (var i=0; i<v1; i++) {
+    if (amount2[i] == 1) {
+      v2 = v2 + Math.pow(2,i);
+    }
+  }
+  */
+  var result2 = new Array(ws/8);
+  result2 = predictBpLRot(word,par,v2);
+  return result2;
+}
+
+// --------------------------------------- RESIDUE ----------------
+
+function getR(word, rtype) {
+
+  var vr3 = new Array(rtype);
+  
+  /*
+  if (rtype == 2) {
+    v1 = getR2(word);
+  }
+  else if (rtype == 4) {
+    v1 = getR4(word);
+  }
+  else if (rtype == 8) {
+    v1 = getR8(word);
+  }
+  */
+  
+  var v1 = 0;
+  
+  for (var i=0; i<ws; i++) {
+    if (word[i] == 1) {
+      var v2 = i%rtype;
+      v1 += Math.pow(2,v2);
+    }
+  }
+  var v3 = v1%((Math.pow(2,rtype))-1);
+  
+  vr3 = i2b(v3,rtype);
+  
+  return vr3;
+}
+
+
+function getR2(word) {
+  var vr3 = new Array(2);
+  var v1;
+  var v2 = 0;
+  
+  v2 = b2i(word);
+  /*
+  for (var i=0; i<word.length; i++) {
+    if (word[i] == 1) {
+      v2 = v2 + Math.pow(2,i);
+    }
+  }
+  */
+  v1 = v2%3;
+  
+  vr3 = i2b(v1,2);
+  /*
+  switch (v1) {
+    case 0 : vr3[1] = 0; vr3[0] = 0; break;
+    case 1 : vr3[1] = 0; vr3[0] = 1; break;
+    case 2 : vr3[1] = 1; vr3[0] = 0; break;
+  }
+  */
+  return vr3;
+}
+
+function getR4(word) {
+  var ba = new Array(4); // vr15
+  var v1;
+  var v2 = 0;
+  
+  v2 = b2i(word);
+  /*
+  for (var i=0; i<word.length; i++) {
+    if (word[i] == 1) {
+      v2 = v2 + Math.pow(2,i);
+    }
+  }
+  */
+  v1 = v2%15;  
+  
+  ba = i2b(v1,4);
+  /*
+  var c = 0;  
+  switch (v1) {
+    case 0 : ba[c]=0; c++; ba[c]=0; c++; ba[c]=0; c++; ba[c]=0; c++; break;
+    case 1 : ba[c]=1; c++; ba[c]=0; c++; ba[c]=0; c++; ba[c]=0; c++; break;
+    case 2 : ba[c]=0; c++; ba[c]=1; c++; ba[c]=0; c++; ba[c]=0; c++; break;
+    case 3 : ba[c]=1; c++; ba[c]=1; c++; ba[c]=0; c++; ba[c]=0; c++; break;
+    case 4 : ba[c]=0; c++; ba[c]=0; c++; ba[c]=1; c++; ba[c]=0; c++; break;
+    case 5 : ba[c]=1; c++; ba[c]=0; c++; ba[c]=1; c++; ba[c]=0; c++; break;
+    case 6 : ba[c]=0; c++; ba[c]=1; c++; ba[c]=1; c++; ba[c]=0; c++; break;
+    case 7 : ba[c]=1; c++; ba[c]=1; c++; ba[c]=1; c++; ba[c]=0; c++; break;
+    case 8 : ba[c]=0; c++; ba[c]=0; c++; ba[c]=0; c++; ba[c]=1; c++; break;
+    case 9 : ba[c]=1; c++; ba[c]=0; c++; ba[c]=0; c++; ba[c]=1; c++; break;
+    case 10 : ba[c]=0; c++; ba[c]=1; c++; ba[c]=0; c++; ba[c]=1; c++; break;
+    case 11 : ba[c]=1; c++; ba[c]=1; c++; ba[c]=0; c++; ba[c]=1; c++; break;
+    case 12 : ba[c]=0; c++; ba[c]=0; c++; ba[c]=1; c++; ba[c]=1; c++; break;
+    case 13 : ba[c]=1; c++; ba[c]=0; c++; ba[c]=1; c++; ba[c]=1; c++; break;
+    case 14 : ba[c]=0; c++; ba[c]=1; c++; ba[c]=1; c++; ba[c]=1; c++; break;    
+  }
+  */
+  return ba;
+}
+
+function getR8(word) {
+  var vr8 = new Array(8); 
+  var v1;
+  var v2 = 0;
+  var v3;
+  
+  v2 = b2i(word);
+  /*
+  for (var i=0; i<word.length; i++) {
+    if (word[i] == 1) {
+      v2 = v2 + Math.pow(2,i);
+    }
+  }
+  */
+  v1 = v2%255;
+  
+  vr8 = i2b(v1,8);
+  /*
+  for (var i=1; i<8; i++) {
+    v3 = v1%(Math.pow(2,8-i));
+    if (v3 == v1) {
+      vr8[8-i] = 0;
+    }
+    else {
+      vr8[8-i] = 1;
+    }
+    v1 = v3;
+  }
+  vr8[0] = v1;
+  */
+  return vr8;
+}
+
+// --------------------------- PREDICTION for RESIDUE -------------------
+
+function predictRAddb(word1, word2, r1, r2) {
+  var rt;
+  rt = r1.length; // 2, 4 or 8
+  var vr1 = 0;
+  var vr2 = 0;
+  var vri;
+  var vr = new Array(rt);
+  
+  var carry = 0;
+  var v1;
+  for (var i=0; i<word1.length; i++) {
+    v1 = word1[i] + word2[i] + carry;
+    switch (v1) {
+      case 3 : carry = 1; break;
+      case 2 : carry = 1; break;
+      case 1 : carry = 0; break;
+      case 0 : carry = 0; break;
+    }
+  }
+  vr1 = b2i(r1);
+  vr2 = b2i(r2);
+  v1 = vr1+vr2-carry;
+  if (v1 < 0) {
+    vri = (Math.pow(2,rt))-2;
+  }
+  else {
+    vri = v1%((Math.pow(2,rt))-1);
+  }
+  
+  vr = i2b(vri,rt);
+  /*
+  var v3;
+  for (var i=1; i<rt; i++) {
+    v3 = vri%(Math.pow(2,rt-i));
+    if (v3 == vri) {
+      vr[rt-i] = 0;
+    }
+    else {
+      vr[rt-i] = 1;
+    }
+    vri = v3;
+  }
+  vr[0] = vri;
+  */
+  
+  return vr;
+}
+
+function predictRXor(word1, word2, r1, r2) {
+  var rt = r1.length; // rtype
+  var vrx = new Array(rt);
+  var vrxi;
+  var v1 = new Array(word1.length);
+  for (var i=0; i<word1.length; i++) {
+    v1[i] = word1[i] & word2[i];
+  }
+  var v2 = 0;
+  var v3 = new Array(r1.length);
+  v3 = getR(v1,rt);
+  
+  v2 = b2i(v3);
+  /*
+  for (var i=0; i<v3.length; i++) {
+    if (v3[i] == 1) {
+      v2 += Math.pow(2,i);
+    }
+  }
+  */  
+  v2 = v2*2;
+  var r1i = b2i(r1);
+  var r2i = b2i(r2);
+  var v4 = r1i + r2i - v2;
+  if (v4<0) {                                       //        check modulo behaviour for negative numbers again
+    v4 = v4%((Math.pow(2,rt))-1);
+    if (v4<0) {
+      vrxi = ((Math.pow(2,rt))-1) + v4;
+    }
+    else {
+      vrxi = 0;
+    }
+  }
+  else {
+    vrxi = v4%((Math.pow(2,rt))-1);
+  }
+  vrx = i2b(vrxi,rt);
+  return vrx;
+}
+
+function predictRLRot(r1, sAmount) {
+
+  var rt = r1.length;
+  
+  var sAmount2 = sAmount%rt;
+  
+  var vrlr = new Array(rt);
+  
+  vrlr = lshift(r1,sAmount2);
+  
+  return vrlr;  
+}
+
+function predictRLRot2(r1, sAmount) {  // sAmount is a word
+
+  var vrlr2 = new Array(r1.length);
+  
+  //var sAmount2 = b2i(sAmount);
+  //sAmount2 = sAmount2%(r1.length);
+  
+  var v1;
+  switch (ws) {
+    case 16 : v1 = 4; break;
+    case 32 : v1 = 5; break;
+    case 64 : v1 = 6; break;
+  }
+    
+  var v2 = 0;
+  
+  var v3 = new Array(v1);
+  for (var i=0; i<v1; i++) {
+    v3[i] = sAmount[i];
+  }
+  
+  v2 = b2i(v3);
+  
+  var v4 = v2%(r1.length);
+  
+  vrlr2 = lshift(r1,v4);
+  
+  return vrlr2;  
+}    
+
+
+// ------------------------------------- FORM CONVERTER FUNCTIONS -------------------------------------------
+
+function cb(abit) { //change bit
+  var faulty_bit;
+  if (abit == 0) {
+    faulty_bit = 1;
+  }
+  else {
+    faulty_bit = 0;
+  }
+  return faulty_bit;
+}
+
+function b2i(vb) {
+  var vi = 0;
+  for (var i=1; i<vb.length; i++) {
+    if (vb[i] == 1) {
+      vi += Math.pow(2,i);
+    }
+  }  
+  if (vb[0] == 1) {
+    vi += 1;
+  }
+  return vi;
+}
+
+function i2b(vi,vs) { // integer 2 bit array; integer, array size
+  var vr = new Array(vs);
+  var v1;
+  for (var i=1; i<vs; i++) {
+    v1 = vi%(Math.pow(2,vs-i));
+    if (v1 == vi) {
+      vr[vs-i] = 0;
+    }
+    else {
+      vr[vs-i] = 1;
+    }
+    vi = v1;
+  }
+  vr[0] = vi;
+  return vr;
+}
+
+
+function s2a(astring) {
+  var thearray = new Array(astring.length);
+  for (var i=0; i<astring.length; i++) {
+    thearray[i] = astring.charAt(i);
+  }
+  return thearray;
+}
+
+function text2rega(thetext) {      //    converts byte text to hex register order
+  var rt = new Array(thetext.length);
+  var rega = new Array(thetext.length/2);
+  for (var i=0; i<thetext.length; i++) {
+    rt[i] = thetext[i];
+  }
+  var v1 = thetext.length;
+  for (var i=0; i<v1/4; i++) {
+    rega[2*i] = rt[2*i+1];
+    rega[2*i+1] = rt[2*i];
+  }
+  return rega;
+}
+
+function text2regb(thetext) {
+  var rt = new Array(thetext.length);
+  var regb = new Array(thetext.length/2);
+  for (var i=0; i<thetext.length; i++) {
+    rt[i] = thetext[i];
+  }
+  var v1 = thetext.length;
+  for (var i=0; i<v1/4; i++) {
+    regb[2*i] = rt[v1/2+2*i+1];
+    regb[2*i+1] = rt[v1/2+2*i];
+  }
+  return regb;
+}
+
+function addzeros(hexarray) { // if < wordsize/4 add zeros; if > cut away leading hex numbers
+// called in start after h2ha()
+
+}
+
+
+function rv2(va1) { // reverse version 2 (does not change original word)
+  var v1 = va1.length;
+  var va2 = new Array(v1);
+  for (var i=0; i<v1; i++) {
+    va2[i] = va1[v1-(1+i)];
+  }
+  return va2;
+}
+
+
+function hex2bit(hexa) { // note: this also converts from string to integer // both register order
+  var ba = new Array((hexa.length)*4); // bit array
+  var c = 0;
+  for (var i=0; i<hexa.length; i++) {
+    switch (hexa[i]) {
+      case "0" : ba[c]=0; c++; ba[c]=0; c++; ba[c]=0; c++; ba[c]=0; c++; break;
+      case "1" : ba[c]=1; c++; ba[c]=0; c++; ba[c]=0; c++; ba[c]=0; c++; break;
+      case "2" : ba[c]=0; c++; ba[c]=1; c++; ba[c]=0; c++; ba[c]=0; c++; break;
+      case "3" : ba[c]=1; c++; ba[c]=1; c++; ba[c]=0; c++; ba[c]=0; c++; break;
+      case "4" : ba[c]=0; c++; ba[c]=0; c++; ba[c]=1; c++; ba[c]=0; c++; break;
+      case "5" : ba[c]=1; c++; ba[c]=0; c++; ba[c]=1; c++; ba[c]=0; c++; break;
+      case "6" : ba[c]=0; c++; ba[c]=1; c++; ba[c]=1; c++; ba[c]=0; c++; break;
+      case "7" : ba[c]=1; c++; ba[c]=1; c++; ba[c]=1; c++; ba[c]=0; c++; break;
+      case "8" : ba[c]=0; c++; ba[c]=0; c++; ba[c]=0; c++; ba[c]=1; c++; break;
+      case "9" : ba[c]=1; c++; ba[c]=0; c++; ba[c]=0; c++; ba[c]=1; c++; break;
+      case "a" : ba[c]=0; c++; ba[c]=1; c++; ba[c]=0; c++; ba[c]=1; c++; break;
+      case "b" : ba[c]=1; c++; ba[c]=1; c++; ba[c]=0; c++; ba[c]=1; c++; break;
+      case "c" : ba[c]=0; c++; ba[c]=0; c++; ba[c]=1; c++; ba[c]=1; c++; break;
+      case "d" : ba[c]=1; c++; ba[c]=0; c++; ba[c]=1; c++; ba[c]=1; c++; break;
+      case "e" : ba[c]=0; c++; ba[c]=1; c++; ba[c]=1; c++; ba[c]=1; c++; break;
+      case "f" : ba[c]=1; c++; ba[c]=1; c++; ba[c]=1; c++; ba[c]=1; c++; break;
+    }
+  }
+  return ba;
+}
+
+function bit2hex(bita) { // both register order
+  var ha = new Array(bita.length/4);
+  var v1;
+  var v2 = bita.join("");
+  for (var i=0;i<v2.length/4; i++) {
+    v1 = v2.substring(4*i,4*(i+1));
+    switch (v1) {
+      case "0000" : ha[i] = "0"; break;
+      case "1000" : ha[i] = "1"; break;
+      case "0100" : ha[i] = "2"; break;
+      case "1100" : ha[i] = "3"; break;
+      case "0010" : ha[i] = "4"; break;
+      case "1010" : ha[i] = "5"; break;
+      case "0110" : ha[i] = "6"; break;
+      case "1110" : ha[i] = "7"; break;
+      case "0001" : ha[i] = "8"; break;
+      case "1001" : ha[i] = "9"; break;
+      case "0101" : ha[i] = "a"; break;
+      case "1101" : ha[i] = "b"; break;
+      case "0011" : ha[i] = "c"; break;
+      case "1011" : ha[i] = "d"; break;
+      case "0111" : ha[i] = "e"; break;
+      case "1111" : ha[i] = "f"; break;
+    }
+  }
+  return ha;    
+}
+
+function reg2text(reg_a, reg_b) {
+  var textv = new Array(2*reg_a.length);
+  for (var i=0; i<reg_a.length/2; i++) {
+    textv[2*i] = reg_a[2*i+1];
+    textv[2*i+1] = reg_a[2*i];
+  }
+  for (var i=0; i<reg_a.length/2; i++) {
+    textv[reg_a.length+2*i] = reg_b[2*i+1];
+    textv[reg_a.length+2*i+1] = reg_b[2*i];
+  }
+  return textv;
+}
+
+
+function ise(a1,a2) { // is equal ;  checks if the two arrays are equal
+  var ftbar = 1; // false,true bar
+  for (var i=0; i<a1.length; i++) {
+    if (a1[i] != a2[i]) {
+      ftbar = 0;
+    }
+  }
+  return ftbar;
+}
+
+
+// ---------------------------------------------------------------- FAULT INJECTION -------------------------------------
+
+function inject_fault() {
+
+  //ctime_note();
+
+  //parent.frames[1].document.forms[0].inputtext.value = ("TEST 1");
+  
+  // locate fault
+  
+  // rowtype: 0=xor, 1=rot, 2=add
+  // norir: number of rows in round: e.g. norir=2 and rowtype=[0,2]
+  
+  var flc; // fault location (column): 0=a, 1=edca, 2=b, 3=edcb
+  var flr; // fault location (row)
+  var flb; // fault location (bit number)
+  
+  for (var i=0; i<r*norir+1; i++) {
+    if (parent.frames[1].document.forms[0].a_error[i].value != 0) {
+      flc = 0;
+      flr = i;
+      flb = parseInt(parent.frames[1].document.forms[0].a_error[i].value)-1;
+    }
+  }
+  for (var i=0; i<r*norir+2; i++) {
+    if (parent.frames[1].document.forms[0].edca_error[i].value != 0) {
+      flc = 1;
+      flr = i;
+      flb = parseInt(parent.frames[1].document.forms[0].edca_error[i].value)-1;
+    }
+  }
+  for (var i=0; i<r*norir+1; i++) {
+    if (parent.frames[1].document.forms[0].b_error[i].value != 0) {
+      flc = 2;
+      flr = i;
+      flb = parseInt(parent.frames[1].document.forms[0].b_error[i].value)-1;
+    }
+  }
+  for (var i=0; i<r*norir+2; i++) {
+    if (parent.frames[1].document.forms[0].edcb_error[i].value != 0) {
+      flc = 3;
+      flr = i;
+      flb = parseInt(parent.frames[1].document.forms[0].edcb_error[i].value)-1;
+    }
+  }      
+  
+  //alert("c="+flc+" r="+flr+" b="+flb);
+  
+  // write the new fault into fault arrays (fls - fault locations)
+  
+  if (flc == 0) {
+    if (flr == 0) {
+      flsa[0][0][flb] = 1;
+    }
+    else {
+      var vridr = (flr-1)%norir; //row in displayed round
+      var vrir = rowtype[vridr]; // row in round
+      var vrn = Math.ceil(flr/norir);
+      flsa[vrn][vrir][flb] = cb(flsa[vrn][vrir][flb]);
+    }
+  }
+  
+  
+  
+  if (flc == 2) {
+    if (flr == 0) {
+      flsb[0][0][flb] = 1;
+    }
+    else {
+      var vridr = (flr-1)%norir; //row in displayed round
+      var vrir = rowtype[vridr]; // row in round
+      var vrn = Math.ceil(flr/norir);
+      flsb[vrn][vrir][flb] = cb(flsb[vrn][vrir][flb]);
+    }
+  }  
+  
+  
+  
+  if (flc == 1) {
+    if (flr == 0) {
+      flsedca[0][0][0][0] = 1;
+      if (flb>1) {
+        flsedca[0][0][2][1] = 1;
+      }
+      else {
+        flsedca[0][0][2][flb] = 1;
+      }
+      flsedca[0][0][1][flb] = 1;
+      flsedca[0][0][3][flb] = 1;
+    }
+    else if (flr == 1) {
+      flsedca[0][1][0][0] = 1;
+      if (flb>1) {
+        flsedca[0][1][2][1] = 1;
+      }
+      else {
+        flsedca[0][1][2][flb] = 1;
+      }
+      flsedca[0][1][1][flb] = 1;
+      flsedca[0][1][3][flb] = 1;    
+    }
+    else {
+      var vridr = (flr-2)%norir; //row in displayed round
+      var vrir = rowtype[vridr]; // row in round
+      var vrn = Math.ceil((flr-1)/norir);      
+      flsedca[vrn][vrir][0][0] = 1;
+      if (flb>1) {
+        flsedca[vrn][vrir][2][1] = 1;
+      }
+      else {
+        flsedca[vrn][vrir][2][flb] = 1;
+      }
+      flsedca[vrn][vrir][1][flb] = 1;
+      flsedca[vrn][vrir][3][flb] = 1;	 
+    }
+  }
+  
+  if (flc == 3) {
+    if (flr == 0) {
+      flsedcb[0][0][0][0] = 1;
+      if (flb>1) {
+        flsedcb[0][0][2][1] = 1;
+      }
+      else {
+        flsedcb[0][0][2][flb] = 1;
+      }
+      flsedcb[0][0][1][flb] = 1;
+      flsedcb[0][0][3][flb] = 1;
+    }
+    else if (flr == 1) {
+      flsedcb[0][1][0][0] = 1;
+      if (flb>1) {
+        flsedcb[0][1][2][1] = 1;
+      }
+      else {
+        flsedcb[0][1][2][flb] = 1;
+      }
+      flsedcb[0][1][1][flb] = 1;
+      flsedcb[0][1][3][flb] = 1;    
+    }
+    else {
+      var vridr = (flr-2)%norir; //row in displayed round
+      var vrir = rowtype[vridr]; // row in round
+      var vrn = Math.ceil((flr-1)/norir);
+      flsedcb[vrn][vrir][0][0] = 1;
+      if (flb>1) {
+        flsedcb[vrn][vrir][2][1] = 1;
+      }
+      else {
+        flsedcb[vrn][vrir][2][flb] = 1;
+      }
+      flsedcb[vrn][vrir][1][flb] = 1;
+      flsedcb[vrn][vrir][3][flb] = 1;	 
+    }
+  }  
+  
+  
+  //alert("c="+flc+" r="+flr+" b="+flb);
+  
+  // function cb(bit); // change bit
+  
+  // recalculate the encryption with the injected fault
+  
+  wadd0 = addb(wab,s[0]);
+  wbdd0 = addb(wbb,s[1]);
+  
+  //alert(wab1);
+  //alert(wadd0);
+  //alert(ffd0a);
+  
+  
+  //if ((flc == 0) && (flr == 0)) {
+  //  wadd0[flb] = cb(wadd0[flb]);
+  //}
+  
+  injectfaults(0,0,0);
+  
+  //if ((flc == 2) && (flr == 0)) {
+  //  wbdd0[flb] = cb(wbdd0[flb]);
+  //}  
+  
+  injectfaults(2,0,0);
+  
+  //var va1 = new Array(ws);
+  //var va2 = new Array(ws);
+  //var vb1 = new Array(ws);
+  //var vb2 = new Array(ws);
+  var vwab = new Array(ws);
+  var vwbb = new Array(ws);
+  
+  for (var i=0; i<ws; i++) {
+    vwab[i] = wadd0[i];
+    vwbb[i] = wbdd0[i];  
+  } 
+   
+  for (var i=1; i<r+1; i++) {
+    
+    wadd[i-1][0] = xorw(vwab,vwbb);
+    
+    //if (i==1) {
+    //  alert(wadd[0][0]);
+    //  alert(ffda[0][0]);
+    //}
+    
+    injectfaults(0,i,0); // a/edca/b/edcb, round number, xor/rot/add, 
+    
+          
+    wadd[i-1][1] = lshift2(wadd[i-1][0],vwbb);
+    
+    injectfaults(0,i,1);
+    
+    wadd[i-1][2] = addb(wadd[i-1][1],s[2*i]);
+    
+    injectfaults(0,i,2);
+
+    for (var j=0; j<ws; j++) {
+      vwab[j] = wadd[i-1][2][j];
+    }
+    
+    
+    wbdd[i-1][0] = xorw(vwbb,vwab);
+    
+    injectfaults(2,i,0);
+    
+    wbdd[i-1][1] = lshift2(wbdd[i-1][0],vwab);
+    
+    
+    
+    injectfaults(2,i,1);
+    
+    wbdd[i-1][2] = addb(wbdd[i-1][1],s[2*i+1]);
+    
+    injectfaults(2,i,2);
+    
+    for (var j=0; j<ws; j++) {
+      vwbb[j] = wbdd[i-1][2][j];  
+    }  
+  }
+  
+  // calculate new edc prediction
+  
+  edcdda00[0][0] = getWordParity(wab);
+  edcdda00[1] = getByteParities(wab);
+  edcdda00[2] = getR(wab,2);
+  edcdda00[3] = getR(wab,ws/8);
+
+  edcddb00[0][0] = getWordParity(wbb);
+  edcddb00[1] = getByteParities(wbb);
+  edcddb00[2] = getR(wbb,2);
+  edcddb00[3] = getR(wbb,ws/8);
+  
+  injectfaults(1,0,0); // a/edca/b/edcb, round number, xor/rot/add
+  injectfaults(3,0,0);
+    
+  edcdda0[0][0] = predictWpAddb(wab,s[0],edcdda00[0][0],edcs[0][0][0]);
+  edcdda0[1] = predictBpAddb(wab,s[0],edcdda00[1],edcs[0][1]);
+  edcdda0[2] = predictRAddb(wab,s[0],edcdda00[2],edcs[0][2]);
+  edcdda0[3] = predictRAddb(wab,s[0],edcdda00[3],edcs[0][3]);
+  
+  edcddb0[0][0] = predictWpAddb(wbb,s[1],edcddb00[0][0],edcs[1][0][0]);
+  edcddb0[1] = predictBpAddb(wbb,s[1],edcddb00[1],edcs[1][1]);
+  edcddb0[2] = predictRAddb(wbb,s[1],edcddb00[2],edcs[1][2]);
+  edcddb0[3] = predictRAddb(wbb,s[1],edcddb00[3],edcs[1][3]);
+  
+  injectfaults(1,0,1);
+  injectfaults(3,0,1);
+
+  // for i==1 ; other arguments than in loop
+  
+  //vwbb = ffd0b
+  
+  //va1 = xorw(vwab,vwbb);
+  edcdda[0][0][0][0] = predictWpXor(edcdda0[0][0],edcddb0[0][0]);
+  edcdda[0][0][1] = predictBpXor(edcdda0[1],edcddb0[1]);
+  edcdda[0][0][2] = predictRXor(wadd0,wbdd0,edcdda0[2],edcddb0[2]);
+  edcdda[0][0][3] = predictRXor(wadd0,wbdd0,edcdda0[3],edcddb0[3]);
+  
+  injectfaults(1,1,0); // a/edca/b/edcb, round number, xor/rot/add
+    
+  //va2 = lshift2(va1,vwbb);
+  edcdda[0][1][0][0] = edcdda[0][0][0][0]; // Word Parity stays the same when rotating
+  edcdda[0][1][1] = predictBpLRot2(wadd[0][0],edcdda[0][0][1],wbdd0);
+  edcdda[0][1][2] = predictRLRot2(edcdda[0][0][2],wbdd0);
+  edcdda[0][1][3] = predictRLRot2(edcdda[0][0][3],wbdd0);
+  
+  injectfaults(1,1,1); // a/edca/b/edcb, round number, xor/rot/add
+    
+  //vwab = addb(va2,s[2*i]);
+  edcdda[0][2][0][0] = predictWpAddb(wadd[0][1],s[2],edcdda[0][1][0][0],edcs[2][0][0]);
+  edcdda[0][2][1] = predictBpAddb(wadd[0][1],s[2],edcdda[0][1][1],edcs[2][1]);
+  edcdda[0][2][2] = predictRAddb(wadd[0][1],s[2],edcdda[0][1][2],edcs[2][2]);
+  edcdda[0][2][3] = predictRAddb(wadd[0][1],s[2],edcdda[0][1][3],edcs[2][3]);
+  
+  injectfaults(1,1,2); // a/edca/b/edcb, round number, xor/rot/add
+    
+  //ffda[i-1][0] = va1;
+  //ffda[i-1][1] = va2;
+  //ffda[i-1][2] = vwab;
+    
+    
+    
+  //vwbb = ffdb[i-2][2]
+  //vwab = ffda[i-1][2]
+    
+  //vb1 = xorw(vwbb,vwab);
+  edcddb[0][0][0][0] = predictWpXor(edcddb0[0][0],edcdda[0][2][0][0]);
+  edcddb[0][0][1] = predictBpXor(edcddb0[1],edcdda[0][2][1]);
+  edcddb[0][0][2] = predictRXor(wbdd0,wadd[0][2],edcddb0[2],edcdda[0][2][2]);
+  edcddb[0][0][3] = predictRXor(wbdd0,wadd[0][2],edcddb0[3],edcdda[0][2][3]);
+  
+  injectfaults(3,1,0); // a/edca/b/edcb, round number, xor/rot/add
+    
+  //vb2 = lshift2(vb1,vwab);
+  edcddb[0][1][0][0] = edcddb[0][0][0][0];
+  edcddb[0][1][1] = predictBpLRot2(wbdd[0][0],edcddb[0][0][1],wadd[0][2]);
+  edcddb[0][1][2] = predictRLRot2(edcddb[0][0][2],wadd[0][2]);
+  edcddb[0][1][3] = predictRLRot2(edcddb[0][0][3],wadd[0][2]);
+  
+  injectfaults(3,1,1); // a/edca/b/edcb, round number, xor/rot/add
+
+  //vwbb = addb(vb2,s[2*i+1]);
+  edcddb[0][2][0][0] = predictWpAddb(wbdd[0][1],s[3],edcddb[0][1][0][0],edcs[3][0][0]);
+  edcddb[0][2][1] = predictBpAddb(wbdd[0][1],s[3],edcddb[0][1][1],edcs[3][1]);
+  edcddb[0][2][2] = predictRAddb(wbdd[0][1],s[3],edcddb[0][1][2],edcs[3][2]);
+  edcddb[0][2][3] = predictRAddb(wbdd[0][1],s[3],edcddb[0][1][3],edcs[3][3]);
+  
+  injectfaults(3,1,2); // a/edca/b/edcb, round number, xor/rot/add
+    
+  //ffdb[i-1][0] = vb1;
+  //ffdb[i-1][1] = vb2;
+  //ffdb[i-1][2] = vwbb; 
+  
+  //alert(wab);
+  
+  for (var i=2; i<r+1; i++) {
+    
+    //va1 = xorw(vwab,vwbb);
+    edcdda[i-1][0][0][0] = predictWpXor(edcdda[i-2][2][0][0],edcddb[i-2][2][0][0]);
+    edcdda[i-1][0][1] = predictBpXor(edcdda[i-2][2][1],edcddb[i-2][2][1]);
+    edcdda[i-1][0][2] = predictRXor(wadd[i-2][2],wbdd[i-2][2],edcdda[i-2][2][2],edcddb[i-2][2][2]);
+    edcdda[i-1][0][3] = predictRXor(wadd[i-2][2],wbdd[i-2][2],edcdda[i-2][2][3],edcddb[i-2][2][3]);
+    
+    injectfaults(1,i,0); // a/edca/b/edcb, round number, xor/rot/add
+    
+    //va2 = lshift2(va1,vwbb);
+    edcdda[i-1][1][0][0] = edcdda[i-1][0][0][0]; // Word Parity stays the same when rotating
+    edcdda[i-1][1][1] = predictBpLRot2(wadd[i-1][0],edcdda[i-1][0][1],wbdd[i-2][2]);
+    edcdda[i-1][1][2] = predictRLRot2(edcdda[i-1][0][2],wbdd[i-2][2]);
+    edcdda[i-1][1][3] = predictRLRot2(edcdda[i-1][0][3],wbdd[i-2][2]);
+    
+    injectfaults(1,i,1); // a/edca/b/edcb, round number, xor/rot/add
+    
+    //vwab = addb(va2,s[2*i]);
+    edcdda[i-1][2][0][0] = predictWpAddb(wadd[i-1][1],s[2*i],edcdda[i-1][1][0][0],edcs[2*i][0][0]);
+    edcdda[i-1][2][1] = predictBpAddb(wadd[i-1][1],s[2*i],edcdda[i-1][1][1],edcs[2*i][1]);
+    edcdda[i-1][2][2] = predictRAddb(wadd[i-1][1],s[2*i],edcdda[i-1][1][2],edcs[2*i][2]);
+    edcdda[i-1][2][3] = predictRAddb(wadd[i-1][1],s[2*i],edcdda[i-1][1][3],edcs[2*i][3]);
+    
+    injectfaults(1,i,2); // a/edca/b/edcb, round number, xor/rot/add
+    
+    //ffda[i-1][0] = va1;
+    //ffda[i-1][1] = va2;
+    //ffda[i-1][2] = vwab;
+    
+    //vwbb = ffdb[i-2][2]
+    //vwab = ffda[i-1][2]
+    
+    //vb1 = xorw(vwbb,vwab);
+    edcddb[i-1][0][0][0] = predictWpXor(edcddb[i-2][2][0][0],edcdda[i-1][2][0][0]);
+    edcddb[i-1][0][1] = predictBpXor(edcddb[i-2][2][1],edcdda[i-1][2][1]);
+    edcddb[i-1][0][2] = predictRXor(wbdd[i-2][2],wadd[i-1][2],edcddb[i-2][2][2],edcdda[i-1][2][2]);
+    edcddb[i-1][0][3] = predictRXor(wbdd[i-2][2],wadd[i-1][2],edcddb[i-2][2][3],edcdda[i-1][2][3]);
+    
+    //if (i==2) {alert(edcddb[1][0][3]);}
+    
+    injectfaults(3,i,0); // a/edca/b/edcb, round number, xor/rot/add
+    
+    //if (i==2) {alert(edcddb[1][0][3]);}
+    
+    //vb2 = lshift2(vb1,vwab);
+    edcddb[i-1][1][0][0] = edcddb[i-1][0][0][0];
+    edcddb[i-1][1][1] = predictBpLRot2(wbdd[i-1][0],edcddb[i-1][0][1],wadd[i-1][2]);
+    edcddb[i-1][1][2] = predictRLRot2(edcddb[i-1][0][2],wadd[i-1][2]);
+    edcddb[i-1][1][3] = predictRLRot2(edcddb[i-1][0][3],wadd[i-1][2]);
+    
+    //if (i==2) {alert(edcddb[1][0][3]);}
+    
+    injectfaults(3,i,1); // a/edca/b/edcb, round number, xor/rot/add
+
+    //if (i==2) {alert(edcddb[1][0][3]);}
+
+    //vwbb = addb(vb2,s[2*i+1]);
+    edcddb[i-1][2][0][0] = predictWpAddb(wbdd[i-1][1],s[2*i+1],edcddb[i-1][1][0][0],edcs[2*i+1][0][0]);
+    edcddb[i-1][2][1] = predictBpAddb(wbdd[i-1][1],s[2*i+1],edcffb[i-1][1][1],edcs[2*i+1][1]);
+    edcddb[i-1][2][2] = predictRAddb(wbdd[i-1][1],s[2*i+1],edcddb[i-1][1][2],edcs[2*i+1][2]);
+    edcddb[i-1][2][3] = predictRAddb(wbdd[i-1][1],s[2*i+1],edcddb[i-1][1][3],edcs[2*i+1][3]);
+    
+    injectfaults(3,i,2); // a/edca/b/edcb, round number, xor/rot/add
+    
+    //ffdb[i-1][0] = vb1;
+    //ffdb[i-1][1] = vb2;
+    //ffdb[i-1][2] = vwbb;    
+  }
+  
+  
+  
+  
+  
+    
+  determine_all_faulty_bits();
+  
+  calculate_checkpoint_error_detection();
+  
+  draw_cfg_with_enc();
+}
+
+function calculate_checkpoint_error_detection() {
+
+  if (cps[0] == 1) {
+    var vwpa = getWordParity(wadd0);
+    var vbpa = getByteParities(wadd0);
+    
+    //alert(vbpa);
+    //alert(edcdda0[1]);
+    var vr2a = getR(wadd0,2);
+    var vr248a = getR(wadd0,ws/8);
+    
+    var vwpb = getWordParity(wbdd0);
+    var vbpb = getByteParities(wbdd0);
+    var vr2b = getR(wbdd0,2);
+    var vr248b = getR(wbdd0,ws/8);
+    
+    if ((edcdda0[0][0] == vwpa) && (edcddb0[0][0] == vwpb)) {
+      cpeds[0][0] = 0;
+    }
+    else {
+      cpeds[0][0] = 1;
+    }
+    
+    if ((ise(edcdda0[1],vbpa) == 1) && (ise(edcddb0[1],vbpb) == 1)) {
+      cpeds[0][1] = 0;
+    }
+    else {
+      cpeds[0][1] = 1;
+    }    
+
+    if ((ise(edcdda0[2],vr2a) == 1) && (ise(edcddb0[2],vr2b) == 1)) {
+      cpeds[0][2] = 0;
+    }
+    else {
+      cpeds[0][2] = 1;
+    }   
+    
+    if ((ise(edcdda0[3],vr248a) == 1) && (ise(edcddb0[3],vr248b) == 1)) {
+      cpeds[0][3] = 0;
+    }
+    else {
+      cpeds[0][3] = 1;
+    }       
+  }
+  
+  for (var i=1; i<r+1; i++) {
+  
+    if (cps[i] == 1) { // reduces calculation
+  
+    var vwpa = getWordParity(wadd[i-1][2]);
+    var vbpa = getByteParities(wadd[i-1][2]);
+    var vr2a = getR(wadd[i-1][2],2);
+    var vr248a = getR(wadd[i-1][2],ws/8);
+    
+    var vwpb = getWordParity(wbdd[i-1][2]);
+    var vbpb = getByteParities(wbdd[i-1][2]);
+    var vr2b = getR(wbdd[i-1][2],2);
+    var vr248b = getR(wbdd[i-1][2],ws/8);
+
+    if ((edcdda[i-1][2][0][0] == vwpa) && (edcddb[i-1][2][0][0] == vwpb)) {
+      cpeds[i][0] = 0;
+    }
+    else {
+      cpeds[i][0] = 1;
+    }
+    
+    if ((ise(edcdda[i-1][2][1],vbpa) == 1) && (ise(edcddb[i-1][2][1],vbpb) == 1)) {
+      cpeds[i][1] = 0;
+    }
+    else {
+      cpeds[i][1] = 1;
+    }    
+
+    if ((ise(edcdda[i-1][2][2],vr2a) == 1) && (ise(edcddb[i-1][2][2],vr2b) == 1)) {
+      cpeds[i][2] = 0;
+    }
+    else {
+      cpeds[i][2] = 1;
+    }   
+    
+    if ((ise(edcdda[i-1][2][3],vr248a) == 1) && (ise(edcddb[i-1][2][3],vr248b) == 1)) {
+      cpeds[i][3] = 0;
+    }
+    else {
+      cpeds[i][3] = 1;
+    }  
+    
+    } // end of "if (cps[i] == 1)"    
+  }
+}
+
+
+function injectfaults(vc,rn,xra) { // a/edca/b/edcb, round number, xor/rot/add,
+  if (vc == 0) {
+    for (var i=0; i<ws; i++) {
+      if (flsa[rn][xra][i] == 1) {
+        if (rn == 0) {
+	  wadd0[i] = cb(wadd0[i]);
+	}
+	else {
+	  wadd[rn-1][xra][i] = cb(wadd[rn-1][xra][i]);
+	}
+      }
+    }
+  }
+  if (vc == 2) {
+    for (var i=0; i<ws; i++) {
+      if (flsb[rn][xra][i] == 1) {
+        if (rn == 0) {
+	  wbdd0[i] = cb(wbdd0[i]);
+	}
+	else {
+	  wbdd[rn-1][xra][i] = cb(wbdd[rn-1][xra][i]);
+	}
+      }
+    }
+  }      
+
+  // for EDCs
+
+  
+
+  if (vc == 1) {
+    for (var i=0; i<4; i++) {
+      for (var j=0; j<ws/8; j++) {
+        if (flsedca[rn][xra][i][j] == 1) {
+	  if (rn == 0) {
+	    if (xra == 0) {
+	      edcdda00[i][j] = cb(edcdda00[i][j]);
+	    }
+	    else { // if xra == 1
+	      edcdda0[i][j] = cb(edcdda0[i][j]);
+	    }
+	  }
+	  else {
+	    edcdda[rn-1][xra][i][j] = cb(edcdda[rn-1][xra][i][j]);
+	  }
+	}
+      }
+    }
+  }
+
+  if (vc == 3) {
+  
+  //if (rn==2) {alert(edcddb[1][0][3]);}
+  
+    for (var i=0; i<4; i++) {
+      for (var j=0; j<ws/8; j++) {
+        if (flsedcb[rn][xra][i][j] == 1) {
+	  //alert("test");
+	  if (rn == 0) {
+	    if (xra == 0) {
+	      edcddb00[i][j] = cb(edcddb00[i][j]);
+	    }
+	    else { // if xra == 1
+	      edcddb0[i][j] = cb(edcddb0[i][j]);
+	    }
+	  }
+	  else {
+	    //alert(rn-1+" "+xra+" "+i+" "+j);
+	    edcddb[rn-1][xra][i][j] = cb(edcddb[rn-1][xra][i][j]);
+	  }
+	}
+      }
+    }
+    //if (rn==2) {alert(edcddb[1][0][3]);}
+  }
+
+
+}
+
+function determine_all_faulty_bits() { // change of dc (display color)
+
+  for (var i=0; i<ws; i++) {
+    if (ffd0a[i] != wadd0[i]) {
+      wadc0[i] = 1;
+    }
+    else {
+      wadc0[i] = 0;
+    }
+  }
+  
+  for (var i=0; i<ws/4; i++) {
+    wadc0h[i] = 0;
+    for (var j=0; j<4; j++) {
+      if (wadc0[4*i+j] == 1) {
+        wadc0h[i] = 1;
+      }
+    }
+  }
+  
+  for (var i=0; i<r; i++) {
+    for (var j=0; j<3; j++) {
+      for (var k=0; k<ws; k++) {
+        if (ffda[i][j][k] == wadd[i][j][k]) {
+	  wadc[i][j][k] = 0;
+	}
+        else {
+	  wadc[i][j][k] = 1;
+	}
+      }
+    }
+  }
+  
+  for (var i=0; i<r; i++) {
+    for (var j=0; j<3; j++) {
+      for (var k=0; k<ws/4; k++) {  
+        wadch[i][j][k] = 0;
+        for (var l=0; l<4; l++) {
+          if (wadc[i][j][4*k+l] == 1) {
+	    wadch[i][j][k] = 1;
+	  }
+        }
+      }
+    }
+  }
+  
+
+  for (var i=0; i<ws; i++) {
+    if (ffd0b[i] != wbdd0[i]) {
+      wbdc0[i] = 1;
+    }
+    else {
+      wbdc0[i] = 0;
+    }
+  }
+  
+  for (var i=0; i<ws/4; i++) {
+    wbdc0h[i] = 0;
+    for (var j=0; j<4; j++) {
+      if (wbdc0[4*i+j] == 1) {
+        wbdc0h[i] = 1;
+      }
+    }
+  }
+  
+  for (var i=0; i<r; i++) {
+    for (var j=0; j<3; j++) {
+      for (var k=0; k<ws; k++) {
+        if (ffdb[i][j][k] != wbdd[i][j][k]) {
+	  wbdc[i][j][k] = 1;
+	}
+        else {
+	  wbdc[i][j][k] = 0;
+	}
+      }
+    }
+  }
+  
+  for (var i=0; i<r; i++) {
+    for (var j=0; j<3; j++) {
+      for (var k=0; k<ws/4; k++) {  
+        wbdch[i][j][k] = 0;
+        for (var l=0; l<4; l++) {
+          if (wbdc[i][j][4*k+l] == 1) {
+	    wbdch[i][j][k] = 1;
+	  }
+        }
+      }
+    }
+  }
+  
+  //for EDCs
+  
+  for (var i=0; i<4; i++) {
+    for (var j=0; j<edcffa00[i].length; j++) {
+      if (edcffa00[i][j] == edcdda00[i][j]) {
+        edcdca00[i][j] = 0;
+      }
+      else {
+        edcdca00[i][j] = 1;
+      }
+    }
+  }
+  
+  for (var i=0; i<4; i++) {
+    for (var j=0; j<edcffa0[i].length; j++) {
+      if (edcffa0[i][j] == edcdda0[i][j]) {
+        edcdca0[i][j] = 0;
+      }
+      else {
+        edcdca0[i][j] = 1;
+      }
+    }
+  }  
+  
+  for (var i=0; i<4; i++) {
+    for (var j=0; j<edcffb00[i].length; j++) {
+      if (edcffb00[i][j] == edcddb00[i][j]) {
+        edcdcb00[i][j] = 0;
+      }
+      else {
+        edcdcb00[i][j] = 1;
+      }
+    }
+  }
+  
+  for (var i=0; i<4; i++) {
+    for (var j=0; j<edcffb0[i].length; j++) {
+      if (edcffb0[i][j] == edcddb0[i][j]) {
+        edcdcb0[i][j] = 0;
+      }
+      else {
+        edcdcb0[i][j] = 1;
+      }
+    }
+  }    
+  
+  
+  for (var i=0; i<r; i++) {
+    for (var j=0; j<3; j++) {
+      for (var k=0; k<4; k++) {
+        for (var l=0; l<edcffa[i][j][k].length; l++) {
+	  if (edcffa[i][j][k][l] == edcdda[i][j][k][l]) {
+	    edcdca[i][j][k][l] = 0;
+	  }
+	  else {
+	    edcdca[i][j][k][l] = 1;
+	  }
+	}
+      }
+    }
+  }
+
+  for (var i=0; i<r; i++) {
+    for (var j=0; j<3; j++) {
+      for (var k=0; k<4; k++) {
+        for (var l=0; l<edcffb[i][j][k].length; l++) {
+	  if (edcffb[i][j][k][l] == edcddb[i][j][k][l]) {
+	    edcdcb[i][j][k][l] = 0;
+	  }
+	  else {
+	    edcdcb[i][j][k][l] = 1;
+	  }
+	}
+      }
+    }
+  }  
+     
+
+}
+
+//--------------------------------------------------------------------------------------- Draw New Configuration Display --------------
+
+function draw_new_cfg_display() {
+  parent.frames[1].document.open();
+  configuration_display();
+  
+  d += "</form></body></html>\n";
+
+  parent.frames[1].document.write(d);
+  parent.frames[1].document.close();
+
+}
+
+function draw_cfg_with_s() {
+  parent.frames[1].document.open();
+  configuration_display();
+  expanded_key_table();
+  d += "</form></body></html>\n";
+
+  parent.frames[1].document.write(d);
+  parent.frames[1].document.close();
+
+}
+
+function draw_cfg_with_enc() {
+  parent.frames[1].document.open();
+  configuration_display();
+  encryption_display();
+  d += "</form></body></html>\n";
+
+  parent.frames[1].document.write(d);
+  parent.frames[1].document.close();
+
+}
+
+/*
+function ctime_note() {
+  parent.frames[1].document.open();
+  var ctn = "<html><head><title>RC5</title></head><body>";
+  ctn += "<p>&nbsp;</p><p>&nbsp;</p>";
+  ctn += "<p align=\"center\">computing data - this may take a few minutes</p></body></html>";
+  
+  parent.frames[1].document.write(ctn);
+  parent.frames[1].document.close();
+  
+}
+*/
+
+
+function configuration_display() {
+
+  
+  d = "<html>\n";
+  d += "<head>\n";
+  d += "<title>RC5</title></head><body>\n";
+
+  d += "<form><h3 align=\"center\"><b><u><font color=\"#000080\">\n";
+  d += "Simulator for Concurrent Fault Detection in a Hardware Implementation of the RC5 Encryption Algorithm</font></u></b></h3>\n";
+
+  d += "<table border=\"0\" cellspacing=\"0\" width=\"100%\"><tr><td width=\"70%\" align=\"center\">\n";
+  
+  d += "<table border=\"0\" align=\"center\" cellspacing=\"0\"><tr><td colspan=\"3\" height=\"4\" bgcolor=\"#CCFFCC\"></td></tr>\n";
+
+  d += "<tr><td bgcolor=\"#CCFFCC\">&nbsp;&nbsp;</td><td bgcolor=\"#CCFFCC\">\n";
+  
+  d += "<b><u>Encryption</u></b>";
+  
+  /*
+  d += "<select size=\"1\" name=\"ed\" onchange=\"parent.frames[0].encryption_decryption()\">\n";
+  
+  if (edbar == 1) {
+    d += "<option selected value=\"1\">Encryption</option>\n";
+    d += "<option value=\"0\">Decryption</option>\n";
+  }
+  else {
+    d += "<option value=\"1\">Encryption</option>\n";
+    d += "<option selected value=\"0\">Decryption</option>\n";
+  }
+        
+  d += "</select>
+  */
+  
+  d += "</td><td bgcolor=\"#CCFFCC\">&nbsp;&nbsp;</td><tr><td colspan=\"3\" height=\"4\" bgcolor=\"#CCFFCC\"></td>\n";
+  d += "</tr></table></td>\n";
+  d += "<td align=\"right\" valign=\"middle\"><input type=\"button\" value=\"Reset\" onClick='parent.location.href=\"rc5.htm\"'>\n";
+  d += "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; <input type=\"button\" value=\"Help\" onClick=\"parent.frames[0].help()\">\n";
+  d += "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td></tr>\n";
+    
+  d += "<tr><td colspan=\"2\" height=\"6\"></td></tr><tr><td colspan=\"2\"><table border=\"0\" cellspacing=\"0\">\n";
+  d += "<tr><td colspan=\"1\" height=\"4\" bgcolor=\"#CCFFCC\"></td></tr>\n";
+  d += "<tr><td bgcolor=\"#CCFFCC\" nowrap><b>&nbsp;&nbsp; Word Size: </b>\n";
+  d += "<select size=\"1\" name=\"wordsize\" onchange=\"parent.frames[0].word_size_change()\">\n";
+  if (ws == 16) {
+    d += "<option selected value=\"16\">16 bit</option>\n";
+    d += "<option value=\"32\">32 bit</option>\n";
+    d += "<option value=\"64\">64 bit</option>\n";
+  }
+  else if (ws == 32) {
+    d += "<option value=\"16\">16 bit</option>\n";
+    d += "<option selected value=\"32\">32 bit</option>\n";
+    d += "<option value=\"64\">64 bit</option>\n";  
+  }
+  else if (ws == 64) {
+    d += "<option value=\"16\">16 bit</option>\n";
+    d += "<option value=\"32\">32 bit</option>\n";
+    d += "<option selected value=\"64\">64 bit</option>\n";  
+  }
+          
+  d += "</select>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>\n";
+  if (edbar == 1) {
+    d += "Plaintext: </b>\n";
+  }
+  else {
+    d += "Ciphertext: </b>\n";
+  }
+    
+  d += "<input type=\"text\" name=\"inputtext\" size=\"32\" value=\"" + itext + "\">\n";
+  d += "<input type=\"button\" value=\"Random\" onClick=\"parent.frames[0].randomtext()\">\n";
+      
+  d += "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\n";
+  d += "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\n";
+      
+  d += "</td></tr><tr><td colspan=\"1\" height=\"4\" bgcolor=\"#CCFFCC\"></td></tr></table></td></tr></table>\n";
+
+  d += "<table border=\"0\" cellspacing=\"0\" cellpadding=\"0\">\n";
+  d += "<tr><td colspan=\"5\" height=\"3\"></td></tr><tr>\n";
+  d += "<td nowrap bgcolor=\"#CCFFCC\"><b>&nbsp;&nbsp; Number of Rounds:</b>&nbsp; </td>\n";
+  d += "<td nowrap  bgcolor=\"#CCFFCC\"><input type=\"text\" name=\"numberofrounds\" size=\"3\" value=\"" + r + "\"></td>\n";
+  d += "<td nowrap  bgcolor=\"#CCFFCC\"><input type=\"button\" value=\"Apply\" onClick=\"parent.frames[0].change_round_number()\">\n";
+  d += "&nbsp;&nbsp;&nbsp;</td><td nowrap> &nbsp</td><td nowrap>\n";
+  
+  d += "<table border=\"0\" cellspacing=\"0\"><tr>\n";
+  d += "<td rowspan=\"3\" bgcolor=\"#99CCFF\">&nbsp;&nbsp;&nbsp;</td>\n";
+  d += "<td height=\"4\" bgcolor=\"#99CCFF\"></td>\n";
+  d += "<td rowspan=\"3\" bgcolor=\"#99CCFF\" nowrap>&nbsp;&nbsp;&nbsp;";
+  d += "<input type=\"button\" value=\"Select all\" onClick=\"parent.frames[0].select_all_cps()\">&nbsp;&nbsp;&nbsp;</td></tr>\n";
+	  
+  d += "<tr><td nowrap><table border=\"1\"><tr align=\"center\">\n";
+  d += "<td align=\"center\" nowrap>Round# </td>\n";
+  d += "<td>&nbsp;</td>\n";
+  for (var i=1; i<(r+1); i++) {
+    d += "<td>" + i + "</td>\n";
+  }
+  d += "</tr><tr align=\"center\"><td>Checkpoints</td>\n";
+  for (var i=0; i<(r+1); i++) {
+    if (cps[i] == 0) {
+      d += "<td><input type=\"checkbox\" name=\"cp1\"></td>\n";
+    }
+    else {
+      d += "<td><input type=\"checkbox\" name=\"cp1\" checked></td>\n";
+    }
+  }
+  d += "</tr></table></td></tr><tr><td height=\"4\" bgcolor=\"#99CCFF\"></td></tr></table></td></tr>  </table>\n";
+  
+  d += "<table border=\"0\" cellspacing=\"0\" cellpadding=\"0\"><tr><td colspan=\"5\" height=\"3\"></td></tr>\n";
+
+  d += "<tr><td height=\"6\" bgcolor=\"#CCFFCC\"></td><td height=\"6\"></td><td height=\"6\" bgcolor=\"#CCFFCC\"></td>\n";
+  d += "<td height=\"6\"></td><td height=\"6\" bgcolor=\"#CCFFCC\"></td></tr>\n";
+
+  d += "<tr><td nowrap bgcolor=\"#CCFFCC\"><b>&nbsp;&nbsp; Secret Key:</b>\n"; 
+  d += "<input type=\"text\" name=\"secretkey\" size=\"40\" value=\"" + keys + "\">\n";
+  d += "<input type=\"button\" value=\"Apply\" onClick=\"parent.frames[0].key_change()\">&nbsp;&nbsp;</td>\n";
+  d += "<td nowrap> &nbsp</td><td nowrap bgcolor=\"#CCFFCC\">&nbsp;\n"; 
+  d += "<input type=\"button\" value=\"Random Secret Key\" onClick=\"parent.frames[0].random_key()\">\n";
+  d += "with <input type=\"text\" name=\"bvalue\" size=\"3\" value=\"" + b + "\">  bytes&nbsp;&nbsp;</td>\n";
+  d += "<td nowrap> &nbsp</td><td nowrap bgcolor=\"#CCFFCC\">&nbsp;\n"; 
+  d += "<input type=\"button\" value=\"Show Expanded Key Table\" onClick=\"parent.frames[0].show_s()\">&nbsp;&nbsp;</td></tr>\n";
+  d += "<tr><td height=\"6\" bgcolor=\"#CCFFCC\"></td><td height=\"6\"></td><td height=\"6\" bgcolor=\"#CCFFCC\"></td>\n";
+  d += "<td height=\"6\"></td><td height=\"6\" bgcolor=\"#CCFFCC\"></td></tr><tr><td colspan=\"5\" height=\"4\"></td></tr></table>\n";
+
+  d += "<table border=\"0\" cellspacing=\"0\"><tr><td bgcolor=\"#E4A69E\" nowrap>\n";
+  d += "&nbsp;&nbsp; <b>Display Data after:&nbsp; </b></td>\n";
+  d += "<td bgcolor=\"#E4A69E\" nowrap>\n";
+  if (edbar == 1) {
+    d += "<b>XOR</b>\n";
+  }
+  else {
+    d += "<b>Subtraction</b>\n";
+  }
+  d += "</td><td bgcolor=\"#E4A69E\" nowrap>\n";
+  
+  if (dc[0] == 0) {
+    d += "<input type=\"checkbox\" name=\"displaycfg\">\n";
+  }
+  else {
+    d += "<input type=\"checkbox\" name=\"displaycfg\" checked>\n";
+  }
+  
+  d += "</td><td nowrap rowspan=\"3\" valign=\"middle\">&nbsp; </td><td nowrap rowspan=\"3\" valign=\"middle\" bgcolor=\"#E4A69E\">\n";
+  d += "<table border=\"0\" cellspacing=\"0\"><tr><td bgcolor=\"#E4A69E\" nowrap><b>&nbsp;Block Data Display:&nbsp; </b></td>\n";
+  d += "<td bgcolor=\"#E4A69E\" nowrap><b>BIN</b></td><td bgcolor=\"#E4A69E\" nowrap>\n";
+  if (dchbbar == 0) {
+    d += "<input type=\"radio\" name=\"bin_hex\" value=\"0\" checked>\n";
+  }
+  else {
+    d += "<input type=\"radio\" name=\"bin_hex\" value=\"0\">\n";
+  }
+  d += "&nbsp;&nbsp;</td></tr><tr><td bgcolor=\"#E4A69E\" nowrap><b>&nbsp; </b></td>\n";
+  d += "<td bgcolor=\"#E4A69E\" nowrap><b>HEX</b></td>\n";
+  d += "<td bgcolor=\"#E4A69E\" nowrap>\n";
+  if (dchbbar == 0) {
+    d += "<input type=\"radio\" name=\"bin_hex\" value=\"1\">\n";
+  }
+  else {
+    d += "<input type=\"radio\" name=\"bin_hex\" value=\"1\" checked>\n";
+  }
+  d += "</td></tr></table></td><td nowrap rowspan=\"3\" valign=\"middle\">&nbsp; </td>\n";
+  
+  d += "<td rowspan=\"3\" valign=\"middle\" bgcolor=\"#FF0000\" nowrap>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\n";
+  d += "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>\n";
+  d += "<td rowspan=\"3\" valign=\"middle\" bgcolor=\"#FF0000\" nowrap>\n";
+  if (edbar == 1) {
+    d += "<input type=\"button\" value=\"Show Encryption\" onClick=\"parent.frames[0].start()\">\n";
+  }
+  else {
+    d += "<input type=\"button\" value=\"Show Decryption\" onClick=\"parent.frames[0].start()\">\n";
+  }
+  d += "</td>\n";
+  d += "<td rowspan=\"3\" valign=\"middle\" bgcolor=\"#FF0000\" nowrap>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\n";
+  d += "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<td rowspan=\"3\">&nbsp;&nbsp;</td>\n";
+  d += "<td nowrap rowspan=\"3\" bgcolor=\"#000080\"><table border=\"0\" cellspacing=\"0\" valign=\"middle\"><tr>\n";
+  d += "<td nowrap bgcolor=\"#000080\">&nbsp; &nbsp;<u><font color=\"#CCFFCC\">Current RC5 Algorithm:</font></u>&nbsp;&nbsp;</td></tr>\n";
+  d += "<tr><td align=\"center\" bgcolor=\"#000080\"><b><font color=\"#CCFFCC\">RC5-"+ws+"/"+r+"/"+b+"</font> </b></td>\n";
+  d += "</tr></table></td></tr>\n";
+  d += "<tr><td bgcolor=\"#E4A69E\" nowrap>&nbsp; </td>\n";
+  d += "<td bgcolor=\"#E4A69E\" nowrap><b>Rotation</b></td><td bgcolor=\"#E4A69E\" nowrap>\n";
+  if (dc[1] == 0) {
+    d += "<input type=\"checkbox\" name=\"displaycfg\">\n";
+  }
+  else {
+    d += "<input type=\"checkbox\" name=\"displaycfg\" checked>\n";
+  }  
+  d += "&nbsp;&nbsp;</td></tr>\n";
+  d += "<tr><td bgcolor=\"#E4A69E\" nowrap>&nbsp; </td><td bgcolor=\"#E4A69E\" nowrap>\n";
+  if (edbar == 1) {
+    d += "<b>Addition</b>\n";
+  }
+  else {
+    d += "<b>XOR</b>\n";
+  }   
+  d += "</td><td bgcolor=\"#E4A69E\" nowrap>\n";
+  if (dc[2] == 0) {
+    d += "<input type=\"checkbox\" name=\"displaycfg\">\n";
+  }
+  else {
+    d += "<input type=\"checkbox\" name=\"displaycfg\" checked>\n";
+  }  
+  d += "</td></tr><tr><td colspan=\"11\" height=\"4\"></td></tr></table>\n";
+}
+
+function expanded_key_table() {
+
+  d += "<table border=\"1\" width=\"100%\" bgcolor=\"#EDEBED\"><tr><td align=\"center\"><p>&nbsp;</p>\n";
+  d += "<p align=\"center\"><b><u><font size=\"4\">Expanded Key Table S</font></u></b></p>\n";
+  d += "<table border=\"1\" align=\"center\" bgcolor=\"#FFFFFF\"><tr><td>\n"; 
+  d += "<table border=\"0\" align=\"center\"><tr><td bgcolor=\"#00CC99\" nowrap><b>&nbsp;&nbsp; Word Number&nbsp;&nbsp; </b></td>\n";
+  d += "<td bgcolor=\"#00CC99\" nowrap align=\"center\"><b>Data </b></td></tr>\n";
+  
+  var bc = "#99FF99"; // background color
+  var v1 = new Array(ws);
+  for (var i=0; i<2*(r+1); i++) {
+    d += "<tr><td bgcolor=\"" + bc + "\" nowrap align=\"center\"><b>" + (i+1) + "</b></td>\n";
+    v1 = rv2(s[i]);//reverse v2
+    d += "<td bgcolor=\"" + bc + "\" nowrap><b>&nbsp;&nbsp; "+ v1.join("") +"&nbsp;&nbsp;&nbsp; </b></td></tr>\n";
+    
+    if (bc == "#99FF99") {
+      bc = "#CCFFCC";
+    }
+    else {
+      bc = "#99FF99";
+    }
+  }
+  d += "</table></td></tr></table><p>&nbsp;</p></td></tr></table>\n";
+}
+
+function encryption_display() {
+
+  d += "<table border=\"1\" align=\"center\"><tr><td><table border=\"0\"><tr>\n";
+  d += "<td bgcolor=\"#00CC99\" nowrap align=\"center\" rowspan=\"2\" valign=\"middle\"><b>&nbsp;Round#&nbsp;</b></td>\n";
+  d += "<td bgcolor=\"#00CC99\" nowrap align=\"center\" rowspan=\"2\" colspan=\"2\" valign=\"middle\"><b>Word A</b></td>\n";
+  d += "<td bgcolor=\"#00CC99\" nowrap align=\"center\" colspan=\"5\"><b>EDCs for A</b></td>\n";
+  
+  d += "<td bgcolor=\"#00CC99\" nowrap align=\"center\" rowspan=\"2\" colspan=\"2\" valign=\"middle\"><b>Word B</b></td>\n";
+  d += "<td bgcolor=\"#00CC99\" nowrap align=\"center\" colspan=\"5\"><b>EDCs for B</b></td></tr>\n";
+ 
+  d += "<tr><td bgcolor=\"#00CC99\" nowrap align=\"center\"><b>WP</b></td>\n";
+  d += "<td bgcolor=\"#00CC99\" nowrap align=\"center\"><b>BP</b></td>\n";
+  d += "<td bgcolor=\"#00CC99\" nowrap align=\"center\"><b>R2</b></td>\n";
+  d += "<td bgcolor=\"#00CC99\" nowrap align=\"center\"><b>R"+ ws/8 +"</b></td>\n"; // maybe do not display when ws==16
+  d += "<td bgcolor=\"#00CC99\" nowrap align=\"center\"></td>\n";
+
+  d += "<td bgcolor=\"#00CC99\" nowrap align=\"center\"><b>WP</b></td>\n";
+  d += "<td bgcolor=\"#00CC99\" nowrap align=\"center\"><b>BP</b></td>\n";
+  d += "<td bgcolor=\"#00CC99\" nowrap align=\"center\"><b>R2</b></td>\n";
+  d += "<td bgcolor=\"#00CC99\" nowrap align=\"center\"><b>R" + ws/8 +"</b></td>\n";
+  d += "<td bgcolor=\"#00CC99\" nowrap align=\"center\"></td></tr>\n";
+
+  d += "<tr><td bgcolor=\"#CCFFCC\" nowrap align=\"center\" rowspan=\"2\" valign=\"middle\"></td>\n";
+  //alert(wab);
+  if (dchbbar == 0) {
+    d += "<td bgcolor=\"#CCFFCC\" nowrap align=\"center\"><b>";
+    for (var i=ws-1; i>-1; i--) {
+      d += wab[i];
+    }
+    
+    d += " </b></td>\n";
+  }
+  else {
+    d += "<td bgcolor=\"#CCFFCC\" nowrap align=\"center\"><b>";
+    var wahvar = bit2hex(wab);
+    for (var i=ws/4-1; i>-1; i--) {
+      d += wahvar[i];
+    }
+    d += " </b></td>\n";
+  }
+  //alert(wab);
+  d += "<td bgcolor=\"#CCFFCC\" nowrap align=\"center\">  </td>\n";
+  d += "<td bgcolor=\"#CCFFCC\" nowrap align=\"center\"><b>\n";
+  if (edcdca00[0][0] == 0) {
+    d += edcdda00[0][0];
+  }
+  else {
+    d += "<font color=\"#FF0000\">" + edcdda00[0][0] + "</font>";
+  }  
+  d += "</b></td><td bgcolor=\"#CCFFCC\" nowrap align=\"center\"><b>\n";
+  for (var i=edcdda00[1].length-1; i>-1; i--) {
+    if (edcdca00[1][i] == 0) {
+      d += edcdda00[1][i];
+    }
+    else {
+      d += "<font color=\"#FF0000\">" + edcdda00[1][i] + "</font>";
+    }
+  }
+  d += "</b></td><td bgcolor=\"#CCFFCC\" nowrap align=\"center\"><b>\n";
+  for (var i=edcdda00[2].length-1; i>-1; i--) {
+    if (edcdca00[2][i] == 0) {
+      d += edcdda00[2][i];
+    }
+    else {
+      d += "<font color=\"#FF0000\">" + edcdda00[2][i] + "</font>";
+    }
+  }  
+  d += "</b></td><td bgcolor=\"#CCFFCC\" nowrap align=\"center\"><b>\n";
+  for (var i=edcdda00[3].length-1; i>-1; i--) {
+    if (edcdca00[3][i] == 0) {
+      d += edcdda00[3][i];
+    }
+    else {
+      d += "<font color=\"#FF0000\">" + edcdda00[3][i] + "</font>";
+    }
+  }   
+  
+  d += "</b></td><td bgcolor=\"#FF0000\" nowrap align=\"center\">\n"; 
+  d += "<input type=\"text\" name=\"edca_error\" size=\"1\" onChange=\"parent.frames[0].inject_fault()\"></td>\n";
+  if (dchbbar == 0) {
+    d += "<td bgcolor=\"#CCFFCC\" nowrap align=\"center\"><b>";
+    for (var i=ws-1; i>-1; i--) {
+      d += wbb[i];
+    }    
+    d += " </b></td>\n";
+  }
+  else {
+    d += "<td bgcolor=\"#CCFFCC\" nowrap align=\"center\"><b>";
+    var wbhvar = bit2hex(wbb);
+    for (var i=ws/4-1; i>-1; i--) {
+      d += wbhvar[i];
+    }    
+    d += " </b></td>\n";
+  }
+  d += "<td bgcolor=\"#CCFFCC\" nowrap align=\"center\">  </td>\n";
+  d += "<td bgcolor=\"#CCFFCC\" nowrap align=\"center\"><b>\n";
+  if (edcdcb00[0][0] == 0) {
+    d += edcddb00[0][0];
+  }
+  else {
+    d += "<font color=\"#FF0000\">" + edcddb00[0][0] + "</font>";
+  }  
+  d += "</b></td><td bgcolor=\"#CCFFCC\" nowrap align=\"center\"><b>\n";
+  for (var i=edcddb00[1].length-1; i>-1; i--) {
+    if (edcdcb00[1][i] == 0) {
+      d += edcddb00[1][i];
+    }
+    else {
+      d += "<font color=\"#FF0000\">" + edcddb00[1][i] + "</font>";
+    }
+  }
+  d += "</b></td><td bgcolor=\"#CCFFCC\" nowrap align=\"center\"><b>\n";
+  for (var i=edcddb00[2].length-1; i>-1; i--) {
+    if (edcdcb00[2][i] == 0) {
+      d += edcddb00[2][i];
+    }
+    else {
+      d += "<font color=\"#FF0000\">" + edcddb00[2][i] + "</font>";
+    }
+  }  
+  d += "</b></td><td bgcolor=\"#CCFFCC\" nowrap align=\"center\"><b>\n";
+  for (var i=edcddb00[3].length-1; i>-1; i--) {
+    if (edcdcb00[3][i] == 0) {
+      d += edcddb00[3][i];
+    }
+    else {
+      d += "<font color=\"#FF0000\">" + edcddb00[3][i] + "</font>";
+    }
+  }   
+  
+  d += "</b></td><td bgcolor=\"#FF0000\" nowrap align=\"center\">\n"; 
+  d += "<input type=\"text\" name=\"edcb_error\" size=\"1\" onChange=\"parent.frames[0].inject_fault()\"></td>\n";
+
+  // words after first addition
+
+  d += "</tr><tr>\n";
+  d += "<td bgcolor=\"#CCFFCC\" nowrap align=\"center\"><b>\n";
+  if (dchbbar == 0) {
+    for (var i=wadd0.length-1; i>-1; i--) {
+      if (wadc0[i] == 0) {
+        d +=wadd0[i];
+      }
+      else {
+        d +="<font color=\"#FF0000\">"+wadd0[i]+"</font>";  
+      }
+    }
+  }
+  else {
+    var vhex = new Array(ws/4);
+    vhex = bit2hex(wadd0);
+    for (var i=vhex.length-1; i>-1; i--) {
+      if (wadc0h[i] == 0) {
+        d +=vhex[i];
+      }
+      else {
+        d +="<font color=\"#FF0000\">"+vhex[i]+"</font>";  
+      }
+    }
+  }    
+  d += "</b></td><td bgcolor=\"#FF0000\" nowrap align=\"center\">"; 
+  d += "<input type=\"text\" name=\"a_error\" size=\"2\" onChange=\"parent.frames[0].inject_fault()\"> </td>\n";
+  d += "<td bgcolor=\"#CCFFCC\" nowrap align=\"center\"><b>\n";
+  if (edcdca0[0][0] == 0) {
+    d += edcdda0[0][0];
+  }
+  else {
+    d += "<font color=\"#FF0000\">" + edcdda0[0][0] + "</font>";
+  }  
+  d += "</b></td><td bgcolor=\"#CCFFCC\" nowrap align=\"center\"><b>\n";
+  for (var i=edcdda0[1].length-1; i>-1; i--) {
+    if (edcdca0[1][i] == 0) {
+      d += edcdda0[1][i];
+    }
+    else {
+      d += "<font color=\"#FF0000\">" + edcdda0[1][i] + "</font>";
+    }
+  }
+  d += "</b></td><td bgcolor=\"#CCFFCC\" nowrap align=\"center\"><b>\n";
+  for (var i=edcdda0[2].length-1; i>-1; i--) {
+    if (edcdca0[2][i] == 0) {
+      d += edcdda0[2][i];
+    }
+    else {
+      d += "<font color=\"#FF0000\">" + edcdda0[2][i] + "</font>";
+    }
+  }  
+  d += "</b></td><td bgcolor=\"#CCFFCC\" nowrap align=\"center\"><b>\n";
+  for (var i=edcdda0[3].length-1; i>-1; i--) {
+    if (edcdca0[3][i] == 0) {
+      d += edcdda0[3][i];
+    }
+    else {
+      d += "<font color=\"#FF0000\">" + edcdda0[3][i] + "</font>";
+    }
+  }   
+  
+  d += "</b></td><td bgcolor=\"#FF0000\" nowrap align=\"center\">\n"; 
+  d += "<input type=\"text\" name=\"edca_error\" size=\"1\" onChange=\"parent.frames[0].inject_fault()\"></td>\n";
+
+  d += "<td bgcolor=\"#CCFFCC\" nowrap align=\"center\"><b>\n";
+  if (dchbbar == 0) {
+    for (var i=wbdd0.length-1; i>-1; i--) {
+      if (wbdc0[i] == 0) {
+        d += wbdd0[i];
+      }
+      else {
+        d += "<font color=\"#FF0000\">" + wbdd0[i] + "</font>";
+      }
+    }
+  }
+  else {
+    var vhex = new Array(ws/4);
+    vhex = bit2hex(wbdd0);
+    for (var i=vhex.length-1; i>-1; i--) {
+      if (wbdc0h[i] == 0) {
+        d +=vhex[i];
+      }
+      else {
+        d +="<font color=\"#FF0000\">"+vhex[i]+"</font>";  
+      }
+    }
+  }
+  
+  
+  d += "</b></td><td bgcolor=\"#FF0000\" nowrap align=\"center\">"; 
+  d += "<input type=\"text\" name=\"b_error\" size=\"2\" onChange=\"parent.frames[0].inject_fault()\"> </td>\n";
+  
+  d += "<td bgcolor=\"#CCFFCC\" nowrap align=\"center\"><b>\n";
+  if (edcdcb0[0][0] == 0) {
+    d += edcddb0[0][0];
+  }
+  else {
+    d += "<font color=\"#FF0000\">" + edcddb0[0][0] + "</font>";
+  }  
+  d += "</b></td><td bgcolor=\"#CCFFCC\" nowrap align=\"center\"><b>\n";
+  for (var i=edcddb0[1].length-1; i>-1; i--) {
+  
+    if (edcdcb0[1][i] == 0) {
+      d += edcddb0[1][i];
+    }
+    else {
+      d += "<font color=\"#FF0000\">" + edcddb0[1][i] + "</font>";
+    }
+  }
+  d += "</b></td><td bgcolor=\"#CCFFCC\" nowrap align=\"center\"><b>\n";
+  for (var i=edcddb0[2].length-1; i>-1; i--) {
+    if (edcdcb0[2][i] == 0) {
+      d += edcddb0[2][i];
+    }
+    else {
+      d += "<font color=\"#FF0000\">" + edcddb0[2][i] + "</font>";
+    }
+  }  
+  d += "</b></td><td bgcolor=\"#CCFFCC\" nowrap align=\"center\"><b>\n";
+  for (var i=edcddb0[3].length-1; i>-1; i--) {
+    if (edcdcb0[3][i] == 0) {
+      d += edcddb0[3][i];
+    }
+    else {
+      d += "<font color=\"#FF0000\">" + edcddb0[3][i] + "</font>";
+    }
+  }   
+  
+  d += "</b></td><td bgcolor=\"#FF0000\" nowrap align=\"center\">\n"; 
+  d += "<input type=\"text\" name=\"edcb_error\" size=\"1\" onChange=\"parent.frames[0].inject_fault()\"></td></tr>\n";
+  
+  // first possible checkpoint (before round 1)
+  
+  if (cps[0] == 1) {
+    
+    d += "<tr><td bgcolor=\"#99CCFF\" nowrap colspan=\"15\"><b>&nbsp;&nbsp;&nbsp;&nbsp;Checkpoint";
+      
+    var flagfirst = 1;
+      
+    for (var j=0; j<4; j++) {
+      
+      if (cpeds[0][j] == 1) {
+	  
+	if (flagfirst == 1) {
+	  d += ":&nbsp;&nbsp;Error detected by:&nbsp;"+edcnames[j];
+	  flagfirst = 0;
+	}
+	else {
+	  d += ",&nbsp;"+edcnames[j];
+	}
+      }
+    }
+    d += "</b></td></tr>\n";
+  }
+  
+  // beginning of the rounds
+  
+  bc = "#99FF99"; //background color
+  
+  norir = 0; // number of rows in round
+  for (var i=0; i<3; i++) {
+    if (dc[i] == 1) {
+      norir++;
+    }
+  }
+  
+  var i2 = new Array(norir);
+  var c1 = 0;
+  for (var i=0; i<3; i++) {
+    if (dc[i] == 1) {
+      i2[c1] = i;
+      c1++;
+    }
+  }
+  
+  rowtype = new Array(norir);
+  for (var i=0; i<norir; i++) {
+    rowtype[i] = i2[i];
+  }
+  var flag2 = 0;
+  
+  for (var i=0; i<r; i++) {
+
+    d += "<tr><td bgcolor=\""+bc+"\" nowrap align=\"center\" rowspan=\""+norir+"\" valign=\"middle\"><b>"+ (i+1) +"</b></td>\n";
+    
+    var flag1 = 0;
+    
+    for (var j=0; j<norir; j++) {
+      
+      if (flag1 == 1) {
+        d += "<tr>";
+      }
+      else {
+        flag1 = 1;
+      }
+      
+      var k = i2[j]; // the index for xor,rot,add
+      
+      
+      
+      // word A data
+      
+      d += "<td bgcolor=\""+bc+"\" nowrap align=\"center\"><b>\n"; 
+           
+      if (dchbbar == 0) {
+        for (var i4=ws-1; i4>-1; i4--) {
+	
+          if (wadc[i][k][i4] == 0) {
+            d += wadd[i][k][i4];
+          }
+          else {
+            d += "<font color=\"#FF0000\">" + wadd[i][k][i4] + "</font>";
+          }
+        }
+      }
+      else {
+        var vhex = new Array(ws/4);
+        vhex = bit2hex(wadd[i][k]);
+        for (var i4=vhex.length-1; i4>-1; i4--) {
+          if (wadch[i][k][i4] == 0) {
+            d +=vhex[i4];
+          }
+          else {
+            d +="<font color=\"#FF0000\">"+vhex[i4]+"</font>";  
+          }
+        }
+      }
+      d += "</b></td><td bgcolor=\"#FF0000\" nowrap align=\"center\">";
+      d += "<input type=\"text\" name=\"a_error\"size=\"2\" onChange=\"parent.frames[0].inject_fault()\"></td>\n";
+      
+      // EDCs for word A
+      
+      d += "<td bgcolor=\""+bc+"\" nowrap align=\"center\"><b>\n";
+      if (edcdca[i][k][0][0] == 0) {
+        d += edcdda[i][k][0][0];
+      }
+      else {
+        d += "<font color=\"#FF0000\">" + edcdda[i][k][0][0] + "</font>";
+      }  
+      d += "</b></td><td bgcolor=\""+bc+"\" nowrap align=\"center\"><b>\n";
+      for (var i4=edcdda[i][k][1].length-1; i4>-1; i4--) {
+        if (edcdca[i][k][1][i4] == 0) {
+          d += edcdda[i][k][1][i4];
+        }
+        else {
+          d += "<font color=\"#FF0000\">" + edcdda[i][k][1][i4] + "</font>";
+        }
+      }
+      d += "</b></td><td bgcolor=\""+bc+"\" nowrap align=\"center\"><b>\n";
+      for (var i4=edcdda[i][k][2].length-1; i4>-1; i4--) {
+        if (edcdca[i][k][2][i4] == 0) {
+          d += edcdda[i][k][2][i4];
+        }
+        else {
+          d += "<font color=\"#FF0000\">" + edcdda[i][k][2][i4] + "</font>";
+        }
+      }  
+      d += "</b></td><td bgcolor=\""+bc+"\" nowrap align=\"center\"><b>\n";
+      for (var i4=edcdda[i][k][3].length-1; i4>-1; i4--) {
+        if (edcdca[i][k][3][i4] == 0) {
+          d += edcdda[i][k][3][i4];
+        }
+        else {
+          d += "<font color=\"#FF0000\">" + edcdda[i][k][3][i4] + "</font>";
+        }
+      }   
+  
+      d += "</b></td><td bgcolor=\"#FF0000\" nowrap align=\"center\">\n"; 
+      d += "<input type=\"text\" name=\"edca_error\" size=\"1\" onChange=\"parent.frames[0].inject_fault()\"></td>\n";
+      
+      
+      
+      // word B data
+      
+      d += "<td bgcolor=\""+bc+"\" nowrap align=\"center\"><b>\n";      
+      if (dchbbar == 0) {
+        for (var i4=ws-1; i4>-1; i4--) {
+          if (wbdc[i][k][i4] == 0) {
+            d += wbdd[i][k][i4];
+          }
+          else {
+            d += "<font color=\"#FF0000\">" + wbdd[i][k][i4] + "</font>";
+          }
+        }
+      }
+      else {
+        var vhex = new Array(ws/4);
+        vhex = bit2hex(wbdd[i][k]);
+        for (var i4=vhex.length-1; i4>-1; i4--) {
+          if (wbdch[i][k][i4] == 0) {
+            d +=vhex[i4];
+          }
+          else {
+            d +="<font color=\"#FF0000\">"+vhex[i4]+"</font>";  
+          }
+        }
+      }
+      d += "</b></td><td bgcolor=\"#FF0000\" nowrap align=\"center\">";
+      d += "<input type=\"text\" name=\"b_error\"size=\"2\" onChange=\"parent.frames[0].inject_fault()\"></td>\n";
+      
+      // EDCs for word B
+      
+      d += "<td bgcolor=\""+bc+"\" nowrap align=\"center\"><b>\n";
+      if (edcdcb[i][k][0][0] == 0) {
+        d += edcddb[i][k][0][0];
+      }
+      else {
+        d += "<font color=\"#FF0000\">" + edcddb[i][k][0][0] + "</font>";
+      }  
+      d += "</b></td><td bgcolor=\""+bc+"\" nowrap align=\"center\"><b>\n";
+      for (var i4=edcddb[i][k][1].length-1; i4>-1; i4--) {
+        if (edcdcb[i][k][1][i4] == 0) {
+          d += edcddb[i][k][1][i4];
+        }
+        else {
+          d += "<font color=\"#FF0000\">" + edcddb[i][k][1][i4] + "</font>";
+        }
+      }
+      d += "</b></td><td bgcolor=\""+bc+"\" nowrap align=\"center\"><b>\n";
+      for (var i4=edcddb[i][k][2].length-1; i4>-1; i4--) {
+        if (edcdcb[i][k][2][i4] == 0) {
+          d += edcddb[i][k][2][i4];
+        }
+        else {
+          d += "<font color=\"#FF0000\">" + edcddb[i][k][2][i4] + "</font>";
+        }
+      }  
+      d += "</b></td><td bgcolor=\""+bc+"\" nowrap align=\"center\"><b>\n";
+      for (var i4=edcddb[i][k][3].length-1; i4>-1; i4--) {
+        if (edcdcb[i][k][3][i4] == 0) {
+          d += edcddb[i][k][3][i4];
+        }
+        else {
+          d += "<font color=\"#FF0000\">" + edcddb[i][k][3][i4] + "</font>";
+        }
+      }   
+  
+      d += "</b></td><td bgcolor=\"#FF0000\" nowrap align=\"center\">\n"; 
+      d += "<input type=\"text\" name=\"edcb_error\" size=\"1\" onChange=\"parent.frames[0].inject_fault()\"></td></tr>\n";
+    }
+    
+    if (bc == "#99FF99") {
+      bc = "#CCFFCC";
+    }
+    else {
+      bc = "#99FF99";
+    }
+    
+    // add checkpoint here
+    
+    if (cps[i+1] == 1) {
+    
+      d += "<tr><td bgcolor=\"#99CCFF\" nowrap colspan=\"15\"><b>&nbsp;&nbsp;&nbsp;&nbsp;Checkpoint";
+      
+      var flagfirst = 1;
+      
+      for (var j=0; j<4; j++) {
+      
+        if (cpeds[i+1][j] == 1) {
+	  
+	  if (flagfirst == 1) {
+	    d += ":&nbsp;&nbsp;Error detected by:&nbsp;"+edcnames[j];
+	    flagfirst = 0;
+	  }
+	  else {
+	    d += ",&nbsp;"+edcnames[j];
+	  }
+        }
+      }
+      d += "</b></td></tr>\n";
+    }
+    
+  }
+
+  d += "</table></td></tr></table>\n";
+  
+  // chiphertext and note how to inject faults
+  
+  var ha = bit2hex(wadd[r-1][2]);
+  var hb = bit2hex(wbdd[r-1][2]);
+  var chipherout = reg2text(ha,hb);
+  
+  var dcchipher = reg2text(wadch[r-1][2],wbdch[r-1][2]);
+    
+  d += "<table border=\"1\" width=\"100%\" bgcolor=\"#EDEBED\" cellpadding=\"10\"><tr>\n";
+  d += "<td align=\"center\"><b>Chiphertext: ";
+  
+  for (var i4=0; i4<chipherout.length; i4++) {
+    if (dcchipher[i4] == 0) {
+      d += chipherout[i4];
+    }
+    else {
+      d +="<font color=\"#FF0000\">"+chipherout[i4]+"</font>";  
+    }
+  }  
+  
+  
+  d += "</b></td></tr></table>\n";
+  
+  d += "<table border=\"0\" width=\"100%\" cellpadding=\"15\">\n";
+  d += "<tr><td width=\"60%\" align=\"center\" valign=\"middle\"> ";
+  d += "Note: To insert a fault type the bit number into the respective textbox and hit enter";
+  
+  d += "</td><td align=\"center\">";
+  
+  d += "<table border=\"1\" bgcolor=\"#FF0000\" cellpadding=\"5\"><tr><td>";
+  d += "<input type=\"button\" value=\"Clear All Faults\" onClick=\"parent.frames[0].start()\">";
+  
+  d += "</td></tr></table></td></tr></table>";
+  
+  // space
+  d += "<p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p>";
+
+}
+
+</SCRIPT>
+</head>
+
+<body bgcolor="#000000">
+
+</body>
+
+</html>
