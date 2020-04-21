@@ -162,7 +162,7 @@ Reg3:=Reg1 + Reg2;
 ![](https://i.imgur.com/CfkntY9.png)
 
 #### ⑦ Merging write buffers
-當某個write buffer中已存放未來將更 新的資料時，如果又有新的資料要被更 新，新的位置將被檢查是否可以和已存 資料的合併，減少write penalty
+當某個write buffer中已存放未來將更新的資料時，如果又有新的資料要被更新，新的位置將被檢查是否可以和已存資料的合併，減少write penalty
 
 ### 4. Reducing Miss Rate
 #### ⑧ Compiler optimizations

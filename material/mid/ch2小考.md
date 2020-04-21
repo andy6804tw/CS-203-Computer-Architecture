@@ -12,6 +12,9 @@ allows data cache to continue to supply cache hits during a miss
 ### Early restart
 按正常順序載入一整個block。當所需的word到達cache後就立即發給CPU。
 
+### Merging write buffers
+當某個write buffer中已存放未來將更新的資料時，如果又有新的資料要被更新，新的位置將被檢查是否可以和已存資料的合併，減少write penalty
+
 ## 3. In the class, we describe the following compiler optimization techniques, i.e., Merging Arrays, Loop Interchange, Loop Fusion, and Blocking, which can improve the cache performance. Given the following code, please rewrite them to improve cache miss. And give which locality is improved in each case.
 
 (a) spatial
