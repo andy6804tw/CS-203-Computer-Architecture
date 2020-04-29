@@ -30,8 +30,7 @@ public class tomasulo {
         
     }
     /**
-   * 讀檔將指令分解
-   * 
+   * 讀檔將指令分解 opcode, rd, rs, rt
    * @param filename
    */
   public static void readFile(String filename) {
