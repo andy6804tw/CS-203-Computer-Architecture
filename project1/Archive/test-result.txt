@@ -1,0 +1,8 @@
+demo測試檔_trace.txt 在 cache_size=64Kb block_size=16b 驗證 1、2、4、8 way的miss rate
+
+direct-map(1-way)=> 0.496338
+2-way=> 0.493043
+4-way=> 0.490663
+8-way=> 0.489015
+
+LRU_40.txt 測試 LRU機制 在cache_size=64Kb block_size=16b 4-way 狀態下 miss rate=0.4
