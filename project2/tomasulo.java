@@ -22,7 +22,7 @@ public class tomasulo {
     public static void main(String[] args) {
 
         // read file
-        readFile("./test/example1.txt");
+        readFile("./test/example2.txt");
         for(int i=0;i<instructionList.size();i++){
             Instruction ins=instructionList.get(i);
             System.out.println(ins.opcode+" "+ins.rd+" "+ins.rs+" "+ins.rt);
@@ -43,7 +43,7 @@ public class tomasulo {
         String instruction = scn.nextLine();
         String opcode=instruction.split(" ")[0];
         String rd="",rs="",rt="";
-        if(opcode.equals("L.D")){
+        if(opcode.equals("L.D")||opcode.equals("S.D")){
             String register=instruction.replace(opcode, "").replaceAll(" ", "");
             String registerArray[]=register.split(",");
             rd=registerArray[0];
