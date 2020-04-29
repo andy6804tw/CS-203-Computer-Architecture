@@ -1,0 +1,6 @@
+1 L.D F6, 8(R2)
+2 L.D F2, 40(R3)
+3 MUL.D F4, F2, F6
+4 DIV.D F8, F0, F4
+5 MUL.D F6, F6, F2
+6 DIV.D F10, F6, F4

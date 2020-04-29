@@ -1,0 +1,6 @@
+1 L.D F0, 0(R1)
+2 L.D F2, 0(R0)
+3 DIV.D F4, F0, F2
+4 DIV.D F8, F6, F4
+5 SUB.D F8, F0, F2
+6 DIV.D F10, F8, F4
