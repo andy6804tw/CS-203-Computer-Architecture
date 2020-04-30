@@ -285,6 +285,7 @@ public class tomasulo {
                         Vk=fRegister.get(instruction.rt).toString();
                 }
                 // 判斷是否還有Reservation Station可用
+                int isIssue=0;
                 if(opcode.equals("L.D")){
                     for(int i=0;i<loadMount;i++){
                         if(loadBuffer[i].busy==0){
@@ -295,6 +296,7 @@ public class tomasulo {
                             loadBuffer[i].Qj=Qj;
                             loadBuffer[i].Qk=Qk;
                             fRegister.put(instruction.rd,"Load"+i);
+                            isIssue=1;
                             break;
                         }
                     }
@@ -308,6 +310,7 @@ public class tomasulo {
                             adder[i].Qj=Qj;
                             adder[i].Qk=Qk;
                             fRegister.put(instruction.rd,"Add"+i);
+                            isIssue=1;
                             break;
                         }
                     }
@@ -321,6 +324,7 @@ public class tomasulo {
                             multiplier[i].Qj=Qj;
                             multiplier[i].Qk=Qk;
                             fRegister.put(instruction.rd,"Mul"+i);
+                            isIssue=1;
                             break;
                         }
                     }
@@ -328,10 +332,13 @@ public class tomasulo {
                 // 更新指令狀態
                 if(Qj.equals("")&&Qk.equals("")&&!(opcode.equals("L.D")||opcode.equals("S.D")))
                     instruction.execution=clock;
-                instruction.issue=clock;
-                instructionList.set(cur_ins_position,instruction);
+                if(isIssue==1){
+                    instruction.issue=clock;
+                    instructionList.set(cur_ins_position,instruction);
+                    cur_ins_position++;
+                }
             }
-            cur_ins_position++;
+            
             /** Issue */
             
             // 檢查是否可以結束
@@ -346,7 +353,7 @@ public class tomasulo {
             showInfo();
             if(flag==instructionList.size())
                 break;
-            // if(clock==48)
+            // if(clock==90)
             //     break;
             clock++;
         }
