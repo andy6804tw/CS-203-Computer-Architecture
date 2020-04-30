@@ -139,7 +139,7 @@ public class tomasulo {
                         ins.execution=clock;
                     }
                     // 檢查是否可執行結束
-                    if(ins.execution+loadCycle-1==clock){
+                    if(ins.execution+loadCycle-1==clock && ins.execution!=0){
                         ins.executed=clock;
                     }
                     // 更新指令狀態
@@ -152,11 +152,11 @@ public class tomasulo {
                     int ins_index=adder[i].id; // 提取第幾個指令id被執行
                     Instruction ins=instructionList.get(ins_index); // 取得指令
                     // check start exec
-                    if(ins.execution==0){
+                    if(adder[i].Qj.equals("") && adder[i].Qk.equals("")){
                         ins.execution=clock;
                     }
                     // 檢查是否可執行結束
-                    if(ins.execution+addCycle-1==clock){
+                    if(ins.execution+addCycle-1==clock && ins.execution!=0){
                         ins.executed=clock;
                     }
                     // 更新指令狀態
@@ -169,16 +169,16 @@ public class tomasulo {
                     int ins_index=multiplier[i].id; // 提取第幾個指令id被執行
                     Instruction ins=instructionList.get(ins_index); // 取得指令
                     // check start exec
-                    if(ins.execution==0){
+                    if(multiplier[i].Qj.equals("") && multiplier[i].Qk.equals("")){
                         ins.execution=clock;
                     }
                     // 檢查是否可執行結束，首先分辨是 div/mul
                     if(ins.opcode.equals("MUL.D")){
-                        if(ins.execution+mutiplyCycle-1==clock){
+                        if(ins.execution+mutiplyCycle-1==clock && ins.execution!=0){
                             ins.executed=clock;
                         }
                     }else{
-                        if(ins.execution+divideCycle-1==clock){
+                        if(ins.execution+divideCycle-1==clock && ins.execution!=0){
                             ins.executed=clock;
                         }
                     }
@@ -193,6 +193,25 @@ public class tomasulo {
             if(cur_ins_position<instructionList.size()){
                 Instruction instruction=instructionList.get(cur_ins_position);
                 String opcode=instruction.opcode;
+                // 檢查是否有true dependence
+                String Vj="",Vk="",Qj="",Qk="";
+                String rs=instruction.rs;
+                String rt=instruction.rt;
+                if(!opcode.equals("L.D")){
+                    for(int i=cur_ins_position-1;i>=0;i--){
+                        Instruction preInstruction=instructionList.get(i);
+                        if(preInstruction.rd.equals(rs)){
+                            Qj=fRegister.get(instruction.rs).toString();
+                        }
+                        if(preInstruction.rd.equals(rt)){
+                            Qk=fRegister.get(instruction.rt).toString();
+                        }
+                    }
+                    if(Qj.equals(""))
+                        Vj=fRegister.get(instruction.rs).toString();
+                    if(Qk.equals(""))
+                        Vk=fRegister.get(instruction.rt).toString();
+                }
                 // 判斷是否還有Reservation Station可用
                 if(opcode.equals("L.D")){
                     for(int i=0;i<loadMount;i++){
@@ -201,6 +220,8 @@ public class tomasulo {
                             loadBuffer[i].id=cur_ins_position;
                             loadBuffer[i].Vj=iRegister.get(instruction.rt).toString();
                             loadBuffer[i].Vk=iRegister.get(instruction.rt).toString();
+                            loadBuffer[i].Qj=Qj;
+                            loadBuffer[i].Qk=Qk;
                             instruction.issue=clock;
                             break;
                         }
@@ -210,8 +231,10 @@ public class tomasulo {
                         if(adder[i].busy==0){
                             adder[i].busy=1;
                             adder[i].id=cur_ins_position;
-                            adder[i].Vj=fRegister.get(instruction.rs).toString();
-                            adder[i].Vk=fRegister.get(instruction.rt).toString();
+                            adder[i].Vj=Vj;
+                            adder[i].Vk=Vk;
+                            adder[i].Qj=Qj;
+                            adder[i].Qk=Qk;
                             instruction.issue=clock;
                             break;
                         }
@@ -221,8 +244,10 @@ public class tomasulo {
                         if(multiplier[i].busy==0){
                             multiplier[i].busy=1;
                             multiplier[i].id=cur_ins_position;
-                            multiplier[i].Vj=fRegister.get(instruction.rs).toString();
-                            multiplier[i].Vk=fRegister.get(instruction.rt).toString();
+                            multiplier[i].Vj=Vj;
+                            multiplier[i].Vk=Vk;
+                            multiplier[i].Qj=Qj;
+                            multiplier[i].Qk=Qk;
                             instruction.issue=clock;
                             break;
                         }
@@ -246,8 +271,8 @@ public class tomasulo {
             showInfo();
             if(flag==instructionList.size())
                 break;
-            // if(clock==44)
-            //     break;
+            if(clock==44)
+                break;
             clock++;
         }
         System.out.println("End: "+clock);
@@ -313,10 +338,6 @@ public class tomasulo {
     }
         
   }
-  public static Instruction checkReservationStation(){
-
-    
-  }
   public static void showInfo(){
     System.out.println("週期: "+clock);
     System.out.println("Instruction Status");
@@ -325,5 +346,14 @@ public class tomasulo {
         Instruction ins=instructionList.get(i);
         System.out.println(ins.opcode+"\t\t"+ins.issue+"\t"+ins.execution+"\t\t"+ins.executed+"\t\t\t"+ins.written);
     }
+    System.out.println("Reservation Station");
+    System.out.println("類型\tOP\tVj\tVk\tQj\tQk\tBusy");
+    for(int i=0;i<addMount;i++){
+        System.out.println("Add"+(i+1)+"\t"+adder[i].opcode+"\t"+adder[i].Vj+"\t"+adder[i].Vk+"\t"+adder[i].Qj+"\t"+adder[i].Qk+"\t"+adder[i].busy);
+    }
+    for(int i=0;i<mulMount;i++){
+        System.out.println("Mul"+(i+1)+"\t"+multiplier[i].opcode+"\t"+multiplier[i].Vj+"\t"+multiplier[i].Vk+"\t"+multiplier[i].Qj+"\t"+multiplier[i].Qk+"\t"+multiplier[i].busy);
+    }
+    System.out.println("------------------------------");
   }
 }
