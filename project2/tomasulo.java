@@ -72,7 +72,7 @@ public class tomasulo {
     public static void main(String[] args) {
 
         // read file
-        readFile("./test/test1.txt");
+        readFile("./test/example1.txt");
         // for(int i=0;i<instructionList.size();i++){
         //     Instruction ins=instructionList.get(i);
         //     System.out.println(ins.opcode+" "+ins.rd+" "+ins.rs+" "+ins.rt);
@@ -126,7 +126,7 @@ public class tomasulo {
                     instructionList.set(ins_index,ins);
                 }
             }
-            /** 執行 */
+            /** WriteResult */
             /** 執行 */
             // 檢查全部的Reservation Station，能立即執行的就開始執行
             // Load
@@ -312,6 +312,10 @@ public class tomasulo {
         multiplier[i]=new ReservationStation();
     }
         
+  }
+  public static Instruction checkReservationStation(){
+
+    
   }
   public static void showInfo(){
     System.out.println("週期: "+clock);
