@@ -6,7 +6,7 @@ import java.util.*;
 class Instruction{
     String opcode="";
     String rd="",rs="",rt="";
-    int issue=0,executed=0,written=0;
+    int issue=0,executed=0,execution=0,written=0;
 
     public Instruction(String opcode,String rd,String rs,String rt){
         this.opcode=opcode;
@@ -15,10 +15,48 @@ class Instruction{
         this.rt=rt;
     }
 }
+// Reservation Station
+class ReservationStation{
+    int busy=0;
+    String opcode="";
+    String FU="";	//記錄使用哪個function unit
+    double Vj=0;
+    double Vk=0;
+    double Qj=0;
+    double Qk=0;
+    int remain=0;
+    public ReservationStation(String opcode,String FU,double Vj,double Vk,double Qj,double Qk){
+        this.opcode=opcode;
+        this.FU=FU;
+        this.Vj=Vj;
+        this.Vk=Vk;
+        this.Qj=Qj;
+        this.Qk=Qk;
+    }
+}
+// class RegisterStatus{
+//     String name="";
+//     double value=0;
+//     public RegisterStatus(String name,double value){
+//         this.name=name;
+//         this.value=value;
+//     }
+// }
 
 public class tomasulo {
 
     public static ArrayList<Instruction> instructionList = new ArrayList<>();
+    // Reservation Station
+    ReservationStation loadBuffer[]=new ReservationStation[2];
+    ReservationStation storeBuffer[]=new ReservationStation[2];
+    ReservationStation adder[]=new ReservationStation[3];
+    ReservationStation multiplier[]=new ReservationStation[2];
+    // Register Status
+    // RegisterStatus fRegister[]=new RegisterStatus[16];
+    // RegisterStatus iRegister[]=new RegisterStatus[32];
+    HashMap fRegister = new HashMap();
+    HashMap iRegister = new HashMap();
+
     public static void main(String[] args) {
 
         // read file
