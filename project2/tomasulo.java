@@ -72,7 +72,7 @@ public class tomasulo {
     public static void main(String[] args) {
 
         // read file
-        readFile("./test/example3.txt");
+        readFile("./test/example2.txt");
         // for(int i=0;i<instructionList.size();i++){
         //     Instruction ins=instructionList.get(i);
         //     System.out.println(ins.opcode+" "+ins.rd+" "+ins.rs+" "+ins.rt);
@@ -81,7 +81,7 @@ public class tomasulo {
         while(true){
             /** WriteResult */
             // 檢查全部的Reservation Station，是否已經可以Write Result
-            // Load
+            // LoadBuffer
             for(int i=0;i<loadMount;i++){
                 if(loadBuffer[i].busy==1){
                     int ins_index=loadBuffer[i].id; // 提取第幾個指令id被執行
@@ -93,6 +93,13 @@ public class tomasulo {
                         loadBuffer[i].flush();
                         // 廣播更新
                         fRegister.put(ins.rd, iRegister.get(ins.rt).toString());
+                        // 廣播Load更新storeBuffer
+                        for(int j=0;j<loadMount;j++){
+                            if(storeBuffer[j].Qj.equals("Load"+i)){
+                                storeBuffer[j].Qj="";
+                                storeBuffer[j].Vj=fRegister.get(ins.rd).toString();
+                            }
+                        }
                         // 廣播Load更新adder
                         for(int j=0;j<addMount;j++){
                             if(adder[j].Qj.equals("Load"+i)){
@@ -120,6 +127,52 @@ public class tomasulo {
                     instructionList.set(ins_index,ins);
                 }
             }
+            // StoreBuffer
+            for(int i=0;i<storeMount;i++){
+                if(storeBuffer[i].busy==1){
+                    int ins_index=storeBuffer[i].id; // 提取第幾個指令id被執行
+                    Instruction ins=instructionList.get(ins_index); // 取得指令
+                    // 檢查是否可以Write Result
+                    if(ins.executed!=0){
+                        ins.written=clock;
+                        // 清空Station
+                        storeBuffer[i].flush();
+                        // 廣播更新
+                        fRegister.put(ins.rd, iRegister.get(ins.rt).toString());
+                        // 廣播Load更新storeBuffer
+                        for(int j=0;j<loadMount;j++){
+                            if(storeBuffer[j].Qj.equals("Store"+i)){
+                                storeBuffer[j].Qj="";
+                                storeBuffer[j].Vj=fRegister.get(ins.rd).toString();
+                            }
+                        }
+                        // 廣播Load更新adder
+                        for(int j=0;j<addMount;j++){
+                            if(adder[j].Qj.equals("Store"+i)){
+                                adder[j].Qj="";
+                                adder[j].Vj=fRegister.get(ins.rd).toString();
+                            }
+                            if(adder[j].Qk.equals("Store"+i)){
+                                adder[j].Qk="";
+                                adder[j].Vk=fRegister.get(ins.rd).toString();
+                            }
+                        }
+                        // 廣播Load更新multiplier
+                        for(int j=0;j<mulMount;j++){
+                            if(multiplier[j].Qj.equals("Store"+i)){
+                                multiplier[j].Qj="";
+                                multiplier[j].Vj=fRegister.get(ins.rd).toString();
+                            }
+                            if(multiplier[j].Qk.equals("Store"+i)){
+                                multiplier[j].Qk="";
+                                multiplier[j].Vk=fRegister.get(ins.rd).toString();
+                            }
+                        }
+                    }
+                    // 更新指令狀態
+                    instructionList.set(ins_index,ins);
+                }
+            }
             // Adder
             for(int i=0;i<addMount;i++){
                 if(adder[i].busy==1){
@@ -132,6 +185,13 @@ public class tomasulo {
                         adder[i].flush();
                         // 廣播更新
                         fRegister.put(ins.rd, "1");
+                        // 廣播Add更新storeBuffer
+                        for(int j=0;j<loadMount;j++){
+                            if(storeBuffer[j].Qj.equals("Add"+i)){
+                                storeBuffer[j].Qj="";
+                                storeBuffer[j].Vj=fRegister.get(ins.rd).toString();
+                            }
+                        }
                         // 廣播Add更新adder
                         for(int j=0;j<addMount;j++){
                             if(adder[j].Qj.equals("Add"+i)){
@@ -171,6 +231,13 @@ public class tomasulo {
                         multiplier[i].flush();
                         // 廣播更新
                         fRegister.put(ins.rd, "1");
+                        // 廣播Mul更新storeBuffer
+                        for(int j=0;j<loadMount;j++){
+                            if(storeBuffer[j].Qj.equals("Mul"+i)){
+                                storeBuffer[j].Qj="";
+                                storeBuffer[j].Vj=fRegister.get(ins.rd).toString();
+                            }
+                        }
                         // 廣播Mul更新adder
                         for(int j=0;j<addMount;j++){
                             if(adder[j].Qj.equals("Mul"+i)){
@@ -207,11 +274,28 @@ public class tomasulo {
                     int ins_index=loadBuffer[i].id; // 提取第幾個指令id被執行
                     Instruction ins=instructionList.get(ins_index); // 取得指令
                     // check start exec
-                    if(ins.execution==0){
+                    if(loadBuffer[i].Qj.equals("") && ins.execution==0){
                         ins.execution=clock;
                     }
                     // 檢查是否可執行結束
-                    if(ins.execution+loadCycle-1==clock && ins.execution!=0){
+                    if(ins.execution+loadCycle==clock && ins.execution!=0){
+                        ins.executed=clock;
+                    }
+                    // 更新指令狀態
+                    instructionList.set(ins_index,ins);
+                }
+            }
+            // Store
+            for(int i=0;i<storeMount;i++){
+                if(storeBuffer[i].busy==1){
+                    int ins_index=storeBuffer[i].id; // 提取第幾個指令id被執行
+                    Instruction ins=instructionList.get(ins_index); // 取得指令
+                    // check start exec
+                    if(storeBuffer[i].Qj.equals("") && ins.execution==0){
+                        ins.execution=clock;
+                    }
+                    // 檢查是否可執行結束
+                    if(ins.execution+storeCycle==clock && ins.execution!=0){
                         ins.executed=clock;
                     }
                     // 更新指令狀態
@@ -254,7 +338,6 @@ public class tomasulo {
                             ins.executed=clock;
                         }
                     }
-                    
                     // 更新指令狀態
                     instructionList.set(ins_index,ins);
                 }
@@ -269,7 +352,8 @@ public class tomasulo {
                 String Vj="",Vk="",Qj="",Qk="";
                 String rs=instruction.rs;
                 String rt=instruction.rt;
-                if(!opcode.equals("L.D")){
+                String rd=instruction.rd;
+                if(!(opcode.equals("L.D")||opcode.equals("S.D"))){
                     for(int i=cur_ins_position-1;i>=0;i--){
                         Instruction preInstruction=instructionList.get(i);
                         if(preInstruction.rd.equals(rs) && preInstruction.written==0){
@@ -283,6 +367,14 @@ public class tomasulo {
                         Vj=fRegister.get(instruction.rs).toString();
                     if(Qk.equals(""))
                         Vk=fRegister.get(instruction.rt).toString();
+                }else if(opcode.equals("S.D")){
+                    // 判斷SD是否可以被儲存
+                    for(int i=cur_ins_position-1;i>=0;i--){
+                        Instruction preInstruction=instructionList.get(i);
+                        if(preInstruction.rd.equals(rd) && preInstruction.written==0){
+                            Qj=fRegister.get(rd).toString();
+                        }
+                    }
                 }
                 // 判斷是否還有Reservation Station可用
                 int isIssue=0;
@@ -291,10 +383,21 @@ public class tomasulo {
                         if(loadBuffer[i].busy==0){
                             loadBuffer[i].busy=1;
                             loadBuffer[i].id=cur_ins_position;
-                            loadBuffer[i].Vj=iRegister.get(instruction.rt).toString();
-                            loadBuffer[i].Vk=iRegister.get(instruction.rt).toString();
-                            loadBuffer[i].Qj=Qj;
-                            loadBuffer[i].Qk=Qk;
+                            // loadBuffer[i].Vj=iRegister.get(instruction.rt).toString();
+                            // loadBuffer[i].Vk=iRegister.get(instruction.rt).toString();
+                            // loadBuffer[i].Qj=Qj;
+                            // loadBuffer[i].Qk=Qk;
+                            fRegister.put(instruction.rd,"Load"+i);
+                            isIssue=1;
+                            break;
+                        }
+                    }
+                }else if(opcode.equals("S.D")){
+                    for(int i=0;i<storeMount;i++){
+                        if(storeBuffer[i].busy==0){
+                            storeBuffer[i].busy=1;
+                            storeBuffer[i].id=cur_ins_position;
+                            storeBuffer[i].Qj=Qj;
                             fRegister.put(instruction.rd,"Load"+i);
                             isIssue=1;
                             break;
@@ -330,7 +433,7 @@ public class tomasulo {
                     }
                 }
                 // 更新指令狀態
-                if(Qj.equals("")&&Qk.equals("")&&!(opcode.equals("L.D")||opcode.equals("S.D")))
+                if(Qj.equals("")&&Qk.equals(""))
                     instruction.execution=clock;
                 if(isIssue==1){
                     instruction.issue=clock;
@@ -353,7 +456,7 @@ public class tomasulo {
             showInfo();
             if(flag==instructionList.size())
                 break;
-            // if(clock==90)
+            // if(clock==64)
             //     break;
             clock++;
         }
@@ -429,7 +532,7 @@ public class tomasulo {
         System.out.println(ins.opcode+"\t\t"+ins.issue+"\t"+ins.execution+"\t\t"+ins.executed+"\t\t\t"+ins.written);
     }
     System.out.println("Reservation Station");
-    System.out.println("類型\tOP\tVj\tVk\tQj\tQk\tBusy");
+    System.out.println("Name\tOP\tVj\tVk\tQj\tQk\tBusy");
     for(int i=0;i<addMount;i++){
         System.out.println("Add"+(i+1)+"\t"+adder[i].opcode+"\t"+adder[i].Vj+"\t"+adder[i].Vk+"\t"+adder[i].Qj+"\t"+adder[i].Qk+"\t"+adder[i].busy);
     }
@@ -439,6 +542,11 @@ public class tomasulo {
     System.out.println("Register result status");
     for (Object key : fRegister.keySet()) {
         System.out.print(key + ":" + fRegister.get(key)+" ");
+    }
+    System.out.println("Store Buffer");
+    System.out.println("Name\tBusy\tVj\tQj");
+    for(int i=0;i<storeMount;i++){
+        System.out.println("Store"+(i+1)+"\t"+storeBuffer[i].busy+"\t"+storeBuffer[i].Vj+"\t"+storeBuffer[i].Qj+"\t");
     }
     System.out.println("\n------------------------------");
   }
