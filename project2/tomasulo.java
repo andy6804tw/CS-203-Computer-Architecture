@@ -72,7 +72,7 @@ public class tomasulo {
     public static void main(String[] args) {
 
         // read file
-        readFile("./test/test1.txt");
+        readFile("./test/example3.txt");
         // for(int i=0;i<instructionList.size();i++){
         //     Instruction ins=instructionList.get(i);
         //     System.out.println(ins.opcode+" "+ins.rd+" "+ins.rs+" "+ins.rt);
@@ -295,7 +295,6 @@ public class tomasulo {
                             loadBuffer[i].Qj=Qj;
                             loadBuffer[i].Qk=Qk;
                             fRegister.put(instruction.rd,"Load"+i);
-                            instruction.issue=clock;
                             break;
                         }
                     }
@@ -309,7 +308,6 @@ public class tomasulo {
                             adder[i].Qj=Qj;
                             adder[i].Qk=Qk;
                             fRegister.put(instruction.rd,"Add"+i);
-                            instruction.issue=clock;
                             break;
                         }
                     }
@@ -323,12 +321,14 @@ public class tomasulo {
                             multiplier[i].Qj=Qj;
                             multiplier[i].Qk=Qk;
                             fRegister.put(instruction.rd,"Mul"+i);
-                            instruction.issue=clock;
                             break;
                         }
                     }
                 }
                 // 更新指令狀態
+                if(Qj.equals("")&&Qk.equals("")&&!(opcode.equals("L.D")||opcode.equals("S.D")))
+                    instruction.execution=clock;
+                instruction.issue=clock;
                 instructionList.set(cur_ins_position,instruction);
             }
             cur_ins_position++;
