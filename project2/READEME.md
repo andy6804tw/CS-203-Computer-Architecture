@@ -65,5 +65,75 @@ SUB.D F8, F0, F2
 
 ## Example1
 ```
-
+L.D F6, 8(R2)
+L.D F2, 40(R3)
+MUL.D F0, F2, F4 
+SUB.D F8, F6, F2
+DIV.D F10, F0, F6
+ADD.D F6, F8, F2
 ```
+![](https://i.imgur.com/vFxtw8s.png)
+
+## Example2
+```
+L.D F6, 8(R2)
+L.D F2, 40(R3)
+ADD.D F0, F2, F6
+SUB.D F8, F6, F2
+MUL.D F10, F0, F8
+S.D F10, 0(R3)
+DIV.D F8, F0, F2
+S.D F8, 8(R3)
+```
+![](https://i.imgur.com/drmVTKz.png)
+
+## Example3
+```
+L.D F6, 8(R2)
+L.D F2, 40(R3)
+ADD.D F4, F2, F6
+DIV.D F8, F0, F4
+SUB.D F6, F6, F2
+MUL.D F10, F6, F4
+S.D F10, 40(R3)
+```
+![](https://i.imgur.com/E5o3HKe.png)
+
+## Example4
+```
+L.D F6, 8(R2)
+L.D F2, 40(R3)
+ADD.D F4, F2, F6
+DIV.D F8, F0, F4
+MUL.D F6, F8, F4
+SUB.D F10, F2, F4
+SUB.D F14, F8, F4
+SUB.D F10, F6, F4
+ADD.D F12, F6, F4
+```
+![](https://i.imgur.com/2pKMVvg.png)
+
+## Example5
+```
+L.D F6, 8(R2)
+L.D F2, 40(R3)
+MUL.D F4, F2, F6
+DIV.D F8, F0, F4
+MUL.D F6, F6, F2
+DIV.D F10, F6, F4
+S.D F10, 40(R3)
+```
+![](https://i.imgur.com/sHtZSLN.png)
+
+
+## Example6
+```
+L.D F0, 0(R1)
+L.D F2, 0(R0)
+DIV.D F4, F0, F2
+DIV.D F8, F6, F4
+SUB.D F8, F0, F2
+DIV.D F10, F8, F4
+```
+![](https://i.imgur.com/0IOV7MO.png)
+
