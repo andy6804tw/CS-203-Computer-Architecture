@@ -72,7 +72,7 @@ public class tomasulo {
     public static void main(String[] args) {
 
         // read file
-        readFile("./test/example6.txt");
+        readFile("./test/test4.txt");
         // for(int i=0;i<instructionList.size();i++){
         //     Instruction ins=instructionList.get(i);
         //     System.out.println(ins.opcode+" "+ins.rd+" "+ins.rs+" "+ins.rt);
@@ -604,7 +604,7 @@ public class tomasulo {
     for (Object key : fRegister.keySet()) {
         System.out.print(key + ":" + fRegister.get(key)+" ");
     }
-    System.out.println("\nStore Buffer");
+    System.out.println("Store Buffer");
     System.out.println("Name\tBusy\tVj\tQj");
     for(int i=0;i<storeMount;i++){
         System.out.println("Store"+(i+1)+"\t"+storeBuffer[i].busy+"\t"+storeBuffer[i].Vj+"\t"+storeBuffer[i].Qj+"\t");
