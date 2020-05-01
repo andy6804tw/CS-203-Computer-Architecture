@@ -72,7 +72,7 @@ public class tomasulo {
     public static void main(String[] args) {
 
         // read file
-        readFile("./test/example2.txt");
+        readFile("./test/test5.txt");
         // for(int i=0;i<instructionList.size();i++){
         //     Instruction ins=instructionList.get(i);
         //     System.out.println(ins.opcode+" "+ins.rd+" "+ins.rs+" "+ins.rt);
@@ -324,13 +324,15 @@ public class tomasulo {
                 }
             }
             // Store
+            // 判斷是否在load-store queue的最前端才能做execute
+            int checkFirst=1;
             for(int i=0;i<storeMount;i++){
-                if(storeBuffer[i].busy==1){
+                if(storeBuffer[i].busy==1&&checkFirst==1){
                     int ins_index=storeBuffer[i].id; // 提取第幾個指令id被執行
                     Instruction ins=instructionList.get(ins_index); // 取得指令
                     // check start exec
                     if(ins.execution==0){
-                        ins.execution=clock;
+                        ins.execution=clock-1;
                     }
                     // 檢查是否可執行結束
                     if(ins.execution+storeCycle==clock && ins.execution!=0){
@@ -338,6 +340,7 @@ public class tomasulo {
                     }
                     // 更新指令狀態
                     instructionList.set(ins_index,ins);
+                    checkFirst=0;
                 }
             }
             // Adder
@@ -491,7 +494,7 @@ public class tomasulo {
                     }
                 }
                 // 更新指令狀態
-                if(Qj.equals("")&&Qk.equals("")||opcode.equals("S.D"))
+                if(Qj.equals("")&&Qk.equals("")||(opcode.equals("S.D")&&Qj.equals("")))
                     instruction.execution=clock;
                 if(isIssue==1){
                     instruction.issue=clock;
@@ -514,7 +517,7 @@ public class tomasulo {
             showInfo();
             if(flag==instructionList.size())
                 break;
-            // if(clock==10)
+            // if(clock==22)
             //     break;
             clock++;
         }
