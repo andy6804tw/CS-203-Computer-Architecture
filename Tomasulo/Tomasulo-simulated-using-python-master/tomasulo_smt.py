@@ -93,7 +93,7 @@ Delay_time={'L.D':2,'ADD.D':3,'SUB.D':3,'DIV.D':41,'MUL.D':11,}
 
 # ins='1	L.D 	F6,34(R2)\n2	L.D 	F2,45(R3)\n3	MUL.D	F0,F2,F4\n4	SUB.D	F8,F2,F6\n5	DIV.D	F0,F0,F6\n6	ADD.D	F6,F8,F2'
 # ins=ins.split('\n')
-f = open('./example6.txt', 'r')
+f = open('./example1.txt', 'r')
 ins = f.readlines()
 
 #总指令数量
