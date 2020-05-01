@@ -72,7 +72,7 @@ public class tomasulo {
     public static void main(String[] args) {
 
         // read file
-        readFile("./test/example6.txt");
+        readFile("./test/example2.txt");
         // for(int i=0;i<instructionList.size();i++){
         //     Instruction ins=instructionList.get(i);
         //     System.out.println(ins.opcode+" "+ins.rd+" "+ins.rs+" "+ins.rt);
@@ -89,8 +89,6 @@ public class tomasulo {
                     // 檢查是否可以Write Result
                     if(ins.executed!=0&&ins.written==0){
                         ins.written=clock;
-                        // 廣播更新
-                        fRegister.put(ins.rd, iRegister.get(ins.rt).toString());
                         // 廣播Load更新storeBuffer
                         for(int j=0;j<loadMount;j++){
                             if(storeBuffer[j].Qj.equals("Load"+i)){
@@ -124,6 +122,18 @@ public class tomasulo {
                     // 清空Station
                     if(ins.written+1==clock){
                         loadBuffer[i].flush();
+                        // 檢查WAW處理Output Dependence
+                        int isBroadcast=1;
+                        for(int j=cur_ins_position-1;j>=0;j--){
+                            if(instructionList.get(j).rd.equals(ins.rd)&&instructionList.get(j).executed!=0){
+                                isBroadcast=0;
+                            }
+                        }
+                        if(isBroadcast==1){
+                            // 廣播更新
+                            fRegister.put(ins.rd, iRegister.get(ins.rt).toString());
+                        }
+                            
                     }
                     // 更新指令狀態
                     instructionList.set(ins_index,ins);
@@ -217,9 +227,18 @@ public class tomasulo {
                     }
                     // 清空Station
                     if(ins.written+1==clock){
-                        // 廣播更新
-                        fRegister.put(ins.rd, "1");
                         adder[i].flush();
+                        // 檢查WAW處理Output Dependence
+                        int isBroadcast=1;
+                        for(int j=cur_ins_position-1;j>=0;j--){
+                            if(instructionList.get(j).rd.equals(ins.rd)&&instructionList.get(j).executed!=0){
+                                isBroadcast=0;
+                            }
+                        }
+                        if(isBroadcast==1){
+                            // 廣播更新
+                        fRegister.put(ins.rd, "1");
+                        }
                     }
                     // 更新指令狀態
                     instructionList.set(ins_index,ins);
@@ -232,7 +251,6 @@ public class tomasulo {
                     Instruction ins=instructionList.get(ins_index); // 取得指令
                     // 檢查是否可以Write Result
                     if(ins.executed!=0&&ins.written==0){
-                        System.out.println("廣播啦！");
                         // 廣播結果備份
                         String broadcast="b1";
                         ins.written=clock;
@@ -268,9 +286,18 @@ public class tomasulo {
                     }
                     // 清空Station
                     if(ins.written+1==clock){
-                        // 廣播更新
-                        fRegister.put(ins.rd, "1");
                         multiplier[i].flush();
+                        // 檢查WAW處理Output Dependence
+                        int isBroadcast=1;
+                        for(int j=cur_ins_position-1;j>=0;j--){
+                            if(instructionList.get(j).rd.equals(ins.rd)&&instructionList.get(j).executed!=0){
+                                isBroadcast=0;
+                            }
+                        }
+                        if(isBroadcast==1){
+                            // 廣播更新
+                            fRegister.put(ins.rd, "1");
+                        }
                     }
                     // 更新指令狀態
                     instructionList.set(ins_index,ins);
@@ -487,7 +514,7 @@ public class tomasulo {
             showInfo();
             if(flag==instructionList.size())
                 break;
-            // if(clock==47)
+            // if(clock==10)
             //     break;
             clock++;
         }
