@@ -78,7 +78,7 @@ public class tomasulo {
     public static void main(String[] args) {
 
         // Read File
-        readFile("./test/example1.txt");
+        readFile("./test/example2.txt");
         // 保留站與暫存器初始化
         init();
         while(true){
@@ -125,8 +125,13 @@ public class tomasulo {
                     // 清空Station
                     if(ins.written+1==clock){
                         loadBuffer[i].flush();
+                        
+                            
+                    }
+                    if(ins.written==clock){
                         // 檢查WAW處理Output Dependence
                         int isBroadcast=1;
+                        System.out.println("cur_ins_position "+cur_ins_position+" "+ins_index);
                         for(int j=cur_ins_position-1;j>ins_index;j--){
                             if(instructionList.get(j).rd.equals(ins.rd)&&instructionList.get(j).executed==0){
                                 isBroadcast=0;
@@ -136,7 +141,6 @@ public class tomasulo {
                             // 廣播更新
                             fRegister.put(ins.rd, iRegister.get(ins.rt).toString());
                         }
-                            
                     }
                     // 更新指令狀態
                     instructionList.set(ins_index,ins);
@@ -204,7 +208,7 @@ public class tomasulo {
                         if(ins.opcode.equals("ADD.D"))
                             result=Double.parseDouble(adder[i].Vj)+Double.parseDouble(adder[i].Vk);
                         else if(ins.opcode.equals("SUB.D"))
-                            result=Double.parseDouble(fRegister.get(ins.rs))-Double.parseDouble(fRegister.get(ins.rt));
+                            result=Double.parseDouble(adder[i].Vj)-Double.parseDouble(adder[i].Vk);
                         fRegister.put(ins.rd, result+"");
                         // 廣播Add更新storeBuffer
                         for(int j=0;j<loadMount;j++){
@@ -267,7 +271,12 @@ public class tomasulo {
                     if(ins.executed!=0&&ins.written==0){
                         ins.written=clock;
                         // 更新FU
-                        fRegister.put(ins.rd, "1");
+                        double result=0;
+                        if(ins.opcode.equals("MUL.D"))
+                            result=Double.parseDouble(multiplier[i].Vj)*Double.parseDouble(multiplier[i].Vk);
+                        else if(ins.opcode.equals("DIV.D"))
+                            result=Double.parseDouble(multiplier[i].Vj)/Double.parseDouble(multiplier[i].Vk);
+                        fRegister.put(ins.rd, result+"");
                         // 廣播Mul更新storeBuffer
                         for(int j=0;j<loadMount;j++){
                             if(storeBuffer[j].Qj.equals("Mul"+i)){
