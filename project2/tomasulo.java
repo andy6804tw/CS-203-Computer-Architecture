@@ -1,4 +1,3 @@
-
 import java.io.*;
 import java.util.*;
 
@@ -29,7 +28,7 @@ class Instruction{
  * 與StoreBuffer&LoadBuffer共用
  */
 class ReservationStation{
-    int id=0; // 表示第幾個指令
+    int id=0; // 表示第幾個指令(行數)
     int busy=0; // 0:閒置中 1:資源佔用中
     String opcode=""; // operand指令種類
     String Vj="", Vk=""; // Vj, Vk：可以馬上使用的實際數值
@@ -45,10 +44,13 @@ class ReservationStation{
     }
 }
 
-
+/**
+ * 主程式
+ */
 public class tomasulo {
+    // 執行指令串列
     public static ArrayList<Instruction> instructionList = new ArrayList<>();
-    // Reservation Station
+    // Reservation Station (載入、儲存、加法器、除法器) 數量初始化與建立陣列
     public static int loadMount=2;
     public static int storeMount=2;
     public static int addMount=3;
@@ -57,27 +59,25 @@ public class tomasulo {
     public static ReservationStation storeBuffer[]=new ReservationStation[storeMount];
     public static ReservationStation adder[]=new ReservationStation[addMount];
     public static ReservationStation multiplier[]=new ReservationStation[mulMount];
-    // Register Status
-    public static HashMap fRegister = new HashMap();
-    public static HashMap iRegister = new HashMap();
-    // Op cycle
+    // Register Status (浮點數暫存器、整數暫存器)
+    public static HashMap<String,String> fRegister = new HashMap<>();
+    public static HashMap<String,String> iRegister = new HashMap<>();
+    // 指令執行週期設定 L.D=2、S.D=1、MUL.D=10、ADD.D=2、DIV.D=40
     public static int loadCycle=2;
     public static int storeCycle=1;
     public static int mutiplyCycle=10;
     public static int addCycle=2;
     public static int divideCycle=40;
-    // clock
+    // clock時間週期初始化
     public static int clock=1;
-    public static int cur_ins_position=0; // 目前指令被執行的行數
+    // 儲存目前指令被執行的位置id(行數)
+    public static int cur_ins_position=0;
 
     public static void main(String[] args) {
 
-        // read file
-        readFile("./test/example6.txt");
-        // for(int i=0;i<instructionList.size();i++){
-        //     Instruction ins=instructionList.get(i);
-        //     System.out.println(ins.opcode+" "+ins.rd+" "+ins.rs+" "+ins.rt);
-        // }
+        // Read File
+        readFile("./test/test4.txt");
+        // 保留站與暫存器初始化
         init();
         while(true){
             /** WriteResult */
@@ -538,6 +538,7 @@ public class tomasulo {
         String instruction = scn.nextLine();
         String opcode=instruction.split(" ")[0];
         String rd="",rs="",rt="";
+        // L.D與S.D另外處理其餘依照字串切割放入指定暫存
         if(opcode.equals("L.D")||opcode.equals("S.D")){
             String register=instruction.replace(opcode, "").replaceAll(" ", "");
             String registerArray[]=register.split(",");
@@ -554,6 +555,7 @@ public class tomasulo {
 
         instructionList.add(new Instruction(opcode, rd, rs, rt));
       }
+      scn.close();
     } catch (FileNotFoundException e) {
       System.out.println("An error occurred.");
       e.printStackTrace();
@@ -562,13 +564,13 @@ public class tomasulo {
   public static void init(){
     // init Register Status
     for(int i=0;i<=30;i+=2){
-        fRegister.put("F"+i, 1);
+        fRegister.put("F"+i, "1");
     }
     for(int i=0;i<=31;i++){
         if(i==1)
-            iRegister.put("R"+i, 16);
+            iRegister.put("R"+i, "16");
         else
-            iRegister.put("R"+i, 0);
+            iRegister.put("R"+i, "0");
     }
     // init Reservation Station
     for(int i=0;i<loadMount;i++){
