@@ -72,6 +72,8 @@ public class tomasulo {
     public static int clock=1;
     // 儲存目前指令被執行的位置id(行數)
     public static int cur_ins_position=0;
+    // 寫檔
+    public static String str="";
 
     public static void main(String[] args) {
 
@@ -516,12 +518,14 @@ public class tomasulo {
                     break;
             }
             showInfo();
+            save();
             if(flag==instructionList.size())
                 break;
             // if(clock==22)
             //     break;
             clock++;
         }
+        writeOutput();
         System.out.println("End: "+clock);
         
     }
@@ -562,10 +566,12 @@ public class tomasulo {
     }
   }
   public static void init(){
-    // init Register Status
+    // 初始化Register Status (key: register name, value: function unit)
+    // 浮點數暫存器有16個，編號為F0、F2、F4、…、F30，初始值為1
     for(int i=0;i<=30;i+=2){
         fRegister.put("F"+i, "1");
     }
+    // 整數暫存器有32個，編號為R0、R1、…、R31，除R1的初始值為16外，其餘整數暫存器初始值為0
     for(int i=0;i<=31;i++){
         if(i==1)
             iRegister.put("R"+i, "16");
@@ -595,6 +601,7 @@ public class tomasulo {
         Instruction ins=instructionList.get(i);
         System.out.println(ins.opcode+"\t\t"+ins.issue+"\t"+ins.execution+"\t\t"+ins.executed+"\t\t\t"+ins.written);
     }
+    System.out.println("\n-----------------------------------------------------------------------");
     System.out.println("Reservation Station");
     System.out.println("Time\tName\tOP\tVj\tVk\tQj\tQk\tBusy");
     for(int i=0;i<addMount;i++){
@@ -603,15 +610,51 @@ public class tomasulo {
     for(int i=0;i<mulMount;i++){
         System.out.println(multiplier[i].remain+"\t"+"Mul"+(i+1)+"\t"+multiplier[i].opcode+"\t"+multiplier[i].Vj+"\t"+multiplier[i].Vk+"\t"+multiplier[i].Qj+"\t"+multiplier[i].Qk+"\t"+multiplier[i].busy);
     }
+    System.out.println("\n-----------------------------------------------------------------------");
     System.out.println("Register result status");
     for (Object key : fRegister.keySet()) {
         System.out.print(key + ":" + fRegister.get(key)+" ");
     }
-    System.out.println("\nStore Buffer");
+    System.out.println("\n-----------------------------------------------------------------------");
+    System.out.println("Store Buffer");
     System.out.println("Name\tBusy\tVj\tQj");
     for(int i=0;i<storeMount;i++){
         System.out.println("Store"+(i+1)+"\t"+storeBuffer[i].busy+"\t"+storeBuffer[i].Vj+"\t"+storeBuffer[i].Qj+"\t");
     }
-    System.out.println("\n------------------------------");
+    System.out.println("=======================================================================");
+  }
+  public static void save(){
+    str+="週期: "+clock+"\n"+"Instruction Status\n"+"指令類型\tIssue\t開始執行\t執行結束\t寫回\n";
+    for(int i=0;i<instructionList.size();i++){
+        Instruction ins=instructionList.get(i);
+        str+=ins.opcode+"\t\t"+ins.issue+"\t"+ins.execution+"\t\t"+ins.executed+"\t\t\t"+ins.written+"\n";
+    }
+    str+="\n-----------------------------------------------------------------------\nReservation Station\nTime\tName\tOP\tVj\tVk\tQj\tQk\tBusy\n";
+    for(int i=0;i<addMount;i++){
+        str+=adder[i].remain+"\t"+"Add"+(i+1)+"\t"+adder[i].opcode+"\t"+adder[i].Vj+"\t"+adder[i].Vk+"\t"+adder[i].Qj+"\t"+adder[i].Qk+"\t"+adder[i].busy+"\n";
+    }
+    for(int i=0;i<mulMount;i++){
+        str+=multiplier[i].remain+"\t"+"Mul"+(i+1)+"\t"+multiplier[i].opcode+"\t"+multiplier[i].Vj+"\t"+multiplier[i].Vk+"\t"+multiplier[i].Qj+"\t"+multiplier[i].Qk+"\t"+multiplier[i].busy+"\n";
+    }
+    str+="\n-----------------------------------------------------------------------\nRegister result status";
+    for (Object key : fRegister.keySet()) {
+        str+=key + ":" + fRegister.get(key)+" ";
+    }
+    str+="\n-----------------------------------------------------------------------\nStore Buffer\nName\tBusy\tVj\tQj\n";
+    for(int i=0;i<storeMount;i++){
+        str+="Store"+(i+1)+"\t"+storeBuffer[i].busy+"\t"+storeBuffer[i].Vj+"\t"+storeBuffer[i].Qj+"\n";
+    }
+    str+="=======================================================================\n";
+  }
+  public static void writeOutput(){
+    try {
+        FileWriter fw = new FileWriter("output.txt");
+        fw.write(str);
+        fw.close();
+        System.out.println("Successfully wrote to the file.");
+      } catch (IOException e) {
+        System.out.println("An error occurred.");
+        e.printStackTrace();
+      }
   }
 }
