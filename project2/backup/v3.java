@@ -96,29 +96,29 @@ public class tomasulo {
                         for(int j=0;j<loadMount;j++){
                             if(storeBuffer[j].Qj.equals("Load"+i)){
                                 storeBuffer[j].Qj="";
-                                storeBuffer[j].Vj=iRegister.get(ins.rt).toString();
+                                storeBuffer[j].Vj=fRegister.get(ins.rd).toString();
                             }
                         }
                         // 廣播Load更新adder
                         for(int j=0;j<addMount;j++){
                             if(adder[j].Qj.equals("Load"+i) && adder[j].remain==0){
                                 adder[j].Qj="";
-                                adder[j].Vj=iRegister.get(ins.rt).toString();
+                                adder[j].Vj=fRegister.get(ins.rd).toString();
                             }
                             if(adder[j].Qk.equals("Load"+i) && adder[j].remain==0){
                                 adder[j].Qk="";
-                                adder[j].Vk=iRegister.get(ins.rt).toString();
+                                adder[j].Vk=fRegister.get(ins.rd).toString();
                             }
                         }
                         // 廣播Load更新multiplier
                         for(int j=0;j<mulMount;j++){
                             if(multiplier[j].Qj.equals("Load"+i)){
                                 multiplier[j].Qj="";
-                                multiplier[j].Vj=iRegister.get(ins.rt).toString();
+                                multiplier[j].Vj=fRegister.get(ins.rd).toString();
                             }
                             if(multiplier[j].Qk.equals("Load"+i)){
                                 multiplier[j].Qk="";
-                                multiplier[j].Vk=iRegister.get(ins.rt).toString();
+                                multiplier[j].Vk=fRegister.get(ins.rd).toString();
                             }
                         }
                     }
@@ -127,8 +127,8 @@ public class tomasulo {
                         loadBuffer[i].flush();
                         // 檢查WAW處理Output Dependence
                         int isBroadcast=1;
-                        for(int j=cur_ins_position-1;j>ins_index;j--){
-                            if(instructionList.get(j).rd.equals(ins.rd)&&instructionList.get(j).executed==0){
+                        for(int j=cur_ins_position-1;j>=0;j--){
+                            if(instructionList.get(j).rd.equals(ins.rd)&&instructionList.get(j).executed!=0){
                                 isBroadcast=0;
                             }
                         }
@@ -198,8 +198,6 @@ public class tomasulo {
                     // 檢查是否可以Write Result
                     if(ins.executed!=0&&ins.written==0){
                         ins.written=clock;
-                        // 更新FU
-                        fRegister.put(ins.rd, "1");
                         // 廣播Add更新storeBuffer
                         for(int j=0;j<loadMount;j++){
                             if(storeBuffer[j].Qj.equals("Add"+i)){
@@ -233,21 +231,18 @@ public class tomasulo {
                     // 清空Station
                     if(ins.written+1==clock){
                         adder[i].flush();
-                        
+                        // 檢查WAW處理Output Dependence
+                        int isBroadcast=1;
+                        for(int j=cur_ins_position-1;j>=0;j--){
+                            if(instructionList.get(j).rd.equals(ins.rd)&&instructionList.get(j).executed!=0){
+                                isBroadcast=0;
+                            }
+                        }
+                        if(isBroadcast==1){
+                            // 廣播更新
+                            fRegister.put(ins.rd, "1");
+                        }
                     }
-                    // if(ins.written==clock){
-                    //     // 檢查WAW處理Output Dependence
-                    //     int isBroadcast=1;
-                    //     for(int j=cur_ins_position-1;j>=0;j--){
-                    //         if(instructionList.get(j).rd.equals(ins.rd)&&instructionList.get(j).executed!=0){
-                    //             // isBroadcast=0;
-                    //         }
-                    //     }
-                    //     if(isBroadcast==1){
-                    //         // 廣播更新
-                    //         fRegister.put(ins.rd, "1");
-                    //     }
-                    // }
                     // 更新指令狀態
                     instructionList.set(ins_index,ins);
                 }
@@ -259,9 +254,7 @@ public class tomasulo {
                     Instruction ins=instructionList.get(ins_index); // 取得指令
                     // 檢查是否可以Write Result
                     if(ins.executed!=0&&ins.written==0){
-                        // 更新FU
                         ins.written=clock;
-                        fRegister.put(ins.rd, "1");
                         // 廣播Mul更新storeBuffer
                         for(int j=0;j<loadMount;j++){
                             if(storeBuffer[j].Qj.equals("Mul"+i)){
@@ -296,16 +289,16 @@ public class tomasulo {
                     if(ins.written+1==clock){
                         multiplier[i].flush();
                         // 檢查WAW處理Output Dependence
-                        // int isBroadcast=1;
-                        // for(int j=cur_ins_position-1;j>=0;j--){
-                        //     if(instructionList.get(j).rd.equals(ins.rd)&&instructionList.get(j).executed!=0){
-                        //         isBroadcast=0;
-                        //     }
-                        // }
-                        // if(isBroadcast==1){
-                        //     // 廣播更新
-                        //     fRegister.put(ins.rd, "1");
-                        // }
+                        int isBroadcast=1;
+                        for(int j=cur_ins_position-1;j>=0;j--){
+                            if(instructionList.get(j).rd.equals(ins.rd)&&instructionList.get(j).executed!=0){
+                                isBroadcast=0;
+                            }
+                        }
+                        if(isBroadcast==1){
+                            // 廣播更新
+                            fRegister.put(ins.rd, "1");
+                        }
                     }
                     // 更新指令狀態
                     instructionList.set(ins_index,ins);
@@ -526,7 +519,7 @@ public class tomasulo {
             save();
             if(flag==instructionList.size())
                 break;
-            // if(clock==9)
+            // if(clock==22)
             //     break;
             clock++;
         }
