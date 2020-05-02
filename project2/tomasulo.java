@@ -78,7 +78,7 @@ public class tomasulo {
     public static void main(String[] args) {
 
         // Read File
-        readFile("./test/test4.txt");
+        readFile("./test/example1.txt");
         // 保留站與暫存器初始化
         init();
         while(true){
@@ -199,7 +199,13 @@ public class tomasulo {
                     if(ins.executed!=0&&ins.written==0){
                         ins.written=clock;
                         // 更新FU
-                        fRegister.put(ins.rd, "1");
+                        double result=0;
+                        System.out.println(ins.rs+" "+ins.rt);
+                        if(ins.opcode.equals("ADD.D"))
+                            result=Double.parseDouble(adder[i].Vj)+Double.parseDouble(adder[i].Vk);
+                        else if(ins.opcode.equals("SUB.D"))
+                            result=Double.parseDouble(fRegister.get(ins.rs))-Double.parseDouble(fRegister.get(ins.rt));
+                        fRegister.put(ins.rd, result+"");
                         // 廣播Add更新storeBuffer
                         for(int j=0;j<loadMount;j++){
                             if(storeBuffer[j].Qj.equals("Add"+i)){
@@ -259,8 +265,8 @@ public class tomasulo {
                     Instruction ins=instructionList.get(ins_index); // 取得指令
                     // 檢查是否可以Write Result
                     if(ins.executed!=0&&ins.written==0){
-                        // 更新FU
                         ins.written=clock;
+                        // 更新FU
                         fRegister.put(ins.rd, "1");
                         // 廣播Mul更新storeBuffer
                         for(int j=0;j<loadMount;j++){

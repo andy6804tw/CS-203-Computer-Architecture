@@ -237,12 +237,12 @@ S.D          8         0            0           0
 Reservation Station
 Time Name    OP      Vj      Vk      Qj      Qk      Busy    
 0    Add1    ADD.D   16      16                      1       
-2    Add2    SUB.D   1       1                       1       
+2    Add2    SUB.D   1       32.0                    1       
 0    Add3                                            0       
 6    Mul1    MUL.D   1       1                       1       
 0    Mul2    DIV.D           1       Mul0            1       
 -----------------------------------------------------------------------
-Register result statusF30:1 F10:1 F20:1 F12:Mul0 F22:1 F14:1 F24:1 F0:16 F16:1 F26:1 F2:1 F18:1 F28:1 F4:1 F6:1 F8:Add1 
+Register result statusF30:1 F10:1 F20:1 F12:Mul0 F22:1 F14:1 F24:1 F0:16 F16:1 F26:1 F2:32.0 F18:1 F28:1 F4:1 F6:1 F8:Add1 
 -----------------------------------------------------------------------
 Load Buffer
 Name    Busy    Vj      Qj      
@@ -269,12 +269,12 @@ S.D          8         0            0           0
 Reservation Station
 Time Name    OP      Vj      Vk      Qj      Qk      Busy    
 0    Add1                                            0       
-1    Add2    SUB.D   1       1                       1       
+1    Add2    SUB.D   1       32.0                    1       
 0    Add3                                            0       
 5    Mul1    MUL.D   1       1                       1       
 0    Mul2    DIV.D           1       Mul0            1       
 -----------------------------------------------------------------------
-Register result statusF30:1 F10:1 F20:1 F12:Mul0 F22:1 F14:1 F24:1 F0:16 F16:1 F26:1 F2:1 F18:1 F28:1 F4:1 F6:1 F8:Add1 
+Register result statusF30:1 F10:1 F20:1 F12:Mul0 F22:1 F14:1 F24:1 F0:16 F16:1 F26:1 F2:32.0 F18:1 F28:1 F4:1 F6:1 F8:Add1 
 -----------------------------------------------------------------------
 Load Buffer
 Name    Busy    Vj      Qj      
@@ -301,12 +301,12 @@ S.D          8         0            0           0
 Reservation Station
 Time Name    OP      Vj      Vk      Qj      Qk      Busy    
 0    Add1                                            0       
-0    Add2    SUB.D   1       1                       1       
+0    Add2    SUB.D   1       32.0                    1       
 0    Add3                                            0       
 4    Mul1    MUL.D   1       1                       1       
 0    Mul2    DIV.D           1       Mul0            1       
 -----------------------------------------------------------------------
-Register result statusF30:1 F10:1 F20:1 F12:Mul0 F22:1 F14:1 F24:1 F0:16 F16:1 F26:1 F2:1 F18:1 F28:1 F4:1 F6:1 F8:Add1 
+Register result statusF30:1 F10:1 F20:1 F12:Mul0 F22:1 F14:1 F24:1 F0:16 F16:1 F26:1 F2:32.0 F18:1 F28:1 F4:1 F6:1 F8:Add1 
 -----------------------------------------------------------------------
 Load Buffer
 Name    Busy    Vj      Qj      
@@ -333,12 +333,12 @@ S.D          8         0            0           0
 Reservation Station
 Time Name    OP      Vj      Vk      Qj      Qk      Busy    
 0    Add1                                            0       
-0    Add2    SUB.D   1       1                       1       
+0    Add2    SUB.D   1       32.0                    1       
 0    Add3                                            0       
 3    Mul1    MUL.D   1       1                       1       
 0    Mul2    DIV.D           1       Mul0            1       
 -----------------------------------------------------------------------
-Register result statusF30:1 F10:1 F20:1 F12:Mul0 F22:1 F14:1 F24:1 F0:16 F16:1 F26:1 F2:1 F18:1 F28:1 F4:1 F6:1 F8:1 
+Register result statusF30:1 F10:1 F20:1 F12:Mul0 F22:1 F14:1 F24:1 F0:16 F16:1 F26:1 F2:32.0 F18:1 F28:1 F4:1 F6:1 F8:-31.0 
 -----------------------------------------------------------------------
 Load Buffer
 Name    Busy    Vj      Qj      
@@ -347,7 +347,7 @@ Load2   0
 -----------------------------------------------------------------------
 Store Buffer
 Name    Busy    Vj      Qj      
-Store1  1       1               
+Store1  1       -31.0           
 Store2  1               Mul0    
 =======================================================================
 週期: 12
@@ -370,7 +370,7 @@ Time Name    OP      Vj      Vk      Qj      Qk      Busy
 2    Mul1    MUL.D   1       1                       1       
 0    Mul2    DIV.D           1       Mul0            1       
 -----------------------------------------------------------------------
-Register result statusF30:1 F10:1 F20:1 F12:Mul0 F22:1 F14:1 F24:1 F0:16 F16:1 F26:1 F2:1 F18:1 F28:1 F4:1 F6:1 F8:16 
+Register result statusF30:1 F10:1 F20:1 F12:Mul0 F22:1 F14:1 F24:1 F0:16 F16:1 F26:1 F2:32.0 F18:1 F28:1 F4:1 F6:1 F8:16 
 -----------------------------------------------------------------------
 Load Buffer
 Name    Busy    Vj      Qj      
@@ -379,7 +379,7 @@ Load2   0
 -----------------------------------------------------------------------
 Store Buffer
 Name    Busy    Vj      Qj      
-Store1  1       1               
+Store1  1       -31.0           
 Store2  1               Mul0    
 =======================================================================
 週期: 13
@@ -402,7 +402,7 @@ Time Name    OP      Vj      Vk      Qj      Qk      Busy
 1    Mul1    MUL.D   1       1                       1       
 0    Mul2    DIV.D           1       Mul0            1       
 -----------------------------------------------------------------------
-Register result statusF30:1 F10:1 F20:1 F12:Mul0 F22:1 F14:1 F24:1 F0:16 F16:1 F26:1 F2:1 F18:1 F28:1 F4:1 F6:1 F8:16 
+Register result statusF30:1 F10:1 F20:1 F12:Mul0 F22:1 F14:1 F24:1 F0:16 F16:1 F26:1 F2:32.0 F18:1 F28:1 F4:1 F6:1 F8:16 
 -----------------------------------------------------------------------
 Load Buffer
 Name    Busy    Vj      Qj      
@@ -434,7 +434,7 @@ Time Name    OP      Vj      Vk      Qj      Qk      Busy
 0    Mul1    MUL.D   1       1                       1       
 0    Mul2    DIV.D           1       Mul0            1       
 -----------------------------------------------------------------------
-Register result statusF30:1 F10:1 F20:1 F12:Mul0 F22:1 F14:1 F24:1 F0:16 F16:1 F26:1 F2:1 F18:1 F28:1 F4:1 F6:1 F8:16 
+Register result statusF30:1 F10:1 F20:1 F12:Mul0 F22:1 F14:1 F24:1 F0:16 F16:1 F26:1 F2:32.0 F18:1 F28:1 F4:1 F6:1 F8:16 
 -----------------------------------------------------------------------
 Load Buffer
 Name    Busy    Vj      Qj      
@@ -466,7 +466,7 @@ Time Name    OP      Vj      Vk      Qj      Qk      Busy
 0    Mul1    MUL.D   1       1                       1       
 40   Mul2    DIV.D   1       1                       1       
 -----------------------------------------------------------------------
-Register result statusF30:1 F10:1 F20:1 F12:1 F22:1 F14:1 F24:1 F0:16 F16:1 F26:1 F2:1 F18:1 F28:1 F4:1 F6:1 F8:16 
+Register result statusF30:1 F10:1 F20:1 F12:1 F22:1 F14:1 F24:1 F0:16 F16:1 F26:1 F2:32.0 F18:1 F28:1 F4:1 F6:1 F8:16 
 -----------------------------------------------------------------------
 Load Buffer
 Name    Busy    Vj      Qj      
@@ -498,7 +498,7 @@ Time Name    OP      Vj      Vk      Qj      Qk      Busy
 0    Mul1                                            0       
 39   Mul2    DIV.D   1       1                       1       
 -----------------------------------------------------------------------
-Register result statusF30:1 F10:1 F20:1 F12:16 F22:1 F14:1 F24:1 F0:16 F16:1 F26:1 F2:1 F18:1 F28:1 F4:1 F6:1 F8:16 
+Register result statusF30:1 F10:1 F20:1 F12:16 F22:1 F14:1 F24:1 F0:16 F16:1 F26:1 F2:32.0 F18:1 F28:1 F4:1 F6:1 F8:16 
 -----------------------------------------------------------------------
 Load Buffer
 Name    Busy    Vj      Qj      
@@ -530,7 +530,7 @@ Time Name    OP      Vj      Vk      Qj      Qk      Busy
 0    Mul1                                            0       
 38   Mul2    DIV.D   1       1                       1       
 -----------------------------------------------------------------------
-Register result statusF30:1 F10:1 F20:1 F12:16 F22:1 F14:1 F24:1 F0:16 F16:1 F26:1 F2:1 F18:1 F28:1 F4:1 F6:1 F8:16 
+Register result statusF30:1 F10:1 F20:1 F12:16 F22:1 F14:1 F24:1 F0:16 F16:1 F26:1 F2:32.0 F18:1 F28:1 F4:1 F6:1 F8:16 
 -----------------------------------------------------------------------
 Load Buffer
 Name    Busy    Vj      Qj      
@@ -562,7 +562,7 @@ Time Name    OP      Vj      Vk      Qj      Qk      Busy
 0    Mul1                                            0       
 37   Mul2    DIV.D   1       1                       1       
 -----------------------------------------------------------------------
-Register result statusF30:1 F10:1 F20:1 F12:16 F22:1 F14:1 F24:1 F0:16 F16:1 F26:1 F2:1 F18:1 F28:1 F4:1 F6:1 F8:16 
+Register result statusF30:1 F10:1 F20:1 F12:16 F22:1 F14:1 F24:1 F0:16 F16:1 F26:1 F2:32.0 F18:1 F28:1 F4:1 F6:1 F8:16 
 -----------------------------------------------------------------------
 Load Buffer
 Name    Busy    Vj      Qj      
@@ -594,7 +594,7 @@ Time Name    OP      Vj      Vk      Qj      Qk      Busy
 0    Mul1                                            0       
 36   Mul2    DIV.D   1       1                       1       
 -----------------------------------------------------------------------
-Register result statusF30:1 F10:1 F20:1 F12:16 F22:1 F14:1 F24:1 F0:16 F16:1 F26:1 F2:1 F18:1 F28:1 F4:1 F6:1 F8:16 
+Register result statusF30:1 F10:1 F20:1 F12:16 F22:1 F14:1 F24:1 F0:16 F16:1 F26:1 F2:32.0 F18:1 F28:1 F4:1 F6:1 F8:16 
 -----------------------------------------------------------------------
 Load Buffer
 Name    Busy    Vj      Qj      
@@ -626,7 +626,7 @@ Time Name    OP      Vj      Vk      Qj      Qk      Busy
 0    Mul1                                            0       
 35   Mul2    DIV.D   1       1                       1       
 -----------------------------------------------------------------------
-Register result statusF30:1 F10:1 F20:1 F12:16 F22:1 F14:1 F24:1 F0:16 F16:1 F26:1 F2:1 F18:1 F28:1 F4:1 F6:1 F8:16 
+Register result statusF30:1 F10:1 F20:1 F12:16 F22:1 F14:1 F24:1 F0:16 F16:1 F26:1 F2:32.0 F18:1 F28:1 F4:1 F6:1 F8:16 
 -----------------------------------------------------------------------
 Load Buffer
 Name    Busy    Vj      Qj      
@@ -658,7 +658,7 @@ Time Name    OP      Vj      Vk      Qj      Qk      Busy
 0    Mul1                                            0       
 34   Mul2    DIV.D   1       1                       1       
 -----------------------------------------------------------------------
-Register result statusF30:1 F10:1 F20:1 F12:16 F22:1 F14:1 F24:1 F0:16 F16:1 F26:1 F2:1 F18:1 F28:1 F4:1 F6:1 F8:16 
+Register result statusF30:1 F10:1 F20:1 F12:16 F22:1 F14:1 F24:1 F0:16 F16:1 F26:1 F2:32.0 F18:1 F28:1 F4:1 F6:1 F8:16 
 -----------------------------------------------------------------------
 Load Buffer
 Name    Busy    Vj      Qj      
@@ -690,7 +690,7 @@ Time Name    OP      Vj      Vk      Qj      Qk      Busy
 0    Mul1                                            0       
 33   Mul2    DIV.D   1       1                       1       
 -----------------------------------------------------------------------
-Register result statusF30:1 F10:1 F20:1 F12:16 F22:1 F14:1 F24:1 F0:16 F16:1 F26:1 F2:1 F18:1 F28:1 F4:1 F6:1 F8:16 
+Register result statusF30:1 F10:1 F20:1 F12:16 F22:1 F14:1 F24:1 F0:16 F16:1 F26:1 F2:32.0 F18:1 F28:1 F4:1 F6:1 F8:16 
 -----------------------------------------------------------------------
 Load Buffer
 Name    Busy    Vj      Qj      
@@ -722,7 +722,7 @@ Time Name    OP      Vj      Vk      Qj      Qk      Busy
 0    Mul1                                            0       
 32   Mul2    DIV.D   1       1                       1       
 -----------------------------------------------------------------------
-Register result statusF30:1 F10:1 F20:1 F12:16 F22:1 F14:1 F24:1 F0:16 F16:1 F26:1 F2:1 F18:1 F28:1 F4:1 F6:1 F8:16 
+Register result statusF30:1 F10:1 F20:1 F12:16 F22:1 F14:1 F24:1 F0:16 F16:1 F26:1 F2:32.0 F18:1 F28:1 F4:1 F6:1 F8:16 
 -----------------------------------------------------------------------
 Load Buffer
 Name    Busy    Vj      Qj      
@@ -754,7 +754,7 @@ Time Name    OP      Vj      Vk      Qj      Qk      Busy
 0    Mul1                                            0       
 31   Mul2    DIV.D   1       1                       1       
 -----------------------------------------------------------------------
-Register result statusF30:1 F10:1 F20:1 F12:16 F22:1 F14:1 F24:1 F0:16 F16:1 F26:1 F2:1 F18:1 F28:1 F4:1 F6:1 F8:16 
+Register result statusF30:1 F10:1 F20:1 F12:16 F22:1 F14:1 F24:1 F0:16 F16:1 F26:1 F2:32.0 F18:1 F28:1 F4:1 F6:1 F8:16 
 -----------------------------------------------------------------------
 Load Buffer
 Name    Busy    Vj      Qj      
@@ -786,7 +786,7 @@ Time Name    OP      Vj      Vk      Qj      Qk      Busy
 0    Mul1                                            0       
 30   Mul2    DIV.D   1       1                       1       
 -----------------------------------------------------------------------
-Register result statusF30:1 F10:1 F20:1 F12:16 F22:1 F14:1 F24:1 F0:16 F16:1 F26:1 F2:1 F18:1 F28:1 F4:1 F6:1 F8:16 
+Register result statusF30:1 F10:1 F20:1 F12:16 F22:1 F14:1 F24:1 F0:16 F16:1 F26:1 F2:32.0 F18:1 F28:1 F4:1 F6:1 F8:16 
 -----------------------------------------------------------------------
 Load Buffer
 Name    Busy    Vj      Qj      
@@ -818,7 +818,7 @@ Time Name    OP      Vj      Vk      Qj      Qk      Busy
 0    Mul1                                            0       
 29   Mul2    DIV.D   1       1                       1       
 -----------------------------------------------------------------------
-Register result statusF30:1 F10:1 F20:1 F12:16 F22:1 F14:1 F24:1 F0:16 F16:1 F26:1 F2:1 F18:1 F28:1 F4:1 F6:1 F8:16 
+Register result statusF30:1 F10:1 F20:1 F12:16 F22:1 F14:1 F24:1 F0:16 F16:1 F26:1 F2:32.0 F18:1 F28:1 F4:1 F6:1 F8:16 
 -----------------------------------------------------------------------
 Load Buffer
 Name    Busy    Vj      Qj      
@@ -850,7 +850,7 @@ Time Name    OP      Vj      Vk      Qj      Qk      Busy
 0    Mul1                                            0       
 28   Mul2    DIV.D   1       1                       1       
 -----------------------------------------------------------------------
-Register result statusF30:1 F10:1 F20:1 F12:16 F22:1 F14:1 F24:1 F0:16 F16:1 F26:1 F2:1 F18:1 F28:1 F4:1 F6:1 F8:16 
+Register result statusF30:1 F10:1 F20:1 F12:16 F22:1 F14:1 F24:1 F0:16 F16:1 F26:1 F2:32.0 F18:1 F28:1 F4:1 F6:1 F8:16 
 -----------------------------------------------------------------------
 Load Buffer
 Name    Busy    Vj      Qj      
@@ -882,7 +882,7 @@ Time Name    OP      Vj      Vk      Qj      Qk      Busy
 0    Mul1                                            0       
 27   Mul2    DIV.D   1       1                       1       
 -----------------------------------------------------------------------
-Register result statusF30:1 F10:1 F20:1 F12:16 F22:1 F14:1 F24:1 F0:16 F16:1 F26:1 F2:1 F18:1 F28:1 F4:1 F6:1 F8:16 
+Register result statusF30:1 F10:1 F20:1 F12:16 F22:1 F14:1 F24:1 F0:16 F16:1 F26:1 F2:32.0 F18:1 F28:1 F4:1 F6:1 F8:16 
 -----------------------------------------------------------------------
 Load Buffer
 Name    Busy    Vj      Qj      
@@ -914,7 +914,7 @@ Time Name    OP      Vj      Vk      Qj      Qk      Busy
 0    Mul1                                            0       
 26   Mul2    DIV.D   1       1                       1       
 -----------------------------------------------------------------------
-Register result statusF30:1 F10:1 F20:1 F12:16 F22:1 F14:1 F24:1 F0:16 F16:1 F26:1 F2:1 F18:1 F28:1 F4:1 F6:1 F8:16 
+Register result statusF30:1 F10:1 F20:1 F12:16 F22:1 F14:1 F24:1 F0:16 F16:1 F26:1 F2:32.0 F18:1 F28:1 F4:1 F6:1 F8:16 
 -----------------------------------------------------------------------
 Load Buffer
 Name    Busy    Vj      Qj      
@@ -946,7 +946,7 @@ Time Name    OP      Vj      Vk      Qj      Qk      Busy
 0    Mul1                                            0       
 25   Mul2    DIV.D   1       1                       1       
 -----------------------------------------------------------------------
-Register result statusF30:1 F10:1 F20:1 F12:16 F22:1 F14:1 F24:1 F0:16 F16:1 F26:1 F2:1 F18:1 F28:1 F4:1 F6:1 F8:16 
+Register result statusF30:1 F10:1 F20:1 F12:16 F22:1 F14:1 F24:1 F0:16 F16:1 F26:1 F2:32.0 F18:1 F28:1 F4:1 F6:1 F8:16 
 -----------------------------------------------------------------------
 Load Buffer
 Name    Busy    Vj      Qj      
@@ -978,7 +978,7 @@ Time Name    OP      Vj      Vk      Qj      Qk      Busy
 0    Mul1                                            0       
 24   Mul2    DIV.D   1       1                       1       
 -----------------------------------------------------------------------
-Register result statusF30:1 F10:1 F20:1 F12:16 F22:1 F14:1 F24:1 F0:16 F16:1 F26:1 F2:1 F18:1 F28:1 F4:1 F6:1 F8:16 
+Register result statusF30:1 F10:1 F20:1 F12:16 F22:1 F14:1 F24:1 F0:16 F16:1 F26:1 F2:32.0 F18:1 F28:1 F4:1 F6:1 F8:16 
 -----------------------------------------------------------------------
 Load Buffer
 Name    Busy    Vj      Qj      
@@ -1010,7 +1010,7 @@ Time Name    OP      Vj      Vk      Qj      Qk      Busy
 0    Mul1                                            0       
 23   Mul2    DIV.D   1       1                       1       
 -----------------------------------------------------------------------
-Register result statusF30:1 F10:1 F20:1 F12:16 F22:1 F14:1 F24:1 F0:16 F16:1 F26:1 F2:1 F18:1 F28:1 F4:1 F6:1 F8:16 
+Register result statusF30:1 F10:1 F20:1 F12:16 F22:1 F14:1 F24:1 F0:16 F16:1 F26:1 F2:32.0 F18:1 F28:1 F4:1 F6:1 F8:16 
 -----------------------------------------------------------------------
 Load Buffer
 Name    Busy    Vj      Qj      
@@ -1042,7 +1042,7 @@ Time Name    OP      Vj      Vk      Qj      Qk      Busy
 0    Mul1                                            0       
 22   Mul2    DIV.D   1       1                       1       
 -----------------------------------------------------------------------
-Register result statusF30:1 F10:1 F20:1 F12:16 F22:1 F14:1 F24:1 F0:16 F16:1 F26:1 F2:1 F18:1 F28:1 F4:1 F6:1 F8:16 
+Register result statusF30:1 F10:1 F20:1 F12:16 F22:1 F14:1 F24:1 F0:16 F16:1 F26:1 F2:32.0 F18:1 F28:1 F4:1 F6:1 F8:16 
 -----------------------------------------------------------------------
 Load Buffer
 Name    Busy    Vj      Qj      
@@ -1074,7 +1074,7 @@ Time Name    OP      Vj      Vk      Qj      Qk      Busy
 0    Mul1                                            0       
 21   Mul2    DIV.D   1       1                       1       
 -----------------------------------------------------------------------
-Register result statusF30:1 F10:1 F20:1 F12:16 F22:1 F14:1 F24:1 F0:16 F16:1 F26:1 F2:1 F18:1 F28:1 F4:1 F6:1 F8:16 
+Register result statusF30:1 F10:1 F20:1 F12:16 F22:1 F14:1 F24:1 F0:16 F16:1 F26:1 F2:32.0 F18:1 F28:1 F4:1 F6:1 F8:16 
 -----------------------------------------------------------------------
 Load Buffer
 Name    Busy    Vj      Qj      
@@ -1106,7 +1106,7 @@ Time Name    OP      Vj      Vk      Qj      Qk      Busy
 0    Mul1                                            0       
 20   Mul2    DIV.D   1       1                       1       
 -----------------------------------------------------------------------
-Register result statusF30:1 F10:1 F20:1 F12:16 F22:1 F14:1 F24:1 F0:16 F16:1 F26:1 F2:1 F18:1 F28:1 F4:1 F6:1 F8:16 
+Register result statusF30:1 F10:1 F20:1 F12:16 F22:1 F14:1 F24:1 F0:16 F16:1 F26:1 F2:32.0 F18:1 F28:1 F4:1 F6:1 F8:16 
 -----------------------------------------------------------------------
 Load Buffer
 Name    Busy    Vj      Qj      
@@ -1138,7 +1138,7 @@ Time Name    OP      Vj      Vk      Qj      Qk      Busy
 0    Mul1                                            0       
 19   Mul2    DIV.D   1       1                       1       
 -----------------------------------------------------------------------
-Register result statusF30:1 F10:1 F20:1 F12:16 F22:1 F14:1 F24:1 F0:16 F16:1 F26:1 F2:1 F18:1 F28:1 F4:1 F6:1 F8:16 
+Register result statusF30:1 F10:1 F20:1 F12:16 F22:1 F14:1 F24:1 F0:16 F16:1 F26:1 F2:32.0 F18:1 F28:1 F4:1 F6:1 F8:16 
 -----------------------------------------------------------------------
 Load Buffer
 Name    Busy    Vj      Qj      
@@ -1170,7 +1170,7 @@ Time Name    OP      Vj      Vk      Qj      Qk      Busy
 0    Mul1                                            0       
 18   Mul2    DIV.D   1       1                       1       
 -----------------------------------------------------------------------
-Register result statusF30:1 F10:1 F20:1 F12:16 F22:1 F14:1 F24:1 F0:16 F16:1 F26:1 F2:1 F18:1 F28:1 F4:1 F6:1 F8:16 
+Register result statusF30:1 F10:1 F20:1 F12:16 F22:1 F14:1 F24:1 F0:16 F16:1 F26:1 F2:32.0 F18:1 F28:1 F4:1 F6:1 F8:16 
 -----------------------------------------------------------------------
 Load Buffer
 Name    Busy    Vj      Qj      
@@ -1202,7 +1202,7 @@ Time Name    OP      Vj      Vk      Qj      Qk      Busy
 0    Mul1                                            0       
 17   Mul2    DIV.D   1       1                       1       
 -----------------------------------------------------------------------
-Register result statusF30:1 F10:1 F20:1 F12:16 F22:1 F14:1 F24:1 F0:16 F16:1 F26:1 F2:1 F18:1 F28:1 F4:1 F6:1 F8:16 
+Register result statusF30:1 F10:1 F20:1 F12:16 F22:1 F14:1 F24:1 F0:16 F16:1 F26:1 F2:32.0 F18:1 F28:1 F4:1 F6:1 F8:16 
 -----------------------------------------------------------------------
 Load Buffer
 Name    Busy    Vj      Qj      
@@ -1234,7 +1234,7 @@ Time Name    OP      Vj      Vk      Qj      Qk      Busy
 0    Mul1                                            0       
 16   Mul2    DIV.D   1       1                       1       
 -----------------------------------------------------------------------
-Register result statusF30:1 F10:1 F20:1 F12:16 F22:1 F14:1 F24:1 F0:16 F16:1 F26:1 F2:1 F18:1 F28:1 F4:1 F6:1 F8:16 
+Register result statusF30:1 F10:1 F20:1 F12:16 F22:1 F14:1 F24:1 F0:16 F16:1 F26:1 F2:32.0 F18:1 F28:1 F4:1 F6:1 F8:16 
 -----------------------------------------------------------------------
 Load Buffer
 Name    Busy    Vj      Qj      
@@ -1266,7 +1266,7 @@ Time Name    OP      Vj      Vk      Qj      Qk      Busy
 0    Mul1                                            0       
 15   Mul2    DIV.D   1       1                       1       
 -----------------------------------------------------------------------
-Register result statusF30:1 F10:1 F20:1 F12:16 F22:1 F14:1 F24:1 F0:16 F16:1 F26:1 F2:1 F18:1 F28:1 F4:1 F6:1 F8:16 
+Register result statusF30:1 F10:1 F20:1 F12:16 F22:1 F14:1 F24:1 F0:16 F16:1 F26:1 F2:32.0 F18:1 F28:1 F4:1 F6:1 F8:16 
 -----------------------------------------------------------------------
 Load Buffer
 Name    Busy    Vj      Qj      
@@ -1298,7 +1298,7 @@ Time Name    OP      Vj      Vk      Qj      Qk      Busy
 0    Mul1                                            0       
 14   Mul2    DIV.D   1       1                       1       
 -----------------------------------------------------------------------
-Register result statusF30:1 F10:1 F20:1 F12:16 F22:1 F14:1 F24:1 F0:16 F16:1 F26:1 F2:1 F18:1 F28:1 F4:1 F6:1 F8:16 
+Register result statusF30:1 F10:1 F20:1 F12:16 F22:1 F14:1 F24:1 F0:16 F16:1 F26:1 F2:32.0 F18:1 F28:1 F4:1 F6:1 F8:16 
 -----------------------------------------------------------------------
 Load Buffer
 Name    Busy    Vj      Qj      
@@ -1330,7 +1330,7 @@ Time Name    OP      Vj      Vk      Qj      Qk      Busy
 0    Mul1                                            0       
 13   Mul2    DIV.D   1       1                       1       
 -----------------------------------------------------------------------
-Register result statusF30:1 F10:1 F20:1 F12:16 F22:1 F14:1 F24:1 F0:16 F16:1 F26:1 F2:1 F18:1 F28:1 F4:1 F6:1 F8:16 
+Register result statusF30:1 F10:1 F20:1 F12:16 F22:1 F14:1 F24:1 F0:16 F16:1 F26:1 F2:32.0 F18:1 F28:1 F4:1 F6:1 F8:16 
 -----------------------------------------------------------------------
 Load Buffer
 Name    Busy    Vj      Qj      
@@ -1362,7 +1362,7 @@ Time Name    OP      Vj      Vk      Qj      Qk      Busy
 0    Mul1                                            0       
 12   Mul2    DIV.D   1       1                       1       
 -----------------------------------------------------------------------
-Register result statusF30:1 F10:1 F20:1 F12:16 F22:1 F14:1 F24:1 F0:16 F16:1 F26:1 F2:1 F18:1 F28:1 F4:1 F6:1 F8:16 
+Register result statusF30:1 F10:1 F20:1 F12:16 F22:1 F14:1 F24:1 F0:16 F16:1 F26:1 F2:32.0 F18:1 F28:1 F4:1 F6:1 F8:16 
 -----------------------------------------------------------------------
 Load Buffer
 Name    Busy    Vj      Qj      
@@ -1394,7 +1394,7 @@ Time Name    OP      Vj      Vk      Qj      Qk      Busy
 0    Mul1                                            0       
 11   Mul2    DIV.D   1       1                       1       
 -----------------------------------------------------------------------
-Register result statusF30:1 F10:1 F20:1 F12:16 F22:1 F14:1 F24:1 F0:16 F16:1 F26:1 F2:1 F18:1 F28:1 F4:1 F6:1 F8:16 
+Register result statusF30:1 F10:1 F20:1 F12:16 F22:1 F14:1 F24:1 F0:16 F16:1 F26:1 F2:32.0 F18:1 F28:1 F4:1 F6:1 F8:16 
 -----------------------------------------------------------------------
 Load Buffer
 Name    Busy    Vj      Qj      
@@ -1426,7 +1426,7 @@ Time Name    OP      Vj      Vk      Qj      Qk      Busy
 0    Mul1                                            0       
 10   Mul2    DIV.D   1       1                       1       
 -----------------------------------------------------------------------
-Register result statusF30:1 F10:1 F20:1 F12:16 F22:1 F14:1 F24:1 F0:16 F16:1 F26:1 F2:1 F18:1 F28:1 F4:1 F6:1 F8:16 
+Register result statusF30:1 F10:1 F20:1 F12:16 F22:1 F14:1 F24:1 F0:16 F16:1 F26:1 F2:32.0 F18:1 F28:1 F4:1 F6:1 F8:16 
 -----------------------------------------------------------------------
 Load Buffer
 Name    Busy    Vj      Qj      
@@ -1458,7 +1458,7 @@ Time Name    OP      Vj      Vk      Qj      Qk      Busy
 0    Mul1                                            0       
 9    Mul2    DIV.D   1       1                       1       
 -----------------------------------------------------------------------
-Register result statusF30:1 F10:1 F20:1 F12:16 F22:1 F14:1 F24:1 F0:16 F16:1 F26:1 F2:1 F18:1 F28:1 F4:1 F6:1 F8:16 
+Register result statusF30:1 F10:1 F20:1 F12:16 F22:1 F14:1 F24:1 F0:16 F16:1 F26:1 F2:32.0 F18:1 F28:1 F4:1 F6:1 F8:16 
 -----------------------------------------------------------------------
 Load Buffer
 Name    Busy    Vj      Qj      
@@ -1490,7 +1490,7 @@ Time Name    OP      Vj      Vk      Qj      Qk      Busy
 0    Mul1                                            0       
 8    Mul2    DIV.D   1       1                       1       
 -----------------------------------------------------------------------
-Register result statusF30:1 F10:1 F20:1 F12:16 F22:1 F14:1 F24:1 F0:16 F16:1 F26:1 F2:1 F18:1 F28:1 F4:1 F6:1 F8:16 
+Register result statusF30:1 F10:1 F20:1 F12:16 F22:1 F14:1 F24:1 F0:16 F16:1 F26:1 F2:32.0 F18:1 F28:1 F4:1 F6:1 F8:16 
 -----------------------------------------------------------------------
 Load Buffer
 Name    Busy    Vj      Qj      
@@ -1522,7 +1522,7 @@ Time Name    OP      Vj      Vk      Qj      Qk      Busy
 0    Mul1                                            0       
 7    Mul2    DIV.D   1       1                       1       
 -----------------------------------------------------------------------
-Register result statusF30:1 F10:1 F20:1 F12:16 F22:1 F14:1 F24:1 F0:16 F16:1 F26:1 F2:1 F18:1 F28:1 F4:1 F6:1 F8:16 
+Register result statusF30:1 F10:1 F20:1 F12:16 F22:1 F14:1 F24:1 F0:16 F16:1 F26:1 F2:32.0 F18:1 F28:1 F4:1 F6:1 F8:16 
 -----------------------------------------------------------------------
 Load Buffer
 Name    Busy    Vj      Qj      
@@ -1554,7 +1554,7 @@ Time Name    OP      Vj      Vk      Qj      Qk      Busy
 0    Mul1                                            0       
 6    Mul2    DIV.D   1       1                       1       
 -----------------------------------------------------------------------
-Register result statusF30:1 F10:1 F20:1 F12:16 F22:1 F14:1 F24:1 F0:16 F16:1 F26:1 F2:1 F18:1 F28:1 F4:1 F6:1 F8:16 
+Register result statusF30:1 F10:1 F20:1 F12:16 F22:1 F14:1 F24:1 F0:16 F16:1 F26:1 F2:32.0 F18:1 F28:1 F4:1 F6:1 F8:16 
 -----------------------------------------------------------------------
 Load Buffer
 Name    Busy    Vj      Qj      
@@ -1586,7 +1586,7 @@ Time Name    OP      Vj      Vk      Qj      Qk      Busy
 0    Mul1                                            0       
 5    Mul2    DIV.D   1       1                       1       
 -----------------------------------------------------------------------
-Register result statusF30:1 F10:1 F20:1 F12:16 F22:1 F14:1 F24:1 F0:16 F16:1 F26:1 F2:1 F18:1 F28:1 F4:1 F6:1 F8:16 
+Register result statusF30:1 F10:1 F20:1 F12:16 F22:1 F14:1 F24:1 F0:16 F16:1 F26:1 F2:32.0 F18:1 F28:1 F4:1 F6:1 F8:16 
 -----------------------------------------------------------------------
 Load Buffer
 Name    Busy    Vj      Qj      
@@ -1618,7 +1618,7 @@ Time Name    OP      Vj      Vk      Qj      Qk      Busy
 0    Mul1                                            0       
 4    Mul2    DIV.D   1       1                       1       
 -----------------------------------------------------------------------
-Register result statusF30:1 F10:1 F20:1 F12:16 F22:1 F14:1 F24:1 F0:16 F16:1 F26:1 F2:1 F18:1 F28:1 F4:1 F6:1 F8:16 
+Register result statusF30:1 F10:1 F20:1 F12:16 F22:1 F14:1 F24:1 F0:16 F16:1 F26:1 F2:32.0 F18:1 F28:1 F4:1 F6:1 F8:16 
 -----------------------------------------------------------------------
 Load Buffer
 Name    Busy    Vj      Qj      
@@ -1650,7 +1650,7 @@ Time Name    OP      Vj      Vk      Qj      Qk      Busy
 0    Mul1                                            0       
 3    Mul2    DIV.D   1       1                       1       
 -----------------------------------------------------------------------
-Register result statusF30:1 F10:1 F20:1 F12:16 F22:1 F14:1 F24:1 F0:16 F16:1 F26:1 F2:1 F18:1 F28:1 F4:1 F6:1 F8:16 
+Register result statusF30:1 F10:1 F20:1 F12:16 F22:1 F14:1 F24:1 F0:16 F16:1 F26:1 F2:32.0 F18:1 F28:1 F4:1 F6:1 F8:16 
 -----------------------------------------------------------------------
 Load Buffer
 Name    Busy    Vj      Qj      
@@ -1682,7 +1682,7 @@ Time Name    OP      Vj      Vk      Qj      Qk      Busy
 0    Mul1                                            0       
 2    Mul2    DIV.D   1       1                       1       
 -----------------------------------------------------------------------
-Register result statusF30:1 F10:1 F20:1 F12:16 F22:1 F14:1 F24:1 F0:16 F16:1 F26:1 F2:1 F18:1 F28:1 F4:1 F6:1 F8:16 
+Register result statusF30:1 F10:1 F20:1 F12:16 F22:1 F14:1 F24:1 F0:16 F16:1 F26:1 F2:32.0 F18:1 F28:1 F4:1 F6:1 F8:16 
 -----------------------------------------------------------------------
 Load Buffer
 Name    Busy    Vj      Qj      
@@ -1714,7 +1714,7 @@ Time Name    OP      Vj      Vk      Qj      Qk      Busy
 0    Mul1                                            0       
 1    Mul2    DIV.D   1       1                       1       
 -----------------------------------------------------------------------
-Register result statusF30:1 F10:1 F20:1 F12:16 F22:1 F14:1 F24:1 F0:16 F16:1 F26:1 F2:1 F18:1 F28:1 F4:1 F6:1 F8:16 
+Register result statusF30:1 F10:1 F20:1 F12:16 F22:1 F14:1 F24:1 F0:16 F16:1 F26:1 F2:32.0 F18:1 F28:1 F4:1 F6:1 F8:16 
 -----------------------------------------------------------------------
 Load Buffer
 Name    Busy    Vj      Qj      
@@ -1746,7 +1746,7 @@ Time Name    OP      Vj      Vk      Qj      Qk      Busy
 0    Mul1                                            0       
 0    Mul2    DIV.D   1       1                       1       
 -----------------------------------------------------------------------
-Register result statusF30:1 F10:1 F20:1 F12:16 F22:1 F14:1 F24:1 F0:16 F16:1 F26:1 F2:1 F18:1 F28:1 F4:1 F6:1 F8:16 
+Register result statusF30:1 F10:1 F20:1 F12:16 F22:1 F14:1 F24:1 F0:16 F16:1 F26:1 F2:32.0 F18:1 F28:1 F4:1 F6:1 F8:16 
 -----------------------------------------------------------------------
 Load Buffer
 Name    Busy    Vj      Qj      
@@ -1778,7 +1778,7 @@ Time Name    OP      Vj      Vk      Qj      Qk      Busy
 0    Mul1                                            0       
 0    Mul2    DIV.D   1       1                       1       
 -----------------------------------------------------------------------
-Register result statusF30:1 F10:1 F20:1 F12:16 F22:1 F14:1 F24:1 F0:16 F16:1 F26:1 F2:1 F18:1 F28:1 F4:1 F6:1 F8:1 
+Register result statusF30:1 F10:1 F20:1 F12:16 F22:1 F14:1 F24:1 F0:16 F16:1 F26:1 F2:32.0 F18:1 F28:1 F4:1 F6:1 F8:1 
 -----------------------------------------------------------------------
 Load Buffer
 Name    Busy    Vj      Qj      
