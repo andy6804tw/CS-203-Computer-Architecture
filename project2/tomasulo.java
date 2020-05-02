@@ -78,7 +78,7 @@ public class tomasulo {
     public static void main(String[] args) {
 
         // Read File
-        readFile("./test/example2.txt");
+        readFile("./test/test5.txt");
         // 保留站與暫存器初始化
         init();
         while(true){
@@ -202,41 +202,42 @@ public class tomasulo {
                     // 檢查是否可以Write Result
                     if(ins.executed!=0&&ins.written==0){
                         ins.written=clock;
+
                         // 更新FU
-                        double result=0;
+                        double broadcastValue=0;
                         System.out.println(ins.rs+" "+ins.rt);
                         if(ins.opcode.equals("ADD.D"))
-                            result=Double.parseDouble(adder[i].Vj)+Double.parseDouble(adder[i].Vk);
+                            broadcastValue=Double.parseDouble(adder[i].Vj)+Double.parseDouble(adder[i].Vk);
                         else if(ins.opcode.equals("SUB.D"))
-                            result=Double.parseDouble(adder[i].Vj)-Double.parseDouble(adder[i].Vk);
-                        fRegister.put(ins.rd, result+"");
+                            broadcastValue=Double.parseDouble(adder[i].Vj)-Double.parseDouble(adder[i].Vk);
+                        
                         // 廣播Add更新storeBuffer
                         for(int j=0;j<loadMount;j++){
                             if(storeBuffer[j].Qj.equals("Add"+i)){
                                 storeBuffer[j].Qj="";
-                                storeBuffer[j].Vj=fRegister.get(ins.rd).toString();
+                                storeBuffer[j].Vj=broadcastValue+"";
                             }
                         }
                         // 廣播Add更新adder
                         for(int j=0;j<addMount;j++){
                             if(adder[j].Qj.equals("Add"+i)){
                                 adder[j].Qj="";
-                                adder[j].Vj=fRegister.get(ins.rd).toString();
+                                adder[j].Vj=broadcastValue+"";
                             }
                             if(adder[j].Qk.equals("Add"+i)){
                                 adder[j].Qk="";
-                                adder[j].Vk=fRegister.get(ins.rd).toString();
+                                adder[j].Vk=broadcastValue+"";
                             }
                         }
                         // 廣播Add更新multiplier
                         for(int j=0;j<mulMount;j++){
                             if(multiplier[j].Qj.equals("Add"+i)){
                                 multiplier[j].Qj="";
-                                multiplier[j].Vj=fRegister.get(ins.rd).toString();
+                                multiplier[j].Vj=broadcastValue+"";
                             }
                             if(multiplier[j].Qk.equals("Add"+i)){
                                 multiplier[j].Qk="";
-                                multiplier[j].Vk=fRegister.get(ins.rd).toString();
+                                multiplier[j].Vk=broadcastValue+"";
                             }
                         }
                     }
@@ -245,19 +246,26 @@ public class tomasulo {
                         adder[i].flush();
                         
                     }
-                    // if(ins.written==clock){
-                    //     // 檢查WAW處理Output Dependence
-                    //     int isBroadcast=1;
-                    //     for(int j=cur_ins_position-1;j>=0;j--){
-                    //         if(instructionList.get(j).rd.equals(ins.rd)&&instructionList.get(j).executed!=0){
-                    //             // isBroadcast=0;
-                    //         }
-                    //     }
-                    //     if(isBroadcast==1){
-                    //         // 廣播更新
-                    //         fRegister.put(ins.rd, "1");
-                    //     }
-                    // }
+                    
+                    
+                    if(ins.written==clock){
+                        // 檢查WAW處理Output Dependence
+                        int isBroadcast=1;
+                        for(int j=cur_ins_position-1;j>ins_index;j--){
+                            if(instructionList.get(j).rd.equals(ins.rd)&&instructionList.get(j).executed==0){
+                                isBroadcast=0;
+                            }
+                        }
+                        if(isBroadcast==1){
+                            // 廣播更新
+                            double result=0;
+                            if(ins.opcode.equals("ADD.D"))
+                                result=Double.parseDouble(adder[i].Vj)+Double.parseDouble(adder[i].Vk);
+                            else if(ins.opcode.equals("SUB.D"))
+                                result=Double.parseDouble(adder[i].Vj)-Double.parseDouble(adder[i].Vk);
+                            fRegister.put(ins.rd, result+"");
+                        }
+                    }
                     // 更新指令狀態
                     instructionList.set(ins_index,ins);
                 }
@@ -541,7 +549,7 @@ public class tomasulo {
             save();
             if(flag==instructionList.size())
                 break;
-            // if(clock==9)
+            // if(clock==49)
             //     break;
             clock++;
         }
