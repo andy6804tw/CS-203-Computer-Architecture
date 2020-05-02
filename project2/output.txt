@@ -1,9 +1,14 @@
 週期: 1
 Instruction Status
 指令類型      Issue     開始執行      執行結束      寫回        
-MUL.D        1         1            0           0         
-SUB.D        0         0            0           0         
+L.D          1         1            0           0         
+L.D          0         0            0           0         
+ADD.D        0         0            0           0         
 DIV.D        0         0            0           0         
+MUL.D        0         0            0           0         
+SUB.D        0         0            0           0         
+SUB.D        0         0            0           0         
+SUB.D        0         0            0           0         
 ADD.D        0         0            0           0         
 -----------------------------------------------------------------------
 Reservation Station
@@ -11,14 +16,14 @@ Time Name    OP      Vj      Vk      Qj      Qk      Busy
 0    Add1                                            0       
 0    Add2                                            0       
 0    Add3                                            0       
-0    Mul1    MUL.D   1       1                       1       
+0    Mul1                                            0       
 0    Mul2                                            0       
 -----------------------------------------------------------------------
-Register result statusF30:1 F10:1 F20:1 F12:1 F22:1 F14:1 F24:1 F0:Mul0 F16:1 F26:1 F2:1 F18:1 F28:1 F4:1 F6:1 F8:1 
+Register result statusF30:1 F10:1 F20:1 F12:1 F22:1 F14:1 F24:1 F0:1 F16:1 F26:1 F2:1 F18:1 F28:1 F4:1 F6:Load0 F8:1 
 -----------------------------------------------------------------------
 Load Buffer
 Name    Busy    Vj      Qj      
-Load1   0                       
+Load1   1                       
 Load2   0                       
 -----------------------------------------------------------------------
 Store Buffer
@@ -29,25 +34,30 @@ Store2  0
 週期: 2
 Instruction Status
 指令類型      Issue     開始執行      執行結束      寫回        
-MUL.D        1         1            0           0         
-SUB.D        2         2            0           0         
+L.D          1         1            0           0         
+L.D          2         2            0           0         
+ADD.D        0         0            0           0         
 DIV.D        0         0            0           0         
+MUL.D        0         0            0           0         
+SUB.D        0         0            0           0         
+SUB.D        0         0            0           0         
+SUB.D        0         0            0           0         
 ADD.D        0         0            0           0         
 -----------------------------------------------------------------------
 Reservation Station
 Time Name    OP      Vj      Vk      Qj      Qk      Busy    
-0    Add1    SUB.D   1       1                       1       
+0    Add1                                            0       
 0    Add2                                            0       
 0    Add3                                            0       
-9    Mul1    MUL.D   1       1                       1       
+0    Mul1                                            0       
 0    Mul2                                            0       
 -----------------------------------------------------------------------
-Register result statusF30:1 F10:1 F20:1 F12:1 F22:1 F14:1 F24:1 F0:Mul0 F16:1 F26:1 F2:1 F18:1 F28:1 F4:1 F6:Add0 F8:1 
+Register result statusF30:1 F10:1 F20:1 F12:1 F22:1 F14:1 F24:1 F0:1 F16:1 F26:1 F2:Load1 F18:1 F28:1 F4:1 F6:Load0 F8:1 
 -----------------------------------------------------------------------
 Load Buffer
 Name    Busy    Vj      Qj      
-Load1   0                       
-Load2   0                       
+Load1   1                       
+Load2   1                       
 -----------------------------------------------------------------------
 Store Buffer
 Name    Busy    Vj      Qj      
@@ -57,25 +67,30 @@ Store2  0
 週期: 3
 Instruction Status
 指令類型      Issue     開始執行      執行結束      寫回        
-MUL.D        1         1            0           0         
-SUB.D        2         2            0           0         
-DIV.D        3         3            0           0         
+L.D          1         1            3           0         
+L.D          2         2            0           0         
+ADD.D        3         0            0           0         
+DIV.D        0         0            0           0         
+MUL.D        0         0            0           0         
+SUB.D        0         0            0           0         
+SUB.D        0         0            0           0         
+SUB.D        0         0            0           0         
 ADD.D        0         0            0           0         
 -----------------------------------------------------------------------
 Reservation Station
 Time Name    OP      Vj      Vk      Qj      Qk      Busy    
-1    Add1    SUB.D   1       1                       1       
+0    Add1    ADD.D                   Load1   Load0   1       
 0    Add2                                            0       
 0    Add3                                            0       
-8    Mul1    MUL.D   1       1                       1       
-0    Mul2    DIV.D   1       1                       1       
+0    Mul1                                            0       
+0    Mul2                                            0       
 -----------------------------------------------------------------------
-Register result statusF30:1 F10:1 F20:1 F12:Mul1 F22:1 F14:1 F24:1 F0:Mul0 F16:1 F26:1 F2:1 F18:1 F28:1 F4:1 F6:Add0 F8:1 
+Register result statusF30:1 F10:1 F20:1 F12:1 F22:1 F14:1 F24:1 F0:1 F16:1 F26:1 F2:Load1 F18:1 F28:1 F4:Add0 F6:Load0 F8:1 
 -----------------------------------------------------------------------
 Load Buffer
 Name    Busy    Vj      Qj      
-Load1   0                       
-Load2   0                       
+Load1   1                       
+Load2   1                       
 -----------------------------------------------------------------------
 Store Buffer
 Name    Busy    Vj      Qj      
@@ -85,25 +100,30 @@ Store2  0
 週期: 4
 Instruction Status
 指令類型      Issue     開始執行      執行結束      寫回        
-MUL.D        1         1            0           0         
-SUB.D        2         2            4           0         
-DIV.D        3         3            0           0         
-ADD.D        4         4            0           0         
+L.D          1         1            3           4         
+L.D          2         2            4           0         
+ADD.D        3         0            0           0         
+DIV.D        4         0            0           0         
+MUL.D        0         0            0           0         
+SUB.D        0         0            0           0         
+SUB.D        0         0            0           0         
+SUB.D        0         0            0           0         
+ADD.D        0         0            0           0         
 -----------------------------------------------------------------------
 Reservation Station
 Time Name    OP      Vj      Vk      Qj      Qk      Busy    
-0    Add1    SUB.D   1       1                       1       
-0    Add2    ADD.D   1       1                       1       
+0    Add1    ADD.D           Load0   Load1           1       
+0    Add2                                            0       
 0    Add3                                            0       
-7    Mul1    MUL.D   1       1                       1       
-39   Mul2    DIV.D   1       1                       1       
+0    Mul1    DIV.D   1                       Add0    1       
+0    Mul2                                            0       
 -----------------------------------------------------------------------
-Register result statusF30:1 F10:1 F20:1 F12:Mul1 F22:1 F14:1 F24:1 F0:Mul0 F16:1 F26:1 F2:1 F18:Add1 F28:1 F4:1 F6:Add0 F8:1 
+Register result statusF30:1 F10:1 F20:1 F12:1 F22:1 F14:1 F24:1 F0:1 F16:1 F26:1 F2:Load1 F18:1 F28:1 F4:Add0 F6:Load0 F8:Mul0 
 -----------------------------------------------------------------------
 Load Buffer
 Name    Busy    Vj      Qj      
-Load1   0                       
-Load2   0                       
+Load1   1                       
+Load2   1                       
 -----------------------------------------------------------------------
 Store Buffer
 Name    Busy    Vj      Qj      
@@ -113,25 +133,30 @@ Store2  0
 週期: 5
 Instruction Status
 指令類型      Issue     開始執行      執行結束      寫回        
-MUL.D        1         1            0           0         
-SUB.D        2         2            4           5         
-DIV.D        3         3            0           0         
-ADD.D        4         4            0           0         
+L.D          1         1            3           4         
+L.D          2         2            4           5         
+ADD.D        3         5            0           0         
+DIV.D        4         0            0           0         
+MUL.D        5         0            0           0         
+SUB.D        0         0            0           0         
+SUB.D        0         0            0           0         
+SUB.D        0         0            0           0         
+ADD.D        0         0            0           0         
 -----------------------------------------------------------------------
 Reservation Station
 Time Name    OP      Vj      Vk      Qj      Qk      Busy    
-0    Add1    SUB.D   1       1                       1       
-1    Add2    ADD.D   1       1                       1       
+2    Add1    ADD.D   Load1   Load0                   1       
+0    Add2                                            0       
 0    Add3                                            0       
-6    Mul1    MUL.D   1       1                       1       
-38   Mul2    DIV.D   1       1                       1       
+0    Mul1    DIV.D   1                       Add0    1       
+0    Mul2    MUL.D                   Mul0    Add0    1       
 -----------------------------------------------------------------------
-Register result statusF30:1 F10:1 F20:1 F12:Mul1 F22:1 F14:1 F24:1 F0:Mul0 F16:1 F26:1 F2:1 F18:Add1 F28:1 F4:1 F6:Add0 F8:1 
+Register result statusF30:1 F10:1 F20:1 F12:1 F22:1 F14:1 F24:1 F0:1 F16:1 F26:1 F2:Load1 F18:1 F28:1 F4:Add0 F6:Mul1 F8:Mul0 
 -----------------------------------------------------------------------
 Load Buffer
 Name    Busy    Vj      Qj      
 Load1   0                       
-Load2   0                       
+Load2   1                       
 -----------------------------------------------------------------------
 Store Buffer
 Name    Busy    Vj      Qj      
@@ -141,20 +166,25 @@ Store2  0
 週期: 6
 Instruction Status
 指令類型      Issue     開始執行      執行結束      寫回        
-MUL.D        1         1            0           0         
-SUB.D        2         2            4           5         
-DIV.D        3         3            0           0         
-ADD.D        4         4            6           0         
+L.D          1         1            3           4         
+L.D          2         2            4           5         
+ADD.D        3         5            0           0         
+DIV.D        4         0            0           0         
+MUL.D        5         0            0           0         
+SUB.D        6         0            0           0         
+SUB.D        0         0            0           0         
+SUB.D        0         0            0           0         
+ADD.D        0         0            0           0         
 -----------------------------------------------------------------------
 Reservation Station
 Time Name    OP      Vj      Vk      Qj      Qk      Busy    
-0    Add1                                            0       
-0    Add2    ADD.D   1       1                       1       
+1    Add1    ADD.D   Load1   Load0                   1       
+0    Add2    SUB.D   Load1                   Add0    1       
 0    Add3                                            0       
-5    Mul1    MUL.D   1       1                       1       
-37   Mul2    DIV.D   1       1                       1       
+0    Mul1    DIV.D   1                       Add0    1       
+0    Mul2    MUL.D                   Mul0    Add0    1       
 -----------------------------------------------------------------------
-Register result statusF30:1 F10:1 F20:1 F12:Mul1 F22:1 F14:1 F24:1 F0:Mul0 F16:1 F26:1 F2:1 F18:Add1 F28:1 F4:1 F6:Add0 F8:1 
+Register result statusF30:1 F10:Add1 F20:1 F12:1 F22:1 F14:1 F24:1 F0:1 F16:1 F26:1 F2:Load1 F18:1 F28:1 F4:Add0 F6:Mul1 F8:Mul0 
 -----------------------------------------------------------------------
 Load Buffer
 Name    Busy    Vj      Qj      
@@ -169,20 +199,25 @@ Store2  0
 週期: 7
 Instruction Status
 指令類型      Issue     開始執行      執行結束      寫回        
-MUL.D        1         1            0           0         
-SUB.D        2         2            4           5         
-DIV.D        3         3            0           0         
-ADD.D        4         4            6           7         
+L.D          1         1            3           4         
+L.D          2         2            4           5         
+ADD.D        3         5            7           0         
+DIV.D        4         0            0           0         
+MUL.D        5         0            0           0         
+SUB.D        6         0            0           0         
+SUB.D        7         0            0           0         
+SUB.D        0         0            0           0         
+ADD.D        0         0            0           0         
 -----------------------------------------------------------------------
 Reservation Station
 Time Name    OP      Vj      Vk      Qj      Qk      Busy    
-0    Add1                                            0       
-0    Add2    ADD.D   1       1                       1       
-0    Add3                                            0       
-4    Mul1    MUL.D   1       1                       1       
-36   Mul2    DIV.D   1       1                       1       
+0    Add1    ADD.D   Load1   Load0                   1       
+0    Add2    SUB.D   Load1                   Add0    1       
+0    Add3    SUB.D                   Mul0    Add0    1       
+0    Mul1    DIV.D   1                       Add0    1       
+0    Mul2    MUL.D                   Mul0    Add0    1       
 -----------------------------------------------------------------------
-Register result statusF30:1 F10:1 F20:1 F12:Mul1 F22:1 F14:1 F24:1 F0:Mul0 F16:1 F26:1 F2:1 F18:Add1 F28:1 F4:1 F6:Add0 F8:1 
+Register result statusF30:1 F10:Add1 F20:1 F12:1 F22:1 F14:Add2 F24:1 F0:1 F16:1 F26:1 F2:Load1 F18:1 F28:1 F4:Add0 F6:Mul1 F8:Mul0 
 -----------------------------------------------------------------------
 Load Buffer
 Name    Busy    Vj      Qj      
@@ -197,20 +232,25 @@ Store2  0
 週期: 8
 Instruction Status
 指令類型      Issue     開始執行      執行結束      寫回        
-MUL.D        1         1            0           0         
-SUB.D        2         2            4           5         
-DIV.D        3         3            0           0         
-ADD.D        4         4            6           7         
+L.D          1         1            3           4         
+L.D          2         2            4           5         
+ADD.D        3         5            7           8         
+DIV.D        4         8            0           0         
+MUL.D        5         0            0           0         
+SUB.D        6         8            0           0         
+SUB.D        7         0            0           0         
+SUB.D        0         0            0           0         
+ADD.D        0         0            0           0         
 -----------------------------------------------------------------------
 Reservation Station
 Time Name    OP      Vj      Vk      Qj      Qk      Busy    
-0    Add1                                            0       
-0    Add2                                            0       
-0    Add3                                            0       
-3    Mul1    MUL.D   1       1                       1       
-35   Mul2    DIV.D   1       1                       1       
+0    Add1    ADD.D   Load1   Load0                   1       
+2    Add2    SUB.D   Load1   Add0                    1       
+0    Add3    SUB.D           Add0    Mul0            1       
+40   Mul1    DIV.D   1       Add0                    1       
+0    Mul2    MUL.D           Add0    Mul0            1       
 -----------------------------------------------------------------------
-Register result statusF30:1 F10:1 F20:1 F12:Mul1 F22:1 F14:1 F24:1 F0:Mul0 F16:1 F26:1 F2:1 F18:Add1 F28:1 F4:1 F6:Add0 F8:1 
+Register result statusF30:1 F10:Add1 F20:1 F12:1 F22:1 F14:Add2 F24:1 F0:1 F16:1 F26:1 F2:Load1 F18:1 F28:1 F4:Add0 F6:Mul1 F8:Mul0 
 -----------------------------------------------------------------------
 Load Buffer
 Name    Busy    Vj      Qj      
@@ -225,20 +265,25 @@ Store2  0
 週期: 9
 Instruction Status
 指令類型      Issue     開始執行      執行結束      寫回        
-MUL.D        1         1            0           0         
-SUB.D        2         2            4           5         
-DIV.D        3         3            0           0         
-ADD.D        4         4            6           7         
+L.D          1         1            3           4         
+L.D          2         2            4           5         
+ADD.D        3         5            7           8         
+DIV.D        4         8            0           0         
+MUL.D        5         0            0           0         
+SUB.D        6         8            0           0         
+SUB.D        7         0            0           0         
+SUB.D        9         0            0           0         
+ADD.D        0         0            0           0         
 -----------------------------------------------------------------------
 Reservation Station
 Time Name    OP      Vj      Vk      Qj      Qk      Busy    
-0    Add1                                            0       
-0    Add2                                            0       
-0    Add3                                            0       
-2    Mul1    MUL.D   1       1                       1       
-34   Mul2    DIV.D   1       1                       1       
+0    Add1    SUB.D           Add0    Mul1            1       
+1    Add2    SUB.D   Load1   Add0                    1       
+0    Add3    SUB.D           Add0    Mul0            1       
+39   Mul1    DIV.D   1       Add0                    1       
+0    Mul2    MUL.D           Add0    Mul0            1       
 -----------------------------------------------------------------------
-Register result statusF30:1 F10:1 F20:1 F12:Mul1 F22:1 F14:1 F24:1 F0:Mul0 F16:1 F26:1 F2:1 F18:Add1 F28:1 F4:1 F6:Add0 F8:1 
+Register result statusF30:1 F10:Add0 F20:1 F12:1 F22:1 F14:Add2 F24:1 F0:1 F16:1 F26:1 F2:Load1 F18:1 F28:1 F4:Add0 F6:Mul1 F8:Mul0 
 -----------------------------------------------------------------------
 Load Buffer
 Name    Busy    Vj      Qj      
@@ -253,20 +298,25 @@ Store2  0
 週期: 10
 Instruction Status
 指令類型      Issue     開始執行      執行結束      寫回        
-MUL.D        1         1            0           0         
-SUB.D        2         2            4           5         
-DIV.D        3         3            0           0         
-ADD.D        4         4            6           7         
+L.D          1         1            3           4         
+L.D          2         2            4           5         
+ADD.D        3         5            7           8         
+DIV.D        4         8            0           0         
+MUL.D        5         0            0           0         
+SUB.D        6         8            10          0         
+SUB.D        7         0            0           0         
+SUB.D        9         0            0           0         
+ADD.D        0         0            0           0         
 -----------------------------------------------------------------------
 Reservation Station
 Time Name    OP      Vj      Vk      Qj      Qk      Busy    
-0    Add1                                            0       
-0    Add2                                            0       
-0    Add3                                            0       
-1    Mul1    MUL.D   1       1                       1       
-33   Mul2    DIV.D   1       1                       1       
+0    Add1    SUB.D           Add0    Mul1            1       
+0    Add2    SUB.D   Load1   Add0                    1       
+0    Add3    SUB.D           Add0    Mul0            1       
+38   Mul1    DIV.D   1       Add0                    1       
+0    Mul2    MUL.D           Add0    Mul0            1       
 -----------------------------------------------------------------------
-Register result statusF30:1 F10:1 F20:1 F12:Mul1 F22:1 F14:1 F24:1 F0:Mul0 F16:1 F26:1 F2:1 F18:Add1 F28:1 F4:1 F6:Add0 F8:1 
+Register result statusF30:1 F10:Add0 F20:1 F12:1 F22:1 F14:Add2 F24:1 F0:1 F16:1 F26:1 F2:Load1 F18:1 F28:1 F4:Add0 F6:Mul1 F8:Mul0 
 -----------------------------------------------------------------------
 Load Buffer
 Name    Busy    Vj      Qj      
@@ -281,20 +331,25 @@ Store2  0
 週期: 11
 Instruction Status
 指令類型      Issue     開始執行      執行結束      寫回        
-MUL.D        1         1            11          0         
-SUB.D        2         2            4           5         
-DIV.D        3         3            0           0         
-ADD.D        4         4            6           7         
+L.D          1         1            3           4         
+L.D          2         2            4           5         
+ADD.D        3         5            7           8         
+DIV.D        4         8            0           0         
+MUL.D        5         0            0           0         
+SUB.D        6         8            10          11        
+SUB.D        7         0            0           0         
+SUB.D        9         0            0           0         
+ADD.D        0         0            0           0         
 -----------------------------------------------------------------------
 Reservation Station
 Time Name    OP      Vj      Vk      Qj      Qk      Busy    
-0    Add1                                            0       
-0    Add2                                            0       
-0    Add3                                            0       
-0    Mul1    MUL.D   1       1                       1       
-32   Mul2    DIV.D   1       1                       1       
+0    Add1    SUB.D           Add0    Mul1            1       
+0    Add2    SUB.D   Load1   Add0                    1       
+0    Add3    SUB.D           Add0    Mul0            1       
+37   Mul1    DIV.D   1       Add0                    1       
+0    Mul2    MUL.D           Add0    Mul0            1       
 -----------------------------------------------------------------------
-Register result statusF30:1 F10:1 F20:1 F12:Mul1 F22:1 F14:1 F24:1 F0:Mul0 F16:1 F26:1 F2:1 F18:Add1 F28:1 F4:1 F6:Add0 F8:1 
+Register result statusF30:1 F10:Add0 F20:1 F12:1 F22:1 F14:Add2 F24:1 F0:1 F16:1 F26:1 F2:Load1 F18:1 F28:1 F4:Add0 F6:Mul1 F8:Mul0 
 -----------------------------------------------------------------------
 Load Buffer
 Name    Busy    Vj      Qj      
@@ -309,20 +364,25 @@ Store2  0
 週期: 12
 Instruction Status
 指令類型      Issue     開始執行      執行結束      寫回        
-MUL.D        1         1            11          12        
-SUB.D        2         2            4           5         
-DIV.D        3         3            0           0         
-ADD.D        4         4            6           7         
+L.D          1         1            3           4         
+L.D          2         2            4           5         
+ADD.D        3         5            7           8         
+DIV.D        4         8            0           0         
+MUL.D        5         0            0           0         
+SUB.D        6         8            10          11        
+SUB.D        7         0            0           0         
+SUB.D        9         0            0           0         
+ADD.D        12        0            0           0         
 -----------------------------------------------------------------------
 Reservation Station
 Time Name    OP      Vj      Vk      Qj      Qk      Busy    
-0    Add1                                            0       
-0    Add2                                            0       
-0    Add3                                            0       
-0    Mul1    MUL.D   1       1                       1       
-31   Mul2    DIV.D   1       1                       1       
+0    Add1    SUB.D           Add0    Mul1            1       
+0    Add2    ADD.D           Add0    Mul1            1       
+0    Add3    SUB.D           Add0    Mul0            1       
+36   Mul1    DIV.D   1       Add0                    1       
+0    Mul2    MUL.D           Add0    Mul0            1       
 -----------------------------------------------------------------------
-Register result statusF30:1 F10:1 F20:1 F12:Mul1 F22:1 F14:1 F24:1 F0:Mul0 F16:1 F26:1 F2:1 F18:Add1 F28:1 F4:1 F6:Add0 F8:1 
+Register result statusF30:1 F10:Add0 F20:1 F12:Add1 F22:1 F14:Add2 F24:1 F0:1 F16:1 F26:1 F2:Load1 F18:1 F28:1 F4:Add0 F6:Mul1 F8:Mul0 
 -----------------------------------------------------------------------
 Load Buffer
 Name    Busy    Vj      Qj      
@@ -337,20 +397,25 @@ Store2  0
 週期: 13
 Instruction Status
 指令類型      Issue     開始執行      執行結束      寫回        
-MUL.D        1         1            11          12        
-SUB.D        2         2            4           5         
-DIV.D        3         3            0           0         
-ADD.D        4         4            6           7         
+L.D          1         1            3           4         
+L.D          2         2            4           5         
+ADD.D        3         5            7           8         
+DIV.D        4         8            0           0         
+MUL.D        5         0            0           0         
+SUB.D        6         8            10          11        
+SUB.D        7         0            0           0         
+SUB.D        9         0            0           0         
+ADD.D        12        0            0           0         
 -----------------------------------------------------------------------
 Reservation Station
 Time Name    OP      Vj      Vk      Qj      Qk      Busy    
-0    Add1                                            0       
-0    Add2                                            0       
-0    Add3                                            0       
-0    Mul1                                            0       
-30   Mul2    DIV.D   1       1                       1       
+0    Add1    SUB.D           Add0    Mul1            1       
+0    Add2    ADD.D           Add0    Mul1            1       
+0    Add3    SUB.D           Add0    Mul0            1       
+35   Mul1    DIV.D   1       Add0                    1       
+0    Mul2    MUL.D           Add0    Mul0            1       
 -----------------------------------------------------------------------
-Register result statusF30:1 F10:1 F20:1 F12:Mul1 F22:1 F14:1 F24:1 F0:Mul0 F16:1 F26:1 F2:1 F18:Add1 F28:1 F4:1 F6:Add0 F8:1 
+Register result statusF30:1 F10:Add0 F20:1 F12:Add1 F22:1 F14:Add2 F24:1 F0:1 F16:1 F26:1 F2:Load1 F18:1 F28:1 F4:Add0 F6:Mul1 F8:Mul0 
 -----------------------------------------------------------------------
 Load Buffer
 Name    Busy    Vj      Qj      
@@ -365,20 +430,25 @@ Store2  0
 週期: 14
 Instruction Status
 指令類型      Issue     開始執行      執行結束      寫回        
-MUL.D        1         1            11          12        
-SUB.D        2         2            4           5         
-DIV.D        3         3            0           0         
-ADD.D        4         4            6           7         
+L.D          1         1            3           4         
+L.D          2         2            4           5         
+ADD.D        3         5            7           8         
+DIV.D        4         8            0           0         
+MUL.D        5         0            0           0         
+SUB.D        6         8            10          11        
+SUB.D        7         0            0           0         
+SUB.D        9         0            0           0         
+ADD.D        12        0            0           0         
 -----------------------------------------------------------------------
 Reservation Station
 Time Name    OP      Vj      Vk      Qj      Qk      Busy    
-0    Add1                                            0       
-0    Add2                                            0       
-0    Add3                                            0       
-0    Mul1                                            0       
-29   Mul2    DIV.D   1       1                       1       
+0    Add1    SUB.D           Add0    Mul1            1       
+0    Add2    ADD.D           Add0    Mul1            1       
+0    Add3    SUB.D           Add0    Mul0            1       
+34   Mul1    DIV.D   1       Add0                    1       
+0    Mul2    MUL.D           Add0    Mul0            1       
 -----------------------------------------------------------------------
-Register result statusF30:1 F10:1 F20:1 F12:Mul1 F22:1 F14:1 F24:1 F0:Mul0 F16:1 F26:1 F2:1 F18:Add1 F28:1 F4:1 F6:Add0 F8:1 
+Register result statusF30:1 F10:Add0 F20:1 F12:Add1 F22:1 F14:Add2 F24:1 F0:1 F16:1 F26:1 F2:Load1 F18:1 F28:1 F4:Add0 F6:Mul1 F8:Mul0 
 -----------------------------------------------------------------------
 Load Buffer
 Name    Busy    Vj      Qj      
@@ -393,20 +463,25 @@ Store2  0
 週期: 15
 Instruction Status
 指令類型      Issue     開始執行      執行結束      寫回        
-MUL.D        1         1            11          12        
-SUB.D        2         2            4           5         
-DIV.D        3         3            0           0         
-ADD.D        4         4            6           7         
+L.D          1         1            3           4         
+L.D          2         2            4           5         
+ADD.D        3         5            7           8         
+DIV.D        4         8            0           0         
+MUL.D        5         0            0           0         
+SUB.D        6         8            10          11        
+SUB.D        7         0            0           0         
+SUB.D        9         0            0           0         
+ADD.D        12        0            0           0         
 -----------------------------------------------------------------------
 Reservation Station
 Time Name    OP      Vj      Vk      Qj      Qk      Busy    
-0    Add1                                            0       
-0    Add2                                            0       
-0    Add3                                            0       
-0    Mul1                                            0       
-28   Mul2    DIV.D   1       1                       1       
+0    Add1    SUB.D           Add0    Mul1            1       
+0    Add2    ADD.D           Add0    Mul1            1       
+0    Add3    SUB.D           Add0    Mul0            1       
+33   Mul1    DIV.D   1       Add0                    1       
+0    Mul2    MUL.D           Add0    Mul0            1       
 -----------------------------------------------------------------------
-Register result statusF30:1 F10:1 F20:1 F12:Mul1 F22:1 F14:1 F24:1 F0:Mul0 F16:1 F26:1 F2:1 F18:Add1 F28:1 F4:1 F6:Add0 F8:1 
+Register result statusF30:1 F10:Add0 F20:1 F12:Add1 F22:1 F14:Add2 F24:1 F0:1 F16:1 F26:1 F2:Load1 F18:1 F28:1 F4:Add0 F6:Mul1 F8:Mul0 
 -----------------------------------------------------------------------
 Load Buffer
 Name    Busy    Vj      Qj      
@@ -421,20 +496,25 @@ Store2  0
 週期: 16
 Instruction Status
 指令類型      Issue     開始執行      執行結束      寫回        
-MUL.D        1         1            11          12        
-SUB.D        2         2            4           5         
-DIV.D        3         3            0           0         
-ADD.D        4         4            6           7         
+L.D          1         1            3           4         
+L.D          2         2            4           5         
+ADD.D        3         5            7           8         
+DIV.D        4         8            0           0         
+MUL.D        5         0            0           0         
+SUB.D        6         8            10          11        
+SUB.D        7         0            0           0         
+SUB.D        9         0            0           0         
+ADD.D        12        0            0           0         
 -----------------------------------------------------------------------
 Reservation Station
 Time Name    OP      Vj      Vk      Qj      Qk      Busy    
-0    Add1                                            0       
-0    Add2                                            0       
-0    Add3                                            0       
-0    Mul1                                            0       
-27   Mul2    DIV.D   1       1                       1       
+0    Add1    SUB.D           Add0    Mul1            1       
+0    Add2    ADD.D           Add0    Mul1            1       
+0    Add3    SUB.D           Add0    Mul0            1       
+32   Mul1    DIV.D   1       Add0                    1       
+0    Mul2    MUL.D           Add0    Mul0            1       
 -----------------------------------------------------------------------
-Register result statusF30:1 F10:1 F20:1 F12:Mul1 F22:1 F14:1 F24:1 F0:Mul0 F16:1 F26:1 F2:1 F18:Add1 F28:1 F4:1 F6:Add0 F8:1 
+Register result statusF30:1 F10:Add0 F20:1 F12:Add1 F22:1 F14:Add2 F24:1 F0:1 F16:1 F26:1 F2:Load1 F18:1 F28:1 F4:Add0 F6:Mul1 F8:Mul0 
 -----------------------------------------------------------------------
 Load Buffer
 Name    Busy    Vj      Qj      
@@ -449,20 +529,25 @@ Store2  0
 週期: 17
 Instruction Status
 指令類型      Issue     開始執行      執行結束      寫回        
-MUL.D        1         1            11          12        
-SUB.D        2         2            4           5         
-DIV.D        3         3            0           0         
-ADD.D        4         4            6           7         
+L.D          1         1            3           4         
+L.D          2         2            4           5         
+ADD.D        3         5            7           8         
+DIV.D        4         8            0           0         
+MUL.D        5         0            0           0         
+SUB.D        6         8            10          11        
+SUB.D        7         0            0           0         
+SUB.D        9         0            0           0         
+ADD.D        12        0            0           0         
 -----------------------------------------------------------------------
 Reservation Station
 Time Name    OP      Vj      Vk      Qj      Qk      Busy    
-0    Add1                                            0       
-0    Add2                                            0       
-0    Add3                                            0       
-0    Mul1                                            0       
-26   Mul2    DIV.D   1       1                       1       
+0    Add1    SUB.D           Add0    Mul1            1       
+0    Add2    ADD.D           Add0    Mul1            1       
+0    Add3    SUB.D           Add0    Mul0            1       
+31   Mul1    DIV.D   1       Add0                    1       
+0    Mul2    MUL.D           Add0    Mul0            1       
 -----------------------------------------------------------------------
-Register result statusF30:1 F10:1 F20:1 F12:Mul1 F22:1 F14:1 F24:1 F0:Mul0 F16:1 F26:1 F2:1 F18:Add1 F28:1 F4:1 F6:Add0 F8:1 
+Register result statusF30:1 F10:Add0 F20:1 F12:Add1 F22:1 F14:Add2 F24:1 F0:1 F16:1 F26:1 F2:Load1 F18:1 F28:1 F4:Add0 F6:Mul1 F8:Mul0 
 -----------------------------------------------------------------------
 Load Buffer
 Name    Busy    Vj      Qj      
@@ -477,20 +562,25 @@ Store2  0
 週期: 18
 Instruction Status
 指令類型      Issue     開始執行      執行結束      寫回        
-MUL.D        1         1            11          12        
-SUB.D        2         2            4           5         
-DIV.D        3         3            0           0         
-ADD.D        4         4            6           7         
+L.D          1         1            3           4         
+L.D          2         2            4           5         
+ADD.D        3         5            7           8         
+DIV.D        4         8            0           0         
+MUL.D        5         0            0           0         
+SUB.D        6         8            10          11        
+SUB.D        7         0            0           0         
+SUB.D        9         0            0           0         
+ADD.D        12        0            0           0         
 -----------------------------------------------------------------------
 Reservation Station
 Time Name    OP      Vj      Vk      Qj      Qk      Busy    
-0    Add1                                            0       
-0    Add2                                            0       
-0    Add3                                            0       
-0    Mul1                                            0       
-25   Mul2    DIV.D   1       1                       1       
+0    Add1    SUB.D           Add0    Mul1            1       
+0    Add2    ADD.D           Add0    Mul1            1       
+0    Add3    SUB.D           Add0    Mul0            1       
+30   Mul1    DIV.D   1       Add0                    1       
+0    Mul2    MUL.D           Add0    Mul0            1       
 -----------------------------------------------------------------------
-Register result statusF30:1 F10:1 F20:1 F12:Mul1 F22:1 F14:1 F24:1 F0:Mul0 F16:1 F26:1 F2:1 F18:Add1 F28:1 F4:1 F6:Add0 F8:1 
+Register result statusF30:1 F10:Add0 F20:1 F12:Add1 F22:1 F14:Add2 F24:1 F0:1 F16:1 F26:1 F2:Load1 F18:1 F28:1 F4:Add0 F6:Mul1 F8:Mul0 
 -----------------------------------------------------------------------
 Load Buffer
 Name    Busy    Vj      Qj      
@@ -505,20 +595,25 @@ Store2  0
 週期: 19
 Instruction Status
 指令類型      Issue     開始執行      執行結束      寫回        
-MUL.D        1         1            11          12        
-SUB.D        2         2            4           5         
-DIV.D        3         3            0           0         
-ADD.D        4         4            6           7         
+L.D          1         1            3           4         
+L.D          2         2            4           5         
+ADD.D        3         5            7           8         
+DIV.D        4         8            0           0         
+MUL.D        5         0            0           0         
+SUB.D        6         8            10          11        
+SUB.D        7         0            0           0         
+SUB.D        9         0            0           0         
+ADD.D        12        0            0           0         
 -----------------------------------------------------------------------
 Reservation Station
 Time Name    OP      Vj      Vk      Qj      Qk      Busy    
-0    Add1                                            0       
-0    Add2                                            0       
-0    Add3                                            0       
-0    Mul1                                            0       
-24   Mul2    DIV.D   1       1                       1       
+0    Add1    SUB.D           Add0    Mul1            1       
+0    Add2    ADD.D           Add0    Mul1            1       
+0    Add3    SUB.D           Add0    Mul0            1       
+29   Mul1    DIV.D   1       Add0                    1       
+0    Mul2    MUL.D           Add0    Mul0            1       
 -----------------------------------------------------------------------
-Register result statusF30:1 F10:1 F20:1 F12:Mul1 F22:1 F14:1 F24:1 F0:Mul0 F16:1 F26:1 F2:1 F18:Add1 F28:1 F4:1 F6:Add0 F8:1 
+Register result statusF30:1 F10:Add0 F20:1 F12:Add1 F22:1 F14:Add2 F24:1 F0:1 F16:1 F26:1 F2:Load1 F18:1 F28:1 F4:Add0 F6:Mul1 F8:Mul0 
 -----------------------------------------------------------------------
 Load Buffer
 Name    Busy    Vj      Qj      
@@ -533,20 +628,25 @@ Store2  0
 週期: 20
 Instruction Status
 指令類型      Issue     開始執行      執行結束      寫回        
-MUL.D        1         1            11          12        
-SUB.D        2         2            4           5         
-DIV.D        3         3            0           0         
-ADD.D        4         4            6           7         
+L.D          1         1            3           4         
+L.D          2         2            4           5         
+ADD.D        3         5            7           8         
+DIV.D        4         8            0           0         
+MUL.D        5         0            0           0         
+SUB.D        6         8            10          11        
+SUB.D        7         0            0           0         
+SUB.D        9         0            0           0         
+ADD.D        12        0            0           0         
 -----------------------------------------------------------------------
 Reservation Station
 Time Name    OP      Vj      Vk      Qj      Qk      Busy    
-0    Add1                                            0       
-0    Add2                                            0       
-0    Add3                                            0       
-0    Mul1                                            0       
-23   Mul2    DIV.D   1       1                       1       
+0    Add1    SUB.D           Add0    Mul1            1       
+0    Add2    ADD.D           Add0    Mul1            1       
+0    Add3    SUB.D           Add0    Mul0            1       
+28   Mul1    DIV.D   1       Add0                    1       
+0    Mul2    MUL.D           Add0    Mul0            1       
 -----------------------------------------------------------------------
-Register result statusF30:1 F10:1 F20:1 F12:Mul1 F22:1 F14:1 F24:1 F0:Mul0 F16:1 F26:1 F2:1 F18:Add1 F28:1 F4:1 F6:Add0 F8:1 
+Register result statusF30:1 F10:Add0 F20:1 F12:Add1 F22:1 F14:Add2 F24:1 F0:1 F16:1 F26:1 F2:Load1 F18:1 F28:1 F4:Add0 F6:Mul1 F8:Mul0 
 -----------------------------------------------------------------------
 Load Buffer
 Name    Busy    Vj      Qj      
@@ -561,20 +661,25 @@ Store2  0
 週期: 21
 Instruction Status
 指令類型      Issue     開始執行      執行結束      寫回        
-MUL.D        1         1            11          12        
-SUB.D        2         2            4           5         
-DIV.D        3         3            0           0         
-ADD.D        4         4            6           7         
+L.D          1         1            3           4         
+L.D          2         2            4           5         
+ADD.D        3         5            7           8         
+DIV.D        4         8            0           0         
+MUL.D        5         0            0           0         
+SUB.D        6         8            10          11        
+SUB.D        7         0            0           0         
+SUB.D        9         0            0           0         
+ADD.D        12        0            0           0         
 -----------------------------------------------------------------------
 Reservation Station
 Time Name    OP      Vj      Vk      Qj      Qk      Busy    
-0    Add1                                            0       
-0    Add2                                            0       
-0    Add3                                            0       
-0    Mul1                                            0       
-22   Mul2    DIV.D   1       1                       1       
+0    Add1    SUB.D           Add0    Mul1            1       
+0    Add2    ADD.D           Add0    Mul1            1       
+0    Add3    SUB.D           Add0    Mul0            1       
+27   Mul1    DIV.D   1       Add0                    1       
+0    Mul2    MUL.D           Add0    Mul0            1       
 -----------------------------------------------------------------------
-Register result statusF30:1 F10:1 F20:1 F12:Mul1 F22:1 F14:1 F24:1 F0:Mul0 F16:1 F26:1 F2:1 F18:Add1 F28:1 F4:1 F6:Add0 F8:1 
+Register result statusF30:1 F10:Add0 F20:1 F12:Add1 F22:1 F14:Add2 F24:1 F0:1 F16:1 F26:1 F2:Load1 F18:1 F28:1 F4:Add0 F6:Mul1 F8:Mul0 
 -----------------------------------------------------------------------
 Load Buffer
 Name    Busy    Vj      Qj      
@@ -589,20 +694,25 @@ Store2  0
 週期: 22
 Instruction Status
 指令類型      Issue     開始執行      執行結束      寫回        
-MUL.D        1         1            11          12        
-SUB.D        2         2            4           5         
-DIV.D        3         3            0           0         
-ADD.D        4         4            6           7         
+L.D          1         1            3           4         
+L.D          2         2            4           5         
+ADD.D        3         5            7           8         
+DIV.D        4         8            0           0         
+MUL.D        5         0            0           0         
+SUB.D        6         8            10          11        
+SUB.D        7         0            0           0         
+SUB.D        9         0            0           0         
+ADD.D        12        0            0           0         
 -----------------------------------------------------------------------
 Reservation Station
 Time Name    OP      Vj      Vk      Qj      Qk      Busy    
-0    Add1                                            0       
-0    Add2                                            0       
-0    Add3                                            0       
-0    Mul1                                            0       
-21   Mul2    DIV.D   1       1                       1       
+0    Add1    SUB.D           Add0    Mul1            1       
+0    Add2    ADD.D           Add0    Mul1            1       
+0    Add3    SUB.D           Add0    Mul0            1       
+26   Mul1    DIV.D   1       Add0                    1       
+0    Mul2    MUL.D           Add0    Mul0            1       
 -----------------------------------------------------------------------
-Register result statusF30:1 F10:1 F20:1 F12:Mul1 F22:1 F14:1 F24:1 F0:Mul0 F16:1 F26:1 F2:1 F18:Add1 F28:1 F4:1 F6:Add0 F8:1 
+Register result statusF30:1 F10:Add0 F20:1 F12:Add1 F22:1 F14:Add2 F24:1 F0:1 F16:1 F26:1 F2:Load1 F18:1 F28:1 F4:Add0 F6:Mul1 F8:Mul0 
 -----------------------------------------------------------------------
 Load Buffer
 Name    Busy    Vj      Qj      
@@ -617,20 +727,25 @@ Store2  0
 週期: 23
 Instruction Status
 指令類型      Issue     開始執行      執行結束      寫回        
-MUL.D        1         1            11          12        
-SUB.D        2         2            4           5         
-DIV.D        3         3            0           0         
-ADD.D        4         4            6           7         
+L.D          1         1            3           4         
+L.D          2         2            4           5         
+ADD.D        3         5            7           8         
+DIV.D        4         8            0           0         
+MUL.D        5         0            0           0         
+SUB.D        6         8            10          11        
+SUB.D        7         0            0           0         
+SUB.D        9         0            0           0         
+ADD.D        12        0            0           0         
 -----------------------------------------------------------------------
 Reservation Station
 Time Name    OP      Vj      Vk      Qj      Qk      Busy    
-0    Add1                                            0       
-0    Add2                                            0       
-0    Add3                                            0       
-0    Mul1                                            0       
-20   Mul2    DIV.D   1       1                       1       
+0    Add1    SUB.D           Add0    Mul1            1       
+0    Add2    ADD.D           Add0    Mul1            1       
+0    Add3    SUB.D           Add0    Mul0            1       
+25   Mul1    DIV.D   1       Add0                    1       
+0    Mul2    MUL.D           Add0    Mul0            1       
 -----------------------------------------------------------------------
-Register result statusF30:1 F10:1 F20:1 F12:Mul1 F22:1 F14:1 F24:1 F0:Mul0 F16:1 F26:1 F2:1 F18:Add1 F28:1 F4:1 F6:Add0 F8:1 
+Register result statusF30:1 F10:Add0 F20:1 F12:Add1 F22:1 F14:Add2 F24:1 F0:1 F16:1 F26:1 F2:Load1 F18:1 F28:1 F4:Add0 F6:Mul1 F8:Mul0 
 -----------------------------------------------------------------------
 Load Buffer
 Name    Busy    Vj      Qj      
@@ -645,20 +760,25 @@ Store2  0
 週期: 24
 Instruction Status
 指令類型      Issue     開始執行      執行結束      寫回        
-MUL.D        1         1            11          12        
-SUB.D        2         2            4           5         
-DIV.D        3         3            0           0         
-ADD.D        4         4            6           7         
+L.D          1         1            3           4         
+L.D          2         2            4           5         
+ADD.D        3         5            7           8         
+DIV.D        4         8            0           0         
+MUL.D        5         0            0           0         
+SUB.D        6         8            10          11        
+SUB.D        7         0            0           0         
+SUB.D        9         0            0           0         
+ADD.D        12        0            0           0         
 -----------------------------------------------------------------------
 Reservation Station
 Time Name    OP      Vj      Vk      Qj      Qk      Busy    
-0    Add1                                            0       
-0    Add2                                            0       
-0    Add3                                            0       
-0    Mul1                                            0       
-19   Mul2    DIV.D   1       1                       1       
+0    Add1    SUB.D           Add0    Mul1            1       
+0    Add2    ADD.D           Add0    Mul1            1       
+0    Add3    SUB.D           Add0    Mul0            1       
+24   Mul1    DIV.D   1       Add0                    1       
+0    Mul2    MUL.D           Add0    Mul0            1       
 -----------------------------------------------------------------------
-Register result statusF30:1 F10:1 F20:1 F12:Mul1 F22:1 F14:1 F24:1 F0:Mul0 F16:1 F26:1 F2:1 F18:Add1 F28:1 F4:1 F6:Add0 F8:1 
+Register result statusF30:1 F10:Add0 F20:1 F12:Add1 F22:1 F14:Add2 F24:1 F0:1 F16:1 F26:1 F2:Load1 F18:1 F28:1 F4:Add0 F6:Mul1 F8:Mul0 
 -----------------------------------------------------------------------
 Load Buffer
 Name    Busy    Vj      Qj      
@@ -673,20 +793,25 @@ Store2  0
 週期: 25
 Instruction Status
 指令類型      Issue     開始執行      執行結束      寫回        
-MUL.D        1         1            11          12        
-SUB.D        2         2            4           5         
-DIV.D        3         3            0           0         
-ADD.D        4         4            6           7         
+L.D          1         1            3           4         
+L.D          2         2            4           5         
+ADD.D        3         5            7           8         
+DIV.D        4         8            0           0         
+MUL.D        5         0            0           0         
+SUB.D        6         8            10          11        
+SUB.D        7         0            0           0         
+SUB.D        9         0            0           0         
+ADD.D        12        0            0           0         
 -----------------------------------------------------------------------
 Reservation Station
 Time Name    OP      Vj      Vk      Qj      Qk      Busy    
-0    Add1                                            0       
-0    Add2                                            0       
-0    Add3                                            0       
-0    Mul1                                            0       
-18   Mul2    DIV.D   1       1                       1       
+0    Add1    SUB.D           Add0    Mul1            1       
+0    Add2    ADD.D           Add0    Mul1            1       
+0    Add3    SUB.D           Add0    Mul0            1       
+23   Mul1    DIV.D   1       Add0                    1       
+0    Mul2    MUL.D           Add0    Mul0            1       
 -----------------------------------------------------------------------
-Register result statusF30:1 F10:1 F20:1 F12:Mul1 F22:1 F14:1 F24:1 F0:Mul0 F16:1 F26:1 F2:1 F18:Add1 F28:1 F4:1 F6:Add0 F8:1 
+Register result statusF30:1 F10:Add0 F20:1 F12:Add1 F22:1 F14:Add2 F24:1 F0:1 F16:1 F26:1 F2:Load1 F18:1 F28:1 F4:Add0 F6:Mul1 F8:Mul0 
 -----------------------------------------------------------------------
 Load Buffer
 Name    Busy    Vj      Qj      
@@ -701,20 +826,25 @@ Store2  0
 週期: 26
 Instruction Status
 指令類型      Issue     開始執行      執行結束      寫回        
-MUL.D        1         1            11          12        
-SUB.D        2         2            4           5         
-DIV.D        3         3            0           0         
-ADD.D        4         4            6           7         
+L.D          1         1            3           4         
+L.D          2         2            4           5         
+ADD.D        3         5            7           8         
+DIV.D        4         8            0           0         
+MUL.D        5         0            0           0         
+SUB.D        6         8            10          11        
+SUB.D        7         0            0           0         
+SUB.D        9         0            0           0         
+ADD.D        12        0            0           0         
 -----------------------------------------------------------------------
 Reservation Station
 Time Name    OP      Vj      Vk      Qj      Qk      Busy    
-0    Add1                                            0       
-0    Add2                                            0       
-0    Add3                                            0       
-0    Mul1                                            0       
-17   Mul2    DIV.D   1       1                       1       
+0    Add1    SUB.D           Add0    Mul1            1       
+0    Add2    ADD.D           Add0    Mul1            1       
+0    Add3    SUB.D           Add0    Mul0            1       
+22   Mul1    DIV.D   1       Add0                    1       
+0    Mul2    MUL.D           Add0    Mul0            1       
 -----------------------------------------------------------------------
-Register result statusF30:1 F10:1 F20:1 F12:Mul1 F22:1 F14:1 F24:1 F0:Mul0 F16:1 F26:1 F2:1 F18:Add1 F28:1 F4:1 F6:Add0 F8:1 
+Register result statusF30:1 F10:Add0 F20:1 F12:Add1 F22:1 F14:Add2 F24:1 F0:1 F16:1 F26:1 F2:Load1 F18:1 F28:1 F4:Add0 F6:Mul1 F8:Mul0 
 -----------------------------------------------------------------------
 Load Buffer
 Name    Busy    Vj      Qj      
@@ -729,20 +859,25 @@ Store2  0
 週期: 27
 Instruction Status
 指令類型      Issue     開始執行      執行結束      寫回        
-MUL.D        1         1            11          12        
-SUB.D        2         2            4           5         
-DIV.D        3         3            0           0         
-ADD.D        4         4            6           7         
+L.D          1         1            3           4         
+L.D          2         2            4           5         
+ADD.D        3         5            7           8         
+DIV.D        4         8            0           0         
+MUL.D        5         0            0           0         
+SUB.D        6         8            10          11        
+SUB.D        7         0            0           0         
+SUB.D        9         0            0           0         
+ADD.D        12        0            0           0         
 -----------------------------------------------------------------------
 Reservation Station
 Time Name    OP      Vj      Vk      Qj      Qk      Busy    
-0    Add1                                            0       
-0    Add2                                            0       
-0    Add3                                            0       
-0    Mul1                                            0       
-16   Mul2    DIV.D   1       1                       1       
+0    Add1    SUB.D           Add0    Mul1            1       
+0    Add2    ADD.D           Add0    Mul1            1       
+0    Add3    SUB.D           Add0    Mul0            1       
+21   Mul1    DIV.D   1       Add0                    1       
+0    Mul2    MUL.D           Add0    Mul0            1       
 -----------------------------------------------------------------------
-Register result statusF30:1 F10:1 F20:1 F12:Mul1 F22:1 F14:1 F24:1 F0:Mul0 F16:1 F26:1 F2:1 F18:Add1 F28:1 F4:1 F6:Add0 F8:1 
+Register result statusF30:1 F10:Add0 F20:1 F12:Add1 F22:1 F14:Add2 F24:1 F0:1 F16:1 F26:1 F2:Load1 F18:1 F28:1 F4:Add0 F6:Mul1 F8:Mul0 
 -----------------------------------------------------------------------
 Load Buffer
 Name    Busy    Vj      Qj      
@@ -757,20 +892,25 @@ Store2  0
 週期: 28
 Instruction Status
 指令類型      Issue     開始執行      執行結束      寫回        
-MUL.D        1         1            11          12        
-SUB.D        2         2            4           5         
-DIV.D        3         3            0           0         
-ADD.D        4         4            6           7         
+L.D          1         1            3           4         
+L.D          2         2            4           5         
+ADD.D        3         5            7           8         
+DIV.D        4         8            0           0         
+MUL.D        5         0            0           0         
+SUB.D        6         8            10          11        
+SUB.D        7         0            0           0         
+SUB.D        9         0            0           0         
+ADD.D        12        0            0           0         
 -----------------------------------------------------------------------
 Reservation Station
 Time Name    OP      Vj      Vk      Qj      Qk      Busy    
-0    Add1                                            0       
-0    Add2                                            0       
-0    Add3                                            0       
-0    Mul1                                            0       
-15   Mul2    DIV.D   1       1                       1       
+0    Add1    SUB.D           Add0    Mul1            1       
+0    Add2    ADD.D           Add0    Mul1            1       
+0    Add3    SUB.D           Add0    Mul0            1       
+20   Mul1    DIV.D   1       Add0                    1       
+0    Mul2    MUL.D           Add0    Mul0            1       
 -----------------------------------------------------------------------
-Register result statusF30:1 F10:1 F20:1 F12:Mul1 F22:1 F14:1 F24:1 F0:Mul0 F16:1 F26:1 F2:1 F18:Add1 F28:1 F4:1 F6:Add0 F8:1 
+Register result statusF30:1 F10:Add0 F20:1 F12:Add1 F22:1 F14:Add2 F24:1 F0:1 F16:1 F26:1 F2:Load1 F18:1 F28:1 F4:Add0 F6:Mul1 F8:Mul0 
 -----------------------------------------------------------------------
 Load Buffer
 Name    Busy    Vj      Qj      
@@ -785,20 +925,25 @@ Store2  0
 週期: 29
 Instruction Status
 指令類型      Issue     開始執行      執行結束      寫回        
-MUL.D        1         1            11          12        
-SUB.D        2         2            4           5         
-DIV.D        3         3            0           0         
-ADD.D        4         4            6           7         
+L.D          1         1            3           4         
+L.D          2         2            4           5         
+ADD.D        3         5            7           8         
+DIV.D        4         8            0           0         
+MUL.D        5         0            0           0         
+SUB.D        6         8            10          11        
+SUB.D        7         0            0           0         
+SUB.D        9         0            0           0         
+ADD.D        12        0            0           0         
 -----------------------------------------------------------------------
 Reservation Station
 Time Name    OP      Vj      Vk      Qj      Qk      Busy    
-0    Add1                                            0       
-0    Add2                                            0       
-0    Add3                                            0       
-0    Mul1                                            0       
-14   Mul2    DIV.D   1       1                       1       
+0    Add1    SUB.D           Add0    Mul1            1       
+0    Add2    ADD.D           Add0    Mul1            1       
+0    Add3    SUB.D           Add0    Mul0            1       
+19   Mul1    DIV.D   1       Add0                    1       
+0    Mul2    MUL.D           Add0    Mul0            1       
 -----------------------------------------------------------------------
-Register result statusF30:1 F10:1 F20:1 F12:Mul1 F22:1 F14:1 F24:1 F0:Mul0 F16:1 F26:1 F2:1 F18:Add1 F28:1 F4:1 F6:Add0 F8:1 
+Register result statusF30:1 F10:Add0 F20:1 F12:Add1 F22:1 F14:Add2 F24:1 F0:1 F16:1 F26:1 F2:Load1 F18:1 F28:1 F4:Add0 F6:Mul1 F8:Mul0 
 -----------------------------------------------------------------------
 Load Buffer
 Name    Busy    Vj      Qj      
@@ -813,20 +958,25 @@ Store2  0
 週期: 30
 Instruction Status
 指令類型      Issue     開始執行      執行結束      寫回        
-MUL.D        1         1            11          12        
-SUB.D        2         2            4           5         
-DIV.D        3         3            0           0         
-ADD.D        4         4            6           7         
+L.D          1         1            3           4         
+L.D          2         2            4           5         
+ADD.D        3         5            7           8         
+DIV.D        4         8            0           0         
+MUL.D        5         0            0           0         
+SUB.D        6         8            10          11        
+SUB.D        7         0            0           0         
+SUB.D        9         0            0           0         
+ADD.D        12        0            0           0         
 -----------------------------------------------------------------------
 Reservation Station
 Time Name    OP      Vj      Vk      Qj      Qk      Busy    
-0    Add1                                            0       
-0    Add2                                            0       
-0    Add3                                            0       
-0    Mul1                                            0       
-13   Mul2    DIV.D   1       1                       1       
+0    Add1    SUB.D           Add0    Mul1            1       
+0    Add2    ADD.D           Add0    Mul1            1       
+0    Add3    SUB.D           Add0    Mul0            1       
+18   Mul1    DIV.D   1       Add0                    1       
+0    Mul2    MUL.D           Add0    Mul0            1       
 -----------------------------------------------------------------------
-Register result statusF30:1 F10:1 F20:1 F12:Mul1 F22:1 F14:1 F24:1 F0:Mul0 F16:1 F26:1 F2:1 F18:Add1 F28:1 F4:1 F6:Add0 F8:1 
+Register result statusF30:1 F10:Add0 F20:1 F12:Add1 F22:1 F14:Add2 F24:1 F0:1 F16:1 F26:1 F2:Load1 F18:1 F28:1 F4:Add0 F6:Mul1 F8:Mul0 
 -----------------------------------------------------------------------
 Load Buffer
 Name    Busy    Vj      Qj      
@@ -841,20 +991,25 @@ Store2  0
 週期: 31
 Instruction Status
 指令類型      Issue     開始執行      執行結束      寫回        
-MUL.D        1         1            11          12        
-SUB.D        2         2            4           5         
-DIV.D        3         3            0           0         
-ADD.D        4         4            6           7         
+L.D          1         1            3           4         
+L.D          2         2            4           5         
+ADD.D        3         5            7           8         
+DIV.D        4         8            0           0         
+MUL.D        5         0            0           0         
+SUB.D        6         8            10          11        
+SUB.D        7         0            0           0         
+SUB.D        9         0            0           0         
+ADD.D        12        0            0           0         
 -----------------------------------------------------------------------
 Reservation Station
 Time Name    OP      Vj      Vk      Qj      Qk      Busy    
-0    Add1                                            0       
-0    Add2                                            0       
-0    Add3                                            0       
-0    Mul1                                            0       
-12   Mul2    DIV.D   1       1                       1       
+0    Add1    SUB.D           Add0    Mul1            1       
+0    Add2    ADD.D           Add0    Mul1            1       
+0    Add3    SUB.D           Add0    Mul0            1       
+17   Mul1    DIV.D   1       Add0                    1       
+0    Mul2    MUL.D           Add0    Mul0            1       
 -----------------------------------------------------------------------
-Register result statusF30:1 F10:1 F20:1 F12:Mul1 F22:1 F14:1 F24:1 F0:Mul0 F16:1 F26:1 F2:1 F18:Add1 F28:1 F4:1 F6:Add0 F8:1 
+Register result statusF30:1 F10:Add0 F20:1 F12:Add1 F22:1 F14:Add2 F24:1 F0:1 F16:1 F26:1 F2:Load1 F18:1 F28:1 F4:Add0 F6:Mul1 F8:Mul0 
 -----------------------------------------------------------------------
 Load Buffer
 Name    Busy    Vj      Qj      
@@ -869,20 +1024,25 @@ Store2  0
 週期: 32
 Instruction Status
 指令類型      Issue     開始執行      執行結束      寫回        
-MUL.D        1         1            11          12        
-SUB.D        2         2            4           5         
-DIV.D        3         3            0           0         
-ADD.D        4         4            6           7         
+L.D          1         1            3           4         
+L.D          2         2            4           5         
+ADD.D        3         5            7           8         
+DIV.D        4         8            0           0         
+MUL.D        5         0            0           0         
+SUB.D        6         8            10          11        
+SUB.D        7         0            0           0         
+SUB.D        9         0            0           0         
+ADD.D        12        0            0           0         
 -----------------------------------------------------------------------
 Reservation Station
 Time Name    OP      Vj      Vk      Qj      Qk      Busy    
-0    Add1                                            0       
-0    Add2                                            0       
-0    Add3                                            0       
-0    Mul1                                            0       
-11   Mul2    DIV.D   1       1                       1       
+0    Add1    SUB.D           Add0    Mul1            1       
+0    Add2    ADD.D           Add0    Mul1            1       
+0    Add3    SUB.D           Add0    Mul0            1       
+16   Mul1    DIV.D   1       Add0                    1       
+0    Mul2    MUL.D           Add0    Mul0            1       
 -----------------------------------------------------------------------
-Register result statusF30:1 F10:1 F20:1 F12:Mul1 F22:1 F14:1 F24:1 F0:Mul0 F16:1 F26:1 F2:1 F18:Add1 F28:1 F4:1 F6:Add0 F8:1 
+Register result statusF30:1 F10:Add0 F20:1 F12:Add1 F22:1 F14:Add2 F24:1 F0:1 F16:1 F26:1 F2:Load1 F18:1 F28:1 F4:Add0 F6:Mul1 F8:Mul0 
 -----------------------------------------------------------------------
 Load Buffer
 Name    Busy    Vj      Qj      
@@ -897,20 +1057,25 @@ Store2  0
 週期: 33
 Instruction Status
 指令類型      Issue     開始執行      執行結束      寫回        
-MUL.D        1         1            11          12        
-SUB.D        2         2            4           5         
-DIV.D        3         3            0           0         
-ADD.D        4         4            6           7         
+L.D          1         1            3           4         
+L.D          2         2            4           5         
+ADD.D        3         5            7           8         
+DIV.D        4         8            0           0         
+MUL.D        5         0            0           0         
+SUB.D        6         8            10          11        
+SUB.D        7         0            0           0         
+SUB.D        9         0            0           0         
+ADD.D        12        0            0           0         
 -----------------------------------------------------------------------
 Reservation Station
 Time Name    OP      Vj      Vk      Qj      Qk      Busy    
-0    Add1                                            0       
-0    Add2                                            0       
-0    Add3                                            0       
-0    Mul1                                            0       
-10   Mul2    DIV.D   1       1                       1       
+0    Add1    SUB.D           Add0    Mul1            1       
+0    Add2    ADD.D           Add0    Mul1            1       
+0    Add3    SUB.D           Add0    Mul0            1       
+15   Mul1    DIV.D   1       Add0                    1       
+0    Mul2    MUL.D           Add0    Mul0            1       
 -----------------------------------------------------------------------
-Register result statusF30:1 F10:1 F20:1 F12:Mul1 F22:1 F14:1 F24:1 F0:Mul0 F16:1 F26:1 F2:1 F18:Add1 F28:1 F4:1 F6:Add0 F8:1 
+Register result statusF30:1 F10:Add0 F20:1 F12:Add1 F22:1 F14:Add2 F24:1 F0:1 F16:1 F26:1 F2:Load1 F18:1 F28:1 F4:Add0 F6:Mul1 F8:Mul0 
 -----------------------------------------------------------------------
 Load Buffer
 Name    Busy    Vj      Qj      
@@ -925,20 +1090,25 @@ Store2  0
 週期: 34
 Instruction Status
 指令類型      Issue     開始執行      執行結束      寫回        
-MUL.D        1         1            11          12        
-SUB.D        2         2            4           5         
-DIV.D        3         3            0           0         
-ADD.D        4         4            6           7         
+L.D          1         1            3           4         
+L.D          2         2            4           5         
+ADD.D        3         5            7           8         
+DIV.D        4         8            0           0         
+MUL.D        5         0            0           0         
+SUB.D        6         8            10          11        
+SUB.D        7         0            0           0         
+SUB.D        9         0            0           0         
+ADD.D        12        0            0           0         
 -----------------------------------------------------------------------
 Reservation Station
 Time Name    OP      Vj      Vk      Qj      Qk      Busy    
-0    Add1                                            0       
-0    Add2                                            0       
-0    Add3                                            0       
-0    Mul1                                            0       
-9    Mul2    DIV.D   1       1                       1       
+0    Add1    SUB.D           Add0    Mul1            1       
+0    Add2    ADD.D           Add0    Mul1            1       
+0    Add3    SUB.D           Add0    Mul0            1       
+14   Mul1    DIV.D   1       Add0                    1       
+0    Mul2    MUL.D           Add0    Mul0            1       
 -----------------------------------------------------------------------
-Register result statusF30:1 F10:1 F20:1 F12:Mul1 F22:1 F14:1 F24:1 F0:Mul0 F16:1 F26:1 F2:1 F18:Add1 F28:1 F4:1 F6:Add0 F8:1 
+Register result statusF30:1 F10:Add0 F20:1 F12:Add1 F22:1 F14:Add2 F24:1 F0:1 F16:1 F26:1 F2:Load1 F18:1 F28:1 F4:Add0 F6:Mul1 F8:Mul0 
 -----------------------------------------------------------------------
 Load Buffer
 Name    Busy    Vj      Qj      
@@ -953,20 +1123,25 @@ Store2  0
 週期: 35
 Instruction Status
 指令類型      Issue     開始執行      執行結束      寫回        
-MUL.D        1         1            11          12        
-SUB.D        2         2            4           5         
-DIV.D        3         3            0           0         
-ADD.D        4         4            6           7         
+L.D          1         1            3           4         
+L.D          2         2            4           5         
+ADD.D        3         5            7           8         
+DIV.D        4         8            0           0         
+MUL.D        5         0            0           0         
+SUB.D        6         8            10          11        
+SUB.D        7         0            0           0         
+SUB.D        9         0            0           0         
+ADD.D        12        0            0           0         
 -----------------------------------------------------------------------
 Reservation Station
 Time Name    OP      Vj      Vk      Qj      Qk      Busy    
-0    Add1                                            0       
-0    Add2                                            0       
-0    Add3                                            0       
-0    Mul1                                            0       
-8    Mul2    DIV.D   1       1                       1       
+0    Add1    SUB.D           Add0    Mul1            1       
+0    Add2    ADD.D           Add0    Mul1            1       
+0    Add3    SUB.D           Add0    Mul0            1       
+13   Mul1    DIV.D   1       Add0                    1       
+0    Mul2    MUL.D           Add0    Mul0            1       
 -----------------------------------------------------------------------
-Register result statusF30:1 F10:1 F20:1 F12:Mul1 F22:1 F14:1 F24:1 F0:Mul0 F16:1 F26:1 F2:1 F18:Add1 F28:1 F4:1 F6:Add0 F8:1 
+Register result statusF30:1 F10:Add0 F20:1 F12:Add1 F22:1 F14:Add2 F24:1 F0:1 F16:1 F26:1 F2:Load1 F18:1 F28:1 F4:Add0 F6:Mul1 F8:Mul0 
 -----------------------------------------------------------------------
 Load Buffer
 Name    Busy    Vj      Qj      
@@ -981,20 +1156,25 @@ Store2  0
 週期: 36
 Instruction Status
 指令類型      Issue     開始執行      執行結束      寫回        
-MUL.D        1         1            11          12        
-SUB.D        2         2            4           5         
-DIV.D        3         3            0           0         
-ADD.D        4         4            6           7         
+L.D          1         1            3           4         
+L.D          2         2            4           5         
+ADD.D        3         5            7           8         
+DIV.D        4         8            0           0         
+MUL.D        5         0            0           0         
+SUB.D        6         8            10          11        
+SUB.D        7         0            0           0         
+SUB.D        9         0            0           0         
+ADD.D        12        0            0           0         
 -----------------------------------------------------------------------
 Reservation Station
 Time Name    OP      Vj      Vk      Qj      Qk      Busy    
-0    Add1                                            0       
-0    Add2                                            0       
-0    Add3                                            0       
-0    Mul1                                            0       
-7    Mul2    DIV.D   1       1                       1       
+0    Add1    SUB.D           Add0    Mul1            1       
+0    Add2    ADD.D           Add0    Mul1            1       
+0    Add3    SUB.D           Add0    Mul0            1       
+12   Mul1    DIV.D   1       Add0                    1       
+0    Mul2    MUL.D           Add0    Mul0            1       
 -----------------------------------------------------------------------
-Register result statusF30:1 F10:1 F20:1 F12:Mul1 F22:1 F14:1 F24:1 F0:Mul0 F16:1 F26:1 F2:1 F18:Add1 F28:1 F4:1 F6:Add0 F8:1 
+Register result statusF30:1 F10:Add0 F20:1 F12:Add1 F22:1 F14:Add2 F24:1 F0:1 F16:1 F26:1 F2:Load1 F18:1 F28:1 F4:Add0 F6:Mul1 F8:Mul0 
 -----------------------------------------------------------------------
 Load Buffer
 Name    Busy    Vj      Qj      
@@ -1009,20 +1189,25 @@ Store2  0
 週期: 37
 Instruction Status
 指令類型      Issue     開始執行      執行結束      寫回        
-MUL.D        1         1            11          12        
-SUB.D        2         2            4           5         
-DIV.D        3         3            0           0         
-ADD.D        4         4            6           7         
+L.D          1         1            3           4         
+L.D          2         2            4           5         
+ADD.D        3         5            7           8         
+DIV.D        4         8            0           0         
+MUL.D        5         0            0           0         
+SUB.D        6         8            10          11        
+SUB.D        7         0            0           0         
+SUB.D        9         0            0           0         
+ADD.D        12        0            0           0         
 -----------------------------------------------------------------------
 Reservation Station
 Time Name    OP      Vj      Vk      Qj      Qk      Busy    
-0    Add1                                            0       
-0    Add2                                            0       
-0    Add3                                            0       
-0    Mul1                                            0       
-6    Mul2    DIV.D   1       1                       1       
+0    Add1    SUB.D           Add0    Mul1            1       
+0    Add2    ADD.D           Add0    Mul1            1       
+0    Add3    SUB.D           Add0    Mul0            1       
+11   Mul1    DIV.D   1       Add0                    1       
+0    Mul2    MUL.D           Add0    Mul0            1       
 -----------------------------------------------------------------------
-Register result statusF30:1 F10:1 F20:1 F12:Mul1 F22:1 F14:1 F24:1 F0:Mul0 F16:1 F26:1 F2:1 F18:Add1 F28:1 F4:1 F6:Add0 F8:1 
+Register result statusF30:1 F10:Add0 F20:1 F12:Add1 F22:1 F14:Add2 F24:1 F0:1 F16:1 F26:1 F2:Load1 F18:1 F28:1 F4:Add0 F6:Mul1 F8:Mul0 
 -----------------------------------------------------------------------
 Load Buffer
 Name    Busy    Vj      Qj      
@@ -1037,20 +1222,25 @@ Store2  0
 週期: 38
 Instruction Status
 指令類型      Issue     開始執行      執行結束      寫回        
-MUL.D        1         1            11          12        
-SUB.D        2         2            4           5         
-DIV.D        3         3            0           0         
-ADD.D        4         4            6           7         
+L.D          1         1            3           4         
+L.D          2         2            4           5         
+ADD.D        3         5            7           8         
+DIV.D        4         8            0           0         
+MUL.D        5         0            0           0         
+SUB.D        6         8            10          11        
+SUB.D        7         0            0           0         
+SUB.D        9         0            0           0         
+ADD.D        12        0            0           0         
 -----------------------------------------------------------------------
 Reservation Station
 Time Name    OP      Vj      Vk      Qj      Qk      Busy    
-0    Add1                                            0       
-0    Add2                                            0       
-0    Add3                                            0       
-0    Mul1                                            0       
-5    Mul2    DIV.D   1       1                       1       
+0    Add1    SUB.D           Add0    Mul1            1       
+0    Add2    ADD.D           Add0    Mul1            1       
+0    Add3    SUB.D           Add0    Mul0            1       
+10   Mul1    DIV.D   1       Add0                    1       
+0    Mul2    MUL.D           Add0    Mul0            1       
 -----------------------------------------------------------------------
-Register result statusF30:1 F10:1 F20:1 F12:Mul1 F22:1 F14:1 F24:1 F0:Mul0 F16:1 F26:1 F2:1 F18:Add1 F28:1 F4:1 F6:Add0 F8:1 
+Register result statusF30:1 F10:Add0 F20:1 F12:Add1 F22:1 F14:Add2 F24:1 F0:1 F16:1 F26:1 F2:Load1 F18:1 F28:1 F4:Add0 F6:Mul1 F8:Mul0 
 -----------------------------------------------------------------------
 Load Buffer
 Name    Busy    Vj      Qj      
@@ -1065,20 +1255,25 @@ Store2  0
 週期: 39
 Instruction Status
 指令類型      Issue     開始執行      執行結束      寫回        
-MUL.D        1         1            11          12        
-SUB.D        2         2            4           5         
-DIV.D        3         3            0           0         
-ADD.D        4         4            6           7         
+L.D          1         1            3           4         
+L.D          2         2            4           5         
+ADD.D        3         5            7           8         
+DIV.D        4         8            0           0         
+MUL.D        5         0            0           0         
+SUB.D        6         8            10          11        
+SUB.D        7         0            0           0         
+SUB.D        9         0            0           0         
+ADD.D        12        0            0           0         
 -----------------------------------------------------------------------
 Reservation Station
 Time Name    OP      Vj      Vk      Qj      Qk      Busy    
-0    Add1                                            0       
-0    Add2                                            0       
-0    Add3                                            0       
-0    Mul1                                            0       
-4    Mul2    DIV.D   1       1                       1       
+0    Add1    SUB.D           Add0    Mul1            1       
+0    Add2    ADD.D           Add0    Mul1            1       
+0    Add3    SUB.D           Add0    Mul0            1       
+9    Mul1    DIV.D   1       Add0                    1       
+0    Mul2    MUL.D           Add0    Mul0            1       
 -----------------------------------------------------------------------
-Register result statusF30:1 F10:1 F20:1 F12:Mul1 F22:1 F14:1 F24:1 F0:Mul0 F16:1 F26:1 F2:1 F18:Add1 F28:1 F4:1 F6:Add0 F8:1 
+Register result statusF30:1 F10:Add0 F20:1 F12:Add1 F22:1 F14:Add2 F24:1 F0:1 F16:1 F26:1 F2:Load1 F18:1 F28:1 F4:Add0 F6:Mul1 F8:Mul0 
 -----------------------------------------------------------------------
 Load Buffer
 Name    Busy    Vj      Qj      
@@ -1093,20 +1288,25 @@ Store2  0
 週期: 40
 Instruction Status
 指令類型      Issue     開始執行      執行結束      寫回        
-MUL.D        1         1            11          12        
-SUB.D        2         2            4           5         
-DIV.D        3         3            0           0         
-ADD.D        4         4            6           7         
+L.D          1         1            3           4         
+L.D          2         2            4           5         
+ADD.D        3         5            7           8         
+DIV.D        4         8            0           0         
+MUL.D        5         0            0           0         
+SUB.D        6         8            10          11        
+SUB.D        7         0            0           0         
+SUB.D        9         0            0           0         
+ADD.D        12        0            0           0         
 -----------------------------------------------------------------------
 Reservation Station
 Time Name    OP      Vj      Vk      Qj      Qk      Busy    
-0    Add1                                            0       
-0    Add2                                            0       
-0    Add3                                            0       
-0    Mul1                                            0       
-3    Mul2    DIV.D   1       1                       1       
+0    Add1    SUB.D           Add0    Mul1            1       
+0    Add2    ADD.D           Add0    Mul1            1       
+0    Add3    SUB.D           Add0    Mul0            1       
+8    Mul1    DIV.D   1       Add0                    1       
+0    Mul2    MUL.D           Add0    Mul0            1       
 -----------------------------------------------------------------------
-Register result statusF30:1 F10:1 F20:1 F12:Mul1 F22:1 F14:1 F24:1 F0:Mul0 F16:1 F26:1 F2:1 F18:Add1 F28:1 F4:1 F6:Add0 F8:1 
+Register result statusF30:1 F10:Add0 F20:1 F12:Add1 F22:1 F14:Add2 F24:1 F0:1 F16:1 F26:1 F2:Load1 F18:1 F28:1 F4:Add0 F6:Mul1 F8:Mul0 
 -----------------------------------------------------------------------
 Load Buffer
 Name    Busy    Vj      Qj      
@@ -1121,20 +1321,25 @@ Store2  0
 週期: 41
 Instruction Status
 指令類型      Issue     開始執行      執行結束      寫回        
-MUL.D        1         1            11          12        
-SUB.D        2         2            4           5         
-DIV.D        3         3            0           0         
-ADD.D        4         4            6           7         
+L.D          1         1            3           4         
+L.D          2         2            4           5         
+ADD.D        3         5            7           8         
+DIV.D        4         8            0           0         
+MUL.D        5         0            0           0         
+SUB.D        6         8            10          11        
+SUB.D        7         0            0           0         
+SUB.D        9         0            0           0         
+ADD.D        12        0            0           0         
 -----------------------------------------------------------------------
 Reservation Station
 Time Name    OP      Vj      Vk      Qj      Qk      Busy    
-0    Add1                                            0       
-0    Add2                                            0       
-0    Add3                                            0       
-0    Mul1                                            0       
-2    Mul2    DIV.D   1       1                       1       
+0    Add1    SUB.D           Add0    Mul1            1       
+0    Add2    ADD.D           Add0    Mul1            1       
+0    Add3    SUB.D           Add0    Mul0            1       
+7    Mul1    DIV.D   1       Add0                    1       
+0    Mul2    MUL.D           Add0    Mul0            1       
 -----------------------------------------------------------------------
-Register result statusF30:1 F10:1 F20:1 F12:Mul1 F22:1 F14:1 F24:1 F0:Mul0 F16:1 F26:1 F2:1 F18:Add1 F28:1 F4:1 F6:Add0 F8:1 
+Register result statusF30:1 F10:Add0 F20:1 F12:Add1 F22:1 F14:Add2 F24:1 F0:1 F16:1 F26:1 F2:Load1 F18:1 F28:1 F4:Add0 F6:Mul1 F8:Mul0 
 -----------------------------------------------------------------------
 Load Buffer
 Name    Busy    Vj      Qj      
@@ -1149,20 +1354,25 @@ Store2  0
 週期: 42
 Instruction Status
 指令類型      Issue     開始執行      執行結束      寫回        
-MUL.D        1         1            11          12        
-SUB.D        2         2            4           5         
-DIV.D        3         3            0           0         
-ADD.D        4         4            6           7         
+L.D          1         1            3           4         
+L.D          2         2            4           5         
+ADD.D        3         5            7           8         
+DIV.D        4         8            0           0         
+MUL.D        5         0            0           0         
+SUB.D        6         8            10          11        
+SUB.D        7         0            0           0         
+SUB.D        9         0            0           0         
+ADD.D        12        0            0           0         
 -----------------------------------------------------------------------
 Reservation Station
 Time Name    OP      Vj      Vk      Qj      Qk      Busy    
-0    Add1                                            0       
-0    Add2                                            0       
-0    Add3                                            0       
-0    Mul1                                            0       
-1    Mul2    DIV.D   1       1                       1       
+0    Add1    SUB.D           Add0    Mul1            1       
+0    Add2    ADD.D           Add0    Mul1            1       
+0    Add3    SUB.D           Add0    Mul0            1       
+6    Mul1    DIV.D   1       Add0                    1       
+0    Mul2    MUL.D           Add0    Mul0            1       
 -----------------------------------------------------------------------
-Register result statusF30:1 F10:1 F20:1 F12:Mul1 F22:1 F14:1 F24:1 F0:Mul0 F16:1 F26:1 F2:1 F18:Add1 F28:1 F4:1 F6:Add0 F8:1 
+Register result statusF30:1 F10:Add0 F20:1 F12:Add1 F22:1 F14:Add2 F24:1 F0:1 F16:1 F26:1 F2:Load1 F18:1 F28:1 F4:Add0 F6:Mul1 F8:Mul0 
 -----------------------------------------------------------------------
 Load Buffer
 Name    Busy    Vj      Qj      
@@ -1177,20 +1387,25 @@ Store2  0
 週期: 43
 Instruction Status
 指令類型      Issue     開始執行      執行結束      寫回        
-MUL.D        1         1            11          12        
-SUB.D        2         2            4           5         
-DIV.D        3         3            43          0         
-ADD.D        4         4            6           7         
+L.D          1         1            3           4         
+L.D          2         2            4           5         
+ADD.D        3         5            7           8         
+DIV.D        4         8            0           0         
+MUL.D        5         0            0           0         
+SUB.D        6         8            10          11        
+SUB.D        7         0            0           0         
+SUB.D        9         0            0           0         
+ADD.D        12        0            0           0         
 -----------------------------------------------------------------------
 Reservation Station
 Time Name    OP      Vj      Vk      Qj      Qk      Busy    
-0    Add1                                            0       
-0    Add2                                            0       
-0    Add3                                            0       
-0    Mul1                                            0       
-0    Mul2    DIV.D   1       1                       1       
+0    Add1    SUB.D           Add0    Mul1            1       
+0    Add2    ADD.D           Add0    Mul1            1       
+0    Add3    SUB.D           Add0    Mul0            1       
+5    Mul1    DIV.D   1       Add0                    1       
+0    Mul2    MUL.D           Add0    Mul0            1       
 -----------------------------------------------------------------------
-Register result statusF30:1 F10:1 F20:1 F12:Mul1 F22:1 F14:1 F24:1 F0:Mul0 F16:1 F26:1 F2:1 F18:Add1 F28:1 F4:1 F6:Add0 F8:1 
+Register result statusF30:1 F10:Add0 F20:1 F12:Add1 F22:1 F14:Add2 F24:1 F0:1 F16:1 F26:1 F2:Load1 F18:1 F28:1 F4:Add0 F6:Mul1 F8:Mul0 
 -----------------------------------------------------------------------
 Load Buffer
 Name    Busy    Vj      Qj      
@@ -1205,20 +1420,652 @@ Store2  0
 週期: 44
 Instruction Status
 指令類型      Issue     開始執行      執行結束      寫回        
-MUL.D        1         1            11          12        
-SUB.D        2         2            4           5         
-DIV.D        3         3            43          44        
-ADD.D        4         4            6           7         
+L.D          1         1            3           4         
+L.D          2         2            4           5         
+ADD.D        3         5            7           8         
+DIV.D        4         8            0           0         
+MUL.D        5         0            0           0         
+SUB.D        6         8            10          11        
+SUB.D        7         0            0           0         
+SUB.D        9         0            0           0         
+ADD.D        12        0            0           0         
 -----------------------------------------------------------------------
 Reservation Station
 Time Name    OP      Vj      Vk      Qj      Qk      Busy    
-0    Add1                                            0       
-0    Add2                                            0       
+0    Add1    SUB.D           Add0    Mul1            1       
+0    Add2    ADD.D           Add0    Mul1            1       
+0    Add3    SUB.D           Add0    Mul0            1       
+4    Mul1    DIV.D   1       Add0                    1       
+0    Mul2    MUL.D           Add0    Mul0            1       
+-----------------------------------------------------------------------
+Register result statusF30:1 F10:Add0 F20:1 F12:Add1 F22:1 F14:Add2 F24:1 F0:1 F16:1 F26:1 F2:Load1 F18:1 F28:1 F4:Add0 F6:Mul1 F8:Mul0 
+-----------------------------------------------------------------------
+Load Buffer
+Name    Busy    Vj      Qj      
+Load1   0                       
+Load2   0                       
+-----------------------------------------------------------------------
+Store Buffer
+Name    Busy    Vj      Qj      
+Store1  0                       
+Store2  0                       
+=======================================================================
+週期: 45
+Instruction Status
+指令類型      Issue     開始執行      執行結束      寫回        
+L.D          1         1            3           4         
+L.D          2         2            4           5         
+ADD.D        3         5            7           8         
+DIV.D        4         8            0           0         
+MUL.D        5         0            0           0         
+SUB.D        6         8            10          11        
+SUB.D        7         0            0           0         
+SUB.D        9         0            0           0         
+ADD.D        12        0            0           0         
+-----------------------------------------------------------------------
+Reservation Station
+Time Name    OP      Vj      Vk      Qj      Qk      Busy    
+0    Add1    SUB.D           Add0    Mul1            1       
+0    Add2    ADD.D           Add0    Mul1            1       
+0    Add3    SUB.D           Add0    Mul0            1       
+3    Mul1    DIV.D   1       Add0                    1       
+0    Mul2    MUL.D           Add0    Mul0            1       
+-----------------------------------------------------------------------
+Register result statusF30:1 F10:Add0 F20:1 F12:Add1 F22:1 F14:Add2 F24:1 F0:1 F16:1 F26:1 F2:Load1 F18:1 F28:1 F4:Add0 F6:Mul1 F8:Mul0 
+-----------------------------------------------------------------------
+Load Buffer
+Name    Busy    Vj      Qj      
+Load1   0                       
+Load2   0                       
+-----------------------------------------------------------------------
+Store Buffer
+Name    Busy    Vj      Qj      
+Store1  0                       
+Store2  0                       
+=======================================================================
+週期: 46
+Instruction Status
+指令類型      Issue     開始執行      執行結束      寫回        
+L.D          1         1            3           4         
+L.D          2         2            4           5         
+ADD.D        3         5            7           8         
+DIV.D        4         8            0           0         
+MUL.D        5         0            0           0         
+SUB.D        6         8            10          11        
+SUB.D        7         0            0           0         
+SUB.D        9         0            0           0         
+ADD.D        12        0            0           0         
+-----------------------------------------------------------------------
+Reservation Station
+Time Name    OP      Vj      Vk      Qj      Qk      Busy    
+0    Add1    SUB.D           Add0    Mul1            1       
+0    Add2    ADD.D           Add0    Mul1            1       
+0    Add3    SUB.D           Add0    Mul0            1       
+2    Mul1    DIV.D   1       Add0                    1       
+0    Mul2    MUL.D           Add0    Mul0            1       
+-----------------------------------------------------------------------
+Register result statusF30:1 F10:Add0 F20:1 F12:Add1 F22:1 F14:Add2 F24:1 F0:1 F16:1 F26:1 F2:Load1 F18:1 F28:1 F4:Add0 F6:Mul1 F8:Mul0 
+-----------------------------------------------------------------------
+Load Buffer
+Name    Busy    Vj      Qj      
+Load1   0                       
+Load2   0                       
+-----------------------------------------------------------------------
+Store Buffer
+Name    Busy    Vj      Qj      
+Store1  0                       
+Store2  0                       
+=======================================================================
+週期: 47
+Instruction Status
+指令類型      Issue     開始執行      執行結束      寫回        
+L.D          1         1            3           4         
+L.D          2         2            4           5         
+ADD.D        3         5            7           8         
+DIV.D        4         8            0           0         
+MUL.D        5         0            0           0         
+SUB.D        6         8            10          11        
+SUB.D        7         0            0           0         
+SUB.D        9         0            0           0         
+ADD.D        12        0            0           0         
+-----------------------------------------------------------------------
+Reservation Station
+Time Name    OP      Vj      Vk      Qj      Qk      Busy    
+0    Add1    SUB.D           Add0    Mul1            1       
+0    Add2    ADD.D           Add0    Mul1            1       
+0    Add3    SUB.D           Add0    Mul0            1       
+1    Mul1    DIV.D   1       Add0                    1       
+0    Mul2    MUL.D           Add0    Mul0            1       
+-----------------------------------------------------------------------
+Register result statusF30:1 F10:Add0 F20:1 F12:Add1 F22:1 F14:Add2 F24:1 F0:1 F16:1 F26:1 F2:Load1 F18:1 F28:1 F4:Add0 F6:Mul1 F8:Mul0 
+-----------------------------------------------------------------------
+Load Buffer
+Name    Busy    Vj      Qj      
+Load1   0                       
+Load2   0                       
+-----------------------------------------------------------------------
+Store Buffer
+Name    Busy    Vj      Qj      
+Store1  0                       
+Store2  0                       
+=======================================================================
+週期: 48
+Instruction Status
+指令類型      Issue     開始執行      執行結束      寫回        
+L.D          1         1            3           4         
+L.D          2         2            4           5         
+ADD.D        3         5            7           8         
+DIV.D        4         8            48          0         
+MUL.D        5         0            0           0         
+SUB.D        6         8            10          11        
+SUB.D        7         0            0           0         
+SUB.D        9         0            0           0         
+ADD.D        12        0            0           0         
+-----------------------------------------------------------------------
+Reservation Station
+Time Name    OP      Vj      Vk      Qj      Qk      Busy    
+0    Add1    SUB.D           Add0    Mul1            1       
+0    Add2    ADD.D           Add0    Mul1            1       
+0    Add3    SUB.D           Add0    Mul0            1       
+0    Mul1    DIV.D   1       Add0                    1       
+0    Mul2    MUL.D           Add0    Mul0            1       
+-----------------------------------------------------------------------
+Register result statusF30:1 F10:Add0 F20:1 F12:Add1 F22:1 F14:Add2 F24:1 F0:1 F16:1 F26:1 F2:Load1 F18:1 F28:1 F4:Add0 F6:Mul1 F8:Mul0 
+-----------------------------------------------------------------------
+Load Buffer
+Name    Busy    Vj      Qj      
+Load1   0                       
+Load2   0                       
+-----------------------------------------------------------------------
+Store Buffer
+Name    Busy    Vj      Qj      
+Store1  0                       
+Store2  0                       
+=======================================================================
+週期: 49
+Instruction Status
+指令類型      Issue     開始執行      執行結束      寫回        
+L.D          1         1            3           4         
+L.D          2         2            4           5         
+ADD.D        3         5            7           8         
+DIV.D        4         8            48          49        
+MUL.D        5         49           0           0         
+SUB.D        6         8            10          11        
+SUB.D        7         49           0           0         
+SUB.D        9         0            0           0         
+ADD.D        12        0            0           0         
+-----------------------------------------------------------------------
+Reservation Station
+Time Name    OP      Vj      Vk      Qj      Qk      Busy    
+0    Add1    SUB.D           Add0    Mul1            1       
+0    Add2    ADD.D           Add0    Mul1            1       
+2    Add3    SUB.D   Mul0    Add0                    1       
+0    Mul1    DIV.D   1       Add0                    1       
+10   Mul2    MUL.D   Mul0    Add0                    1       
+-----------------------------------------------------------------------
+Register result statusF30:1 F10:Add0 F20:1 F12:Add1 F22:1 F14:Add2 F24:1 F0:1 F16:1 F26:1 F2:Load1 F18:1 F28:1 F4:Add0 F6:Mul1 F8:Mul0 
+-----------------------------------------------------------------------
+Load Buffer
+Name    Busy    Vj      Qj      
+Load1   0                       
+Load2   0                       
+-----------------------------------------------------------------------
+Store Buffer
+Name    Busy    Vj      Qj      
+Store1  0                       
+Store2  0                       
+=======================================================================
+週期: 50
+Instruction Status
+指令類型      Issue     開始執行      執行結束      寫回        
+L.D          1         1            3           4         
+L.D          2         2            4           5         
+ADD.D        3         5            7           8         
+DIV.D        4         8            48          49        
+MUL.D        5         49           0           0         
+SUB.D        6         8            10          11        
+SUB.D        7         49           0           0         
+SUB.D        9         0            0           0         
+ADD.D        12        0            0           0         
+-----------------------------------------------------------------------
+Reservation Station
+Time Name    OP      Vj      Vk      Qj      Qk      Busy    
+0    Add1    SUB.D           Add0    Mul1            1       
+0    Add2    ADD.D           Add0    Mul1            1       
+1    Add3    SUB.D   Mul0    Add0                    1       
+0    Mul1                                            0       
+9    Mul2    MUL.D   Mul0    Add0                    1       
+-----------------------------------------------------------------------
+Register result statusF30:1 F10:Add0 F20:1 F12:Add1 F22:1 F14:Add2 F24:1 F0:1 F16:1 F26:1 F2:Load1 F18:1 F28:1 F4:Add0 F6:Mul1 F8:Mul0 
+-----------------------------------------------------------------------
+Load Buffer
+Name    Busy    Vj      Qj      
+Load1   0                       
+Load2   0                       
+-----------------------------------------------------------------------
+Store Buffer
+Name    Busy    Vj      Qj      
+Store1  0                       
+Store2  0                       
+=======================================================================
+週期: 51
+Instruction Status
+指令類型      Issue     開始執行      執行結束      寫回        
+L.D          1         1            3           4         
+L.D          2         2            4           5         
+ADD.D        3         5            7           8         
+DIV.D        4         8            48          49        
+MUL.D        5         49           0           0         
+SUB.D        6         8            10          11        
+SUB.D        7         49           51          0         
+SUB.D        9         0            0           0         
+ADD.D        12        0            0           0         
+-----------------------------------------------------------------------
+Reservation Station
+Time Name    OP      Vj      Vk      Qj      Qk      Busy    
+0    Add1    SUB.D           Add0    Mul1            1       
+0    Add2    ADD.D           Add0    Mul1            1       
+0    Add3    SUB.D   Mul0    Add0                    1       
+0    Mul1                                            0       
+8    Mul2    MUL.D   Mul0    Add0                    1       
+-----------------------------------------------------------------------
+Register result statusF30:1 F10:Add0 F20:1 F12:Add1 F22:1 F14:Add2 F24:1 F0:1 F16:1 F26:1 F2:Load1 F18:1 F28:1 F4:Add0 F6:Mul1 F8:Mul0 
+-----------------------------------------------------------------------
+Load Buffer
+Name    Busy    Vj      Qj      
+Load1   0                       
+Load2   0                       
+-----------------------------------------------------------------------
+Store Buffer
+Name    Busy    Vj      Qj      
+Store1  0                       
+Store2  0                       
+=======================================================================
+週期: 52
+Instruction Status
+指令類型      Issue     開始執行      執行結束      寫回        
+L.D          1         1            3           4         
+L.D          2         2            4           5         
+ADD.D        3         5            7           8         
+DIV.D        4         8            48          49        
+MUL.D        5         49           0           0         
+SUB.D        6         8            10          11        
+SUB.D        7         49           51          52        
+SUB.D        9         0            0           0         
+ADD.D        12        0            0           0         
+-----------------------------------------------------------------------
+Reservation Station
+Time Name    OP      Vj      Vk      Qj      Qk      Busy    
+0    Add1    SUB.D           Add0    Mul1            1       
+0    Add2    ADD.D           Add0    Mul1            1       
+0    Add3    SUB.D   Mul0    Add0                    1       
+0    Mul1                                            0       
+7    Mul2    MUL.D   Mul0    Add0                    1       
+-----------------------------------------------------------------------
+Register result statusF30:1 F10:Add0 F20:1 F12:Add1 F22:1 F14:Add2 F24:1 F0:1 F16:1 F26:1 F2:Load1 F18:1 F28:1 F4:Add0 F6:Mul1 F8:Mul0 
+-----------------------------------------------------------------------
+Load Buffer
+Name    Busy    Vj      Qj      
+Load1   0                       
+Load2   0                       
+-----------------------------------------------------------------------
+Store Buffer
+Name    Busy    Vj      Qj      
+Store1  0                       
+Store2  0                       
+=======================================================================
+週期: 53
+Instruction Status
+指令類型      Issue     開始執行      執行結束      寫回        
+L.D          1         1            3           4         
+L.D          2         2            4           5         
+ADD.D        3         5            7           8         
+DIV.D        4         8            48          49        
+MUL.D        5         49           0           0         
+SUB.D        6         8            10          11        
+SUB.D        7         49           51          52        
+SUB.D        9         0            0           0         
+ADD.D        12        0            0           0         
+-----------------------------------------------------------------------
+Reservation Station
+Time Name    OP      Vj      Vk      Qj      Qk      Busy    
+0    Add1    SUB.D           Add0    Mul1            1       
+0    Add2    ADD.D           Add0    Mul1            1       
 0    Add3                                            0       
 0    Mul1                                            0       
-0    Mul2    DIV.D   1       1                       1       
+6    Mul2    MUL.D   Mul0    Add0                    1       
 -----------------------------------------------------------------------
-Register result statusF30:1 F10:1 F20:1 F12:Mul1 F22:1 F14:1 F24:1 F0:Mul0 F16:1 F26:1 F2:1 F18:Add1 F28:1 F4:1 F6:Add0 F8:1 
+Register result statusF30:1 F10:Add0 F20:1 F12:Add1 F22:1 F14:Add2 F24:1 F0:1 F16:1 F26:1 F2:Load1 F18:1 F28:1 F4:Add0 F6:Mul1 F8:Mul0 
+-----------------------------------------------------------------------
+Load Buffer
+Name    Busy    Vj      Qj      
+Load1   0                       
+Load2   0                       
+-----------------------------------------------------------------------
+Store Buffer
+Name    Busy    Vj      Qj      
+Store1  0                       
+Store2  0                       
+=======================================================================
+週期: 54
+Instruction Status
+指令類型      Issue     開始執行      執行結束      寫回        
+L.D          1         1            3           4         
+L.D          2         2            4           5         
+ADD.D        3         5            7           8         
+DIV.D        4         8            48          49        
+MUL.D        5         49           0           0         
+SUB.D        6         8            10          11        
+SUB.D        7         49           51          52        
+SUB.D        9         0            0           0         
+ADD.D        12        0            0           0         
+-----------------------------------------------------------------------
+Reservation Station
+Time Name    OP      Vj      Vk      Qj      Qk      Busy    
+0    Add1    SUB.D           Add0    Mul1            1       
+0    Add2    ADD.D           Add0    Mul1            1       
+0    Add3                                            0       
+0    Mul1                                            0       
+5    Mul2    MUL.D   Mul0    Add0                    1       
+-----------------------------------------------------------------------
+Register result statusF30:1 F10:Add0 F20:1 F12:Add1 F22:1 F14:Add2 F24:1 F0:1 F16:1 F26:1 F2:Load1 F18:1 F28:1 F4:Add0 F6:Mul1 F8:Mul0 
+-----------------------------------------------------------------------
+Load Buffer
+Name    Busy    Vj      Qj      
+Load1   0                       
+Load2   0                       
+-----------------------------------------------------------------------
+Store Buffer
+Name    Busy    Vj      Qj      
+Store1  0                       
+Store2  0                       
+=======================================================================
+週期: 55
+Instruction Status
+指令類型      Issue     開始執行      執行結束      寫回        
+L.D          1         1            3           4         
+L.D          2         2            4           5         
+ADD.D        3         5            7           8         
+DIV.D        4         8            48          49        
+MUL.D        5         49           0           0         
+SUB.D        6         8            10          11        
+SUB.D        7         49           51          52        
+SUB.D        9         0            0           0         
+ADD.D        12        0            0           0         
+-----------------------------------------------------------------------
+Reservation Station
+Time Name    OP      Vj      Vk      Qj      Qk      Busy    
+0    Add1    SUB.D           Add0    Mul1            1       
+0    Add2    ADD.D           Add0    Mul1            1       
+0    Add3                                            0       
+0    Mul1                                            0       
+4    Mul2    MUL.D   Mul0    Add0                    1       
+-----------------------------------------------------------------------
+Register result statusF30:1 F10:Add0 F20:1 F12:Add1 F22:1 F14:Add2 F24:1 F0:1 F16:1 F26:1 F2:Load1 F18:1 F28:1 F4:Add0 F6:Mul1 F8:Mul0 
+-----------------------------------------------------------------------
+Load Buffer
+Name    Busy    Vj      Qj      
+Load1   0                       
+Load2   0                       
+-----------------------------------------------------------------------
+Store Buffer
+Name    Busy    Vj      Qj      
+Store1  0                       
+Store2  0                       
+=======================================================================
+週期: 56
+Instruction Status
+指令類型      Issue     開始執行      執行結束      寫回        
+L.D          1         1            3           4         
+L.D          2         2            4           5         
+ADD.D        3         5            7           8         
+DIV.D        4         8            48          49        
+MUL.D        5         49           0           0         
+SUB.D        6         8            10          11        
+SUB.D        7         49           51          52        
+SUB.D        9         0            0           0         
+ADD.D        12        0            0           0         
+-----------------------------------------------------------------------
+Reservation Station
+Time Name    OP      Vj      Vk      Qj      Qk      Busy    
+0    Add1    SUB.D           Add0    Mul1            1       
+0    Add2    ADD.D           Add0    Mul1            1       
+0    Add3                                            0       
+0    Mul1                                            0       
+3    Mul2    MUL.D   Mul0    Add0                    1       
+-----------------------------------------------------------------------
+Register result statusF30:1 F10:Add0 F20:1 F12:Add1 F22:1 F14:Add2 F24:1 F0:1 F16:1 F26:1 F2:Load1 F18:1 F28:1 F4:Add0 F6:Mul1 F8:Mul0 
+-----------------------------------------------------------------------
+Load Buffer
+Name    Busy    Vj      Qj      
+Load1   0                       
+Load2   0                       
+-----------------------------------------------------------------------
+Store Buffer
+Name    Busy    Vj      Qj      
+Store1  0                       
+Store2  0                       
+=======================================================================
+週期: 57
+Instruction Status
+指令類型      Issue     開始執行      執行結束      寫回        
+L.D          1         1            3           4         
+L.D          2         2            4           5         
+ADD.D        3         5            7           8         
+DIV.D        4         8            48          49        
+MUL.D        5         49           0           0         
+SUB.D        6         8            10          11        
+SUB.D        7         49           51          52        
+SUB.D        9         0            0           0         
+ADD.D        12        0            0           0         
+-----------------------------------------------------------------------
+Reservation Station
+Time Name    OP      Vj      Vk      Qj      Qk      Busy    
+0    Add1    SUB.D           Add0    Mul1            1       
+0    Add2    ADD.D           Add0    Mul1            1       
+0    Add3                                            0       
+0    Mul1                                            0       
+2    Mul2    MUL.D   Mul0    Add0                    1       
+-----------------------------------------------------------------------
+Register result statusF30:1 F10:Add0 F20:1 F12:Add1 F22:1 F14:Add2 F24:1 F0:1 F16:1 F26:1 F2:Load1 F18:1 F28:1 F4:Add0 F6:Mul1 F8:Mul0 
+-----------------------------------------------------------------------
+Load Buffer
+Name    Busy    Vj      Qj      
+Load1   0                       
+Load2   0                       
+-----------------------------------------------------------------------
+Store Buffer
+Name    Busy    Vj      Qj      
+Store1  0                       
+Store2  0                       
+=======================================================================
+週期: 58
+Instruction Status
+指令類型      Issue     開始執行      執行結束      寫回        
+L.D          1         1            3           4         
+L.D          2         2            4           5         
+ADD.D        3         5            7           8         
+DIV.D        4         8            48          49        
+MUL.D        5         49           0           0         
+SUB.D        6         8            10          11        
+SUB.D        7         49           51          52        
+SUB.D        9         0            0           0         
+ADD.D        12        0            0           0         
+-----------------------------------------------------------------------
+Reservation Station
+Time Name    OP      Vj      Vk      Qj      Qk      Busy    
+0    Add1    SUB.D           Add0    Mul1            1       
+0    Add2    ADD.D           Add0    Mul1            1       
+0    Add3                                            0       
+0    Mul1                                            0       
+1    Mul2    MUL.D   Mul0    Add0                    1       
+-----------------------------------------------------------------------
+Register result statusF30:1 F10:Add0 F20:1 F12:Add1 F22:1 F14:Add2 F24:1 F0:1 F16:1 F26:1 F2:Load1 F18:1 F28:1 F4:Add0 F6:Mul1 F8:Mul0 
+-----------------------------------------------------------------------
+Load Buffer
+Name    Busy    Vj      Qj      
+Load1   0                       
+Load2   0                       
+-----------------------------------------------------------------------
+Store Buffer
+Name    Busy    Vj      Qj      
+Store1  0                       
+Store2  0                       
+=======================================================================
+週期: 59
+Instruction Status
+指令類型      Issue     開始執行      執行結束      寫回        
+L.D          1         1            3           4         
+L.D          2         2            4           5         
+ADD.D        3         5            7           8         
+DIV.D        4         8            48          49        
+MUL.D        5         49           59          0         
+SUB.D        6         8            10          11        
+SUB.D        7         49           51          52        
+SUB.D        9         0            0           0         
+ADD.D        12        0            0           0         
+-----------------------------------------------------------------------
+Reservation Station
+Time Name    OP      Vj      Vk      Qj      Qk      Busy    
+0    Add1    SUB.D           Add0    Mul1            1       
+0    Add2    ADD.D           Add0    Mul1            1       
+0    Add3                                            0       
+0    Mul1                                            0       
+0    Mul2    MUL.D   Mul0    Add0                    1       
+-----------------------------------------------------------------------
+Register result statusF30:1 F10:Add0 F20:1 F12:Add1 F22:1 F14:Add2 F24:1 F0:1 F16:1 F26:1 F2:Load1 F18:1 F28:1 F4:Add0 F6:Mul1 F8:Mul0 
+-----------------------------------------------------------------------
+Load Buffer
+Name    Busy    Vj      Qj      
+Load1   0                       
+Load2   0                       
+-----------------------------------------------------------------------
+Store Buffer
+Name    Busy    Vj      Qj      
+Store1  0                       
+Store2  0                       
+=======================================================================
+週期: 60
+Instruction Status
+指令類型      Issue     開始執行      執行結束      寫回        
+L.D          1         1            3           4         
+L.D          2         2            4           5         
+ADD.D        3         5            7           8         
+DIV.D        4         8            48          49        
+MUL.D        5         49           59          60        
+SUB.D        6         8            10          11        
+SUB.D        7         49           51          52        
+SUB.D        9         60           0           0         
+ADD.D        12        60           0           0         
+-----------------------------------------------------------------------
+Reservation Station
+Time Name    OP      Vj      Vk      Qj      Qk      Busy    
+2    Add1    SUB.D   Mul1    Add0                    1       
+2    Add2    ADD.D   Mul1    Add0                    1       
+0    Add3                                            0       
+0    Mul1                                            0       
+0    Mul2    MUL.D   Mul0    Add0                    1       
+-----------------------------------------------------------------------
+Register result statusF30:1 F10:Add0 F20:1 F12:Add1 F22:1 F14:Add2 F24:1 F0:1 F16:1 F26:1 F2:Load1 F18:1 F28:1 F4:Add0 F6:Mul1 F8:Mul0 
+-----------------------------------------------------------------------
+Load Buffer
+Name    Busy    Vj      Qj      
+Load1   0                       
+Load2   0                       
+-----------------------------------------------------------------------
+Store Buffer
+Name    Busy    Vj      Qj      
+Store1  0                       
+Store2  0                       
+=======================================================================
+週期: 61
+Instruction Status
+指令類型      Issue     開始執行      執行結束      寫回        
+L.D          1         1            3           4         
+L.D          2         2            4           5         
+ADD.D        3         5            7           8         
+DIV.D        4         8            48          49        
+MUL.D        5         49           59          60        
+SUB.D        6         8            10          11        
+SUB.D        7         49           51          52        
+SUB.D        9         60           0           0         
+ADD.D        12        60           0           0         
+-----------------------------------------------------------------------
+Reservation Station
+Time Name    OP      Vj      Vk      Qj      Qk      Busy    
+1    Add1    SUB.D   Mul1    Add0                    1       
+1    Add2    ADD.D   Mul1    Add0                    1       
+0    Add3                                            0       
+0    Mul1                                            0       
+0    Mul2                                            0       
+-----------------------------------------------------------------------
+Register result statusF30:1 F10:Add0 F20:1 F12:Add1 F22:1 F14:Add2 F24:1 F0:1 F16:1 F26:1 F2:Load1 F18:1 F28:1 F4:Add0 F6:Mul1 F8:Mul0 
+-----------------------------------------------------------------------
+Load Buffer
+Name    Busy    Vj      Qj      
+Load1   0                       
+Load2   0                       
+-----------------------------------------------------------------------
+Store Buffer
+Name    Busy    Vj      Qj      
+Store1  0                       
+Store2  0                       
+=======================================================================
+週期: 62
+Instruction Status
+指令類型      Issue     開始執行      執行結束      寫回        
+L.D          1         1            3           4         
+L.D          2         2            4           5         
+ADD.D        3         5            7           8         
+DIV.D        4         8            48          49        
+MUL.D        5         49           59          60        
+SUB.D        6         8            10          11        
+SUB.D        7         49           51          52        
+SUB.D        9         60           62          0         
+ADD.D        12        60           62          0         
+-----------------------------------------------------------------------
+Reservation Station
+Time Name    OP      Vj      Vk      Qj      Qk      Busy    
+0    Add1    SUB.D   Mul1    Add0                    1       
+0    Add2    ADD.D   Mul1    Add0                    1       
+0    Add3                                            0       
+0    Mul1                                            0       
+0    Mul2                                            0       
+-----------------------------------------------------------------------
+Register result statusF30:1 F10:Add0 F20:1 F12:Add1 F22:1 F14:Add2 F24:1 F0:1 F16:1 F26:1 F2:Load1 F18:1 F28:1 F4:Add0 F6:Mul1 F8:Mul0 
+-----------------------------------------------------------------------
+Load Buffer
+Name    Busy    Vj      Qj      
+Load1   0                       
+Load2   0                       
+-----------------------------------------------------------------------
+Store Buffer
+Name    Busy    Vj      Qj      
+Store1  0                       
+Store2  0                       
+=======================================================================
+週期: 63
+Instruction Status
+指令類型      Issue     開始執行      執行結束      寫回        
+L.D          1         1            3           4         
+L.D          2         2            4           5         
+ADD.D        3         5            7           8         
+DIV.D        4         8            48          49        
+MUL.D        5         49           59          60        
+SUB.D        6         8            10          11        
+SUB.D        7         49           51          52        
+SUB.D        9         60           62          63        
+ADD.D        12        60           62          63        
+-----------------------------------------------------------------------
+Reservation Station
+Time Name    OP      Vj      Vk      Qj      Qk      Busy    
+0    Add1    SUB.D   Mul1    Add0                    1       
+0    Add2    ADD.D   Mul1    Add0                    1       
+0    Add3                                            0       
+0    Mul1                                            0       
+0    Mul2                                            0       
+-----------------------------------------------------------------------
+Register result statusF30:1 F10:Add0 F20:1 F12:Add1 F22:1 F14:Add2 F24:1 F0:1 F16:1 F26:1 F2:Load1 F18:1 F28:1 F4:Add0 F6:Mul1 F8:Mul0 
 -----------------------------------------------------------------------
 Load Buffer
 Name    Busy    Vj      Qj      

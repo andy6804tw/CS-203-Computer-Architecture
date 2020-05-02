@@ -78,7 +78,7 @@ public class tomasulo {
     public static void main(String[] args) {
 
         // Read File
-        readFile("./test/test1.txt");
+        readFile("./test/test4.txt");
         // 保留站與暫存器初始化
         init();
         while(true){
@@ -254,36 +254,34 @@ public class tomasulo {
                     Instruction ins=instructionList.get(ins_index); // 取得指令
                     // 檢查是否可以Write Result
                     if(ins.executed!=0&&ins.written==0){
-                        // 廣播結果備份
-                        String broadcast="b1";
                         ins.written=clock;
                         // 廣播Mul更新storeBuffer
                         for(int j=0;j<loadMount;j++){
                             if(storeBuffer[j].Qj.equals("Mul"+i)){
                                 storeBuffer[j].Qj="";
-                                storeBuffer[j].Vj=broadcast;
+                                storeBuffer[j].Vj=fRegister.get(ins.rd).toString();
                             }
                         }
                         // 廣播Mul更新adder
                         for(int j=0;j<addMount;j++){
                             if(adder[j].Qj.equals("Mul"+i)){
                                 adder[j].Qj="";
-                                adder[j].Vj=broadcast;
+                                adder[j].Vj=fRegister.get(ins.rd).toString();
                             }
                             if(adder[j].Qk.equals("Mul"+i)){
                                 adder[j].Qk="";
-                                adder[j].Vk=broadcast;
+                                adder[j].Vk=fRegister.get(ins.rd).toString();
                             }
                         }
                         // 廣播Mul更新multiplier
                         for(int j=0;j<mulMount;j++){
                             if(multiplier[j].Qj.equals("Mul"+i)){
                                 multiplier[j].Qj="";
-                                multiplier[j].Vj=broadcast;
+                                multiplier[j].Vj=fRegister.get(ins.rd).toString();
                             }
                             if(multiplier[j].Qk.equals("Mul"+i)){
                                 multiplier[j].Qk="";
-                                multiplier[j].Vk=broadcast;
+                                multiplier[j].Vk=fRegister.get(ins.rd).toString();
                             }
                         }
                     }
