@@ -2,12 +2,21 @@
 import java.io.*;
 import java.util.*;
 
-// 指令
+/**
+ * 指令格式 opcode rd, rs, rt
+ * @param opcode
+ * @param rd
+ * @param rs
+ * @param rt
+ */ 
 class Instruction{
     String opcode="";
     String rd="",rs="",rt="";
+    // issue表示第幾個clock有資源可用
+    // excution表示開始執行的clock
+    // executed(execution complete)表示執行完畢clock
+    // written(write result)表示被寫入clock
     int issue=0,executed=0,execution=0,written=0;
-
     public Instruction(String opcode,String rd,String rs,String rt){
         this.opcode=opcode;
         this.rd=rd;
@@ -15,37 +24,29 @@ class Instruction{
         this.rt=rt;
     }
 }
-// Reservation Station
+/**
+ * Reservation Station 
+ * 與StoreBuffer&LoadBuffer共用
+ */
 class ReservationStation{
     int id=0; // 表示第幾個指令
-    int busy=0;
-    String opcode="";
-    String Vj="";
-    String Vk="";
-    String Qj="";
-    String Qk="";
-    int remain=0;
+    int busy=0; // 0:閒置中 1:資源佔用中
+    String opcode=""; // operand指令種類
+    String Vj="", Vk=""; // Vj, Vk：可以馬上使用的實際數值
+    String Qj="", Qk=""; // Qj, Qk：目標暫存器的值還在處理中等待廣播
+    int remain=0; // 儲存還剩餘幾個cycle將結束執行
+    // 清空
     public void flush(){
         this.busy=0;
         this.opcode="";
-        this.Vj="";
-        this.Vk="";
-        this.Qj="";
-        this.Qk="";
+        this.Vj="";this.Vk="";
+        this.Qj="";this.Qk="";
         this.remain=0;
     }
 }
-// class RegisterStatus{
-//     String name="";
-//     double value=0;
-//     public RegisterStatus(String name,double value){
-//         this.name=name;
-//         this.value=value;
-//     }
-// }
+
 
 public class tomasulo {
-
     public static ArrayList<Instruction> instructionList = new ArrayList<>();
     // Reservation Station
     public static int loadMount=2;
