@@ -78,7 +78,7 @@ public class tomasulo {
     public static void main(String[] args) {
 
         // Read File
-        readFile("./test/test4.txt");
+        readFile("./test/test1.txt");
         // 保留站與暫存器初始化
         init();
         while(true){
@@ -596,19 +596,19 @@ public class tomasulo {
   public static void showInfo(){
     System.out.println("週期: "+clock);
     System.out.println("Instruction Status");
-    System.out.println("指令類型\tIssue\t開始執行\t執行結束\t寫回");
+    System.out.printf("%-10s%-10s%-10s%-10s%-10s\n","指令類型","Issue","開始執行","執行結束","寫回");
     for(int i=0;i<instructionList.size();i++){
         Instruction ins=instructionList.get(i);
-        System.out.println(ins.opcode+"\t\t"+ins.issue+"\t"+ins.execution+"\t\t"+ins.executed+"\t\t\t"+ins.written);
+        System.out.printf("%-14s%-10s%-14s%-14s%-10s\n",ins.opcode,ins.issue,ins.execution,ins.executed,ins.written);
     }
     System.out.println("\n-----------------------------------------------------------------------");
     System.out.println("Reservation Station");
-    System.out.println("Time\tName\tOP\tVj\tVk\tQj\tQk\tBusy");
+    System.out.printf("%-5s%-8s%-8s%-8s%-8s%-8s%-8s%-8s\n","Time","Name","OP","Vj","Vk","Qj","Qk","Busy");
     for(int i=0;i<addMount;i++){
-        System.out.println(adder[i].remain+"\t"+"Add"+(i+1)+"\t"+adder[i].opcode+"\t"+adder[i].Vj+"\t"+adder[i].Vk+"\t"+adder[i].Qj+"\t"+adder[i].Qk+"\t"+adder[i].busy);
+        System.out.printf("%-5s%-8s%-8s%-8s%-8s%-8s%-8s%-8s\n",adder[i].remain,"Add"+(i+1),adder[i].opcode,adder[i].Vj,adder[i].Vk,adder[i].Qj,adder[i].Qk,adder[i].busy);
     }
     for(int i=0;i<mulMount;i++){
-        System.out.println(multiplier[i].remain+"\t"+"Mul"+(i+1)+"\t"+multiplier[i].opcode+"\t"+multiplier[i].Vj+"\t"+multiplier[i].Vk+"\t"+multiplier[i].Qj+"\t"+multiplier[i].Qk+"\t"+multiplier[i].busy);
+        System.out.printf("%-5s%-8s%-8s%-8s%-8s%-8s%-8s%-8s\n",multiplier[i].remain,"Mul"+(i+1),multiplier[i].opcode,multiplier[i].Vj,multiplier[i].Vk,multiplier[i].Qj,multiplier[i].Qk,multiplier[i].busy);
     }
     System.out.println("\n-----------------------------------------------------------------------");
     System.out.println("Register result status");
@@ -616,33 +616,46 @@ public class tomasulo {
         System.out.print(key + ":" + fRegister.get(key)+" ");
     }
     System.out.println("\n-----------------------------------------------------------------------");
+    System.out.println("Load Buffer");
+    System.out.printf("%-8s%-8s%-8s%-8s\n","Name","Busy","Vj","Qj");
+    for(int i=0;i<loadMount;i++){
+        System.out.printf("%-8s%-8s%-8s%-8s\n","Load"+(i+1),loadBuffer[i].busy,loadBuffer[i].Vj,loadBuffer[i].Qj);
+    }
+    System.out.println("\n-----------------------------------------------------------------------");
     System.out.println("Store Buffer");
-    System.out.println("Name\tBusy\tVj\tQj");
+    System.out.printf("%-8s%-8s%-8s%-8s\n","Name","Busy","Vj","Qj");
     for(int i=0;i<storeMount;i++){
-        System.out.println("Store"+(i+1)+"\t"+storeBuffer[i].busy+"\t"+storeBuffer[i].Vj+"\t"+storeBuffer[i].Qj+"\t");
+        System.out.printf("%-8s%-8s%-8s%-8s\n","Store"+(i+1),storeBuffer[i].busy,storeBuffer[i].Vj,storeBuffer[i].Qj);
     }
     System.out.println("=======================================================================");
   }
   public static void save(){
-    str+="週期: "+clock+"\n"+"Instruction Status\n"+"指令類型\tIssue\t開始執行\t執行結束\t寫回\n";
+    str+="週期: "+clock+"\n"+"Instruction Status\n"+String.format("%-10s%-10s%-10s%-10s%-10s\n","指令類型","Issue","開始執行","執行結束","寫回");
     for(int i=0;i<instructionList.size();i++){
         Instruction ins=instructionList.get(i);
-        str+=ins.opcode+"\t\t"+ins.issue+"\t"+ins.execution+"\t\t"+ins.executed+"\t\t\t"+ins.written+"\n";
+        str+=String.format("%-13s%-10s%-13s%-12s%-10s\n",ins.opcode,ins.issue,ins.execution,ins.executed,ins.written);
     }
-    str+="\n-----------------------------------------------------------------------\nReservation Station\nTime\tName\tOP\tVj\tVk\tQj\tQk\tBusy\n";
+    str+="-----------------------------------------------------------------------\nReservation Station\n";
+    str+=String.format("%-5s%-8s%-8s%-8s%-8s%-8s%-8s%-8s\n","Time","Name","OP","Vj","Vk","Qj","Qk","Busy");
     for(int i=0;i<addMount;i++){
-        str+=adder[i].remain+"\t"+"Add"+(i+1)+"\t"+adder[i].opcode+"\t"+adder[i].Vj+"\t"+adder[i].Vk+"\t"+adder[i].Qj+"\t"+adder[i].Qk+"\t"+adder[i].busy+"\n";
+        str+=String.format("%-5s%-8s%-8s%-8s%-8s%-8s%-8s%-8s\n",adder[i].remain,"Add"+(i+1),adder[i].opcode,adder[i].Vj,adder[i].Vk,adder[i].Qj,adder[i].Qk,adder[i].busy);
     }
     for(int i=0;i<mulMount;i++){
-        str+=multiplier[i].remain+"\t"+"Mul"+(i+1)+"\t"+multiplier[i].opcode+"\t"+multiplier[i].Vj+"\t"+multiplier[i].Vk+"\t"+multiplier[i].Qj+"\t"+multiplier[i].Qk+"\t"+multiplier[i].busy+"\n";
+        str+=String.format("%-5s%-8s%-8s%-8s%-8s%-8s%-8s%-8s\n",multiplier[i].remain,"Mul"+(i+1),multiplier[i].opcode,multiplier[i].Vj,multiplier[i].Vk,multiplier[i].Qj,multiplier[i].Qk,multiplier[i].busy);
     }
-    str+="\n-----------------------------------------------------------------------\nRegister result status";
+    str+="-----------------------------------------------------------------------\nRegister result status";
     for (Object key : fRegister.keySet()) {
         str+=key + ":" + fRegister.get(key)+" ";
     }
-    str+="\n-----------------------------------------------------------------------\nStore Buffer\nName\tBusy\tVj\tQj\n";
+    str+="\n-----------------------------------------------------------------------\nLoad Buffer\n";
+    str+=String.format("%-8s%-8s%-8s%-8s\n","Name","Busy","Vj","Qj");
+    for(int i=0;i<loadMount;i++){
+        str+=String.format("%-8s%-8s%-8s%-8s\n","Load"+(i+1),loadBuffer[i].busy,loadBuffer[i].Vj,loadBuffer[i].Qj);
+    }
+    str+="-----------------------------------------------------------------------\nStore Buffer\n";
+    str+=String.format("%-8s%-8s%-8s%-8s\n","Name","Busy","Vj","Qj");
     for(int i=0;i<storeMount;i++){
-        str+="Store"+(i+1)+"\t"+storeBuffer[i].busy+"\t"+storeBuffer[i].Vj+"\t"+storeBuffer[i].Qj+"\n";
+        str+=String.format("%-8s%-8s%-8s%-8s\n","Store"+(i+1),storeBuffer[i].busy,storeBuffer[i].Vj,storeBuffer[i].Qj);
     }
     str+="=======================================================================\n";
   }
