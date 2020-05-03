@@ -701,6 +701,9 @@ public class tomasulo {
     }
     str+="=======================================================================\n";
   }
+  /**
+   * 執行結束並寫檔匯出每個週期內容
+   */
   public static void writeOutput(){
     try {
         FileWriter fw = new FileWriter("output.txt");
@@ -708,7 +711,7 @@ public class tomasulo {
         fw.close();
         System.out.println("Successfully wrote to the file.");
       } catch (IOException e) {
-        System.out.println("An error occurred.");
+        System.out.println("An error occurred (Write File).");
         e.printStackTrace();
       }
   }
