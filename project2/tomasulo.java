@@ -568,7 +568,7 @@ public class tomasulo {
     }
     /**
    * 讀檔將指令分解 opcode, rd, rs, rt
-   * @param filename
+   * @param filename // 檔名 ex: test1.txt
    */
   public static void readFile(String filename) {
     try {
@@ -593,12 +593,11 @@ public class tomasulo {
             rs=registerArray[1];
             rt=registerArray[2];
         }
-
         instructionList.add(new Instruction(opcode, rd, rs, rt));
       }
       scn.close();
     } catch (FileNotFoundException e) {
-      System.out.println("An error occurred.");
+      System.out.println("An error occurred (Read File).");
       e.printStackTrace();
     }
   }
