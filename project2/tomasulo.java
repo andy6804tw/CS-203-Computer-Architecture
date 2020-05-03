@@ -669,6 +669,9 @@ public class tomasulo {
     }
     System.out.println("=======================================================================");
   }
+  /**
+   * 將每個週期內容儲存起來(寫檔用)
+   */
   public static void save(){
     str+="週期: "+clock+"\n"+"Instruction Status\n"+String.format("%-10s%-10s%-10s%-10s%-10s\n","指令類型","Issue","開始執行","執行結束","寫回");
     for(int i=0;i<instructionList.size();i++){
