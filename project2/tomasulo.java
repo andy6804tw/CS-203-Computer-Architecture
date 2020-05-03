@@ -601,8 +601,10 @@ public class tomasulo {
       e.printStackTrace();
     }
   }
+  /**
+   * 初始化Register Status (key: register name, value: function unit)
+   */
   public static void init(){
-    // 初始化Register Status (key: register name, value: function unit)
     // 浮點數暫存器有16個，編號為F0、F2、F4、…、F30，初始值為1
     for(int i=0;i<=30;i+=2){
         fRegister.put("F"+i, "1");
@@ -614,7 +616,7 @@ public class tomasulo {
         else
             iRegister.put("R"+i, "0");
     }
-    // init Reservation Station
+    // 初始化Reservation Station並建立資源
     for(int i=0;i<loadMount;i++){
         loadBuffer[i]=new ReservationStation();
     }
