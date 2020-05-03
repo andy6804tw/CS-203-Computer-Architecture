@@ -631,6 +631,9 @@ public class tomasulo {
     }
         
   }
+  /**
+   * 在終端機中列印出每個週期的內容
+   */
   public static void showInfo(){
     System.out.println("週期: "+clock);
     System.out.println("Instruction Status");
