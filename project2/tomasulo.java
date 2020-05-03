@@ -427,17 +427,24 @@ public class tomasulo {
                 }
             }
             /** 執行 */
-            /** Issue */
-            // 確認下一個指令是否可以被Issue
+            /** 
+             * Issue
+             * 當有資源可利用時(busy=0)，檢查下一個指令是否可以被Issue
+             * loadBuffer[2]=> L.D
+             * stroeBuffer[2]=> S.D
+             * adder[3]=> ADD.D、SUB.D
+             * multiplier[2]=> MUL.D、DIV.D
+             *  */
             if(cur_ins_position<instructionList.size()){
+                // 若還有指令未被執行將確認是否可被Issue
                 Instruction instruction=instructionList.get(cur_ins_position);
                 String opcode=instruction.opcode;
-                // 檢查是否有true dependence
+                // 保留站變數初始化，檢查是否有true dependence
                 String Vj="",Vk="",Qj="",Qk="";
                 String rs=instruction.rs;
                 String rt=instruction.rt;
                 String rd=instruction.rd;
-                // 查詢到有true dependence就不繼續往上找，直到rs和rt都個別找到，若都無代表無true dependence
+                // 查詢到有true dependence就不繼續往上找，直到rs和rt都個別找到(isRsDone、isRtDone皆為1)
                 int isRsDone=0,isRtDone=0;
                 if(!(opcode.equals("L.D")||opcode.equals("S.D"))){
                     for(int i=cur_ins_position-1;i>=0;i--){
@@ -453,6 +460,7 @@ public class tomasulo {
                             isRtDone=1;
                         }
                     }
+                    // 若都無代表無true dependence，即更新Vj、Vk準備執行
                     if(Qj.equals(""))
                         Vj=fRegister.get(instruction.rs).toString();
                     if(Qk.equals(""))
@@ -466,17 +474,15 @@ public class tomasulo {
                         }
                     }
                 }
-                // 判斷是否還有Reservation Station可用
+                // 判斷是否還有Reservation Station資源可用
+                // 若可以利用則將busy=1，以及更新Reservation Station內容
+                // id為查表用(存index)，可以從保留站回推是哪一個條被執行指令
                 int isIssue=0;
                 if(opcode.equals("L.D")){
                     for(int i=0;i<loadMount;i++){
                         if(loadBuffer[i].busy==0){
                             loadBuffer[i].busy=1;
                             loadBuffer[i].id=cur_ins_position;
-                            // loadBuffer[i].Vj=iRegister.get(instruction.rt).toString();
-                            // loadBuffer[i].Vk=iRegister.get(instruction.rt).toString();
-                            // loadBuffer[i].Qj=Qj;
-                            // loadBuffer[i].Qk=Qk;
                             fRegister.put(instruction.rd,"Load"+i);
                             isIssue=1;
                             break;
@@ -488,7 +494,6 @@ public class tomasulo {
                             storeBuffer[i].busy=1;
                             storeBuffer[i].id=cur_ins_position;
                             storeBuffer[i].Qj=Qj;
-                            // fRegister.put(instruction.rd,"Store"+i);
                             isIssue=1;
                             break;
                         }
@@ -524,19 +529,21 @@ public class tomasulo {
                         }
                     }
                 }
-                // 更新指令狀態
+                
+                // 檢查目前將被Issue的指令是否可以準備進入下一階段(執行)
+                // execution即為該指令被執行的開始時間
                 if(Qj.equals("")&&Qk.equals("")||(opcode.equals("S.D")&&Qj.equals("")))
                     instruction.execution=clock;
+                // 當有指令被Issue(isIssue=1)，即更新指令狀態並同時紀錄該指令被Issue週期
                 if(isIssue==1){
                     instruction.issue=clock;
                     instructionList.set(cur_ins_position,instruction);
                     cur_ins_position++;
                 }
             }
-            
             /** Issue */
             
-            // 檢查是否可以結束
+            // 檢查是否可以結束程式
             int flag=0;
             for(;flag<instructionList.size();flag++){
                 Instruction ins=instructionList.get(flag);
@@ -545,8 +552,10 @@ public class tomasulo {
                 else
                     break;
             }
+            // 印出每個週期狀態與寫檔
             showInfo();
             save();
+            // 當flag等於指令行數表示所有指令都已執行與寫入完畢
             if(flag==instructionList.size())
                 break;
             // if(clock==49)
