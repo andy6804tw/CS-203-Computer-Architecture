@@ -78,7 +78,7 @@ public class tomasulo {
     public static void main(String[] args) {
 
         // Read File
-        readFile("./test/test5.txt");
+        readFile("./test/example4.txt");
         // 保留站與暫存器初始化
         init();
         while(true){
@@ -155,7 +155,7 @@ public class tomasulo {
                     if(ins.executed!=0&&ins.written==0&&storeBuffer[i].Qj.equals("")){
                         ins.written=clock;
                         // 廣播更新
-                        fRegister.put(ins.rd, iRegister.get(ins.rt).toString());
+                        // fRegister.put(ins.rd, iRegister.get(ins.rt).toString());
                         // 廣播Load更新storeBuffer
                         for(int j=0;j<loadMount;j++){
                             if(storeBuffer[j].Qj.equals("Store"+i)){
@@ -640,9 +640,8 @@ public class tomasulo {
     }
     System.out.println("\n-----------------------------------------------------------------------");
     System.out.println("Register result status");
-    for (Object key : fRegister.keySet()) {
-        System.out.print(key + ":" + fRegister.get(key)+" ");
-    }
+    for(int i=0;i<=30;i+=2)
+        System.out.print("F"+i+":" + fRegister.get("F"+i)+" ");
     System.out.println("\n-----------------------------------------------------------------------");
     System.out.println("Load Buffer");
     System.out.printf("%-8s%-8s%-8s%-8s\n","Name","Busy","Vj","Qj");
@@ -671,10 +670,9 @@ public class tomasulo {
     for(int i=0;i<mulMount;i++){
         str+=String.format("%-5s%-8s%-8s%-8s%-8s%-8s%-8s%-8s\n",multiplier[i].remain,"Mul"+(i+1),multiplier[i].opcode,multiplier[i].Vj,multiplier[i].Vk,multiplier[i].Qj,multiplier[i].Qk,multiplier[i].busy);
     }
-    str+="-----------------------------------------------------------------------\nRegister result status";
-    for (Object key : fRegister.keySet()) {
-        str+=key + ":" + fRegister.get(key)+" ";
-    }
+    str+="-----------------------------------------------------------------------\nRegister result status\n";
+    for(int i=0;i<=30;i+=2)
+        str+="F"+i+":" + fRegister.get("F"+i)+" ";
     str+="\n-----------------------------------------------------------------------\nLoad Buffer\n";
     str+=String.format("%-8s%-8s%-8s%-8s\n","Name","Busy","Vj","Qj");
     for(int i=0;i<loadMount;i++){
