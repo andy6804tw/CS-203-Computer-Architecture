@@ -47,7 +47,7 @@ class ReservationStation{
 /**
  * 主程式
  */
-public class tomasulo {
+public class tomasulo_head_sd {
     // 執行指令串列
     public static ArrayList<Instruction> instructionList = new ArrayList<>();
     // Reservation Station (載入、儲存、加法器、除法器) 數量初始化與建立陣列
@@ -133,7 +133,9 @@ public class tomasulo {
                     }
                     // 清空Station
                     if(ins.written+1==clock){
-                        loadBuffer[i].flush();    
+                        loadBuffer[i].flush();
+                        
+                            
                     }
                     if(ins.written==clock){
                         // 檢查WAW處理Output Dependence
@@ -253,8 +255,6 @@ public class tomasulo {
                         adder[i].flush();
                         
                     }
-                    
-                    
                     if(ins.written==clock){
                         // 檢查WAW處理Output Dependence
                         int isBroadcast=1;
@@ -386,7 +386,7 @@ public class tomasulo {
                     }
                     // 更新指令狀態
                     instructionList.set(ins_index,ins);
-                    // checkFirst=0;
+                    checkFirst=0;
                 }
             }
             // Adder
