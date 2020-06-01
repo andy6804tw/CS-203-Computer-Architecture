@@ -47,7 +47,7 @@ class ReservationStation{
 /**
  * 主程式
  */
-public class tomasulo {
+public class v3 {
     // 執行指令串列
     public static ArrayList<Instruction> instructionList = new ArrayList<>();
     // Reservation Station (載入、儲存、加法器、除法器) 數量初始化與建立陣列
@@ -78,7 +78,7 @@ public class tomasulo {
     public static void main(String[] args) {
 
         // Read File
-        readFile("./test/test4.txt");
+        readFile("./test/example2.txt");
         // 保留站與暫存器初始化
         init();
         while(true){
