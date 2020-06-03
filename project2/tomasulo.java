@@ -75,17 +75,19 @@ public class tomasulo {
     // 寫檔
     public static String str="";
     // 讀檔檔名
-    public static String fileName="";
+    public static String fileName="./test/example7.txt";
+    // 總Clock
+    public static int totalClock=0;
 
     public static void main(String[] args) {
 
         Scanner scn= new Scanner(System.in);
-        if(args.length!=0){
-			fileName=args[0];
-		}else{
-            System.out.print("請輸入檔名(xxx.txt): ");
-            fileName=scn.nextLine();
-        }
+        // if(args.length!=0){
+		// 	fileName=args[0];
+		// }else{
+        //     System.out.print("請輸入檔名(xxx.txt): ");
+        //     fileName=scn.nextLine();
+        // }
         // Read File
         readFile(fileName);
         // 保留站與暫存器初始化
@@ -101,33 +103,36 @@ public class tomasulo {
                     // 檢查是否可以Write Result
                     if(ins.executed!=0&&ins.written==0){
                         ins.written=clock;
+                        // 取得整數暫存器的數值
+                        double iRegisterValue=Integer.parseInt(iRegister.get(ins.rt));
+                        
                         // 廣播Load更新storeBuffer
                         for(int j=0;j<loadMount;j++){
                             if(storeBuffer[j].Qj.equals("Load"+i)){
                                 storeBuffer[j].Qj="";
-                                storeBuffer[j].Vj=iRegister.get(ins.rt).toString();
+                                storeBuffer[j].Vj=iRegisterValue+"";
                             }
                         }
                         // 廣播Load更新adder
                         for(int j=0;j<addMount;j++){
                             if(adder[j].Qj.equals("Load"+i) && adder[j].remain==0){
                                 adder[j].Qj="";
-                                adder[j].Vj=iRegister.get(ins.rt).toString();
+                                adder[j].Vj=iRegisterValue+"";
                             }
                             if(adder[j].Qk.equals("Load"+i) && adder[j].remain==0){
                                 adder[j].Qk="";
-                                adder[j].Vk=iRegister.get(ins.rt).toString();
+                                adder[j].Vk=iRegisterValue+"";
                             }
                         }
                         // 廣播Load更新multiplier
                         for(int j=0;j<mulMount;j++){
                             if(multiplier[j].Qj.equals("Load"+i)){
                                 multiplier[j].Qj="";
-                                multiplier[j].Vj=iRegister.get(ins.rt).toString();
+                                multiplier[j].Vj=iRegisterValue+"";
                             }
                             if(multiplier[j].Qk.equals("Load"+i)){
                                 multiplier[j].Qk="";
-                                multiplier[j].Vk=iRegister.get(ins.rt).toString();
+                                multiplier[j].Vk=iRegisterValue+"";
                             }
                         }
                     }
@@ -286,39 +291,39 @@ public class tomasulo {
                     if(ins.executed!=0&&ins.written==0){
                         ins.written=clock;
                         // 更新FU
-                        double result=0;
+                        double broadcastValue=0;
                         if(ins.opcode.equals("MUL.D"))
-                            result=Double.parseDouble(multiplier[i].Vj)*Double.parseDouble(multiplier[i].Vk);
+                            broadcastValue=Double.parseDouble(multiplier[i].Vj)*Double.parseDouble(multiplier[i].Vk);
                         else if(ins.opcode.equals("DIV.D"))
-                            result=Double.parseDouble(multiplier[i].Vj)/Double.parseDouble(multiplier[i].Vk);
-                        fRegister.put(ins.rd, result+"");
+                            broadcastValue=Double.parseDouble(multiplier[i].Vj)/Double.parseDouble(multiplier[i].Vk);
+
                         // 廣播Mul更新storeBuffer
                         for(int j=0;j<loadMount;j++){
                             if(storeBuffer[j].Qj.equals("Mul"+i)){
                                 storeBuffer[j].Qj="";
-                                storeBuffer[j].Vj=fRegister.get(ins.rd).toString();
+                                storeBuffer[j].Vj=broadcastValue+"";
                             }
                         }
                         // 廣播Mul更新adder
                         for(int j=0;j<addMount;j++){
                             if(adder[j].Qj.equals("Mul"+i)){
                                 adder[j].Qj="";
-                                adder[j].Vj=fRegister.get(ins.rd).toString();
+                                adder[j].Vj=broadcastValue+"";
                             }
                             if(adder[j].Qk.equals("Mul"+i)){
                                 adder[j].Qk="";
-                                adder[j].Vk=fRegister.get(ins.rd).toString();
+                                adder[j].Vk=broadcastValue+"";
                             }
                         }
                         // 廣播Mul更新multiplier
                         for(int j=0;j<mulMount;j++){
                             if(multiplier[j].Qj.equals("Mul"+i)){
                                 multiplier[j].Qj="";
-                                multiplier[j].Vj=fRegister.get(ins.rd).toString();
+                                multiplier[j].Vj=broadcastValue+"";
                             }
                             if(multiplier[j].Qk.equals("Mul"+i)){
                                 multiplier[j].Qk="";
-                                multiplier[j].Vk=fRegister.get(ins.rd).toString();
+                                multiplier[j].Vk=broadcastValue+"";
                             }
                         }
                     }
@@ -559,7 +564,7 @@ public class tomasulo {
             /** Issue */
             
             // 檢查是否可以結束程式
-            int flag=0;
+            int flag=0,checkRS=0;
             for(;flag<instructionList.size();flag++){
                 Instruction ins=instructionList.get(flag);
                 if(ins.issue!=0&&ins.executed!=0&&ins.written!=0)
@@ -567,18 +572,28 @@ public class tomasulo {
                 else
                     break;
             }
+            for(int i=0;i<addMount;i++){
+                if(adder[i].busy==1)
+                    checkRS=1;
+            }
+            for(int i=0;i<mulMount;i++){
+                if(multiplier[i].busy==1)
+                    checkRS=1;
+            }
             // 印出每個週期狀態與寫檔
             showInfo();
             save();
             // 當flag等於指令行數表示所有指令都已執行與寫入完畢
-            if(flag==instructionList.size())
+            if(flag==instructionList.size()&&checkRS==0)
                 break;
-            // if(clock==49)
+            else if(flag==instructionList.size())
+            totalClock=clock;
+            // if(clock==50)
             //     break;
             clock++;
         }
         writeOutput();
-        System.out.println("End: "+clock);
+        System.out.println("End: "+totalClock);
         scn.nextLine();
         
     }
@@ -628,9 +643,9 @@ public class tomasulo {
     // 整數暫存器有32個，編號為R0、R1、…、R31，除R1的初始值為16外，其餘整數暫存器初始值為0
     for(int i=0;i<=31;i++){
         if(i==1)
-            iRegister.put("R"+i, "16");
+            iRegister.put("R"+i, "1");
         else
-            iRegister.put("R"+i, "0");
+            iRegister.put("R"+i, "1");
     }
     // 初始化Reservation Station並建立資源
     for(int i=0;i<loadMount;i++){
@@ -651,7 +666,10 @@ public class tomasulo {
    * 在終端機中列印出每個週期的內容
    */
   public static void showInfo(){
-    System.out.println("週期: "+clock);
+    if(clock==totalClock+1)
+        System.out.println("Final Result: ");
+    else
+        System.out.println("週期: "+clock);
     System.out.println("Instruction Status");
     System.out.printf("%-10s%-10s%-10s%-10s%-10s\n","指令類型","Issue","開始執行","執行結束","寫回");
     for(int i=0;i<instructionList.size();i++){
