@@ -82,12 +82,12 @@ public class tomasulo {
     public static void main(String[] args) {
 
         Scanner scn= new Scanner(System.in);
-        // if(args.length!=0){
-		// 	fileName=args[0];
-		// }else{
-        //     System.out.print("請輸入檔名(xxx.txt): ");
-        //     fileName=scn.nextLine();
-        // }
+        if(args.length!=0){
+			fileName=args[0];
+		}else{
+            System.out.print("請輸入檔名(xxx.txt): ");
+            fileName=scn.nextLine();
+        }
         // Read File
         readFile(fileName);
         // 保留站與暫存器初始化
