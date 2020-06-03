@@ -75,7 +75,7 @@ public class tomasulo {
     // 寫檔
     public static String str="";
     // 讀檔檔名
-    public static String fileName="./test/example7.txt";
+    public static String fileName="";
     // 總Clock
     public static int totalClock=0;
 
@@ -580,14 +580,21 @@ public class tomasulo {
                 if(multiplier[i].busy==1)
                     checkRS=1;
             }
+            for(int i=0;i<storeMount;i++){
+                if(storeBuffer[i].busy==1)
+                    checkRS=1;
+            }
             // 印出每個週期狀態與寫檔
             showInfo();
             save();
             // 當flag等於指令行數表示所有指令都已執行與寫入完畢
-            if(flag==instructionList.size()&&checkRS==0)
+            if(flag==instructionList.size()&&checkRS==0){
+                if(totalClock==0)
+                    totalClock=clock;
                 break;
+            }
             else if(flag==instructionList.size())
-            totalClock=clock;
+                totalClock=clock;
             // if(clock==50)
             //     break;
             clock++;
