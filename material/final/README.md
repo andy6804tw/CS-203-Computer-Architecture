@@ -27,6 +27,15 @@ very long instruction word processors
 (b)減少計算下個指令的時間，需要多額外空間做 PC 紀錄
 ```
 
+## 6. (a)What step is added to Tomasulo Algorithm in order to implement the hardware- based speculation? (b)Besides, what hardware is needed to prevent any irrevocable action? (c) What interval does the hardware supply operands in? (d) What conditions are satisfied if an instruction achieves the added step? (e) What is done in the step?
+```
+(a) Commit
+(b) Reorder buffer
+(c) between completion of instruction execution and instruction commit 2
+(d) Result is made and the instruction is at head
+(e) Updeate the register or memory with the result in ROB
+```
+
 # [Multiprocessors and Thread-Level Parallelism] 
 ## 1. 請說明何謂 Cache Coherency problem。
 ```
@@ -45,6 +54,18 @@ B. Home node: where the memory location and the directory entry of an address re
 C. Remote node: has a copy of a cache block, whether exclusive or shared
 ```
 
+## 4. What is the coherence miss? The coherence miss can be divided into two subtypes: true sharing misses and false sharing misses. Please explain false sharing misses. And give a solution to false sharing misses.
+```
+(a) Miss caused due to the coherence protocol
+(b) when a block is invalidated because some word in the block, other than the one being read, is written into One-word size.
+```
+
+## 5. We can use the write invalidate protocol or write update protocol in implement the coherence protocol. Please explain them. And which is better? Please give the reason.
+```
+A. 為了確保處理器在寫入數據項之前對其具有exclusive access(獨占訪問權)。
+B. 必須將新的訊息廣播到所有處理器中
+```
+
 # [Data-Level Parallelism in Vector, SIMD, and GPU Architectures]
 ## 1. 如果驗一個 vector processor 系統中有 4 個 memory bank，當欲從記憶體載入資料到一個 64 個 element 的暫存器時，資料在 bank 中如何放置時，會有最大的讀取時間。
 ```
@@ -53,4 +74,10 @@ C. Remote node: has a copy of a cache block, whether exclusive or shared
 ## 2. 如果在可以放置相同電晶體個數的晶片中，分別用來設計一般的 CPU 與 GPU，為何在 GPU 上可以同時執行上百個執行緒，而在 CPU 上能夠執行的執行數只有 個數個。
 ```
 GPU 中的執行緒所使用的硬體資源都很單純簡單，然而 CPU 的設計則相對複雜。
+```
+
+## 3. Vector processor 與 GPU 都可以在同一個時間點執行多個指令，但是架構上完全 不同，請描述其差異。
+```
+前者 function unit 為 deeper pipeline 設計
+後者 function unit 有多個
 ```
