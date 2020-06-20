@@ -36,6 +36,28 @@ very long instruction word processors
 (e) Updeate the register or memory with the result in ROB
 ```
 
+## 7. 請說明何謂 Hardware-Based Speculation，為何需要用到 Reorder buffer? 何時指 令才可以完成 commit 步驟? 萬一猜測錯誤，應該如何處理?
+```
+(a) 當還不確定分支指令的結果時，以預測的方式猜測可能的結果，並將結果存放在 Reorder buffer 中，等確定該指令是應該執行之後，才將 Reorder buffer 中的值更新到相關位置。
+(b) 指令結果已產生並且已在 ROB 的最前端 
+(c) 將預測執行的指令從 ROB 中刪除
+```
+
+## 8. 如果 load 與 store 指令存取相同記憶體位置的資料，將產生 hazard。應該如何做，才能避免 hazard?
+```
+load 要被執行時，應該先判斷是否在此之前有其他要寫入同一位置的 store 指令尚未完 成
+store 要執行時，應該先判斷是否在此之前有其他要讀取或是寫入同一位置的 load 或是 store 指令尚未完成
+```
+
+## 9. Speculation 預測下執行並不是對於任何 branch 之後的指令都是如此，請問會考量甚麼因素?
+```
+為避免猜錯時過度影響效能，如果需要花較多執行時間的指令，將先不執行
+```
+## 10. (a)請說明 Branch Target Buffer (BTB)機制 (b)如果想再加快速度，有甚麼方式?
+```
+
+```
+
 # [Multiprocessors and Thread-Level Parallelism] 
 ## 1. 請說明何謂 Cache Coherency problem。
 ```
