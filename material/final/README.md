@@ -45,7 +45,7 @@ very long instruction word processors
 
 ## 8. 如果 load 與 store 指令存取相同記憶體位置的資料，將產生 hazard。應該如何做，才能避免 hazard?
 ```
-load 要被執行時，應該先判斷是否在此之前有其他要寫入同一位置的 store 指令尚未完 成
+load 要被執行時，應該先判斷是否在此之前有其他要寫入同一位置的 store 指令尚未完成
 store 要執行時，應該先判斷是否在此之前有其他要讀取或是寫入同一位置的 load 或是 store 指令尚未完成
 ```
 
@@ -53,9 +53,11 @@ store 要執行時，應該先判斷是否在此之前有其他要讀取或是�
 ```
 為避免猜錯時過度影響效能，如果需要花較多執行時間的指令，將先不執行
 ```
+
 ## 10. (a)請說明 Branch Target Buffer (BTB)機制 (b)如果想再加快速度，有甚麼方式?
 ```
-
+(a)每個 entry 中紀錄了目前指令的 PC 與所預測之接下來指令位置
+(b)直接紀錄上次的執行指令
 ```
 
 # [Multiprocessors and Thread-Level Parallelism] 
@@ -84,7 +86,7 @@ C. Remote node: has a copy of a cache block, whether exclusive or shared
 
 ## 5. We can use the write invalidate protocol or write update protocol in implement the coherence protocol. Please explain them. And which is better? Please give the reason.
 ```
-A. 為了確保處理器在寫入數據項之前對其具有exclusive access(獨占訪問權)。
+A. 為了確保處理器在寫入數據項之前對其具有exclusive access(獨占訪問權)
 B. 必須將新的訊息廣播到所有處理器中
 ```
 
@@ -109,4 +111,15 @@ GPU 中的執行緒所使用的硬體資源都很單純簡單，然而 CPU 的�
 
 ```
 當 Arithmetic Intensity 逐漸增加時，每秒能夠完成的浮點數指令逐漸增加，但是受限於記憶 體頻寬的限制，之後就算 Arithmetic Intensity 繼續提升，也無法讓每秒指令執行個數增加。
+```
+## 5. 在 Vector processor 中的vector register 一次可以存放多的資料，請問以下指令執行時，執行行為如何?
+```
+不需等待整個 vector 暫存器中的所有 Element 都載入完畢，如有載入完成，即可開行執行乘法動作，只要完成乘法動作的，即可繼續往下做加法，依此類推。
+```
+## 6. 為何會有 Vector Mask Registers 的需求? (可以以例子說明)
+```
+並不是 vector register 中的所有 element 都要做相同的運算，有時會依據條件決定是否要執行運算，不須運算者會在 Mask Registers 註明 disable。
+for (i = 0; i < 64; i=i+1)
+    if (X[i] != 0)
+        X[i] = X[i] – Y[i];
 ```
