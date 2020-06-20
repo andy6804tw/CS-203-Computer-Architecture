@@ -17,7 +17,7 @@
 
 ## 4. 給予可以使得 CPI<1 的兩個機制。
 ```
-Superscaler processors
+superscalar processors
 very long instruction word processors
 ```
 
