@@ -31,7 +31,7 @@ very long instruction word processors
 ```
 (a) Commit
 (b) Reorder buffer
-(c) between completion of instruction execution and instruction commit 2
+(c) between completion of instruction execution and instruction commit
 (d) Result is made and the instruction is at head
 (e) Updeate the register or memory with the result in ROB
 ```
@@ -80,4 +80,11 @@ GPU 中的執行緒所使用的硬體資源都很單純簡單，然而 CPU 的�
 ```
 前者 function unit 為 deeper pipeline 設計
 後者 function unit 有多個
+```
+
+## 4. 請解釋為何不同的處理器在效能呈現上會有如以下的相同趨勢?
+![](https://i.imgur.com/36BDhpD.png)
+
+```
+當 Arithmetic Intensity 逐漸增加時，每秒能夠完成的浮點數指令逐漸增加，但是受限於記憶 體頻寬的限制，之後就算 Arithmetic Intensity 繼續提升，也無法讓每秒指令執行個數增加。
 ```
