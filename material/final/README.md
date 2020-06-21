@@ -100,7 +100,7 @@ B. 必須將新的訊息廣播到所有處理器中
 GPU 中的執行緒所使用的硬體資源都很單純簡單，然而 CPU 的設計則相對複雜。
 ```
 
-## 3. Vector processor 與 GPU 都可以在同一個時間點執行多個指令，但是架構上完全 不同，請描述其差異。
+## 3. Vector processor 與 GPU 都可以在同一個時間點執行多個指令，但是架構上完全不同，請描述其差異。
 ```
 前者 function unit 為 deeper pipeline 設計
 後者 function unit 有多個
