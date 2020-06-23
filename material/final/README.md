@@ -1,3 +1,4 @@
+# [Instruction Level Parallelism and Its Exploitation]
 ## 1. 請說明何謂 hardware speculation
 ```
 當還不確定 branch 指令的 outcome 時，以預測的方式猜測可能的 outcome，之後繼續執行這個路徑上的指令。 
@@ -89,6 +90,9 @@ C. Remote node: has a copy of a cache block, whether exclusive or shared
 A. 為了確保處理器在寫入數據項之前對其具有exclusive access(獨占訪問權)
 B. 必須將新的訊息廣播到所有處理器中
 ```
+
+## 6. 
+
 
 # [Data-Level Parallelism in Vector, SIMD, and GPU Architectures]
 ## 1. 如果驗一個 vector processor 系統中有 4 個 memory bank，當欲從記憶體載入資料到一個 64 個 element 的暫存器時，資料在 bank 中如何放置時，會有最大的讀取時間。
